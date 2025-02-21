@@ -8,6 +8,7 @@
 </head>
 <body>
     <h1>Prueba de miguel</h1>
+    <h1>prueba 2</h1>
     <!--Coloquen un h1 para probar y avisan para hacer git pull-->
 </body>
 </html>
