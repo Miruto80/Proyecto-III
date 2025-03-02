@@ -12,7 +12,5 @@
     <!--Coloquen un h1 para probar y avisan para hacer git pull-->
     <h1>Diego, Listo</h1>
     <h1>Angel, Listo</h1>
-    <h1>Prueba para angel</h1>
-    <h1>Prueba de nuevo</h1>
 </body>
 </html>
