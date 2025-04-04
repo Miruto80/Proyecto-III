@@ -1,20 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proyecto III</title>
-</head>
-<body>
-    <h1>Prueba de miguel</h1>
-    <h1>prueba 2</h1>
-    <!--Coloquen un h1 para probar y avisan para hacer git pull-->
-    <h1>Diego, Listo</h1>
-    <h1>Prueba numero 1293698329827121 de angel</h1>
-    <h1>Angel, listo</h1>
-    <h1>rhichard, listo</h1>
-    <h1>Prueba rhichard</h1>
-    <h1>Prueba Erick, Erick listo</h1>
-</body>
-</html>
+<?php
+session_start();// Inicia la sesión PHP
+
+if(!isset($_SESSION['usuario_id']) && (!isset($_GET['pagina']) || $_GET['pagina'] != 'login')){// Verifica si el usuario no está autenticado y no está en la página de login
+    header("Location: ?pagina=login");// Redirige al usuario a la página de login
+    exit;
+}
+
+if(isset($_GET['pagina']) && $_GET['pagina'] == 'logout'){// Maneja el cierre de sesión
+    session_destroy();// Destruye la sesión actual
+    header("Location: ?pagina=login");// Redirige al usuario a la página de login
+    exit;
+}
+
+$pagina = "principal"; // Establece la página por defecto como "principal"
+
+if (!empty($_GET['pagina'])){ // Si se proporciona una página en la URL, la usa
+    $pagina = basename($_GET['pagina']);  
+}
+
+if(is_file("controlador/".$pagina.".php")){ // Verifica si existe el archivo del controlador para la página solicitada 
+    require_once("controlador/".$pagina.".php");// Incluye el archivo del controlador
+} else {// Si no existe el archivo, muestra un error 404
+    require_once("vista/404.php");
+}
+
+/*
+1.Gestión de sesiones: Inicia la sesión y verifica si el usuario está autenticado.
+2.Control de acceso: Redirige a los usuarios no autenticados a la página de login.
+3.Cierre de sesión: Maneja la solicitud de cierre de sesión.
+4.Enrutamiento: Determina qué página debe cargarse basándose en el parámetro 'pagina' de la URL.
+5.Carga de controladores: Incluye el archivo del controlador correspondiente a la página solicitada.
+6.Manejo de errores: Muestra un error 404 si no se encuentra el controlador solicitado.
+*/
+
+?>
