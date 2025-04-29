@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-04-2025 a las 04:22:14
+-- Tiempo de generación: 29-04-2025 a las 05:17:47
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -101,34 +101,20 @@ CREATE TABLE `metodo_pago` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `notificaciones`
+-- Estructura de tabla para la tabla `pedido`
 --
 
-CREATE TABLE `notificaciones` (
-  `id_notificacion` int(11) NOT NULL,
-  `titulo` varchar(100) DEFAULT NULL,
-  `mensaje` varchar(100) DEFAULT NULL,
-  `fecha` date DEFAULT NULL,
-  `estado` varchar(50) DEFAULT NULL,
-  `id_pedidoweb` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pedidoweb`
---
-
-CREATE TABLE `pedidoweb` (
-  `id_pedidoweb` int(11) NOT NULL,
-  `fecha_pedido` timestamp NOT NULL DEFAULT current_timestamp(),
+CREATE TABLE `pedido` (
+  `id_pedido` int(11) NOT NULL,
+  `tipo` varchar(100) DEFAULT NULL,
+  `fecha` timestamp NOT NULL DEFAULT current_timestamp(),
   `estado` varchar(100) DEFAULT NULL,
   `precio_total` float DEFAULT NULL,
   `referencia_bancaria` int(11) DEFAULT NULL,
   `telefono_emisor` varchar(20) DEFAULT NULL,
-  `id_persona` int(11) DEFAULT NULL,
-  `id_metodopago` int(11) DEFAULT NULL,
-  `id_entrega` int(11) DEFAULT NULL
+  `banco` varchar(100) DEFAULT NULL,
+  `id_entrega` int(11) DEFAULT NULL,
+  `id_metodopago` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -138,10 +124,10 @@ CREATE TABLE `pedidoweb` (
 --
 
 CREATE TABLE `pedido_detalles` (
-  `id_detalle_pedido` int(11) NOT NULL,
+  `id_detalle` int(11) NOT NULL,
   `cantidad` int(11) DEFAULT NULL,
   `precio_unitario` float DEFAULT NULL,
-  `id_pedidoweb` int(11) DEFAULT NULL,
+  `id_pedido` int(11) DEFAULT NULL,
   `id_producto` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -172,7 +158,7 @@ CREATE TABLE `personas` (
 CREATE TABLE `preliminar` (
   `id_preliminar` int(11) NOT NULL,
   `condicion` varchar(100) DEFAULT NULL,
-  `id_detalle_pedido` int(11) DEFAULT NULL,
+  `id_detalle` int(11) DEFAULT NULL,
   `id_detalle_reserva` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -254,37 +240,6 @@ CREATE TABLE `rol_usuario` (
   `estatus` int(2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `venta`
---
-
-CREATE TABLE `venta` (
-  `venta_id` int(11) NOT NULL,
-  `fecha_salida` date DEFAULT NULL,
-  `referencia_bancaria` int(11) DEFAULT NULL,
-  `telefono_emisor` varchar(20) DEFAULT NULL,
-  `estado` varchar(100) DEFAULT NULL,
-  `banco` varchar(30) DEFAULT NULL,
-  `fecha_pago` date DEFAULT NULL,
-  `id_metodopago` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `venta_detalles`
---
-
-CREATE TABLE `venta_detalles` (
-  `id_detalles_venta` int(11) NOT NULL,
-  `cantidad` int(11) DEFAULT NULL,
-  `precio` float DEFAULT NULL,
-  `venta_id` int(11) DEFAULT NULL,
-  `id_producto` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 --
 -- Índices para tablas volcadas
 --
@@ -330,27 +285,19 @@ ALTER TABLE `metodo_pago`
   ADD PRIMARY KEY (`id_metodopago`);
 
 --
--- Indices de la tabla `notificaciones`
+-- Indices de la tabla `pedido`
 --
-ALTER TABLE `notificaciones`
-  ADD PRIMARY KEY (`id_notificacion`),
-  ADD KEY `id_pedidoweb` (`id_pedidoweb`);
-
---
--- Indices de la tabla `pedidoweb`
---
-ALTER TABLE `pedidoweb`
-  ADD PRIMARY KEY (`id_pedidoweb`),
-  ADD KEY `id_persona` (`id_persona`),
-  ADD KEY `id_metodopago` (`id_metodopago`),
-  ADD KEY `id_entrega` (`id_entrega`);
+ALTER TABLE `pedido`
+  ADD PRIMARY KEY (`id_pedido`),
+  ADD KEY `id_entrega` (`id_entrega`),
+  ADD KEY `id_metodopago` (`id_metodopago`);
 
 --
 -- Indices de la tabla `pedido_detalles`
 --
 ALTER TABLE `pedido_detalles`
-  ADD PRIMARY KEY (`id_detalle_pedido`),
-  ADD KEY `id_pedidoweb` (`id_pedidoweb`),
+  ADD PRIMARY KEY (`id_detalle`),
+  ADD KEY `id_pedido` (`id_pedido`),
   ADD KEY `id_producto` (`id_producto`);
 
 --
@@ -365,7 +312,7 @@ ALTER TABLE `personas`
 --
 ALTER TABLE `preliminar`
   ADD PRIMARY KEY (`id_preliminar`),
-  ADD KEY `id_detalle_pedido` (`id_detalle_pedido`),
+  ADD KEY `id_detalle` (`id_detalle`),
   ADD KEY `id_detalle_reserva` (`id_detalle_reserva`);
 
 --
@@ -404,21 +351,6 @@ ALTER TABLE `rol_usuario`
   ADD PRIMARY KEY (`id_tipo`);
 
 --
--- Indices de la tabla `venta`
---
-ALTER TABLE `venta`
-  ADD PRIMARY KEY (`venta_id`),
-  ADD KEY `id_metodopago` (`id_metodopago`);
-
---
--- Indices de la tabla `venta_detalles`
---
-ALTER TABLE `venta_detalles`
-  ADD PRIMARY KEY (`id_detalles_venta`),
-  ADD KEY `venta_id` (`venta_id`),
-  ADD KEY `id_producto` (`id_producto`);
-
---
 -- Restricciones para tablas volcadas
 --
 
@@ -442,24 +374,17 @@ ALTER TABLE `compra_detalles`
   ADD CONSTRAINT `compra_detalles_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
 
 --
--- Filtros para la tabla `notificaciones`
+-- Filtros para la tabla `pedido`
 --
-ALTER TABLE `notificaciones`
-  ADD CONSTRAINT `notificaciones_ibfk_1` FOREIGN KEY (`id_pedidoweb`) REFERENCES `pedidoweb` (`id_pedidoweb`);
-
---
--- Filtros para la tabla `pedidoweb`
---
-ALTER TABLE `pedidoweb`
-  ADD CONSTRAINT `pedidoweb_ibfk_1` FOREIGN KEY (`id_persona`) REFERENCES `personas` (`id_persona`),
-  ADD CONSTRAINT `pedidoweb_ibfk_2` FOREIGN KEY (`id_metodopago`) REFERENCES `metodo_pago` (`id_metodopago`),
-  ADD CONSTRAINT `pedidoweb_ibfk_3` FOREIGN KEY (`id_entrega`) REFERENCES `metodo_entrega` (`id_entrega`);
+ALTER TABLE `pedido`
+  ADD CONSTRAINT `pedido_ibfk_1` FOREIGN KEY (`id_entrega`) REFERENCES `metodo_entrega` (`id_entrega`),
+  ADD CONSTRAINT `pedido_ibfk_2` FOREIGN KEY (`id_metodopago`) REFERENCES `metodo_pago` (`id_metodopago`);
 
 --
 -- Filtros para la tabla `pedido_detalles`
 --
 ALTER TABLE `pedido_detalles`
-  ADD CONSTRAINT `pedido_detalles_ibfk_1` FOREIGN KEY (`id_pedidoweb`) REFERENCES `pedidoweb` (`id_pedidoweb`),
+  ADD CONSTRAINT `pedido_detalles_ibfk_1` FOREIGN KEY (`id_pedido`) REFERENCES `pedido` (`id_pedido`),
   ADD CONSTRAINT `pedido_detalles_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
 
 --
@@ -472,7 +397,7 @@ ALTER TABLE `personas`
 -- Filtros para la tabla `preliminar`
 --
 ALTER TABLE `preliminar`
-  ADD CONSTRAINT `preliminar_ibfk_1` FOREIGN KEY (`id_detalle_pedido`) REFERENCES `pedido_detalles` (`id_detalle_pedido`),
+  ADD CONSTRAINT `preliminar_ibfk_1` FOREIGN KEY (`id_detalle`) REFERENCES `pedido_detalles` (`id_detalle`),
   ADD CONSTRAINT `preliminar_ibfk_2` FOREIGN KEY (`id_detalle_reserva`) REFERENCES `reserva_detalles` (`id_detalle_reserva`);
 
 --
@@ -493,19 +418,6 @@ ALTER TABLE `reserva`
 ALTER TABLE `reserva_detalles`
   ADD CONSTRAINT `reserva_detalles_ibfk_1` FOREIGN KEY (`id_reserva`) REFERENCES `reserva` (`id_reserva`),
   ADD CONSTRAINT `reserva_detalles_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
-
---
--- Filtros para la tabla `venta`
---
-ALTER TABLE `venta`
-  ADD CONSTRAINT `venta_ibfk_1` FOREIGN KEY (`id_metodopago`) REFERENCES `metodo_pago` (`id_metodopago`);
-
---
--- Filtros para la tabla `venta_detalles`
---
-ALTER TABLE `venta_detalles`
-  ADD CONSTRAINT `venta_detalles_ibfk_1` FOREIGN KEY (`venta_id`) REFERENCES `venta` (`venta_id`),
-  ADD CONSTRAINT `venta_detalles_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
