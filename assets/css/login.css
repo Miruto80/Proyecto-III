@@ -1,0 +1,174 @@
+body {
+    margin: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('../img/f010.png');
+    height: 100vh;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  }
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2); /* Ajusta los valores según tus necesidades */
+    padding: 20px; /* Opcional: agrega un poco de espacio interno */
+    border-radius: 8px; /* Opcional: agrega bordes redondeados */
+    background-color: white; /* Opcional: establece un color de fondo */
+}
+  .hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    gap: 20px;
+    border-radius: 20px;
+    background-color: #fc6998;
+    width: 50%;
+    height: 100vh;
+  }
+  .hero-section .sub-heading {
+    margin-top: 0;
+    color: white;
+  }
+  .hero-section img {
+    width: 400px;
+    height: 300px;
+    object-fit: c;
+    border-radius: 10px;
+  }
+  h2 {
+    margin: 0;
+  }
+  .logo {
+    font-size: 40px;
+  }
+  .sub-heading {
+    font-size: 14px;
+    margin-top: 10px;
+    color:#f34e4e;
+  }
+  .btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+    align-items: center;
+  }
+  .btn-primary {
+    background: #fa8fb1;
+    color: rgb(255, 255, 255);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .btn-primary:hover {
+    background: #ffc1d5;
+    color:#000000;
+  }
+  .btn-secondary {
+    background: white;
+    border: 1px solid rgb(236, 233, 233);
+    color: rgb(104, 102, 102);
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .btn-secondary:hover {
+    background: rgb(236, 233, 233);
+  } 
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .form-control {
+    padding: 10px;
+    border: 1px solid rgb(160, 157, 157);
+    border-radius: 5px;
+    width: 360px;
+  }
+  .input-group {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+  label {
+    font-size: 14px;
+    color:#000000;
+  }
+  .mt {
+    margin-top: 20px;
+  }
+  .footer-group {
+    margin-top: 20px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    width: 380px;
+  }
+  .footer-group span {
+    color: rgb(161, 161, 161);
+  }
+  .footer-group a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  @media (max-width: 953px) {
+    .hero-section {
+      display: none;
+    }
+  }
+
+
+
+  .password-input {
+    position: relative;
+    width: 100%;
+  }
+  
+  .password-input span#show-password {
+    position: absolute;
+    top: 11px;
+    right: 10px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+
+  /* Contenedor del botón para posicionarlo en la esquina superior izquierda */
+.back-button-container {
+  position: absolute;
+  top: 20px; 
+  left: 20px; 
+}
+
+/* Estilo del botón circular */
+.back-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px; 
+  height: 50px; 
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  font-size: 20px; 
+  cursor: pointer; 
+}
+
+/* Efecto hover */
+.back-button:hover {
+  background-color: #f0f0f0; 
+  color: #007bff;
+}
