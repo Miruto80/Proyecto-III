@@ -54,32 +54,23 @@
           <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
+                  <th class="text-white">Nombre</th>
+                  <th class="text-white">Descripcion</th>
+                  <th class="text-white">Marca</th>
+                  <th class="text-white">Cantidad_mayor</th>
+                  <th class="text-white">Precio_mayor</th>
+                  <th class="text-white">Precio_detal</th>
+                  <th class="text-white">Stock_disponible</th>
+                  <th class="text-white">Stock_maximo</th>
+                  <th class="text-white">Stock_minimo</th>
+                  <th class="text-white">Imagen</th>
+                  <th class="text-white">Stock_minimo</th>
                   <th class="text-white">ACCION</th>
                 </tr>
               </thead>
               <tbody>
-    
-                <tr>
-                 <td>1</td>
-                 <td>1</td>
-                 <td>1</td>
-                 <td>1</td>
-                  <td>
-                    <form method="POST" action="">
-                       <button name="modificar" class="btn btn-primary btn-sm modificar"> 
-                        <i class="fas fa-pencil-alt" title="Editar"> </i> 
-                       </button>
-                        
-                        <button name="eliminar" class="btn btn-danger btn-sm eliminar">
-                          <i class="fas fa-trash-alt" title="Eliminar"> </i>
-                        </button>
-                     </form>
-                  </td>
-                </tr>
+              <tbody id="resultadoconsulta">
+				</tbody>
             
               </tbody>
                                
