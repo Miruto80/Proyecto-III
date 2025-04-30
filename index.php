@@ -1,5 +1,5 @@
 <?php
-/* GOAL*/
+/* GOAL ssssss*/
     $pagina = "catalago";
         if (!empty($_GET['pagina'])){
             $pagina=$_GET['pagina'];
