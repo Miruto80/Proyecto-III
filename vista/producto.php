@@ -116,6 +116,8 @@
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
+<script src="/Lovemakeup/assets/js/producto.js"></script>
+
 
 </body>
 
