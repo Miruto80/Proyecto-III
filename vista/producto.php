@@ -51,7 +51,7 @@
 
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0" id="tablapersona">
               <thead class="table-color">
                 <tr>
                   <th class="text-white">Nombre</th>
@@ -64,15 +64,13 @@
                   <th class="text-white">Stock_maximo</th>
                   <th class="text-white">Stock_minimo</th>
                   <th class="text-white">Imagen</th>
-                  <th class="text-white">Stock_minimo</th>
+                  <th class="text-white">Estatus</th>
                   <th class="text-white">ACCION</th>
                 </tr>
               </thead>
-              <tbody>
               <tbody id="resultadoconsulta">
 				</tbody>
-            
-              </tbody>
+
                                
           </table> <!-- Fin tabla--> 
       </div>  <!-- Fin div table-->
