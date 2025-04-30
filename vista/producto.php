@@ -83,7 +83,6 @@
     </div>  
     </div><!-- FIN CARD PRINCIPAL-->  
 
-
 <!-- Modal -->
 <div class="modal fade" id="registro" tabindex="1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog  modal-lg modal-dialog-centered">
@@ -95,9 +94,19 @@
 
       <div class="modal-body"> <!-- Modal contenido -->
       
-      <form action="">
-        <input type="text" class="form-control "name=""  id=""> <br>
-        <input type="text" class="form-control "name=""  id=""> <br>
+      <form method="post" id="f" autocomplete="off" enctype='multipart/form-data'>
+      <div class="row mb-3">
+								<div class="col-md-4">
+									<label for="nombre">Nombre del producto</label>
+									<input class="form-control" type="text" id="nombre" name="nombre" />
+									<span id="snombre"></span>
+								</div>
+								<div class="col-md-8">
+									<label for="descripcion">Descripcion</label>
+									<textarea class="form-control" type="textarea" id="descripcion" name="descripcion" placeholder="Escribe la descripcion"></textarea>
+									<span id="sdescripcion"></span>
+								</div>
+							</div>
 <br>
       <div class="text-center">
         <button type="button" class="btn btn-primary">Registrar</button>
