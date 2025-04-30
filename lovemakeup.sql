@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-04-2025 a las 05:17:47
+-- Tiempo de generación: 30-04-2025 a las 03:51:26
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -96,6 +96,21 @@ CREATE TABLE `metodo_pago` (
   `id_metodopago` int(11) NOT NULL,
   `descripcion` varchar(200) DEFAULT NULL,
   `estatus` int(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `notificaciones`
+--
+
+CREATE TABLE `notificaciones` (
+  `id_notificaciones` int(11) DEFAULT NULL,
+  `titulo` varchar(100) DEFAULT NULL,
+  `mensaje` varchar(100) DEFAULT NULL,
+  `fecha` date DEFAULT NULL,
+  `estado` varchar(50) DEFAULT NULL,
+  `id_pedido` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -285,6 +300,12 @@ ALTER TABLE `metodo_pago`
   ADD PRIMARY KEY (`id_metodopago`);
 
 --
+-- Indices de la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  ADD KEY `id_pedido` (`id_pedido`);
+
+--
 -- Indices de la tabla `pedido`
 --
 ALTER TABLE `pedido`
@@ -372,6 +393,12 @@ ALTER TABLE `compra`
 ALTER TABLE `compra_detalles`
   ADD CONSTRAINT `compra_detalles_ibfk_1` FOREIGN KEY (`id_compra`) REFERENCES `compra` (`id_compra`),
   ADD CONSTRAINT `compra_detalles_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
+
+--
+-- Filtros para la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  ADD CONSTRAINT `notificaciones_ibfk_1` FOREIGN KEY (`id_pedido`) REFERENCES `pedido` (`id_pedido`);
 
 --
 -- Filtros para la tabla `pedido`
