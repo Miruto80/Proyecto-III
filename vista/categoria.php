@@ -51,23 +51,21 @@
 
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+          <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
                   <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
+                  <th class="text-white">NOMBRE</th>
                   <th class="text-white">ACCION</th>
                 </tr>
               </thead>
               <tbody>
-    
+                <?php
+                  foreach ($registro as $dato){
+                ?>
                 <tr>
-                 <td>1</td>
-                 <td>1</td>
-                 <td>1</td>
-                 <td>1</td>
+                  <td><?php echo $dato['id_categoria']?></td>
+                  <td><?php echo $dato['nombre']?></td>
                   <td>
                     <form method="POST" action="">
                        <button name="modificar" class="btn btn-primary btn-sm modificar"> 
@@ -80,7 +78,7 @@
                      </form>
                   </td>
                 </tr>
-            
+              <?php } ?>
               </tbody>
                                
           </table> <!-- Fin tabla--> 
@@ -104,12 +102,13 @@
 
       <div class="modal-body"> <!-- Modal contenido -->
       
-      <form action="">
-        <input type="text" class="form-control "name=""  id=""> <br>
-        <input type="text" class="form-control "name=""  id=""> <br>
+      <form action="?pagina=categoria" id="u" autocomplete="off">
+        <label>NOMBRE</label>
+        <input type="text" class="form-control "name="nombre"  id="nombre"  placeholder="Ejemplo: Polvo "  required> <br>
+      
 <br>
       <div class="text-center">
-        <button type="button" class="btn btn-primary">Registrar</button>
+        <button type="button" class="btn btn-primary" name="registrar" id="registrar">Registrar</button>
         <button type="reset" class="btn btn-primary">Limpiar</button>
         </div>
       </form>
@@ -125,6 +124,8 @@
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
+ <script src="assets/js/demo/datatables-demo.js"></script>
+ <script src="assets/js/categoria.js"></script>
 
 </body>
 
