@@ -119,7 +119,7 @@
       </div>
 
       <div class="modal-body"> <!-- Modal contenido -->
-      <form action="?pagina=producto" id="u" autocomplete="off" enctype='multipart/form-data'>
+      <form id="u" autocomplete="off" enctype='multipart/form-data'>
       <div class="row mb-3">
 								<div class="col-md-6">
 									<label for="nombre">Nombre del producto</label>

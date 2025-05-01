@@ -28,34 +28,35 @@ function __construct(){
 
 
 public function registrar(){
+    $registro ="INSERT INTO productos(nombre,descripcion,marca,cantidad_mayor,precio_mayor,precio_detal,stock_disponible,stock_maximo,stock_minimo,imagen,id_categoria,estatus)
+    VALUES (:nombre,:descripcion,:marca,:cantidad_mayor,:precio_mayor,:precio_detal,:stock_disponible,:stock_maximo,:stock_minimo,:imagen,:id_categoria,1)";
 
-	$registro ="INSERT INTO productos(nombre,descripcion,marca,cantidad_mayor,precio_mayor,precio_detal,stock_disponible,stock_maximo,stock_minimo,imagen,estatus)
-	VALUES (:nombre,:descripcion,:marca,:cantidad_mayor,:precio_mayor,:precio_detal,:stock_disponible,:stock_maximo,:stock_minimo,:imagen,1)";
+    $strExec = $this->conex->prepare($registro);
+    $strExec->bindParam(':nombre',$this->nombre);
+    $strExec->bindParam(':descripcion',$this->descripcion);
+    $strExec->bindParam(':marca',$this->marca);
+    $strExec->bindParam(':cantidad_mayor',$this->cantidad_mayor);
+    $strExec->bindParam(':precio_mayor',$this->precio_mayor);
+    $strExec->bindParam(':precio_detal',$this->precio_detal);
+    $strExec->bindParam(':stock_disponible',$this->stock_disponible);
+    $strExec->bindParam(':stock_maximo',$this->stock_maximo);
+    $strExec->bindParam(':stock_minimo',$this->stock_minimo);
+    $strExec->bindParam(':imagen',$this->imagen);
+    $strExec->bindParam(':id_categoria', $this->categoria); // este es el valor que faltaba
 
-	$strExec = $this->conex->prepare($registro);
-	$strExec->bindParam(':nombre',$this->nombre);
-	$strExec->bindParam(':descripcion',$this->descripcion);
-	$strExec->bindParam(':marca',$this->marca);
-	$strExec->bindParam(':cantidad_mayor',$this->cantidad_mayor);
-	$strExec->bindParam(':precio_mayor',$this->precio_mayor);
-	$strExec->bindParam(':precio_detal',$this->precio_detal);
-	$strExec->bindParam(':stock_disponible',$this->stock_disponible);
-	$strExec->bindParam(':stock_maximo',$this->stock_maximo);
-	$strExec->bindParam(':stock_minimo',$this->stock_minimo);
-	$strExec->bindParam(':imagen',$this->imagen);
-	$strExec->bindParam(':stock_minimo',$this->stock_minimo);
+    $resul = $strExec->execute();
 
-	 $resul=$strExec->execute();
-	  if ($resul) {
-		  $res['respuesta'] = 1;
-		   $res['accion'] = 'incluir';
-	} else {
-		 $res['respuesta'] = 0;
-		 $res['accion'] = 'incluir';
-	  }
+    if ($resul) {
+        $res['respuesta'] = 1;
+        $res['accion'] = 'incluir';
+    } else {
+        $res['respuesta'] = 0;
+        $res['accion'] = 'incluir';
+    }
 
-return $res;
-} // fin registrar
+    return $res;
+}
+
 
 
 

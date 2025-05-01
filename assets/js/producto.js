@@ -88,3 +88,31 @@ $(document).ready(function() {
       });
     }
     
+    $("#archivo").on("change",function(){
+	
+      mostrarImagen(this);
+    });
+    //			
+    
+    $("#imagen").on("error",function(){
+      $(this).prop("src","assets/img/logo.PNG");
+    });
+      function mostrarImagen(f) {
+      
+      var tamano = f.files[0].size;
+         var megas = parseInt(tamano / 1024);
+         
+         if(megas > 1024){
+         muestraMensaje("La imagen debe ser igual o menor a 1024 K");
+             $(f).val('');
+         }
+         else{	
+         if (f.files && f.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+           $('#imagen').attr('src', e.target.result);
+          }
+          reader.readAsDataURL(f.files[0]);
+         }
+       }
+    }
