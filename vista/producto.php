@@ -131,7 +131,77 @@
 									<textarea class="form-control" type="textarea" id="descripcion" name="descripcion" placeholder="Escribe la descripcion"></textarea>
 									<span id="sdescripcion"></span>
 								</div>
+				</div>
+      <div class="row mb-3">
+								<div class="col-md-4">
+									<label for="marca">Marca del producto</label>
+									<input class="form-control" type="text" id="marca" name="marca" />
+									<span id="smarca"></span>
+								</div>
+								<div class="col-md-2">
+									<label for="cantidad_mayor">C al mayor</label>
+									<input class="form-control" type="text" id="cantidad_mayor" name="cantidad_mayor" />
+									<span id="scantidad_mayor"></span>
+								</div>
+								<div class="col-md-2">
+									<label for="precio_mayor">Precio al mayor</label>
+									<input class="form-control" type="text" id="precio_mayor" name="precio_mayor" />
+									<span id="sprecio_mayor"></span>
+								</div>
+								<div class="col-md-2">
+									<label for="precio_detal">Precio al detal</label>
+									<input class="form-control" type="text" id="precio_detal" name="precio_detal" />
+									<span id="sprecio_detal"></span>
+								</div>
+								<div class="col-md-2">
+									<label for="stock_disponible">Stock disponible</label>
+									<input class="form-control" type="text" id="stock_disponible" name="stock_disponible"/>
+									<span id="sstock_disponible"></span>
+								</div>
+								
+				</div>
+      <div class="row mb-3">
+                  <div class="col-md-4">
+                    <label for="stock_maximo">Stock maximo</label>
+                    <input class="form-control" type="text" id="stock_maximo" name="stock_maximo" />
+                    <span id="sstock_maximo"></span>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="stock_minimo">Stock minimo</label>
+                    <input class="form-control" type="text" id="stock_minimo" name="stock_minimo" />
+                    <span id="sstock_minimo"></span>
+                  </div>
+								<div class="col-md-4">
+                <label for="categoria">Categoria</label>
+									<select class="form-select text-gray-900 " name="categoria" id="categoria" required>
+                            <option value="">Seleccione una Categoria</option>
+                               <?php foreach($categoria as $categoria) {?>
+                                   <option value="<?php echo $categoria['id_categoria'];?>"> <?php echo $categoria['nombre'];?> </option>
+                                <?php } ?>
+              </select>
+								</div>
+								
+				</div>
+
+        <div class="row">
+								<div class="col-md-12">
+									<center>
+										<label for="archivo" style="cursor:pointer">
+
+											<img src="assets/img/logo.PNG" id="imagen"
+												class="img-fluid rounded-circle w-25 mb-3 centered"
+												style="object-fit:scale-down">
+                        <br>
+											Click aqui para subir la foto del producto
+										</label>
+										<input id="archivo" type="file"
+											style="display:none"
+											accept=".png,.jpg,.jpeg,.webp"
+											name="imagenarchivo" />
+									</center>
+								</div>
 							</div>
+						
               
 <br>
       <div class="text-center">
