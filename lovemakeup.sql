@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-04-2025 a las 03:51:26
+-- Tiempo de generación: 01-05-2025 a las 00:36:42
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -105,7 +105,7 @@ CREATE TABLE `metodo_pago` (
 --
 
 CREATE TABLE `notificaciones` (
-  `id_notificaciones` int(11) DEFAULT NULL,
+  `id_notificaciones` int(11) NOT NULL,
   `titulo` varchar(100) DEFAULT NULL,
   `mensaje` varchar(100) DEFAULT NULL,
   `fecha` date DEFAULT NULL,
@@ -303,6 +303,7 @@ ALTER TABLE `metodo_pago`
 -- Indices de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
+  ADD PRIMARY KEY (`id_notificaciones`),
   ADD KEY `id_pedido` (`id_pedido`);
 
 --
@@ -370,6 +371,106 @@ ALTER TABLE `reserva_detalles`
 --
 ALTER TABLE `rol_usuario`
   ADD PRIMARY KEY (`id_tipo`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `bitacora`
+--
+ALTER TABLE `bitacora`
+  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `categoria`
+--
+ALTER TABLE `categoria`
+  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `compra`
+--
+ALTER TABLE `compra`
+  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `compra_detalles`
+--
+ALTER TABLE `compra_detalles`
+  MODIFY `id_detalle_compra` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `metodo_entrega`
+--
+ALTER TABLE `metodo_entrega`
+  MODIFY `id_entrega` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `metodo_pago`
+--
+ALTER TABLE `metodo_pago`
+  MODIFY `id_metodopago` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  MODIFY `id_notificaciones` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `pedido`
+--
+ALTER TABLE `pedido`
+  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `pedido_detalles`
+--
+ALTER TABLE `pedido_detalles`
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `personas`
+--
+ALTER TABLE `personas`
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `preliminar`
+--
+ALTER TABLE `preliminar`
+  MODIFY `id_preliminar` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `productos`
+--
+ALTER TABLE `productos`
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `proveedor`
+--
+ALTER TABLE `proveedor`
+  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `reserva`
+--
+ALTER TABLE `reserva`
+  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `reserva_detalles`
+--
+ALTER TABLE `reserva_detalles`
+  MODIFY `id_detalle_reserva` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `rol_usuario`
+--
+ALTER TABLE `rol_usuario`
+  MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restricciones para tablas volcadas
