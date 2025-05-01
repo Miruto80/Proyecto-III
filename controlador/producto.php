@@ -22,14 +22,18 @@
                 $objproducto->set_stock_minimo($_POST['stock_minimo']);
                 $objproducto->set_Categoria($_POST['categoria']);
          
-                if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
-                    $nombreImagen = uniqid() . "_" . $_FILES['imagen']['name'];
-                    $rutaDestino = 'assets/img/Imgproductos' . $nombreImagen;
-                    move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaDestino);
-                    $objproducto->set_imagen($nombreImagen);
+                if (isset($_FILES['imagenarchivo']) && $_FILES['imagenarchivo']['error'] == 0) {
+                    $nombreArchivo = $_FILES['imagenarchivo']['name'];
+                    $rutaTemporal = $_FILES['imagenarchivo']['tmp_name'];
+                    $rutaDestino = 'assets/img/Imgproductos/' . $nombreArchivo;
+                
+                    move_uploaded_file($rutaTemporal, $rutaDestino);
+                
+                    $objproducto->set_imagen($rutaDestino); // Guarda la ruta en la base de datos
                 } else {
-                    $objproducto->set_imagen('');
+                    $objproducto->set_imagen(''); // O puedes poner una imagen por defecto
                 }
+                
          
                 $result = $objproducto->registrar();
                 echo json_encode($result);
