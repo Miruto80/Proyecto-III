@@ -51,37 +51,26 @@
 
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0" id="tablapersona">
               <thead class="table-color">
                 <tr>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
+                  <th class="text-white">Nombre</th>
+                  <th class="text-white">Descripcion</th>
+                  <th class="text-white">Marca</th>
+                  <th class="text-white">Cantidad_mayor</th>
+                  <th class="text-white">Precio_mayor</th>
+                  <th class="text-white">Precio_detal</th>
+                  <th class="text-white">Stock_disponible</th>
+                  <th class="text-white">Stock_maximo</th>
+                  <th class="text-white">Stock_minimo</th>
+                  <th class="text-white">Imagen</th>
+                  <th class="text-white">Estatus</th>
                   <th class="text-white">ACCION</th>
                 </tr>
               </thead>
-              <tbody>
-    
-                <tr>
-                 <td>1</td>
-                 <td>1</td>
-                 <td>1</td>
-                 <td>1</td>
-                  <td>
-                    <form method="POST" action="">
-                       <button name="modificar" class="btn btn-primary btn-sm modificar"> 
-                        <i class="fas fa-pencil-alt" title="Editar"> </i> 
-                       </button>
-                        
-                        <button name="eliminar" class="btn btn-danger btn-sm eliminar">
-                          <i class="fas fa-trash-alt" title="Eliminar"> </i>
-                        </button>
-                     </form>
-                  </td>
-                </tr>
-            
-              </tbody>
+              <tbody id="resultadoconsulta">
+				</tbody>
+
                                
           </table> <!-- Fin tabla--> 
       </div>  <!-- Fin div table-->
@@ -91,7 +80,6 @@
     </div>
     </div>  
     </div><!-- FIN CARD PRINCIPAL-->  
-
 
 <!-- Modal -->
 <div class="modal fade" id="registro" tabindex="1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -104,9 +92,19 @@
 
       <div class="modal-body"> <!-- Modal contenido -->
       
-      <form action="">
-        <input type="text" class="form-control "name=""  id=""> <br>
-        <input type="text" class="form-control "name=""  id=""> <br>
+      <form method="post" id="f" autocomplete="off" enctype='multipart/form-data'>
+      <div class="row mb-3">
+								<div class="col-md-4">
+									<label for="nombre">Nombre del producto</label>
+									<input class="form-control" type="text" id="nombre" name="nombre" />
+									<span id="snombre"></span>
+								</div>
+								<div class="col-md-8">
+									<label for="descripcion">Descripcion</label>
+									<textarea class="form-control" type="textarea" id="descripcion" name="descripcion" placeholder="Escribe la descripcion"></textarea>
+									<span id="sdescripcion"></span>
+								</div>
+							</div>
 <br>
       <div class="text-center">
         <button type="button" class="btn btn-primary">Registrar</button>
@@ -125,6 +123,8 @@
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
+<script src="/Lovemakeup/assets/js/producto.js"></script>
+
 
 </body>
 

@@ -1,8 +1,4 @@
 <?php  
-    
-    
-
-
     if (isset($_POST['entrar'])){
      require 'vista/seguridad/bitacora.php';
     }
