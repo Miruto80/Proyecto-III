@@ -1,5 +1,5 @@
 <?php
-/*ERIK LE GUSTA A YERMARI */
+/*ERICK LE GUSTA A YERMARI */
     
     $pagina = "catalago";
         if (!empty($_GET['pagina'])){
