@@ -5,16 +5,19 @@
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
-  <!--Lineas para usar el DataTblet-->
- <link rel="stylesheet" type="text/css" href="/assets/js/libreria/datatables/datatables.css"/> 
- <script type="text/javascript" src="/assets/js/libreria/datatables/datatables.min.js"></script>
+
   <!-- CSS Files -->
   <link id="pagestyle" href="assets/css/argon-dashboard.css?v=2.1.0" rel="stylesheet" />
   <link id="pagestyle" href="assets/css/sidebar.css" rel="stylesheet" />
 
+  <!-- JS LIBRERIA -->
   <script src="assets/js/libreria/jquery.min.js"></script>
   <script src="assets/js/libreria/sweetalert2.js"></script>
   <script src="assets/js/libreria/moment.js"></script>
+
+  <!-- DATATABLE -->
+  <link href="assets/css/datatables.min.css" rel="stylesheet">
+  <script src="assets/js/libreria/datatables.min.js"> </script>
  
 
 
