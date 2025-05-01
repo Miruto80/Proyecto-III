@@ -51,25 +51,51 @@
 
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0" id="tablapersona">
+           <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
                   <th class="text-white">Nombre</th>
                   <th class="text-white">Descripcion</th>
                   <th class="text-white">Marca</th>
-                  <th class="text-white">Cantidad_mayor</th>
-                  <th class="text-white">Precio_mayor</th>
-                  <th class="text-white">Precio_detal</th>
-                  <th class="text-white">Stock_disponible</th>
-                  <th class="text-white">Stock_maximo</th>
-                  <th class="text-white">Stock_minimo</th>
-                  <th class="text-white">Imagen</th>
-                  <th class="text-white">Estatus</th>
+                  <th class="text-white">Al mayor</th>
+                  <th class="text-white">Precio M</th>
+                  <th class="text-white">Precio D</th>
+                  <th class="text-white">Stock_dis</th>
+                  <th class="text-white">Stock_m</th>
+                  <th class="text-white">Stock_m</th>
+                  <th class="text-white"><i class="fa-solid fa-image"></i></th>
                   <th class="text-white">ACCION</th>
                 </tr>
               </thead>
-              <tbody id="resultadoconsulta">
-				</tbody>
+              <tbody>
+                <?php
+                  foreach ($registro as $dato){
+                ?>
+                <tr>
+                  <td><?php echo $dato['nombre']?></td>
+                  <td><?php echo $dato['descripcion']?></td>
+                  <td><?php echo $dato['marca']?></td>
+                  <td><?php echo $dato['cantidad_mayor']?></td>
+                  <td><?php echo $dato['precio_mayor']?></td>
+                  <td><?php echo $dato['precio_detal']?></td>
+                  <td><?php echo $dato['stock_disponible']?></td>
+                  <td><?php echo $dato['stock_maximo']?></td>
+                  <td><?php echo $dato['stock_minimo']?></td>
+                  <td><?php echo $dato['imagen']?></td>
+                  <td>
+                    <form method="POST" action="">
+                       <button name="modificar" class="btn btn-primary btn-sm modificar"> 
+                        <i class="fas fa-pencil-alt" title="Editar"> </i> 
+                       </button>
+                        
+                        <button name="eliminar" class="btn btn-danger btn-sm eliminar">
+                          <i class="fas fa-trash-alt" title="Eliminar"> </i>
+                        </button>
+                     </form>
+                  </td>
+                </tr>
+              <?php } ?>
+              </tbody>
 
                                
           </table> <!-- Fin tabla--> 
@@ -93,6 +119,7 @@
       <div class="modal-body"> <!-- Modal contenido -->
       
       <form method="post" id="f" autocomplete="off" enctype='multipart/form-data'>
+      <input autocomplete="off" type="text" class="form-control" name="accion" id="accion" style="display: none;">
       <div class="row mb-3">
 								<div class="col-md-4">
 									<label for="nombre">Nombre del producto</label>
@@ -105,10 +132,11 @@
 									<span id="sdescripcion"></span>
 								</div>
 							</div>
+              
 <br>
       <div class="text-center">
-        <button type="button" class="btn btn-primary">Registrar</button>
-        <button type="reset" class="btn btn-primary">Limpiar</button>
+      <button type="button" class="btn btn-primary" name="registrar" id="registrar">Registrar</button>
+      <button type="reset" class="btn btn-primary">Limpiar</button>
         </div>
       </form>
 
@@ -123,6 +151,8 @@
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
+<script src="assets/js/demo/datatables-demo.js"></script>
+
 <script src="/Lovemakeup/assets/js/producto.js"></script>
 
 
