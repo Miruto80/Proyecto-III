@@ -8,6 +8,8 @@
 	<script src="https://kit.fontawesome.com/3ed72884f3.js" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="assets/css/tienda.css">
 	<link rel="shortcut icon" type="img/x-icon" href="assets/img/icono.png"/>
+	<?php include 'complementos/head.php' ?> 
+
 	<title>	LoveMakeup - Web </title>
 </head>
 
