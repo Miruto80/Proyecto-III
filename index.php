@@ -1,6 +1,4 @@
 <?php
-/*A,D,D,E,M,R*/
-    
     $pagina = "catalago";
         if (!empty($_GET['pagina'])){
             $pagina=$_GET['pagina'];

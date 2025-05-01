@@ -4,6 +4,7 @@
     $objproducto = new producto(); 
 
         $registro = $objproducto->consultar();
+        $categoria = $objproducto->obtenerCategoria();  // Metodo para obtener la categoria
 
         
         

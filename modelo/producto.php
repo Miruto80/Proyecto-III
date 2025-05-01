@@ -14,7 +14,10 @@ class producto extends Conexion{
  private $stock_maximo;
  private $stock_minimo;
  private $imagen;
+ private $categoria;
  private $estatus;
+
+
 
 
 function __construct(){
@@ -25,19 +28,22 @@ function __construct(){
 
 
 public function registrar(){
+
 	$registro ="INSERT INTO productos(nombre,descripcion,marca,cantidad_mayor,precio_mayor,precio_detal,stock_disponible,stock_maximo,stock_minimo,imagen,estatus)
-	VALUES (:nombre,1)";
+	VALUES (:nombre,:descripcion,:marca,:cantidad_mayor,:precio_mayor,:precio_detal,:stock_disponible,:stock_maximo,:stock_minimo,:imagen,1)";
 
 	$strExec = $this->conex->prepare($registro);
 	$strExec->bindParam(':nombre',$this->nombre);
-	$strExec->bindParam(':nombre',$this->nombre);
-	$strExec->bindParam(':nombre',$this->nombre);
-	$strExec->bindParam(':nombre',$this->nombre);
-	$strExec->bindParam(':nombre',$this->nombre);
-	$strExec->bindParam(':nombre',$this->nombre);
-	$strExec->bindParam(':nombre',$this->nombre);
-	$strExec->bindParam(':nombre',$this->nombre);
-	$strExec->bindParam(':nombre',$this->nombre);
+	$strExec->bindParam(':descripcion',$this->descripcion);
+	$strExec->bindParam(':marca',$this->marca);
+	$strExec->bindParam(':cantidad_mayor',$this->cantidad_mayor);
+	$strExec->bindParam(':precio_mayor',$this->precio_mayor);
+	$strExec->bindParam(':precio_detal',$this->precio_detal);
+	$strExec->bindParam(':stock_disponible',$this->stock_disponible);
+	$strExec->bindParam(':stock_maximo',$this->stock_maximo);
+	$strExec->bindParam(':stock_minimo',$this->stock_minimo);
+	$strExec->bindParam(':imagen',$this->imagen);
+	$strExec->bindParam(':stock_minimo',$this->stock_minimo);
 
 	 $resul=$strExec->execute();
 	  if ($resul) {
@@ -54,21 +60,37 @@ return $res;
 
 
 
-public function consultar(){
+public function consultar() {
+    $registro = "
+        SELECT 
+            productos.*, 
+            categoria.nombre AS nombre_categoria 
+        FROM 
+            productos
+        INNER JOIN 
+            categoria ON productos.id_categoria = categoria.id_categoria
+    ";
 
-	$registro ="SELECT * FROM productos";
-	$consulta = $this->conex->prepare($registro);
-	$resul = $consulta->execute();
+    $consulta = $this->conex->prepare($registro);
+    $resul = $consulta->execute();
 
-	$datos=$consulta->fetchAll(PDO::FETCH_ASSOC);
-		if ($resul){
-			return $datos;
-		} else{
-			return $res = 0;
-		}
+    $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-} //fin consultar
+    if ($resul) {
+        return $datos;
+    } else {
+        return 0;
+    }
+}
+
 	
+
+public function obtenerCategoria() {
+	$query = "SELECT * FROM categoria WHERE estatus = 1";
+	$consulta = $this->conex->prepare($query);
+	$consulta->execute();
+	return $consulta->fetchAll(PDO::FETCH_ASSOC);
+} 
 	
 	function set_nombre($valor)
 		{
@@ -110,9 +132,21 @@ public function consultar(){
 		{
 			$this->imagen = $valor;
 		}
+
 	function set_estatus($valor)
 		{
 			$this->estatus = $valor;
+		}
+
+		
+		public function set_Categoria($categoria){
+			$this->categoria=$categoria;
+		}
+		
+
+
+		public function get_Categoria(){
+			return $this->categoria;
 		}
 	
 	

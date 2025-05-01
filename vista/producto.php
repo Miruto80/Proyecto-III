@@ -64,6 +64,7 @@
                   <th class="text-white">Stock_m</th>
                   <th class="text-white">Stock_m</th>
                   <th class="text-white"><i class="fa-solid fa-image"></i></th>
+                  <th class="text-white">Categoria</th>
                   <th class="text-white">ACCION</th>
                 </tr>
               </thead>
@@ -81,7 +82,8 @@
                   <td><?php echo $dato['stock_disponible']?></td>
                   <td><?php echo $dato['stock_maximo']?></td>
                   <td><?php echo $dato['stock_minimo']?></td>
-                  <td><?php echo $dato['imagen']?></td>
+                  <td><img src="<?php echo $dato['imagen'] ?>" alt="Imagen del producto" width="60" height="60"></td>
+                  <td><?php echo $dato['nombre_categoria']?></td>
                   <td>
                     <form method="POST" action="">
                        <button name="modificar" class="btn btn-primary btn-sm modificar"> 
@@ -117,9 +119,7 @@
       </div>
 
       <div class="modal-body"> <!-- Modal contenido -->
-      
-      <form method="post" id="f" autocomplete="off" enctype='multipart/form-data'>
-      <input autocomplete="off" type="text" class="form-control" name="accion" id="accion" style="display: none;">
+      <form action="?pagina=producto" id="u" autocomplete="off" enctype='multipart/form-data'>
       <div class="row mb-3">
 								<div class="col-md-6">
 									<label for="nombre">Nombre del producto</label>
@@ -176,7 +176,7 @@
 								<div class="col-md-4">
                 <label for="categoria">Categoria</label>
 									<select class="form-select text-gray-900 " name="categoria" id="categoria" required>
-                            <option value="">Seleccione una Categoria</option>
+                            <option disabled selected>Seleccione una Categoria</option>
                                <?php foreach($categoria as $categoria) {?>
                                    <option value="<?php echo $categoria['id_categoria'];?>"> <?php echo $categoria['nombre'];?> </option>
                                 <?php } ?>
