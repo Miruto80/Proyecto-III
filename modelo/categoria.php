@@ -1,85 +1,46 @@
 <?php
-
-    require_once 'conexion.php';
-
-    class categoria extends Conexion{
-        
-        private $conex;
-        private $nombre;
-        private $id_categoria;
-        private $estatus;
-
-
-        function __construct(){
-
-            $this->conex = new Conexion();
-            $this->conex = $this->conex->Conex();
-        }
-
-        public function registrar(){
-            $registro ="INSERT INTO categoria(nombre,estatus)
-            VALUES (:nombre,1)";
-
-            $strExec = $this->conex->prepare($registro);
-            $strExec->bindParam(':nombre',$this->nombre);
-
-             $resul=$strExec->execute();
-              if ($resul) {
-                  $res['respuesta'] = 1;
-                   $res['accion'] = 'incluir';
-            } else {
-                 $res['respuesta'] = 0;
-                 $res['accion'] = 'incluir';
-              }
-
-        return $res;
-        } // fin registrar
-
-
-  
-
-        public function consultar(){
-
-            $registro ="SELECT * FROM categoria";
-            $consulta = $this->conex->prepare($registro);
-            $resul = $consulta->execute();
-
-            $datos=$consulta->fetchAll(PDO::FETCH_ASSOC);
-                if ($resul){
-                    return $datos;
-                } else{
-                    return $res = 0;
-                }
-        
-        } //fin consultar
-
-        
-
-    public function get_Nombre(){
-        return $this->nombre;
+require_once 'conexion.php';
+class categoria extends Conexion {
+    private $conex;
+    private $nombre;
+    private $id_categoria;
+    function __construct() {
+        $this->conex = new Conexion();
+        $this->conex = $this->conex->Conex();
     }
-
-    public function set_Nombre($nombre){
-        return $this->nombre=$nombre;
+    public function registrar() {
+        $registro = "INSERT INTO categoria(nombre, estatus) VALUES (:nombre, 1)";
+        $strExec = $this->conex->prepare($registro);
+        $strExec->bindParam(':nombre', $this->nombre);
+        $resul = $strExec->execute();
+        return $resul ? ['respuesta' => 1, 'accion' => 'incluir'] : ['respuesta' => 0, 'accion' => 'incluir'];
     }
-
-    public function get_Id_categoria(){
-        return $this->id_categoria;
+    public function modificar() {
+        $registro = "UPDATE categoria SET nombre = :nombre WHERE id_categoria = :id_categoria";
+        $strExec = $this->conex->prepare($registro);
+        $strExec->bindParam(':nombre', $this->nombre);
+        $strExec->bindParam(':id_categoria', $this->id_categoria);
+        $resul = $strExec->execute();
+        return $resul ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
     }
-
-    public function set_Id_categoria($id_categoria){
-        return $this->id_categoria=$id_categoria;
+    public function eliminar() {
+        $registro = "DELETE FROM categoria WHERE id_categoria = :id_categoria";
+        $strExec = $this->conex->prepare($registro);
+        $strExec->bindParam(':id_categoria', $this->id_categoria);
+        $resul = $strExec->execute();
+        return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
     }
-
-    public function get_Estatus(){
-        return $this->estatus;
+    public function consultar() {
+        $registro = "SELECT * FROM categoria";
+        $consulta = $this->conex->prepare($registro);
+        $resul = $consulta->execute();
+        return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
     }
-
-    public function set_Estatus($estatus){
-        return $this->estatus=$estatus;
+    public function set_Nombre($nombre) {
+        $this->nombre = $nombre;
     }
-
+    public function set_Id_categoria($id_categoria) {
+        $this->id_categoria = $id_categoria;
     }
-
-
+}
 ?>

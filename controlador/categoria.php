@@ -17,7 +17,21 @@ if(isset($_POST['registrar'])){
        echo json_encode($result);
        
    }
-}else{
+} elseif (isset($_POST['modificar'])) {
+    if (!empty($_POST['id_categoria']) && !empty($_POST['nombre'])) {
+        $objcategoria->set_Id_categoria($_POST['id_categoria']);
+        $objcategoria->set_Nombre($_POST['nombre']);
+        $result = $objcategoria->modificar();
+        echo json_encode($result);
+    }
+} elseif (isset($_POST['eliminar'])) {
+    if (!empty($_POST['id_categoria'])) {
+        $objcategoria->set_Id_categoria($_POST['id_categoria']);
+        $result = $objcategoria->eliminar();
+        echo json_encode($result);
+    }
+}   
+else{
     require_once 'vista/categoria.php';
 }
 
