@@ -51,7 +51,7 @@
 
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+          <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
                   <th class="text-white">ID</th>
@@ -122,9 +122,10 @@
     </div>
   </div>
 </div>
-
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
+<!-- para el datatable-->
+ <script src="assets/js/demo/datatables-demo.js"></script>
 
 </body>
 
