@@ -121,39 +121,41 @@
       <form method="post" id="f" autocomplete="off" enctype='multipart/form-data'>
       <input autocomplete="off" type="text" class="form-control" name="accion" id="accion" style="display: none;">
       <div class="row mb-3">
-								<div class="col-md-4">
+								<div class="col-md-6">
 									<label for="nombre">Nombre del producto</label>
 									<input class="form-control" type="text" id="nombre" name="nombre" />
 									<span id="snombre"></span>
 								</div>
-								<div class="col-md-8">
-									<label for="descripcion">Descripcion</label>
-									<textarea class="form-control" type="textarea" id="descripcion" name="descripcion" placeholder="Escribe la descripcion"></textarea>
-									<span id="sdescripcion"></span>
-								</div>
-				</div>
-      <div class="row mb-3">
-								<div class="col-md-4">
+                <div class="col-md-6">
 									<label for="marca">Marca del producto</label>
 									<input class="form-control" type="text" id="marca" name="marca" />
 									<span id="smarca"></span>
 								</div>
-								<div class="col-md-2">
+				</div>
+        <div class="row mb-3">
+        <div class="col-md-12">
+									<label for="descripcion">Descripcion</label>
+									<textarea class="form-control" type="textarea" id="descripcion" name="descripcion" placeholder="Escribe la descripcion"></textarea>
+									<span id="sdescripcion"></span>
+								</div>
+        </div> 
+      <div class="row mb-3">
+								<div class="col-md-3">
 									<label for="cantidad_mayor">C al mayor</label>
 									<input class="form-control" type="text" id="cantidad_mayor" name="cantidad_mayor" />
 									<span id="scantidad_mayor"></span>
 								</div>
-								<div class="col-md-2">
+								<div class="col-md-3">
 									<label for="precio_mayor">Precio al mayor</label>
 									<input class="form-control" type="text" id="precio_mayor" name="precio_mayor" />
 									<span id="sprecio_mayor"></span>
 								</div>
-								<div class="col-md-2">
+								<div class="col-md-3">
 									<label for="precio_detal">Precio al detal</label>
 									<input class="form-control" type="text" id="precio_detal" name="precio_detal" />
 									<span id="sprecio_detal"></span>
 								</div>
-								<div class="col-md-2">
+								<div class="col-md-3">
 									<label for="stock_disponible">Stock disponible</label>
 									<input class="form-control" type="text" id="stock_disponible" name="stock_disponible"/>
 									<span id="sstock_disponible"></span>
