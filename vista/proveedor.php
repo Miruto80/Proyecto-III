@@ -7,7 +7,7 @@
   <title> Proveedor | LoveMakeup  </title> 
 </head>
 
-<body class="g-sidenav-show bg-gray-100" style="background-color: red;">
+<body class="g-sidenav-show bg-gray-100">
   
 <!-- php barra de navegacion-->
 <?php include 'complementos/sidebar.php' ?>
