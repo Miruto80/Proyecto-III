@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
   <?php include 'complementos/head.php'; ?> 
   <title> Categoria | LoveMakeup  </title> 
 </head>
+
 <body class="g-sidenav-show bg-gray-100">
+
   <?php include 'complementos/sidebar.php'; ?>
   <main class="main-content position-relative border-radius-lg ">
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
@@ -16,7 +19,9 @@
           </ol>
           <h6 class="font-weight-bolder text-white mb-0">Gestionar Categoria</h6>
         </nav>
+
         <?php include 'complementos/nav.php'; ?>
+
         <div class="container-fluid py-4">
           <div class="row">  
             <div class="col-12">
@@ -31,6 +36,7 @@
                       <span class="text-white">Registrar</span>
                     </button>
                   </div>
+                  
                   <div class="table-responsive">
                     <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
                       <thead class="table-color">

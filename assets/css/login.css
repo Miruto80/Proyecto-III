@@ -172,3 +172,40 @@ body {
   background-color: #f0f0f0; 
   color: #007bff;
 }
+
+
+
+
+
+/* GRUPO DE BOTONES DE OLVIDO Y NUEVO */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px; /* Espacio entre el botón de inicio de sesión y los nuevos botones */
+}
+
+.btn-small {
+    background: #0000; /* Color de fondo */
+    color: #007bff; 
+    padding: 5px 10px; 
+    border: none; 
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 12px; 
+    cursor: pointer; 
+    flex: 1; 
+    text-align: center; 
+}
+
+.btn-left {
+    margin-right: 100px; /* Espacio entre los botones */
+}
+
+.btn-right {
+    margin-left: 10px; /* Espacio entre los botones */
+}
+
+.btn-small:hover {
+    background: #e0e0e0; /* Color de fondo al pasar el mouse */
+}

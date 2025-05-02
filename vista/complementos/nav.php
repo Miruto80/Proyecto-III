@@ -16,7 +16,9 @@
             <li><a class="dropdown-item" href="#">• Modificar Datos</a></li>
        </ul>
       <div class="nombre-usuario">
-       Nombre del Usuario
+         <?php 
+           echo $_SESSION['nombre']." ".$_SESSION['apellido'];
+         ?>
        </div> 
 
         </div>
