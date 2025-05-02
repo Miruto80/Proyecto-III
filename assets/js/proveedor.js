@@ -8,24 +8,24 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     
     document.getElementById('btnModificar').addEventListener('click', function () {
-        const id_categoria = document.getElementById('id_categoria_modificar').value;
+        const id_proveedor = document.getElementById('id_proveedor_modificar').value;
         const nombre = document.getElementById('nombre_modificar').value;
         const datos = new FormData();
-        datos.append('id_categoria', id_categoria);
+        datos.append('id_proveedor', id_proveedor);
         datos.append('nombre', nombre);
         datos.append('modificar', 'modificar');
         enviaAjax(datos);
     });
   });
-  function abrirModalModificar(id_categoria, nombre) {
-    document.getElementById('id_categoria_modificar').value = id_categoria;
+  function abrirModalModificar(id_proveedor, nombre) {
+    document.getElementById('id_proveedor_modificar').value = id_proveedor;
     document.getElementById('nombre_modificar').value = nombre;
     $('#modificar').modal('show');
   }
-  function eliminarCategoria(id_categoria) {
+  function eliminarProveedor(id_proveedor) {
     if (confirm('¿Estás seguro de que deseas eliminar esta categoría?')) {
         const datos = new FormData();
-        datos.append('id_categoria', id_categoria);
+        datos.append('id_proveedor', id_proveedor);
         datos.append('eliminar', 'eliminar');
         enviaAjax(datos);
     }
