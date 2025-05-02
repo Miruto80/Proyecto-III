@@ -28,7 +28,7 @@
 	</header>
 	
 
-<br><br><br><br><br><br>
+<br><br><br>
 
 <center><h1>TIENDA VIRTUAL</h1></center>
 

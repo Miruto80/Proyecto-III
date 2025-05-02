@@ -1,3 +1,21 @@
+$(document).on('click', '.ver-detalles', function () {
+    const fila = $(this).closest('tr');
+
+    const cantidadMayor = fila.find('.cantidad_mayor').text();
+    const precioMayor = fila.find('.precio_mayor').text();
+    const stockMaximo = fila.find('.stock_maximo').text();
+    const stockMinimo = fila.find('.stock_minimo').text();
+
+    $('#modal-cantidad-mayor').text(cantidadMayor);
+    $('#modal-precio-mayor').text(precioMayor);
+    $('#modal-stock-maximo').text(stockMaximo);
+    $('#modal-stock-minimo').text(stockMinimo);
+
+    $('#modalDetallesProducto').modal('show');
+  });
+
+
+
 $(document).ready(function() {
   $('#registrar').on("click", function () {
       var datos = new FormData($('#u')[0]);

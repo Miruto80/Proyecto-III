@@ -57,12 +57,12 @@
                   <th class="text-white">Nombre</th>
                   <th class="text-white">Descripcion</th>
                   <th class="text-white">Marca</th>
-                  <th class="text-white">Al mayor</th>
-                  <th class="text-white">Precio M</th>
-                  <th class="text-white">Precio D</th>
-                  <th class="text-white">Stock_dis</th>
-                  <th class="text-white">Stock_m</th>
-                  <th class="text-white">Stock_m</th>
+                  <th class="text-white" style="display:none;">Al mayor</th>
+                  <th class="text-white" style="display:none;">Precio M</th>
+                  <th class="text-white">Precio detal</th>
+                  <th class="text-white">Stock disponible</th>
+                  <th class="text-white" style="display:none;">Stock_m</th>
+                  <th class="text-white" style="display:none;">Stock_m</th>
                   <th class="text-white"><i class="fa-solid fa-image"></i></th>
                   <th class="text-white">Categoria</th>
                   <th class="text-white">ACCION</th>
@@ -76,12 +76,12 @@
                   <td><?php echo $dato['nombre']?></td>
                   <td><?php echo $dato['descripcion']?></td>
                   <td><?php echo $dato['marca']?></td>
-                  <td><?php echo $dato['cantidad_mayor']?></td>
-                  <td><?php echo $dato['precio_mayor']?></td>
+                  <td class="cantidad_mayor" style="display:none;"><?php echo $dato['cantidad_mayor']?></td>
+                  <td class="precio_mayor" style="display:none;"><?php echo $dato['precio_mayor']?></td>
                   <td><?php echo $dato['precio_detal']?></td>
                   <td><?php echo $dato['stock_disponible']?></td>
-                  <td><?php echo $dato['stock_maximo']?></td>
-                  <td><?php echo $dato['stock_minimo']?></td>
+                  <td class="stock_maximo" style="display:none;"><?php echo $dato['stock_maximo']?></td>
+                  <td class="stock_minimo" style="display:none;"><?php echo $dato['stock_minimo']?></td>
                   <td><img src="<?php echo $dato['imagen'] ?>" alt="Imagen del producto" width="60" height="60"></td>
                   <td><?php echo $dato['nombre_categoria']?></td>
                   <td>
@@ -93,6 +93,11 @@
                         <button name="eliminar" class="btn btn-danger btn-sm eliminar">
                           <i class="fas fa-trash-alt" title="Eliminar"> </i>
                         </button>
+
+                        <button type="button" class="btn btn-sm btn-info ver-detalles">
+                         <i class="fa fa-eye"></i>
+                          </button>
+
                      </form>
                   </td>
                 </tr>
@@ -216,10 +221,12 @@
 
 
       </div> <!-- FIN Modal contenido -->
-      
-    </div>
+        
   </div>
 </div>
+
+
+
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
@@ -227,6 +234,25 @@
 
 <script src="/Lovemakeup/assets/js/producto.js"></script>
 
+<div class="modal fade" id="modalDetallesProducto" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+  <h5 class="modal-title" id="tituloModal">Detalles del Producto</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+</div>
+<div class="modal-body">
+  <p><strong>Cantidad de venta al mayor:</strong> <span id="modal-cantidad-mayor"></span></p>
+  <p><strong>Precio Mayor:</strong> <span id="modal-precio-mayor"></span></p>
+  <p><strong>Stock Máximo:</strong> <span id="modal-stock-maximo"></span></p>
+  <p><strong>Stock Mínimo:</strong> <span id="modal-stock-minimo"></span></p>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+</div>
+</div>
+</div>
+</div>
 
 </body>
 
