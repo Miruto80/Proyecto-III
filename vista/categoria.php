@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'complementos/head.php'; ?> 
-  <title> Categoria | LoveMakeup  </title> 
+  <title> Categoriaa | LoveMakeup  </title> 
 </head>
 <body class="g-sidenav-show bg-gray-100">
   <?php include 'complementos/sidebar.php'; ?>
