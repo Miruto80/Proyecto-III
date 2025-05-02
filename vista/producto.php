@@ -94,7 +94,7 @@
                           <i class="fas fa-trash-alt" title="Eliminar"> </i>
                         </button>
 
-                        <button type="button" class="btn btn-sm btn-info ver-detalles">
+                        <button type="button" class="btn btn-sm btn-info ver-detalles" title="Click para ver detalles">
                          <i class="fa fa-eye"></i>
                           </button>
 
