@@ -66,7 +66,7 @@
             title: '<?php echo $_SESSION['message']['title']; ?>',
             text: '<?php echo $_SESSION['message']['text']; ?>',
             icon: '<?php echo $_SESSION['message']['icon']; ?>',
-            confirmButtonColor: '#7E112E',
+            confirmButtonColor: '#fa48f2',
             confirmButtonText: 'OK'
         });
     </script>

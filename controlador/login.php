@@ -32,7 +32,7 @@ if (isset($_POST['ingresar'])) {
                 exit;
             }
         } else {
-            $_SESSION['message'] = array('title' => 'Usuario y/o clave Invalida', 'text' => 'Por favor, verifica tus datos y vuelve a intentarlo', 'icon' => 'error');
+            $_SESSION['message'] = array('title' => 'Cedula y/o clave Invalida', 'text' => 'Por favor, verifica tus datos y vuelve a intentarlo', 'icon' => 'error');
             header('Location: ?pagina=login'); 
             exit;
         } 
