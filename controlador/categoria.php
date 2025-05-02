@@ -1,4 +1,10 @@
 <?php  
+      session_start();
+      if (empty($_SESSION["id"])){
+        header("location:?pagina=login");
+      } /*  Validacion URL  */
+     
+     
      require_once 'modelo/categoria.php';
 
      $objcategoria = new Categoria(); 

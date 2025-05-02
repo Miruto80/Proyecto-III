@@ -31,7 +31,9 @@
       <br>    
 
       <div class="d-flex justify-content-center align-items-center">
-         <a href="?pagina=login" class="btn btn-success btn-lg me-4"> SI</a>
+          <form action="?pagina=login" method="POST" autocomplete="off">  <!-- Cerrar sesión-->
+              <button type="submit" class="btn btn-success btn-lg me-4" name="cerrar"> SI </button>
+          </form> 
          <button type="button" class="btn btn-danger  btn-lg ms-4" data-bs-dismiss="modal">NO</button>
       </div>
 

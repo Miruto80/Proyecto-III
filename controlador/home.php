@@ -1,10 +1,9 @@
 <?php  
+    session_start();
+    if (empty($_SESSION["id"])){
+      header("location:?pagina=login");
+    } /*  Validacion URL  */
     
-    if (isset($_POST['ingresar'])){
-        require_once 'vista/home.php';
-       }
-       else{
-           require_once 'vista/home.php';
-       }
+   require_once 'vista/home.php';
 
 ?>
