@@ -5,9 +5,6 @@
 
         $registro = $objproveedor->consultar();
 
-
-        
-        
 if(isset($_POST['registrar'])){
    if( !empty($_POST['nombre'])){ 
 
