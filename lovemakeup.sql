@@ -157,7 +157,7 @@ CREATE TABLE `personas` (
   `cedula` varchar(15) DEFAULT NULL,
   `nombre` varchar(40) DEFAULT NULL,
   `apellido` varchar(40) DEFAULT NULL,
-  `correo` varchar(50) DEFAULT NULL,
+  `correo` varchar(100) DEFAULT NULL,
   `telefono` varchar(15) DEFAULT NULL,
   `clave` varchar(20) DEFAULT NULL,
   `estatus` int(2) DEFAULT NULL,
@@ -253,6 +253,16 @@ CREATE TABLE `rol_usuario` (
   `nombre` varchar(100) DEFAULT NULL,
   `nivel` int(1) DEFAULT NULL,
   `estatus` int(2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+CREATE TABLE `lista_deseo` (
+  `id_lista` int(11) NOT NULL,
+  `id_persona` int(11) DEFAULT NULL,
+  `id_producto` int(11) DEFAULT NULL,
+  `nombre` varchar(150) DEFAULT NULL,
+  `detalle` varchar(150) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -372,6 +382,13 @@ ALTER TABLE `reserva_detalles`
 ALTER TABLE `rol_usuario`
   ADD PRIMARY KEY (`id_tipo`);
 
+
+ALTER TABLE `lista_deseo`
+  ADD PRIMARY KEY (`id_lista`),
+  ADD KEY `id_persona` (`id_persona`),
+  ADD KEY `id_producto` (`id_producto`);
+  
+
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
@@ -472,6 +489,9 @@ ALTER TABLE `reserva_detalles`
 ALTER TABLE `rol_usuario`
   MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `lista_deseo`
+  MODIFY `id_lista` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- Restricciones para tablas volcadas
 --
@@ -539,6 +559,11 @@ ALTER TABLE `productos`
 --
 ALTER TABLE `reserva`
   ADD CONSTRAINT `reserva_ibfk_1` FOREIGN KEY (`id_persona`) REFERENCES `personas` (`id_persona`);
+
+
+ALTER TABLE `lista_deseo`
+  ADD CONSTRAINT `lista_deseo_ibfk_1` FOREIGN KEY (`id_persona`) REFERENCES `personas` (`id_persona`),
+  ADD CONSTRAINT `lista_deseo_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
 
 --
 -- Filtros para la tabla `reserva_detalles`
