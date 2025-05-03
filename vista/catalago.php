@@ -6,7 +6,7 @@
 	<meta mane="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-compatible" content="ie=edge">
 	<script src="https://kit.fontawesome.com/3ed72884f3.js" crossorigin="anonymous"></script>
-	<link rel="stylesheet" href="assets/css/tienda.css">
+	<link rel="stylesheet" href="assets/css/catalogo.css">
 	<link rel="shortcut icon" type="img/x-icon" href="assets/img/icono.png"/>
 	<?php include 'complementos/head.php' ?> 
 
@@ -28,11 +28,29 @@
 	</header>
 	
 
-<br><br><br>
+<br>
 
 <center><h1>TIENDA VIRTUAL</h1></center>
 
-    <br><br><br><br><br><br>
+    <br><br>
+
+	<div class="contenedor-productos">
+    <?php if (!empty($registro)): ?>
+        <?php foreach ($registro as $producto): ?>
+            <div class="producto">
+                <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo $producto['nombre']; ?>" class="imagen-producto">
+                <h3><?php echo $producto['nombre']; ?></h3>
+                <p><?php echo $producto['descripcion']; ?></p>
+                <p><strong>Marca:</strong> <?php echo $producto['marca']; ?></p>
+                <p><strong>Precio (Mayor):</strong> $<?php echo $producto['precio_mayor']; ?></p>
+                <p><strong>Precio (Detal):</strong> $<?php echo $producto['precio_detal']; ?></p>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p>No hay productos disponibles.</p>
+    <?php endif; ?>
+</div>
+
 
 		<footer class="pie-pagina"> 
 		<div class="grupo-1">
