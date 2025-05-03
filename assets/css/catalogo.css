@@ -150,6 +150,19 @@ transform: scale(1.1);
     text-align: center;
 }
 
+.btn-cart {
+	background-color: #8055CA;
+	color: #fff;
+	border: none;
+	transition: all 0.3s ease-in-out;
+  }
+  
+  .btn-cart:hover {
+	background-color: #6a3fb3;
+	transform: scale(1.05);
+  }
+  
+
 /* Cambiar color de la "X" del botón de cierre del modal */
 .btn-close {
     background-color: black !important; /* Cambia el color a negro */
