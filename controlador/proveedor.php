@@ -1,5 +1,10 @@
 <?php  
-     require_once 'modelo/proveedor.php';
+     session_start();
+     if (empty($_SESSION["id"])){
+       header("location:?pagina=login");
+     } /*  Validacion URL  */
+    
+    require_once 'modelo/proveedor.php';
 
      $objproveedor = new Proveedor(); 
 
