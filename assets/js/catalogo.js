@@ -22,3 +22,19 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+function openModal(element) {
+    const nombre = element.getAttribute('data-nombre');
+    const precio = element.getAttribute('data-precio');
+    const imagen = element.getAttribute('data-imagen');
+
+    // Insertar datos en el modal
+    document.getElementById('modal-title').textContent = nombre;
+    document.getElementById('modal-precio').textContent = `$${precio}`;
+    document.getElementById('modal-imagen').src = imagen;
+
+    // No necesitas bootstrap.Modal, ya lo abre Bootstrap con data-bs-toggle
+}
+
+
+
+

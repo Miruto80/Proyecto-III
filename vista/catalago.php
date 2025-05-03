@@ -44,14 +44,22 @@
     </aside>
 
     <div class="contenedor-productos" id="productos">
-    <?php foreach ($registro as $producto): ?>
-        <div class="producto" data-categoria="<?php echo $producto['id_categoria']; ?>" onclick="openModal(<?php echo $producto['id_producto']; ?>)">
-            <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo $producto['nombre']; ?>">
-            <h3><?php echo $producto['nombre']; ?></h3>
-            <p><strong>Precio:</strong> $<?php echo $producto['precio_detal']; ?></p>
-        </div>
-    <?php endforeach; ?>
-</div>
+        <?php foreach ($registro as $producto): ?>
+            <div class="producto"
+			data-bs-toggle="modal"
+     data-bs-target="#productModal"
+                data-id="<?php echo $producto['id_producto']; ?>"
+                data-nombre="<?php echo htmlspecialchars($producto['nombre']); ?>"
+                data-precio="<?php echo $producto['precio_detal']; ?>"
+                data-imagen="<?php echo $producto['imagen']; ?>"
+                onclick="openModal(this)">
+                
+                <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>">
+                <h3><?php echo htmlspecialchars($producto['nombre']); ?></h3>
+                <p><strong>Precio:</strong> $<?php echo $producto['precio_detal']; ?></p>
+            </div>
+        <?php endforeach; ?>
+    </div>
 
 </div>
 
@@ -85,7 +93,25 @@
 			<small>&copy; 2025 ESTUDIANTE DEL UPTAEB T3 - LOVEMAKEUP | Todos los derechos Revervados.</small>  
 		</div> 
 	</footer>
+
+	<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="modal-imagen" src="" alt="Producto" class="img-fluid mb-3" style="max-height: 300px;">
+        <p><strong>Precio:</strong> <span id="modal-precio"></span></p>
+      </div>
+    </div>
+  </div>
+</div>
     <script src="/Lovemakeup/assets/js/catalogo.js"></script>
+	<script src="/Lovemakeup/assets/js/bootstrap.bundle.min.js"></script>
+	<!-- Bootstrap JS Bundle con Popper -->
+
 
 </body>
 
