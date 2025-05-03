@@ -63,7 +63,7 @@
                 <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>">
                 <h3><?php echo htmlspecialchars($producto['nombre']); ?></h3>
                 <p><strong>Precio:</strong> $<?php echo $producto['precio_detal']; ?></p>
-				<button class="btn btn-primary w-100 mt-2">
+				<button class="btn btn-primary btn-cart w-100 mt-2">
                 <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
                 </button>
             </div>
@@ -124,7 +124,7 @@
             <p><strong>Cantidad al mayor:</strong> <span id="modal-cantidad-mayor"></span></p>
             <p><strong>Precio al mayor:</strong> <span id="modal-precio-mayor"></span></p>
             <p><strong>Stock disponible:</strong> <span id="modal-stock-disponible"></span></p>
-			<button class="btn btn-primary w-100 mt-2">
+			<button class="btn btn-primary btn-cart w-100 mt-2">
   <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
 </button>
           </div>
