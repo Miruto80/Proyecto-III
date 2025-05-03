@@ -3,6 +3,8 @@ require_once 'modelo/catalogo.php';
 
 $catalogo = new Catalogo();
 
+$categorias = $catalogo->obtenerCategorias();
+
 
     if (isset($_GET['categoria'])) {
         // Si se pasa una categoría, se filtra por esa categoría

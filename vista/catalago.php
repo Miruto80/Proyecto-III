@@ -28,28 +28,37 @@
 	</header>
 	
 
-<br>
-
-<center><h1>TIENDA VIRTUAL</h1></center>
+<h1 class="text-center">TIENDA VIRTUAL</h1>
 
     <br><br>
 
-	<div class="contenedor-productos">
-    <?php if (!empty($registro)): ?>
-        <?php foreach ($registro as $producto): ?>
-            <div class="producto">
-                <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo $producto['nombre']; ?>" class="imagen-producto">
-                <h3><?php echo $producto['nombre']; ?></h3>
-                <p><?php echo $producto['descripcion']; ?></p>
-                <p><strong>Marca:</strong> <?php echo $producto['marca']; ?></p>
-                <p><strong>Precio (Mayor):</strong> $<?php echo $producto['precio_mayor']; ?></p>
-                <p><strong>Precio (Detal):</strong> $<?php echo $producto['precio_detal']; ?></p>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <p>No hay productos disponibles.</p>
-    <?php endif; ?>
+	<div class="contenedor">
+    <aside>
+        <h3>Categorías</h3>
+        <form id="filtroCategorias">
+            <?php foreach ($categorias as $cat): ?>
+                <div>
+                    <input type="checkbox" id="cat-<?php echo $cat['id_categoria']; ?>" value="<?php echo $cat['id_categoria']; ?>" class="filtro-checkbox">
+                    <label for="cat-<?php echo $cat['id_categoria']; ?>"><?php echo htmlspecialchars($cat['nombre']); ?></label>
+                </div>
+            <?php endforeach; ?>
+        </form>
+    </aside>
+
+    <div class="contenedor-productos" id="productos">
+    <?php foreach ($registro as $producto): ?>
+        <div class="producto" data-categoria="<?php echo $producto['id_categoria']; ?>" onclick="openModal(<?php echo $producto['id_producto']; ?>)">
+            <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo $producto['nombre']; ?>">
+            <h3><?php echo $producto['nombre']; ?></h3>
+            <p><strong>Precio:</strong> $<?php echo $producto['precio_detal']; ?></p>
+        </div>
+    <?php endforeach; ?>
 </div>
+
+</div>
+
+
+
 
 
 		<footer class="pie-pagina"> 
@@ -78,7 +87,8 @@
 			<small>&copy; 2025 ESTUDIANTE DEL UPTAEB T3 - LOVEMAKEUP | Todos los derechos Revervados.</small>  
 		</div> 
 	</footer>
-    
+    <script src="/Lovemakeup/assets/js/catalogo.js"></script>
+
 </body>
 
 </html>

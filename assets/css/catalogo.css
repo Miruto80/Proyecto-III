@@ -90,28 +90,60 @@ header .textos-header{
 	width: 100%;
 }
 
-.contenedor-productos {
+.contenedor {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     gap: 20px;
-    padding: 40px;
+}
+
+aside {
+    width: 220px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: fit-content;
+}
+
+.contenedor-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    flex: 1;
 }
 
 .producto {
-    width: 250px;
-    border: 1px solid #ddd;
+    background: white;
+    border-radius: 8px;
     padding: 15px;
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.producto:hover {
+    transform: translateY(-5px);
+}
+
+.producto img {
+    max-width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.producto h3 {
+    font-size: 1.1rem;
+    margin: 0 0 5px;
     text-align: center;
 }
 
-.imagen-producto {
-    width: 100px;
-    height: 100px;
-    border-radius: 8px;
+.producto p {
+    font-size: 0.9rem;
+    margin: 3px 0;
+    text-align: center;
 }
 
 

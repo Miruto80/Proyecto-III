@@ -41,5 +41,14 @@ class Catalogo extends Conexion {
     }
     
     
+    public function obtenerCategorias() {
+      $sql = "SELECT id_categoria, nombre FROM categoria WHERE estatus = 1"; // Solo lo necesario
+      $consulta = $this->conex->prepare($sql);
+      $consulta->execute();
+      return $consulta->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
+
+
+
 ?>
