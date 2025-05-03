@@ -6,7 +6,7 @@
 	<meta mane="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-compatible" content="ie=edge">
 	<script src="https://kit.fontawesome.com/3ed72884f3.js" crossorigin="anonymous"></script>
-	<link rel="stylesheet" href="assets/css/tienda.css">
+	<link rel="stylesheet" href="assets/css/catalogo.css">
 	<link rel="shortcut icon" type="img/x-icon" href="assets/img/icono.png"/>
 	<?php include 'complementos/head.php' ?> 
 
@@ -28,11 +28,36 @@
 	</header>
 	
 
-<br><br><br>
+<h1 class="text-center">TIENDA VIRTUAL</h1>
 
-<center><h1>TIENDA VIRTUAL</h1></center>
+    <br><br>
 
-    <br><br><br><br><br><br>
+	<div class="contenedor">
+    <aside>
+        <h3>Categorías</h3>
+            <?php foreach ($categorias as $cat): ?>
+                <div>
+                    <input type="checkbox" id="cat-<?php echo $cat['id_categoria']; ?>" value="<?php echo $cat['id_categoria']; ?>" class="filtro-checkbox">
+                    <label for="cat-<?php echo $cat['id_categoria']; ?>"><?php echo htmlspecialchars($cat['nombre']); ?></label>
+                </div>
+            <?php endforeach; ?>
+    </aside>
+
+    <div class="contenedor-productos" id="productos">
+    <?php foreach ($registro as $producto): ?>
+        <div class="producto" data-categoria="<?php echo $producto['id_categoria']; ?>" onclick="openModal(<?php echo $producto['id_producto']; ?>)">
+            <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo $producto['nombre']; ?>">
+            <h3><?php echo $producto['nombre']; ?></h3>
+            <p><strong>Precio:</strong> $<?php echo $producto['precio_detal']; ?></p>
+        </div>
+    <?php endforeach; ?>
+</div>
+
+</div>
+
+
+
+
 
 		<footer class="pie-pagina"> 
 		<div class="grupo-1">
@@ -60,7 +85,8 @@
 			<small>&copy; 2025 ESTUDIANTE DEL UPTAEB T3 - LOVEMAKEUP | Todos los derechos Revervados.</small>  
 		</div> 
 	</footer>
-    
+    <script src="/Lovemakeup/assets/js/catalogo.js"></script>
+
 </body>
 
 </html>

@@ -157,7 +157,7 @@ CREATE TABLE `personas` (
   `cedula` varchar(15) DEFAULT NULL,
   `nombre` varchar(40) DEFAULT NULL,
   `apellido` varchar(40) DEFAULT NULL,
-  `correo` varchar(25) DEFAULT NULL,
+  `correo` varchar(50) DEFAULT NULL,
   `telefono` varchar(15) DEFAULT NULL,
   `clave` varchar(20) DEFAULT NULL,
   `estatus` int(2) DEFAULT NULL,

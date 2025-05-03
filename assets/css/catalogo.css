@@ -13,14 +13,6 @@ body{
 	color:#ffff;
 }
 
-.contenedor{
-	padding: 60px 0;
-	width: 90%;
-	max-width: 1000px;
-	margin: auto;
-	overflow: hidden;
-
-}
 
 .titulo{
 	color: #ffffff;
@@ -89,6 +81,96 @@ header .textos-header{
 	bottom: 0;
 	width: 100%;
 }
+
+/* Sección contenedor de productos */
+.contenedor {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-start; /* Alinea los elementos al inicio del contenedor */
+    align-items: flex-start; /* Asegura que todo esté alineado en la parte superior */
+}
+
+aside {
+    width: 300px; /* Asegura que el aside no se estire demasiado */
+    margin: 10px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: fit-content;
+}
+
+.contenedor-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Ajusta el número de columnas dinámicamente */
+    gap: 20px;
+    flex: 1;
+	padding-right: 20px; /* Asegura que el último producto tenga un margen a la derecha */
+	margin-bottom: 20px;
+}
+
+.producto {
+    background: white;
+    border-radius: 8px;
+    padding: 0;  
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;  
+    height: 100%;  
+    width: 100%; /* Ajustar el ancho al contenedor */
+    max-width: 350px; /* El tamaño máximo de las tarjetas */
+    margin: auto; /* Centra las cartas dentro de su contenedor */
+}
+
+/* Estilos para cada producto (tarjeta) */
+.producto {
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    max-width: 350px; /* Limitar el tamaño máximo de las tarjetas */
+}
+
+.producto img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0;
+}
+
+.producto h3 {
+    font-size: 1rem;
+    margin: 10px 0 5px;
+    text-align: center;
+}
+
+.producto p {
+    font-size: 0.85rem;
+    margin: 3px 0;
+    text-align: center;
+}
+
+
+@media screen and (max-width: 800px) {
+    aside {
+        display: none; /* Ocultar el aside en pantallas pequeñas */
+    }
+}
+
+
+
+
 
 
 
