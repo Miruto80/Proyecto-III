@@ -232,7 +232,7 @@
 <?php include 'complementos/footer.php' ?>
 <script src="assets/js/demo/datatables-demo.js"></script>
 
-<script src="/Lovemakeup/assets/js/producto.js"></script>
+<script src="assets/js/producto.js"></script>
 
 <div class="modal fade" id="modalDetallesProducto" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
 <div class="modal-dialog">
