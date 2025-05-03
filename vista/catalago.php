@@ -135,8 +135,8 @@
 </div>
 
 
-    <script src="/Lovemakeup/assets/js/catalogo.js"></script>
-	<script src="/Lovemakeup/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/catalogo.js"></script>
+	<script src="assets/js/bootstrap.bundle.min.js"></script>
 	<!-- Bootstrap JS Bundle con Popper -->
 
 
