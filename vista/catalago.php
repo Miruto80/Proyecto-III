@@ -35,14 +35,12 @@
 	<div class="contenedor">
     <aside>
         <h3>Categorías</h3>
-        <form id="filtroCategorias">
             <?php foreach ($categorias as $cat): ?>
                 <div>
                     <input type="checkbox" id="cat-<?php echo $cat['id_categoria']; ?>" value="<?php echo $cat['id_categoria']; ?>" class="filtro-checkbox">
                     <label for="cat-<?php echo $cat['id_categoria']; ?>"><?php echo htmlspecialchars($cat['nombre']); ?></label>
                 </div>
             <?php endforeach; ?>
-        </form>
     </aside>
 
     <div class="contenedor-productos" id="productos">
