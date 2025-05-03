@@ -1,5 +1,10 @@
 <?php  
-    require_once 'modelo/listadeseos.php';
+    session_start();
+    if (empty($_SESSION["id"])){
+      header("location:?pagina=login");
+    } /*  Validacion URL  */
+    
+   require_once 'modelo/listadeseos.php';
 
     // Instanciar el objeto lista de deseos
     $objListaDeseo = new ListaDeseo(); 
