@@ -57,6 +57,7 @@
      data-precio-mayor="<?php echo $producto['precio_mayor']; ?>"
      data-stock-disponible="<?php echo $producto['stock_disponible']; ?>"
      data-imagen="<?php echo $producto['imagen']; ?>"
+	 data-categoria="<?php echo $producto['id_categoria']; ?>"
      onclick="openModal(this)">
                 
                 <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>">
