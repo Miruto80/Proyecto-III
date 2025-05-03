@@ -59,8 +59,8 @@
                   <th class="text-white">Marca</th>
                   <th class="text-white" style="display:none;">Al mayor</th>
                   <th class="text-white" style="display:none;">Precio M</th>
-                  <th class="text-white">Precio detal</th>
-                  <th class="text-white">Stock disponible</th>
+                  <th class="text-white">Precio</th>
+                  <th class="text-white">Stock</th>
                   <th class="text-white" style="display:none;">Stock_m</th>
                   <th class="text-white" style="display:none;">Stock_m</th>
                   <th class="text-white"><i class="fa-solid fa-image"></i></th>
@@ -243,7 +243,7 @@
 </div>
 <div class="modal-body">
   <p><strong>Cantidad de venta al mayor:</strong> <span id="modal-cantidad-mayor"></span></p>
-  <p><strong>Precio Mayor:</strong> <span id="modal-precio-mayor"></span></p>
+  <p><strong>Precio al Mayor:</strong> <span id="modal-precio-mayor"></span></p>
   <p><strong>Stock Máximo:</strong> <span id="modal-stock-maximo"></span></p>
   <p><strong>Stock Mínimo:</strong> <span id="modal-stock-minimo"></span></p>
 </div>
