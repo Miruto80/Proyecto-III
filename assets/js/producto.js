@@ -41,6 +41,24 @@ $(document).on('click', '.ver-detalles', function () {
   // modificar al abrir el modal
   function abrirModalModificar(boton) {
     const fila = $(boton).closest('tr');
+  
+    const botonEliminarOnclick = fila.find('button.eliminar').attr('onclick');
+  
+    let id_producto = null;
+  
+    if (botonEliminarOnclick) {
+  
+      const match = botonEliminarOnclick.match(/(\d+)/);
+  
+      if (match) {
+  
+        id_producto = match[0];
+  
+      }
+  
+    }
+  
+  
     if (!id_producto) {
   
       console.error('No se pudo obtener el id_producto para modificar');
@@ -49,17 +67,29 @@ $(document).on('click', '.ver-detalles', function () {
   
     }
   
+  
     const nombre = fila.find('td').eq(0).text().trim();
+  
     const descripcion = fila.find('td').eq(1).text().trim();
+  
     const marca = fila.find('td').eq(2).text().trim();
+  
     const cantidadMayor = fila.find('.cantidad_mayor').text().trim();
-    const precioMayor = fila.find('.precio_mayor').text().trim(); 
-    const precioDetal = fila.find('td').eq(5).text().trim(); 
+  
+    const precioMayor = fila.find('.precio_mayor').text().trim();
+  
+    const precioDetal = fila.find('td').eq(5).text().trim();
+  
     const stockDisponible = fila.find('td').eq(6).text().trim();
+  
     const stockMaximo = fila.find('.stock_maximo').text().trim();
+  
     const stockMinimo = fila.find('.stock_minimo').text().trim();
+  
     const categoriaTexto = fila.find('td').eq(10).text().trim();
+  
     const imagenSrc = fila.find('td').eq(9).find('img').attr('src');
+  
     $('#imagenActual').val(imagenSrc);
   
     // Buscar el valor del select que corresponde al texto de la categoria
@@ -72,31 +102,56 @@ $(document).on('click', '.ver-detalles', function () {
   
   
     $('#id_producto').val(id_producto);
+  
     $('#nombre').val(nombre);
+  
     $('#descripcion').val(descripcion);
+  
     $('#marca').val(marca);
+  
     $('#cantidad_mayor').val(cantidadMayor);
+  
     $('#precio_mayor').val(precioMayor);
+  
     $('#precio_detal').val(precioDetal);
+  
     $('#stock_disponible').val(stockDisponible);
+  
     $('#stock_maximo').val(stockMaximo);
+  
     $('#stock_minimo').val(stockMinimo);
+  
+  
     if (categoriaSelect !== undefined) {
+  
       $('#categoria').val(categoriaSelect);
+  
     } else {
+  
       // Si no encuentra coincidencia, limpiar selección para evitar error
+  
       $('#categoria').val('');
+  
     }
   
-    $('#accion').val('modificar'); 
+    $('#accion').val('modificar');
+  
+  
     // Mostrar imagen actual, solo si existe y no mostrar la predeterminada por defecto
+  
     if (imagenSrc && imagenSrc !== 'assets/img/logo.PNG') {
+  
       $('#imagen').attr('src', imagenSrc);
+  
     } else {
+  
       $('#imagen').attr('src', 'assets/img/logo.PNG');
   
     }
+  
+  
     // Abrir modal
+  
     $('#modalTitle').text('Modificar Producto');
   
     $('#registro').modal('show');
