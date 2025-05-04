@@ -90,9 +90,10 @@
                         <i class="fas fa-pencil-alt" title="Editar"> </i> 
                        </button>
                         
-                        <button name="eliminar" class="btn btn-danger btn-sm eliminar">
-                          <i class="fas fa-trash-alt" title="Eliminar"> </i>
-                        </button>
+                       <button type="button" class="btn btn-danger btn-sm eliminar" 
+                                    onclick="eliminarproducto(<?php echo $dato['id_producto']; ?>)">
+                              <i class="fas fa-trash-alt" title="Eliminar"> </i>
+                            </button>
 
                         <button type="button" class="btn btn-sm btn-info ver-detalles" title="Click para ver detalles">
                          <i class="fa fa-eye"></i>
@@ -233,6 +234,109 @@
 <script src="assets/js/demo/datatables-demo.js"></script>
 
 <script src="assets/js/producto.js"></script>
+
+<div class="modal fade" id="modificar" tabindex="-1" aria-labelledby="modificarLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modificarLabel">Modificar Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="formModificar" autocomplete="off" enctype='multipart/form-data'>
+                <div class="row mb-3">
+								<div class="col-md-6">
+									<label for="nombre">Nombre del producto</label>
+									<input class="form-control" type="text" id="nombre" name="nombre" />
+									<span id="snombre"></span>
+								</div>
+                <div class="col-md-6">
+									<label for="marca">Marca del producto</label>
+									<input class="form-control" type="text" id="marca" name="marca" />
+									<span id="smarca"></span>
+								</div>
+				</div>
+        <div class="row mb-3">
+        <div class="col-md-12">
+									<label for="descripcion">Descripcion</label>
+									<textarea class="form-control" type="textarea" id="descripcion" name="descripcion" placeholder="Escribe la descripcion"></textarea>
+									<span id="sdescripcion"></span>
+								</div>
+        </div> 
+      <div class="row mb-3">
+								<div class="col-md-3">
+									<label for="cantidad_mayor">C al mayor</label>
+									<input class="form-control" type="text" id="cantidad_mayor" name="cantidad_mayor" />
+									<span id="scantidad_mayor"></span>
+								</div>
+								<div class="col-md-3">
+									<label for="precio_mayor">Precio al mayor</label>
+									<input class="form-control" type="text" id="precio_mayor" name="precio_mayor" />
+									<span id="sprecio_mayor"></span>
+								</div>
+								<div class="col-md-3">
+									<label for="precio_detal">Precio al detal</label>
+									<input class="form-control" type="text" id="precio_detal" name="precio_detal" />
+									<span id="sprecio_detal"></span>
+								</div>
+								<div class="col-md-3">
+									<label for="stock_disponible">Stock disponible</label>
+									<input class="form-control" type="text" id="stock_disponible" name="stock_disponible"/>
+									<span id="sstock_disponible"></span>
+								</div>
+								
+				</div>
+      <div class="row mb-3">
+                  <div class="col-md-4">
+                    <label for="stock_maximo">Stock maximo</label>
+                    <input class="form-control" type="text" id="stock_maximo" name="stock_maximo" />
+                    <span id="sstock_maximo"></span>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="stock_minimo">Stock minimo</label>
+                    <input class="form-control" type="text" id="stock_minimo" name="stock_minimo" />
+                    <span id="sstock_minimo"></span>
+                  </div>
+								<div class="col-md-4">
+                <label for="categoria">Categoria</label>
+									<select class="form-select text-gray-900 " name="categoria" id="categoria" required>
+                            <option disabled selected>Seleccione una Categoria</option>
+                               <?php foreach($categoria as $categoria) {?>
+                                   <option value="<?php echo $categoria['id_categoria'];?>"> <?php echo $categoria['nombre'];?> </option>
+                                <?php } ?>
+              </select>
+								</div>
+								
+				</div>
+
+        <div class="row">
+								<div class="col-md-12">
+									<center>
+										<label for="archivo" style="cursor:pointer">
+
+											<img src="assets/img/logo.PNG" id="imagen"
+												class="img-fluid rounded-circle w-25 mb-3 centered"
+												style="object-fit:scale-down">
+                        <br>
+											Click aqui para subir la foto del producto
+										</label>
+										<input id="archivo" type="file"
+											style="display:none"
+											accept=".png,.jpg,.jpeg,.webp"
+											name="imagenarchivo" />
+									</center>
+								</div>
+							</div>
+               
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnModificar">Modificar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              </div>
+              </form>
+            </div>
+          </div>
+        </div>
 
 <div class="modal fade" id="modalDetallesProducto" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
 <div class="modal-dialog">

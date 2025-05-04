@@ -4,6 +4,7 @@ require_once('modelo/conexion.php');
 
 class producto extends Conexion{
  private $conex;
+ private $id_producto;
  private $nombre;
  private $descripcion;
  private $marca;
@@ -84,6 +85,14 @@ public function consultar() {
     }
 }
 
+public function eliminar() {
+	$registro = "DELETE FROM productos WHERE id_producto = :id_producto";
+	$strExec = $this->conex->prepare($registro);
+	$strExec->bindParam(':id_producto', $this->id_producto);
+	$resul = $strExec->execute();
+	return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
+}
+
 	
 
 public function obtenerCategoria() {
@@ -92,7 +101,10 @@ public function obtenerCategoria() {
 	$consulta->execute();
 	return $consulta->fetchAll(PDO::FETCH_ASSOC);
 } 
-	
+function set_id_producto($valor)
+{
+	$this->id_producto = $valor;
+}
 	function set_nombre($valor)
 		{
 			$this->nombre = $valor;
@@ -148,6 +160,9 @@ public function obtenerCategoria() {
 
 		public function get_Categoria(){
 			return $this->categoria;
+		}
+		public function get_Id_producto(){
+			return $this->id_producto;
 		}
 	
 	

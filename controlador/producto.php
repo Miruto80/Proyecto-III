@@ -43,7 +43,13 @@
                 $result = $objproducto->registrar();
                 echo json_encode($result);
             }
-}else{
+}elseif (isset($_POST['eliminar'])) {
+    if (!empty($_POST['id_producto'])) {
+        $objproducto->set_id_producto($_POST['id_producto']);
+        $result = $objproducto->eliminar();
+        echo json_encode($result);
+    }
+}  else{
     require_once 'vista/producto.php';
 }
 
