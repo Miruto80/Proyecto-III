@@ -24,6 +24,15 @@ $(document).ready(function() {
   });
 });
 
+  function eliminarproducto(id_producto) {
+    if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+        const datos = new FormData();
+        datos.append('id_producto', id_producto);
+        datos.append('eliminar', 'eliminar');
+        enviaAjax(datos);
+    }
+  }
+
 function muestraMensaje(icono, tiempo, titulo, mensaje) {
   Swal.fire({
       icon: icono,
@@ -76,6 +85,9 @@ function enviaAjax(datos) {
               } else if (lee.accion == 'eliminar') {
                   if (lee.respuesta == 1) {
                       muestraMensaje("success", 1000, "Se ha eliminado con éxito", "Los datos se han borrado correctamente");
+                      setTimeout(function () {
+                        location.href = "?pagina=producto";  // Aquí pones la URL a la que quieres redirigir
+                    }, 1000);
                   } else {
                       muestraMensaje("error", 2000, "ERROR", lee.text);
                   }
