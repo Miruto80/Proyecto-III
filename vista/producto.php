@@ -138,27 +138,21 @@
               </div>
             </div>
             <div class="row mb-3">
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <label for="cantidad_mayor">C al mayor</label>
                 <input class="form-control" type="text" id="cantidad_mayor" name="cantidad_mayor" />
                 <span id="scantidad_mayor"></span>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <label for="precio_mayor">Precio al mayor</label>
                 <input class="form-control" type="text" id="precio_mayor" name="precio_mayor" />
                 <span id="sprecio_mayor"></span>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <label for="precio_detal">Precio al detal</label>
                 <input class="form-control" type="text" id="precio_detal" name="precio_detal" />
                 <span id="sprecio_detal"></span>
               </div>
-              <div class="col-md-3">
-                <label for="stock_disponible">Stock disponible</label>
-                <input class="form-control" type="text" id="stock_disponible" name="stock_disponible" />
-                <span id="sstock_disponible"></span>
-              </div>
-            </div>
             <div class="row mb-3">
               <div class="col-md-4">
                 <label for="stock_maximo">Stock maximo</label>

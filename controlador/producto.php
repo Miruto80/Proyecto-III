@@ -24,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $objproducto->set_cantidad_mayor($_POST['cantidad_mayor']);
             $objproducto->set_precio_mayor($_POST['precio_mayor']);
             $objproducto->set_precio_detal($_POST['precio_detal']);
-            $objproducto->set_stock_disponible($_POST['stock_disponible']);
             $objproducto->set_stock_maximo($_POST['stock_maximo']);
             $objproducto->set_stock_minimo($_POST['stock_minimo']);
             $objproducto->set_Categoria($_POST['categoria']);
@@ -54,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $objproducto->set_cantidad_mayor($_POST['cantidad_mayor']);
             $objproducto->set_precio_mayor($_POST['precio_mayor']);
             $objproducto->set_precio_detal($_POST['precio_detal']);
-            $objproducto->set_stock_disponible($_POST['stock_disponible']);
             $objproducto->set_stock_maximo($_POST['stock_maximo']);
             $objproducto->set_stock_minimo($_POST['stock_minimo']);
             if (isset($_POST['categoria']) && !empty($_POST['categoria'])) {
