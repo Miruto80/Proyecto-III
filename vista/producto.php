@@ -122,18 +122,18 @@
               <div class="col-md-6">
                 <label for="nombre">Nombre del producto</label>
                 <input class="form-control" type="text" id="nombre" name="nombre" />
-                <span id="snombre"></span>
+                <span id="snombre" style="color: red;"></span>
               </div>
               <div class="col-md-6">
                 <label for="marca">Marca del producto</label>
                 <input class="form-control" type="text" id="marca" name="marca" />
-                <span id="smarca"></span>
+                <span id="smarca" style="color: red;"></span>
               </div>
             </div>
             <div class="row mb-3">
               <div class="col-md-12">
                 <label for="descripcion">Descripcion</label>
-                <textarea class="form-control" type="textarea" id="descripcion" name="descripcion" placeholder="Escribe la descripcion"></textarea>
+                <textarea class="form-control" type="textarea" id="descripcion" name="descripcion" placeholder="Escribe la descripcion" required></textarea>
                 <span id="sdescripcion"></span>
               </div>
             </div>
@@ -141,28 +141,28 @@
               <div class="col-md-4">
                 <label for="cantidad_mayor">C al mayor</label>
                 <input class="form-control" type="text" id="cantidad_mayor" name="cantidad_mayor" />
-                <span id="scantidad_mayor"></span>
+                <span id="scantidad_mayor"  style="color: red;"></span>
               </div>
               <div class="col-md-4">
                 <label for="precio_mayor">Precio al mayor</label>
                 <input class="form-control" type="text" id="precio_mayor" name="precio_mayor" />
-                <span id="sprecio_mayor"></span>
+                <span id="sprecio_mayor"  style="color: red;"></span>
               </div>
               <div class="col-md-4">
                 <label for="precio_detal">Precio al detal</label>
                 <input class="form-control" type="text" id="precio_detal" name="precio_detal" />
-                <span id="sprecio_detal"></span>
+                <span id="sprecio_detal"  style="color: red;"></span>
               </div>
             <div class="row mb-3">
               <div class="col-md-4">
                 <label for="stock_maximo">Stock maximo</label>
                 <input class="form-control" type="text" id="stock_maximo" name="stock_maximo" />
-                <span id="sstock_maximo"></span>
+                <span id="sstock_maximo"  style="color: red;"></span>
               </div>
               <div class="col-md-4">
                 <label for="stock_minimo">Stock minimo</label>
                 <input class="form-control" type="text" id="stock_minimo" name="stock_minimo" />
-                <span id="sstock_minimo"></span>
+                <span id="sstock_minimo"  style="color: red;"></span>
               </div>
               <div class="col-md-4">
                 <label for="categoria">Categoria</label>
