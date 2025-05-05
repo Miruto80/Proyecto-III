@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             } else {
 
-                echo json_encode(['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'Categoria no seleccionada']);
+                echo json_encode(['respuesta' => 0, 'accion' => 'registrar', 'error' => 'Categoria no seleccionada']);
 
                 exit;
 
