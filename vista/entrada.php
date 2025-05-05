@@ -9,7 +9,7 @@
 
 <body class="g-sidenav-show bg-gray-100">
   
-<!-- php barra de navegacion-->
+<!-- php barra de navegacion--> 
 <?php include 'complementos/sidebar.php' ?>
 
 <main class="main-content position-relative border-radius-lg ">

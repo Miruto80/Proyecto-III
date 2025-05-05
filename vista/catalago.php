@@ -89,7 +89,7 @@
                 <center><h2> LOVEMAKEUP</h2> </center>
 					<center> <p> RIF: J-</p> </center>
 					
-				</div>
+				</div> 
 					<div class="box">
 						<h2> SIGUENOS </h2>
 				

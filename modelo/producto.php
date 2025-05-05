@@ -4,6 +4,7 @@ require_once('modelo/conexion.php');
 
 class producto extends Conexion{
  private $conex;
+ private $id_producto;
  private $nombre;
  private $descripcion;
  private $marca;
@@ -84,6 +85,49 @@ public function consultar() {
     }
 }
 
+public function modificar() {
+    $registro = "UPDATE productos SET 
+        nombre = :nombre,
+        descripcion = :descripcion,
+        marca = :marca,
+        cantidad_mayor = :cantidad_mayor,
+        precio_mayor = :precio_mayor,
+        precio_detal = :precio_detal,
+        stock_disponible = :stock_disponible,
+        stock_maximo = :stock_maximo,
+        stock_minimo = :stock_minimo,
+        imagen = :imagen,
+        id_categoria = :id_categoria
+        WHERE id_producto = :id_producto";
+
+    $strExec = $this->conex->prepare($registro);
+    $strExec->bindParam(':id_producto', $this->id_producto);
+    $strExec->bindParam(':nombre', $this->nombre);
+    $strExec->bindParam(':descripcion', $this->descripcion);
+    $strExec->bindParam(':marca', $this->marca);
+    $strExec->bindParam(':cantidad_mayor', $this->cantidad_mayor);
+    $strExec->bindParam(':precio_mayor', $this->precio_mayor);
+    $strExec->bindParam(':precio_detal', $this->precio_detal);
+    $strExec->bindParam(':stock_disponible', $this->stock_disponible);
+    $strExec->bindParam(':stock_maximo', $this->stock_maximo);
+    $strExec->bindParam(':stock_minimo', $this->stock_minimo);
+    $strExec->bindParam(':imagen', $this->imagen);
+    $strExec->bindParam(':id_categoria', $this->categoria);
+
+    $resul = $strExec->execute();
+
+    return $resul ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
+}
+
+
+public function eliminar() {
+	$registro = "DELETE FROM productos WHERE id_producto = :id_producto";
+	$strExec = $this->conex->prepare($registro);
+	$strExec->bindParam(':id_producto', $this->id_producto);
+	$resul = $strExec->execute();
+	return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
+}
+
 	
 
 public function obtenerCategoria() {
@@ -92,7 +136,10 @@ public function obtenerCategoria() {
 	$consulta->execute();
 	return $consulta->fetchAll(PDO::FETCH_ASSOC);
 } 
-	
+function set_id_producto($valor)
+{
+	$this->id_producto = $valor;
+}
 	function set_nombre($valor)
 		{
 			$this->nombre = $valor;
@@ -148,6 +195,9 @@ public function obtenerCategoria() {
 
 		public function get_Categoria(){
 			return $this->categoria;
+		}
+		public function get_Id_producto(){
+			return $this->id_producto;
 		}
 	
 	
