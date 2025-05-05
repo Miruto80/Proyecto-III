@@ -33,7 +33,7 @@
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
               <i class="fa-solid fa-cart-plus text-dark text-sm opacity-10"></i>
             </div>
-            <span class="nav-link-text ms-1">Entrada</span>
+            <span class="nav-link-text ms-1">Compra</span>
           </a>
         </li>
         <li class="nav-item">
@@ -50,17 +50,10 @@
               <i class="fa-solid fa-cash-register text-dark text-sm opacity-10"></i>
               
             </div>
-            <span class="nav-link-text ms-1">Salida</span>
+            <span class="nav-link-text ms-1">Venta</span>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link " href="?pagina=perdida">
-            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="fa-solid fa-file-arrow-down text-dark text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Perdida</span>
-          </a>
-        </li>
+  
         <li class="nav-item">
           <a class="nav-link " href="?pagina=proveedor">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
