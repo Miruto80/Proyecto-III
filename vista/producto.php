@@ -188,9 +188,6 @@
               </div>
             </div>
 
-<<<<<<< HEAD
-<script src="assets/js/producto.js"></script>
-=======
             <br>
             <div class="text-center">
               <button type="button" class="btn btn-primary" id="btnEnviar">Guardar</button>
@@ -198,7 +195,6 @@
             </div>
           </form>
         </div>
->>>>>>> 37d6e2a378c94adf3b2a23575fc49d99b9821942
 
       </div>
     </div>

@@ -365,6 +365,10 @@ $(document).on('click', '.ver-detalles', function () {
         muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo stock mínimo");
         return false;
     }
+    else if ($("#categoria").val() === null || $("#categoria").val() === "") {
+      muestraMensaje("error", 2000, "Error", "Debes seleccionar una categoría");
+      return false;
+  }
     
     return true;
 }

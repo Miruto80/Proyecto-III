@@ -26,7 +26,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $objproducto->set_precio_detal($_POST['precio_detal']);
             $objproducto->set_stock_maximo($_POST['stock_maximo']);
             $objproducto->set_stock_minimo($_POST['stock_minimo']);
-            $objproducto->set_Categoria($_POST['categoria']);
+            if (isset($_POST['categoria']) && !empty($_POST['categoria'])) {
+
+                $objproducto->set_Categoria($_POST['categoria']);
+
+            } else {
+
+                echo json_encode(['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'Categoria no seleccionada']);
+
+                exit;
+
+            }
 
             if (isset($_FILES['imagenarchivo']) && $_FILES['imagenarchivo']['error'] == 0) {
                 $nombreArchivo = $_FILES['imagenarchivo']['name'];
