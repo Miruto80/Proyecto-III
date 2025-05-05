@@ -94,7 +94,6 @@ public function modificar() {
         cantidad_mayor = :cantidad_mayor,
         precio_mayor = :precio_mayor,
         precio_detal = :precio_detal,
-        stock_disponible = :stock_disponible,
         stock_maximo = :stock_maximo,
         stock_minimo = :stock_minimo,
         imagen = :imagen,
@@ -109,7 +108,6 @@ public function modificar() {
     $strExec->bindParam(':cantidad_mayor', $this->cantidad_mayor);
     $strExec->bindParam(':precio_mayor', $this->precio_mayor);
     $strExec->bindParam(':precio_detal', $this->precio_detal);
-    $strExec->bindParam(':stock_disponible', $this->stock_disponible);
     $strExec->bindParam(':stock_maximo', $this->stock_maximo);
     $strExec->bindParam(':stock_minimo', $this->stock_minimo);
     $strExec->bindParam(':imagen', $this->imagen);
