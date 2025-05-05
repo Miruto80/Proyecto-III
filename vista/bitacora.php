@@ -38,21 +38,23 @@
                 </div>
                 <br>
                 <!-- Campo de entrada para Clave Dinámica -->
+               <form method="POST" action="?pagina=bitacora" autocomplete="off" id="u">
                 <div class="mb-3 text-center">
                     <h5>Clave Especial</h5>
                     <div class="input-group" style="justify-content: center; width: 40%; max-width: 400px; margin: auto;">
                         <div class="password-input">  
-                            <input id="password"  type="password" class="form-control" placeholder="Escriba su clave aquí">
+                            <input id="password"  type="password" class="form-control" name="clave" placeholder="Escriba su clave aquí">
                             <span id="show-password" class="fa fa-eye"></span>
                         </div> 
                     </div>
                 </div>
+
                 <br>
                 <!-- Botones -->
                 <div class="d-flex justify-content-between">
                     <a href="?pagina=home" class="btn btn-danger">Regresar</a>
-                    <form method="POST" action="?pagina=bitacora">
-                        <button type="submit" class="btn btn-primary" name="entrar">Continuar</button>
+                   
+                        <button class="btn btn-primary" name="entrar" id="entrar">Continuar</button>
                     </form>
                 </div>
             </div> <!-- FIN CARD N-1 -->
@@ -64,7 +66,37 @@
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
+
+<script>
+const passwordInput = document.getElementById('password');
+const showPasswordButton = document.getElementById('show-password');
+
+showPasswordButton.addEventListener('click', () => {
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    showPasswordButton.classList.remove('fa-eye');
+    showPasswordButton.classList.add('fa-eye-slash');
+  } else {
+    passwordInput.type = 'password';
+    showPasswordButton.classList.remove('fa-eye-slash');
+    showPasswordButton.classList.add('fa-eye'); 
+  }
+});
+</script>
 <script src="assets/js/bitacora.js"></script>
+
+<?php if(isset($_SESSION['message'])): ?>
+      <script>
+        Swal.fire({
+          title: '<?php echo $_SESSION['message']['title']; ?>',
+          text: '<?php echo $_SESSION['message']['text']; ?>',
+          icon: '<?php echo $_SESSION['message']['icon']; ?>',
+          confirmButtonColor: '#4899fa',
+          confirmButtonText: 'OK'
+        });
+      </script>
+      <?php unset($_SESSION['message']); ?>
+    <?php endif; ?>
 </body>
 
 </html>

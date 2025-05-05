@@ -24,6 +24,13 @@ if (isset($_POST['ingresar'])) {
                 $_SESSION['id_rol'] = $resultado->id_rol;
                 $_SESSION['nombre_usuario'] = $resultado->nombre_usuario; 
                     
+
+                // Registrar en la bitácora
+                 $accion = 'Inicio de sesión';
+                $descripcion = 'El usuario ha iniciado sesión exitosamente.';
+                $objlogin->registrarBitacora($resultado->id_persona, $accion, $descripcion);  
+
+                // ir a la vista
                 header("location:?pagina=home");
 
             } else if (isset($resultado->noactiva)) {
@@ -38,11 +45,16 @@ if (isset($_POST['ingresar'])) {
         } 
     } 
 } else if (isset($_POST['cerrar'])) {
+    if (isset($_SESSION["id"])) {
+        $id_persona = $_SESSION["id"];
+        $accion = 'Cierre de sesión';
+        $descripcion = 'El usuario ha cerrado sesión.';
+        $objlogin->registrarBitacora($id_persona, $accion, $descripcion);
+    }
     
-    session_destroy(); // Se Cierra la Session
+    session_destroy(); // Se cierra la sesión
     header('Location: ?pagina=login');
     exit;
-
 } else {
     require_once 'vista/login.php';
 }

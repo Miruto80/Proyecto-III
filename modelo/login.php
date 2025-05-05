@@ -38,6 +38,20 @@ class Login extends Conexion {
         return $resultado;
     }
    
+    public function registrarBitacora($id_persona, $accion, $descripcion) {
+    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
+                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
+    
+    $strExec = $this->conex->prepare($consulta);
+    $strExec->bindParam(':accion', $accion);
+    $strExec->bindParam(':descripcion', $descripcion);
+    $strExec->bindParam(':id_persona', $id_persona);
+    
+    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
+}
+
+
+   
     public function get_IdUsuario() {
         return $this->id_usuario;
     }
