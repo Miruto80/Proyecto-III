@@ -79,9 +79,7 @@ $(document).on('click', '.ver-detalles', function () {
     const precioMayor = fila.find('.precio_mayor').text().trim();
   
     const precioDetal = fila.find('td').eq(5).text().trim();
-  
-    const stockDisponible = fila.find('td').eq(6).text().trim();
-  
+    
     const stockMaximo = fila.find('.stock_maximo').text().trim();
   
     const stockMinimo = fila.find('.stock_minimo').text().trim();
@@ -114,9 +112,7 @@ $(document).on('click', '.ver-detalles', function () {
     $('#precio_mayor').val(precioMayor);
   
     $('#precio_detal').val(precioDetal);
-  
-    $('#stock_disponible').val(stockDisponible);
-  
+    
     $('#stock_maximo').val(stockMaximo);
   
     $('#stock_minimo').val(stockMinimo);

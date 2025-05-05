@@ -30,7 +30,7 @@ function __construct(){
 
 public function registrar(){
     $registro ="INSERT INTO productos(nombre,descripcion,marca,cantidad_mayor,precio_mayor,precio_detal,stock_disponible,stock_maximo,stock_minimo,imagen,id_categoria,estatus)
-    VALUES (:nombre,:descripcion,:marca,:cantidad_mayor,:precio_mayor,:precio_detal,:stock_disponible,:stock_maximo,:stock_minimo,:imagen,:id_categoria,1)";
+    VALUES (:nombre,:descripcion,:marca,:cantidad_mayor,:precio_mayor,:precio_detal,0,:stock_maximo,:stock_minimo,:imagen,:id_categoria,1)";
 
     $strExec = $this->conex->prepare($registro);
     $strExec->bindParam(':nombre',$this->nombre);
@@ -39,7 +39,6 @@ public function registrar(){
     $strExec->bindParam(':cantidad_mayor',$this->cantidad_mayor);
     $strExec->bindParam(':precio_mayor',$this->precio_mayor);
     $strExec->bindParam(':precio_detal',$this->precio_detal);
-    $strExec->bindParam(':stock_disponible',$this->stock_disponible);
     $strExec->bindParam(':stock_maximo',$this->stock_maximo);
     $strExec->bindParam(':stock_minimo',$this->stock_minimo);
     $strExec->bindParam(':imagen',$this->imagen);
@@ -71,6 +70,8 @@ public function consultar() {
             productos
         INNER JOIN 
             categoria ON productos.id_categoria = categoria.id_categoria
+		WHERE 
+            productos.estatus = 1
     ";
 
     $consulta = $this->conex->prepare($registro);
@@ -121,11 +122,11 @@ public function modificar() {
 
 
 public function eliminar() {
-	$registro = "DELETE FROM productos WHERE id_producto = :id_producto";
-	$strExec = $this->conex->prepare($registro);
-	$strExec->bindParam(':id_producto', $this->id_producto);
-	$resul = $strExec->execute();
-	return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
+    $registro = "UPDATE productos SET estatus = 0 WHERE id_producto = :id_producto";
+    $strExec = $this->conex->prepare($registro);
+    $strExec->bindParam(':id_producto', $this->id_producto);
+    $resul = $strExec->execute();
+    return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
 }
 
 	
