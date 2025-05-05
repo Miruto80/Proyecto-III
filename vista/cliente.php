@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 
-<head>
+<head> 
   <!-- php barra de navegacion-->
   <?php include 'complementos/head.php' ?> 
   <title> Cliente | LoveMakeup  </title> 
