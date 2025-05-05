@@ -43,32 +43,39 @@
 
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+          <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
                   <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
+                  <th class="text-white">ACCION</th>
+                  <th class="text-white">FECHA</th>
+                  <th class="text-white">DESCRIPCION</th>
+                  <th class="text-white">PERSONA</th>
+                  <th class="text-white">ROL</th>
                   <th class="text-white">ACCION</th>
                 </tr>
               </thead>
               <tbody>
-    
+              <?php
+                  foreach ($registro as $dato){
+                ?>
                 <tr>
-                 <td>1</td>
-                 <td>1</td>
-                 <td>1</td>
-                 <td>1</td>
+                  <td><?php echo $dato['id_bitacora']?></td>
+                  <td><?php echo $dato['accion']?></td>
+                  <td><?php echo $dato['fecha_hora']?></td>
+                  <td><?php echo $dato['descripcion']?></td>
+                  <td><?php echo $dato['nombre']." ".$dato["apellido"]?></td>
+                  <td><?php echo $dato['nombre_usuario']?></td>
                   <td>
-                     
-                        <button name="eliminar" class="btn btn-danger btn-sm eliminar">
+                    <form method="POST" action="?pagina=bitacora">
+                        <button name="eliminar" class="btn btn-danger btn-sm eliminar" value="<?php echo $dato['id_bitacora']?>">
                           <i class="fas fa-trash-alt" title="Eliminar"> </i>
                         </button>
-                     
+                        <input type="hidden" name="eliminar" value="<?php echo $dato['id_bitacora']?>">
+                     </form>
                   </td>
                 </tr>
-            
+               <?php } ?>
               </tbody>
                                
           </table> <!-- Fin tabla--> 
@@ -84,6 +91,8 @@
 
 <!-- php barra de navegacion-->
 <?php include 'vista/complementos/footer.php' ?>
+<script src="assets/js/demo/datatables-demo.js"></script>
+<script src="assets/js/bitacora.js"></script>
 
 </body>
 
