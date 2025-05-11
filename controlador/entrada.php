@@ -9,23 +9,34 @@ require_once 'modelo/entrada.php';
 
 $entrada = new Entrada();
 
-// Procesar el registro de una nueva entrada
+// Detectar si la solicitud es AJAX
+function esAjax() {
+    return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+}
+
+// Función para sanitizar datos de entrada
+function sanitizar($dato) {
+    return htmlspecialchars(trim($dato), ENT_QUOTES, 'UTF-8');
+}
+
+// Procesar el registro de una nueva compra
 if (isset($_POST['registrar_compra'])) {
-    // Recibimos los datos de la entrada
-    if (isset($_POST['fecha_entrada']) && isset($_POST['id_proveedor'])) {
-        $entrada->set_Fecha_entrada($_POST['fecha_entrada']);
-        $entrada->set_Id_proveedor($_POST['id_proveedor']);
+    // Recibimos los datos de la compra
+    if (isset($_POST['id_proveedor']) && isset($_POST['fecha_entrada'])) {
+        $entrada->set_Fecha_entrada(sanitizar($_POST['fecha_entrada']));
+        $entrada->set_Id_proveedor(intval($_POST['id_proveedor']));
         
         // Procesamos los detalles de los productos
         $detalles = [];
         if (isset($_POST['id_producto']) && is_array($_POST['id_producto'])) {
             for ($i = 0; $i < count($_POST['id_producto']); $i++) {
-                if (!empty($_POST['id_producto'][$i]) && $_POST['cantidad'][$i] > 0) {
+                if (!empty($_POST['id_producto'][$i]) && isset($_POST['cantidad'][$i]) && $_POST['cantidad'][$i] > 0) {
                     $detalle = [
-                        'id_producto' => $_POST['id_producto'][$i],
-                        'cantidad' => $_POST['cantidad'][$i],
-                        'precio_unitario' => $_POST['precio_unitario'][$i],
-                        'precio_total' => $_POST['precio_total'][$i]
+                        'id_producto' => intval($_POST['id_producto'][$i]),
+                        'cantidad' => intval($_POST['cantidad'][$i]),
+                        'precio_unitario' => floatval($_POST['precio_unitario'][$i]),
+                        'precio_total' => floatval($_POST['precio_total'][$i])
                     ];
                     $detalles[] = $detalle;
                 }
@@ -34,46 +45,48 @@ if (isset($_POST['registrar_compra'])) {
         
         $entrada->set_Detalles($detalles);
         
-        // Registramos la entrada
+        // Registramos la compra
         $respuesta = $entrada->registrar();
         
-        if ($respuesta['respuesta'] == 1) {
-            $_SESSION['mensaje'] = "Entrada registrada correctamente.";
-            $_SESSION['tipo_mensaje'] = "success";
-        } else {
-            $_SESSION['mensaje'] = "Error al registrar la entrada: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
-            $_SESSION['tipo_mensaje'] = "danger";
-        }
         
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            // Si es una petición AJAX, devolvemos JSON
+        if (esAjax()) {
+            // Devolver respuesta JSON para peticiones AJAX
+            header('Content-Type: application/json');
             echo json_encode($respuesta);
             exit;
         } else {
-            // Si es una petición normal, redirigimos
-            header("location:?pagina=entrada");
+            // Respuesta normal para peticiones no-AJAX
+            if ($respuesta['respuesta'] == 1) {
+                $_SESSION['mensaje'] = "Compra registrada exitosamente";
+                $_SESSION['tipo_mensaje'] = "success";
+            } else {
+                $_SESSION['mensaje'] = "Error al registrar la compra: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
+                $_SESSION['tipo_mensaje'] = "danger";
+            }
+            
+            header("Location: ?pagina=entrada");
             exit;
         }
     }
 }
 
-// Procesar la modificación de una entrada
+// Procesar la modificación de una compra
 if (isset($_POST['modificar_compra'])) {
-    if (isset($_POST['id_compra']) && isset($_POST['fecha_entrada']) && isset($_POST['id_proveedor'])) {
-        $entrada->set_Id_compra($_POST['id_compra']);
-        $entrada->set_Fecha_entrada($_POST['fecha_entrada']);
-        $entrada->set_Id_proveedor($_POST['id_proveedor']);
+    if (isset($_POST['id_compra']) && isset($_POST['id_proveedor']) && isset($_POST['fecha_entrada'])) {
+        $entrada->set_Id_compra(intval($_POST['id_compra']));
+        $entrada->set_Fecha_entrada(sanitizar($_POST['fecha_entrada']));
+        $entrada->set_Id_proveedor(intval($_POST['id_proveedor']));
         
         // Procesamos los detalles de los productos
         $detalles = [];
         if (isset($_POST['id_producto']) && is_array($_POST['id_producto'])) {
             for ($i = 0; $i < count($_POST['id_producto']); $i++) {
-                if (!empty($_POST['id_producto'][$i]) && $_POST['cantidad'][$i] > 0) {
+                if (!empty($_POST['id_producto'][$i]) && isset($_POST['cantidad'][$i]) && $_POST['cantidad'][$i] > 0) {
                     $detalle = [
-                        'id_producto' => $_POST['id_producto'][$i],
-                        'cantidad' => $_POST['cantidad'][$i],
-                        'precio_unitario' => $_POST['precio_unitario'][$i],
-                        'precio_total' => $_POST['precio_total'][$i]
+                        'id_producto' => intval($_POST['id_producto'][$i]),
+                        'cantidad' => intval($_POST['cantidad'][$i]),
+                        'precio_unitario' => floatval($_POST['precio_unitario'][$i]),
+                        'precio_total' => floatval($_POST['precio_total'][$i])
                     ];
                     $detalles[] = $detalle;
                 }
@@ -82,53 +95,57 @@ if (isset($_POST['modificar_compra'])) {
         
         $entrada->set_Detalles($detalles);
         
-        // Modificamos la entrada
+        // Modificamos la compra
         $respuesta = $entrada->modificar();
         
-        if ($respuesta['respuesta'] == 1) {
-            $_SESSION['mensaje'] = "Entrada modificada correctamente.";
-            $_SESSION['tipo_mensaje'] = "success";
-        } else {
-            $_SESSION['mensaje'] = "Error al modificar la entrada: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
-            $_SESSION['tipo_mensaje'] = "danger";
-        }
         
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            // Si es una petición AJAX, devolvemos JSON
+        if (esAjax()) {
+            // Devolver respuesta JSON para peticiones AJAX
+            header('Content-Type: application/json');
             echo json_encode($respuesta);
             exit;
         } else {
-            // Si es una petición normal, redirigimos
-            header("location:?pagina=entrada");
+            // Respuesta normal para peticiones no-AJAX
+            if ($respuesta['respuesta'] == 1) {
+                $_SESSION['mensaje'] = "Compra actualizada exitosamente";
+                $_SESSION['tipo_mensaje'] = "success";
+            } else {
+                $_SESSION['mensaje'] = "Error al actualizar la compra: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
+                $_SESSION['tipo_mensaje'] = "danger";
+            }
+            
+            header("Location: ?pagina=entrada");
             exit;
         }
     }
 }
 
-// Procesar la eliminación de una entrada
+// Procesar la eliminación de una compra
 if (isset($_POST['eliminar_compra'])) {
     if (isset($_POST['id_compra'])) {
-        $entrada->set_Id_compra($_POST['id_compra']);
+        $entrada->set_Id_compra(intval($_POST['id_compra']));
         
-        // Eliminamos la entrada
+        // Eliminamos la compra
         $respuesta = $entrada->eliminar();
         
-        if ($respuesta['respuesta'] == 1) {
-            $_SESSION['mensaje'] = "Entrada eliminada correctamente.";
-            $_SESSION['tipo_mensaje'] = "success";
-        } else {
-            $_SESSION['mensaje'] = "Error al eliminar la entrada: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
-            $_SESSION['tipo_mensaje'] = "danger";
-        }
         
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            // Si es una petición AJAX, devolvemos JSON
+        if (esAjax()) {
+            // Devolver respuesta JSON para peticiones AJAX
+            header('Content-Type: application/json');
             echo json_encode($respuesta);
             exit;
         } else {
-            // Si es una petición normal, redirigimos
-            header("location:?pagina=entrada");
-            exit;
+            // Respuesta normal para peticiones no-AJAX
+            if ($respuesta['respuesta'] == 1) {
+                $_SESSION['mensaje'] = "Compra eliminada exitosamente";
+                $_SESSION['tipo_mensaje'] = "success";
+            } else {
+                $_SESSION['mensaje'] = "Error al eliminar la compra: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
+                $_SESSION['tipo_mensaje'] = "danger";
+            }
+            
+            header("Location: ?pagina=entrada");
+            exit; 
         }
     }
 }
@@ -137,8 +154,9 @@ if (isset($_POST['eliminar_compra'])) {
 $compras = $entrada->consultar();
 
 // Si hay un ID en la URL, consultamos los detalles de esa compra
+$detalles_compra = [];
 if (isset($_GET['id'])) {
-    $detalles_compra = $entrada->consultarDetalles($_GET['id']);
+    $detalles_compra = $entrada->consultarDetalles(intval($_GET['id']));
 }
 
 // Obtener la lista de productos y proveedores para los formularios

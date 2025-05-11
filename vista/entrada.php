@@ -4,7 +4,7 @@
 <head>
   <!-- php barra de navegacion-->
   <?php include 'complementos/head.php' ?> 
-  <title> Entrada | LoveMakeup  </title> 
+  <title> Compra | LoveMakeup  </title> 
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
@@ -19,9 +19,9 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
         <li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="#">Administrar</a></li>
-        <li class="breadcrumb-item text-sm text-white active" aria-current="page">Entrada</li>
+        <li class="breadcrumb-item text-sm text-white active" aria-current="page">Compra</li>
       </ol>
-      <h6 class="font-weight-bolder text-white mb-0">Gestionar Entrada</h6>
+      <h6 class="font-weight-bolder text-white mb-0">Gestionar Compra</h6>
     </nav>
 <!-- php barra de navegacion-->    
 <?php include 'complementos/nav.php' ?>
@@ -46,7 +46,7 @@
     <!--Titulo de página -->
      <div class="d-sm-flex align-items-center justify-content-between mb-5">
        <h4 class="mb-0"><i class="fa-solid fa-cart-plus mr-2" style="color: #f6c5b4;"></i>
-        Entrada</h4>
+        Compra</h4>
            
        <!-- Button que abre el Modal N1 Registro -->
           <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registroModal">
@@ -101,7 +101,7 @@
                       <div class="modal-dialog modal-lg">
                           <div class="modal-content">
                               <div class="modal-header header-color">
-                                  <h5 class="modal-title" id="verDetallesModalLabel<?php echo $compra['id_compra']; ?>">Detalles de la Entrada</h5>
+                                  <h5 class="modal-title" id="verDetallesModalLabel<?php echo $compra['id_compra']; ?>">Detalles de la compra</h5>
                                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                               </div>
                               <div class="modal-body">
@@ -158,7 +158,7 @@
                               
                               <div class="row mb-3">
                                 <div class="col-md-6">
-                                  <label for="fecha_entrada" class="form-label">Fecha de Entrada</label>
+                                  <label for="fecha_entrada" class="form-label">Fecha de entrada</label>
                                   <input type="date" class="form-control" id="fecha_entrada" name="fecha_entrada" value="<?php echo $compra['fecha_entrada']; ?>" required>
                                 </div>
                                 <div class="col-md-6">
@@ -240,7 +240,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">
-                            <p>¿Está seguro que desea eliminar la entrada? Esta acción no se puede deshacer y afectará al inventario.</p>
+                            <p>¿Está seguro que desea eliminar la compra? Esta acción no se puede deshacer y afectará al inventario.</p>
                             <form method="POST" action="">
                               <input type="hidden" name="id_compra" value="<?php echo $compra['id_compra']; ?>">
                               <div class="text-center mt-4">
@@ -255,7 +255,7 @@
                   <?php endforeach; ?>
                 <?php else: ?>
                   <tr>
-                    <td colspan="5" class="text-center">No hay entradas registradas</td>
+                    <td colspan="5" class="text-center">No hay compras registradas</td>
                   </tr>
                 <?php endif; ?>
               </tbody>
@@ -274,7 +274,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header header-color">
-        <h5 class="modal-title" id="registroModalLabel">Registrar Entrada de Producto</h5>
+        <h5 class="modal-title" id="registroModalLabel">Registrar compra</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
