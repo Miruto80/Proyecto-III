@@ -122,7 +122,7 @@
   <script src="assets/js/catalago/plugins.js"></script>
   <script src="assets/js/catalago/script.js"></script>
    
-  <script src="assets/js/catalogo.js"></script>
+  <script src="assets/js/catalago/catalogo.js"></script>
   <script src="assets/js/bootstrap.bundle.min.js"></script>
 
 <script>

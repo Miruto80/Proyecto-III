@@ -299,7 +299,7 @@
 
   
 <!-- php Publicidad Insta, Publicidad calidad, footer y JS--> 
-<script src="assets/js/catalogo.js"></script>
+
 <?php include 'vista/complementos/footer_catalogo.php' ?>
   
 </body>

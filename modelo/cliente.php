@@ -6,7 +6,7 @@ class Cliente extends Conexion
 {
 
     private $conex;
-    private $id_usuario;
+    private $id_persona;
     private $nombre;
     private $apellido;
     private $cedula;
@@ -21,17 +21,7 @@ class Cliente extends Conexion
         $this->conex = $this->conex->Conex();
     }
 
-    public function registrarBitacora($id_persona, $accion, $descripcion) {
-    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
-    
-    $strExec = $this->conex->prepare($consulta);
-    $strExec->bindParam(':accion', $accion);
-    $strExec->bindParam(':descripcion', $descripcion);
-    $strExec->bindParam(':id_persona', $id_persona);
-    
-    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
-}
+   
 
 
     public function registrar() {
@@ -81,9 +71,9 @@ class Cliente extends Conexion
 
     public function eliminar(){
         try {
-            $registro = "DELETE FROM personas WHERE id_persona = :id_usuario";
+            $registro = "DELETE FROM personas WHERE id_persona = :id_persona";
             $strExec = $this->conex->prepare($registro);
-            $strExec->bindParam(':id_usuario', $this->id_usuario);
+            $strExec->bindParam(':id_persona', $this->id_persona);
             $result = $strExec->execute();
                 if ($result){
                     $res=array('respuesta'=>1,'accion'=>'eliminar');
@@ -95,25 +85,17 @@ class Cliente extends Conexion
             } catch (PDOException $e) {
                 echo "Error: " . $e->getMessage();
             }
-        }
-   
-    public function obtenerRol()
+    }
+  
+
+    public function get_Id_Persona()
     {
-        $query = "SELECT * FROM rol_usuario WHERE id_tipo >= 1";
-        $consulta = $this->conex->prepare($query);
-        $consulta->execute();
-        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+        return $this->id_persona;
     }
 
-
-    public function get_Id_Usuario()
+    public function set_Id_Persona($id_persona)
     {
-        return $this->id_usuario;
-    }
-
-    public function set_Id_Usuario($id_usuario)
-    {
-        $this->id_usuario = $id_usuario;
+        $this->id_persona = $id_persona;
     }
 
     public function get_Nombre()
