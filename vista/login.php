@@ -9,51 +9,51 @@
 
     <script src="assets/js/libreria/jquery.min.js"></script>
     <script src="assets/js/libreria/sweetalert2.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+   
+   
   </head>
   <body>
-    <div class="form-section">
-      <div class="back-button-container">
-        <a href="?pagina=catalago" class="back-button">
+    <div class="form-section1">
+      <div class="back-button-container1">
+        <a href="?pagina=catalogo" class="back-button1">
           <i class="fa-solid fa-arrow-left"></i>
         </a>
       </div>
       
       <span class="logo"><i class="fa-solid fa-fingerprint"></i></span>
       <h2>Inicio de Sesión</h2>
-      <span class="sub-heading">Ingrese su usuario y clave para acceder al sistema</span>
+      <span class="sub-heading1">Ingrese su usuario y clave para acceder al sistema</span>
     
       <form action="?pagina=login" method="POST" autocomplete="off">
         <label for="name"><i class="fa-solid fa-user"></i> Cédula</label>
-        <input class="form-control" type="text" name="usuario" id="usuario" placeholder="Cédula:" required>
+        <input class="form-control1" type="text" name="usuario" id="usuario" placeholder="Cédula:" required>
 
         <label for="password"><i class="fa-solid fa-lock"></i> Contraseña</label>
-        <div class="password-input">
-          <input type="password" name="clave" id="password" class="form-control" placeholder="Contraseña:" required>
+        <div class="password-input1">
+          <input type="password" name="clave" id="password" class="form-control1" placeholder="Contraseña:" required>
           <span id="show-password" class="fa fa-eye"></span>
         </div>
 
-        <button type="submit" name="ingresar" class="btn-primary mt">Iniciar Sesión</button>
+        <button type="submit" name="ingresar" class="btn-primary1 mt1">Iniciar Sesión</button>
       </form>
   
-      <div class="button-group">
-        <a href="?pagina=forgot-password" class="btn-small btn-left">Olvidó su contraseña</a>
-        <a href="#" class="btn-small btn-right" data-bs-toggle="modal" data-bs-target="#registroCliente">Registrar</a>
+      <div class="button-group1">
+        <a href="?pagina=forgot-password" class="btn-small1 btn-left1">Olvidó su contraseña</a>
+        <a href="#" class="btn-small1 btn-right1" data-bs-toggle="modal" data-bs-target="#registroCliente">Registrar</a>
       </div>
     </div>
 
-    <div class="hero-section">
+    <div class="hero-section1">
       <h2>
         PLATAFORMA DE COMERCIO ELECTRÓNICO <br> PARA LA LÍNEA DE PRODUCTOS DE BELLEZA
       </h2>
-      <span class="sub-heading">
+      <span class="sub-heading1">
         <b>LoveMakeup RIF J-</b>
       </span>
       <img src="assets/img/t2.svg" alt="" />
     </div>
 
-    <!-- Modal para registrar cliente -->
+    <!-- Modal para registrar cliente
     <div class="modal fade" id="registroCliente" tabindex="-1" aria-labelledby="registroClienteLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -98,7 +98,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <script src="assets/js/login.js"></script>
 

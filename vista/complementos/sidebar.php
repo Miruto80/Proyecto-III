@@ -27,8 +27,8 @@
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Administrar</h6>
         </li>
+            <?php if($_SESSION["nivel_rol"] == 3) { ?>
         <li class="nav-item">
-          
           <a class="nav-link " href="?pagina=entrada">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
               <i class="fa-solid fa-cart-plus text-dark text-sm opacity-10"></i>
@@ -36,6 +36,7 @@
             <span class="nav-link-text ms-1">Compra</span>
           </a>
         </li>
+            <?php } ?>
         <li class="nav-item">
           <a class="nav-link " href="?pagina=producto">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -53,7 +54,17 @@
             <span class="nav-link-text ms-1">Venta</span>
           </a>
         </li>
-  
+
+         <li class="nav-item">
+          <a class="nav-link " href="?pagina=reserva">
+            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="fa-solid fa-chalkboard-user text-dark text-sm opacity-10"></i>
+              
+            </div>
+            <span class="nav-link-text ms-1">Reserva</span>
+          </a>
+        </li>
+            <?php if($_SESSION["nivel_rol"] == 3) { ?>
         <li class="nav-item">
           <a class="nav-link " href="?pagina=proveedor">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -62,6 +73,7 @@
             <span class="nav-link-text ms-1">Proveedor</span>
           </a>
         </li>
+             
         <li class="nav-item">
           <a class="nav-link " href="?pagina=categoria">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -71,9 +83,11 @@
             <span class="nav-link-text ms-1">Categoria</span>
           </a>
         </li>
+              <?php } ?>
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">WEB</h6>
         </li>
+           <?php if($_SESSION["nivel_rol"] == 3) { ?>
         <li class="nav-item">
           <a class="nav-link " href="?pagina=cliente">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -82,6 +96,7 @@
             <span class="nav-link-text ms-1">Cliente</span>
           </a>
         </li>
+          <?php } ?>
         <li class="nav-item">
           <a class="nav-link " href="?pagina=pedidoweb">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -90,18 +105,7 @@
             <span class="nav-link-text ms-1">PedidoWeb</span>
           </a>
         </li>
-
-
-        <li class="nav-item">
-          <a class="nav-link " href="?pagina=listadeseos">
-            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="fa-solid fa-heart text-dark text-sm opacity-10                                                                "></i>
-            </div>
-            <span class="nav-link-text ms-1">Lista de deseos</span>
-          </a>
-        </li>
-
-
+            <?php if($_SESSION["nivel_rol"] == 3) { ?>
         <li class="nav-item">
           <a class="nav-link " href="?pagina=metodopago">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -115,9 +119,11 @@
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
               <i class="fa-solid fa-boxes-stacked text-dark text-sm opacity-10"></i>
             </div>
-            <span class="nav-link-text ms-1">Metodo entrega</span>
+            <span class="nav-link-text ms-1">Metodo Entreda</span>
           </a>
         </li>
+              <?php } ?>
+         <?php if($_SESSION["nivel_rol"] == 3) { ?>
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Administrar Usuario</h6>
         </li>
@@ -146,7 +152,7 @@
           </a>
         </li>
 
-        
+         <?php } ?>
       
     </ul>
 

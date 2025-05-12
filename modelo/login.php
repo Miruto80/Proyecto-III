@@ -10,7 +10,7 @@ class Login extends Conexion {
     private $clave;
     private $nombres;
     private $apellidos;
-    private $id_rol;
+    private $id_rol; 
 
     function __construct(){ // Metodo para BD
         $this->conex = new Conexion();
@@ -18,7 +18,7 @@ class Login extends Conexion {
     } 
 
     public function verificarUsuario() {
-        $consulta = "SELECT p.*, ru.nombre AS nombre_usuario
+        $consulta = "SELECT p.*, ru.nombre AS nombre_usuario, ru.nivel
                      FROM personas p
                      INNER JOIN rol_usuario ru ON p.id_tipo = ru.id_tipo
 

@@ -1,5 +1,5 @@
 <?php
-    $pagina = "catalago";
+    $pagina = "catalogo";
         if (!empty($_GET['pagina'])){
             $pagina=$_GET['pagina'];
         }
