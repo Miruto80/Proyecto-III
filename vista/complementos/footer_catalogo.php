@@ -16,7 +16,12 @@
                 
                 <li>
                   <a href="https://www.instagram.com/lovemakeupyk/" target="_blank" class="text-secondary-emphasis">
-                    <i class="fa-solid fa-camera" style="font-size: 30px; color: #fa48c9;"></i>
+                    <i class="fa-brands fa-instagram" style="font-size: 30px; color: #fa48c9;"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.instagram.com/lovemakeupyk/" target="_blank" class="text-secondary-emphasis">
+                  <i class="fa-brands fa-whatsapp" style="font-size: 30px; color: #fa48c9;"></i>
                   </a>
                 </li>
                
