@@ -2,23 +2,27 @@
 document.addEventListener("DOMContentLoaded", () => {
     const checkboxes = document.querySelectorAll('.filtro-checkbox');
     const productos = document.querySelectorAll('.product-item[data-categoria]');
+  
     checkboxes.forEach(cb => {
-        cb.addEventListener('change', () => {
-            const categoriasSeleccionadas = Array.from(checkboxes)
-                .filter(c => c.checked)
-                .map(c => c.value);
-
-            productos.forEach(prod => {
-                const categoria = prod.getAttribute('data-categoria');
-                if (categoriasSeleccionadas.length === 0 || categoriasSeleccionadas.includes(categoria)) {
-                    prod.style.display = '';
-                } else {
-                    prod.style.display = 'none';
-                }
-            });
+      cb.addEventListener('change', () => {
+        const categoriasSeleccionadas = Array.from(checkboxes)
+          .filter(c => c.checked)
+          .map(c => c.value);
+  
+        productos.forEach(prod => {
+          // Buscar el contenedor padre que es la columna de la grilla
+          const container = prod.closest('.col');
+          const categoria = prod.getAttribute('data-categoria');
+          if (categoriasSeleccionadas.length === 0 || categoriasSeleccionadas.includes(categoria)) {
+            container.style.display = ''; // Se muestra la columna
+          } else {
+            container.style.display = 'none'; // Se oculta y no ocupa espacio
+          }
         });
+      });
     });
-});
+  });
+  
 
 
 function openModal(element) {
