@@ -20,7 +20,7 @@
             <div class="col-11">
               <form id="search-form" class="text-center" action="index.html" method="post">
                 <input type="text" class="form-control border-0 bg-transparent"
-                  placeholder="Búsqueda de más de 20.000 productos">
+                  placeholder="Búsqueda de más de 1.000 productos">
 
               </form>
 
