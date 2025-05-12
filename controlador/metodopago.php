@@ -31,7 +31,9 @@ if (isset($_POST['registrar'])) {
         $result = $objMetodoPago->eliminar();
         echo json_encode($result);
     }
-} else {
+} else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
     require_once 'vista/metodopago.php';
+}else{
+    require_once 'vista/seguridad/privilegio.php';
 }
 ?>

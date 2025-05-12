@@ -37,8 +37,9 @@ if (isset($_POST['registrar'])) {
         $result = $objtipousuario->eliminar();
         echo json_encode($result);
     }
-} else {
-    // Si no hay una acción específica, se muestra la vista por defecto
+} else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
     require_once 'vista/tipousuario.php';
+}else{
+    require_once 'vista/seguridad/privilegio.php';
 }
 ?>

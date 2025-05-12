@@ -92,7 +92,11 @@ try {
     } else {
         // Si no es una solicitud AJAX, cargar la vista
         $registro = $objproveedor->consultar();
-        require_once 'vista/proveedor.php';
+        if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+            require_once 'vista/proveedor.php';
+        }else{
+            require_once 'vista/seguridad/privilegio.php';
+        }
     }
 } catch (Exception $e) {
     if ($is_ajax) {
@@ -102,6 +106,10 @@ try {
         // Mostrar error en la interfaz
         $error_message = $e->getMessage();
         $registro = $objproveedor->consultar();
-        require_once 'vista/proveedor.php';
+        if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+            require_once 'vista/proveedor.php';
+        }else{
+            require_once 'vista/seguridad/privilegio.php';
+        }
     }
-}
+}    

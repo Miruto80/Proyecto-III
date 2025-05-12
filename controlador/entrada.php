@@ -164,5 +164,9 @@ $productos_lista = $entrada->consultarProductos();
 $proveedores = $entrada->consultarProveedores();
 
 // Cargamos la vista
-require_once 'vista/entrada.php';
+if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+    require_once 'vista/entrada.php';
+}else{
+    require_once 'vista/seguridad/privilegio.php';
+}
 ?>

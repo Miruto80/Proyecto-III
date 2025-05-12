@@ -30,9 +30,11 @@
  
          echo json_encode($result);
 
+  }else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+      require_once 'vista/bitacora.php';
   }else{
-        require_once 'vista/bitacora.php';
-     }
+      require_once 'vista/seguridad/privilegio.php';
+  }
 
 
 

@@ -60,9 +60,11 @@ if (isset($_POST['registrar'])) {
       echo json_encode($result);
         } 
     
-  } else {
-     require_once 'vista/usuario.php';
-  }
+  } else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+    require_once 'vista/usuario.php';
+}else{
+    require_once 'vista/seguridad/privilegio.php';
+}
 
        
 

@@ -5,6 +5,10 @@
      } /*  Validacion URL  */
 
      
-    require_once 'vista/cliente.php';
+     if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+      require_once 'vista/cliente.php';
+     }else{
+      require_once 'vista/seguridad/privilegio.php';
+  }
 
 ?>
