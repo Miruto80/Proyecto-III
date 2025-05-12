@@ -1,8 +1,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     const checkboxes = document.querySelectorAll('.filtro-checkbox');
-    const productos = document.querySelectorAll('.producto');
-
+    const productos = document.querySelectorAll('.product-item[data-categoria]');
     checkboxes.forEach(cb => {
         cb.addEventListener('change', () => {
             const categoriasSeleccionadas = Array.from(checkboxes)

@@ -140,7 +140,7 @@
                         <div class="product-grid row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 g-4">
                             <?php foreach ($registro as $producto): ?>
                                 <div class="col">
-                                    <div class="product-item">
+                                    <div class="product-item" data-categoria="<?php echo $producto['id_categoria']; ?>">
                                         <figure>
                                             <p title="<?php echo htmlspecialchars($producto['nombre']); ?>">
                                                 <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>" class="tab-image img-fluid rounded-3">
@@ -300,8 +300,10 @@
 
   
 <!-- php Publicidad Insta, Publicidad calidad, footer y JS--> 
+<script src="assets/js/catalogo.js"></script>
 <?php include 'vista/complementos/footer_catalogo.php' ?>
   
 </body>
 
 </html>
+

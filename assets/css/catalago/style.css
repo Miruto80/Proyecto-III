@@ -390,39 +390,13 @@ h1,h2,h3,h4,h5,h6 {
   overflow: visible;
 }
 
-/* product-grid
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button {  
-   opacity: 1;
-}
-.product-item .button-area .quantity {
-  padding: 0.5rem;
-}
-.product-item .button-area {
-  display: none;
-  position: absolute;
-  text-align: center;
-  background: #fff;
-  width: 100%;
-  left: 0;
-  bottom: -47px;
-  z-index: 1;
-  box-shadow: 0px 20px 44px rgba(0, 0, 0, 0.08);
-}
 .product-item {
-  position: relative;
-  padding: 10px;
-  background: #FFFFFF;
-  border-radius: 16px;
-  margin-bottom: 30px;
-  box-shadow: 0px 0px 22px rgba(0, 0, 0, 0);
+transition: transform 0.2s;
 }
-.product-item:hover .button-area {
-  display: block;
-}
+
 .product-item:hover {
-  box-shadow: 0px 0px 44px rgba(0, 0, 0, 0.08);
-} */
+  transform: scale(1.1);
+} 
 .product-item figure {
   text-align: center;
 }
