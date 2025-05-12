@@ -141,7 +141,19 @@
                         <div class="product-grid row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 g-4">
                             <?php foreach ($registro as $producto): ?>
                                 <div class="col">
-                                    <div class="product-item">
+                                    <div class="product-item" data-categoria="<?php echo $producto['id_categoria']; ?>"data-bs-toggle="modal"
+                                     data-bs-target="#productModal"
+	                                   data-id="<?php echo $producto['id_producto']; ?>"
+                                     data-nombre="<?php echo htmlspecialchars($producto['nombre']); ?>"
+                                     data-precio="<?php echo $producto['precio_detal']; ?>"
+                                     data-marca="<?php echo htmlspecialchars($producto['marca']); ?>"
+                                     data-descripcion="<?php echo htmlspecialchars($producto['descripcion']); ?>"
+                                     data-cantidad-mayor="<?php echo $producto['cantidad_mayor']; ?>"
+                                     data-precio-mayor="<?php echo $producto['precio_mayor']; ?>"
+                                     data-stock-disponible="<?php echo $producto['stock_disponible']; ?>"
+                                     data-imagen="<?php echo $producto['imagen']; ?>"
+	                                   data-categoria="<?php echo $producto['id_categoria']; ?>"
+                                     onclick="openModal(this)">
                                         <figure>
                                             <p title="<?php echo htmlspecialchars($producto['nombre']); ?>">
                                                 <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>" class="tab-image img-fluid rounded-3">
@@ -160,20 +172,7 @@
                                                 <span class="text-dark fw-semibold">D $<?php echo $producto['precio_detal']; ?></span>
                                             </div>
                                             <div class="button-area p-3">
-                                                <button class="btn btn-dark rounded-1 p-2 fs-7 btn-cart"
-                                                 data-bs-toggle="modal"
-                                                 data-bs-target="#productModal"
-                                                 data-id="<?php echo $producto['id_producto']; ?>"
-                                                 data-nombre="<?php echo htmlspecialchars($producto['nombre']); ?>"
-                                                 data-precio="<?php echo $producto['precio_detal']; ?>"
-                                                 data-marca="<?php echo htmlspecialchars($producto['marca']); ?>"
-                                                  data-descripcion="<?php echo htmlspecialchars($producto['descripcion']); ?>"
-                                                   data-cantidad-mayor="<?php echo $producto['cantidad_mayor']; ?>"
-                                                  data-precio-mayor="<?php echo $producto['precio_mayor']; ?>"
-                                              data-stock-disponible="<?php echo $producto['stock_disponible']; ?>"
-                                              data-imagen="<?php echo $producto['imagen']; ?>"
-                                              data-categoria="<?php echo $producto['id_categoria']; ?>"
-                                              onclick="openModal(this)">
+                                                <button class="btn btn-dark rounded-1 p-2 fs-7 btn-cart">
                                        <i class="fa-solid fa-cart-shopping"></i> Añadir al carrito
                                     </button>
                                             </div>
