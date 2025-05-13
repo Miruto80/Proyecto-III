@@ -139,7 +139,7 @@
             </div>
             <div class="row mb-3">
               <div class="col-md-4">
-                <label for="cantidad_mayor">C al mayor</label>
+                <label for="cantidad_mayor">Cantidad al mayor</label>
                 <input class="form-control" type="text" id="cantidad_mayor" name="cantidad_mayor" />
                 <span id="scantidad_mayor"  style="color: red;"></span>
               </div>
