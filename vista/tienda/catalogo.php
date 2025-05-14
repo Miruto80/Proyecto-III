@@ -32,10 +32,10 @@
             <div class="container">
               <div class="row justify-content-center text-center">
                 <div class="col-md-12 pt-1">
-                  <p class="fs-6 text-dark fw-bold">
+                  <p class="fs-4 text-dark fw-bold">
                     Haz que tu belleza deslumbre con nuestra selección de alta gama.
                   </p>
-                  <h2 class="fs-3 text-dark text-uppercase ls-0 fw-bold">
+                  <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
                   <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
@@ -50,10 +50,10 @@
             <div class="container">
               <div class="row justify-content-center text-center">
                 <div class="col-md-12 pt-1">
-                  <p class="fs-6 text-dark fw-bold">
+                  <p class="fs-4 text-dark fw-bold">
                     Tu piel, tu arte. Embellece cada día con lo mejor del maquillaje.
                   </p>
-                  <h2 class="fs-3 text-dark text-uppercase ls-0 fw-bold">
+                  <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
                   <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
@@ -68,10 +68,10 @@
             <div class="container">
               <div class="row justify-content-center text-center">
                 <div class="col-md-12 pt-1">
-                  <p class="fs-6 text-dark fw-bold">
+                  <p class="fs-4 text-dark fw-bold">
                     Eleva tu belleza con maquillaje exclusivo. ¡Brilla con confianza!
                   </p>
-                  <h2 class="fs-3 text-dark text-uppercase ls-0 fw-bold">
+                  <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
                   <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
@@ -86,10 +86,10 @@
             <div class="container">
               <div class="row justify-content-center text-center">
                 <div class="col-md-12 pt-1">
-                  <p class="fs-6 text-dark fw-bold">
+                  <p class="fs-4 text-dark fw-bold">
                     Estilo, elegancia y calidad en cada aplicación. ¡Pruébalo!
                   </p>
-                  <h2 class="fs-3 text-dark text-uppercase ls-0 fw-bold">
+                  <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
                   <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
