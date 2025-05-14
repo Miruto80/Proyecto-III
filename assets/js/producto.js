@@ -301,22 +301,24 @@ $(document).on('click', '.ver-detalles', function () {
 		$("#scantidad_mayor"),"El formato debe ser de 1 a 8");
 	});
 	
-	$("#precio_detal").on("keypress",function(e){
-		validarkeypress(/^[0-9-\b]*$/,e);
-	});
+	$("#precio_detal").on("keypress", function(e) {
+    validarkeypress(/^[0-9.]$/, e);
+  });
 	
-	$("#precio_detal").on("keyup",function(){
-		validarkeyup(/^[0-9]{1,8}$/,$(this),
-		$("#sprecio_detal"),"El formato debe ser de 1 a 8");
-	});
-	$("#precio_mayor").on("keypress",function(e){
-		validarkeypress(/^[0-9-\b]*$/,e);
-	});
+	$("#precio_detal").on("keyup", function() {
+    validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/, $(this), 
+    $("#sprecio_detal"), "El formato debe ser de 1 a 8 y 2 decimales");
+  });
+  
+	$("#precio_mayor").on("keypress", function(e) {
+    validarkeypress(/^[0-9.]$/, e);
+  });
 	
-	$("#precio_mayor").on("keyup",function(){
-		validarkeyup(/^[0-9]{1,8}$/,$(this),
-		$("#sprecio_mayor"),"El formato debe ser de 1 a 8");
-	});
+  $("#precio_mayor").on("keyup", function() {
+    validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/, $(this), 
+    $("#sprecio_mayor"), "El formato debe ser de 1 a 8 y 2 decimales");
+  });
+
 	$("#stock_maximo").on("keypress",function(e){
 		validarkeypress(/^[0-9-\b]*$/,e);
 	});
@@ -347,17 +349,18 @@ $(document).on('click', '.ver-detalles', function () {
         return false;
     }
     
-    else if (validarkeyup(/^[0-9]{1,8}$/,
-        $("#precio_detal"), $("#sprecio_detal"), "El formato debe ser de 1 a 8") == 0) {
-        muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo precio detal");
-        return false;
-    }
-    
-    else if (validarkeyup(/^[0-9]{1,8}$/,
-        $("#precio_mayor"), $("#sprecio_mayor"), "El formato debe ser de 1 a 8") == 0) {
-        muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo precio mayor");
-        return false;
-    }
+    else if (validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/,
+    $("#precio_detal"), $("#sprecio_detal"), "El formato debe ser de 1 a 8 y 2 decimales") == 0) {
+    muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo precio detal");
+    return false;
+}
+
+else if (validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/,
+    $("#precio_mayor"), $("#sprecio_mayor"), "El formato debe ser de 1 a 8 y 2 decimales") == 0) {
+    muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo precio mayor");
+    return false;
+}
+
     
     else if (validarkeyup(/^[0-9]{1,8}$/,
         $("#stock_maximo"), $("#sstock_maximo"), "El formato debe ser de 1 a 8") == 0) {
