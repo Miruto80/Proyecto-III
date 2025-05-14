@@ -62,7 +62,8 @@
 
                 <!-- GRIP DE PRODUCTO -->
                 <div class="col-md-12">
-        <div class="product-grid row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 g-4">
+    <div class="product-grid row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 g-4">
+        <?php if (!empty($registro)): ?>
             <?php foreach ($registro as $producto): ?>
                 <div class="col">
                     <div class="product-item" data-categoria="<?php echo $producto['id_categoria']; ?>" data-bs-toggle="modal"
@@ -107,9 +108,12 @@
                     </div>
                 </div>
             <?php endforeach; ?>
-        </div>
+        <?php else: ?>
+            <div class="col-12 text-center">
+                <p class="fs-4 text-muted">No se encontraron productos para tu búsqueda.</p>
+            </div>
+        <?php endif; ?>
     </div>
-</div>
 
                 <!-- FIN GRIP DE PRODUCTO -->
                    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">

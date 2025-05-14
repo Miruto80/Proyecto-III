@@ -1,3 +1,8 @@
+window.onload = function() {
+    if (window.location.search.includes("busqueda=")) {
+        window.history.replaceState({}, document.title, "index.php?pagina=catalogo_producto");
+    }
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     const checkboxes = document.querySelectorAll('.filtro-checkbox');

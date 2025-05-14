@@ -47,7 +47,23 @@ class Catalogo extends Conexion {
       $consulta->execute();
       return $consulta->fetchAll(PDO::FETCH_ASSOC);
     }
+   
+    public function buscarProductos($termino) {
+        $sql = "
+            SELECT * 
+            FROM productos 
+            WHERE estatus = 1 
+              AND (nombre LIKE :busqueda OR marca LIKE :busqueda)
+        ";
+        $consulta = $this->conex->prepare($sql);
+        $busqueda = '%' . $termino . '%';
+        $consulta->bindParam(':busqueda', $busqueda, PDO::PARAM_STR);
+        $consulta->execute();
+        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
+
+
 
 
 
