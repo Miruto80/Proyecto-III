@@ -157,13 +157,25 @@ $(document).on('click', '.ver-detalles', function () {
   }
   
   function eliminarproducto(id_producto) {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+  Swal.fire({
+    title: '¿Eliminar producto?',
+    text: '¿Desea eliminar este producto?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
       const datos = new FormData();
       datos.append('id_producto', id_producto);
       datos.append('eliminar', 'eliminar');
-      enviaAjax(datos);
+      enviaAjax(datos); // Aquí sí usas tu flujo normal con muestraMensaje()
     }
-  }
+  });
+}
+
   
   function muestraMensaje(icono, tiempo, titulo, mensaje) {
     Swal.fire({
