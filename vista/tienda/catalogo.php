@@ -29,7 +29,7 @@
     <div class="slideshow slide-in arrow-absolute text-white position-relative">
       <div class="swiper-wrapper">
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b4.jpg" class="jarallax-img" alt="slideshow">
+          <img src="assets/img/b4.webp" class="jarallax-img" alt="slideshow">
           <div class="banner-content w-100 my-5">
             <div class="container">
               <div class="row justify-content-center text-center">
@@ -45,7 +45,7 @@
           </div>
         </div>
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b1.jpg" class="jarallax-img" alt="slideshow">
+          <img src="assets/img/b1.webp" class="jarallax-img" alt="slideshow">
           <div class="banner-content w-100 my-5">
             <div class="container">
               <div class="row justify-content-center text-center">
@@ -59,7 +59,7 @@
           </div>
         </div>
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b2.jpg" class="jarallax-img" alt="slideshow">
+          <img src="assets/img/b2.webp" class="jarallax-img" alt="slideshow">
           <div class="banner-content w-100 my-5">
             <div class="container">
               <div class="row justify-content-center text-center">
@@ -73,7 +73,7 @@
           </div>
         </div>
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b3.jpg" class="jarallax-img" alt="slideshow">
+          <img src="assets/img/b3.webp" class="jarallax-img" alt="slideshow">
           <div class="banner-content w-100 my-5">
             <div class="container">
               <div class="row justify-content-center text-center">
