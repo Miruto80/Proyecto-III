@@ -24,63 +24,76 @@
 
 
 <!--Banner IMG-->
-  <section>
-
+<section>
     <div class="slideshow slide-in arrow-absolute text-white position-relative">
       <div class="swiper-wrapper">
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b4.jpg" class="jarallax-img" alt="slideshow">
-          <div class="banner-content w-100 my-5">
+          <img src="assets/img/b4.webp" class="jarallax-img w-100" alt="slideshow" />
+          <div class="banner-content w-100 my-3">
             <div class="container">
               <div class="row justify-content-center text-center">
-                <div class="col-md-12 pt-2">
-                  <p class="fs-3 text-dark"><b>Haz que tu belleza deslumbre con nuestra selección de alta gama.</b></p>
-                  <h2 class="display-1 text-dark text-uppercase ls-0">
-                          <b>Venta al Mayor y Detal</b>
+                <div class="col-md-12 pt-1">
+                  <p class="fs-6 text-dark fw-bold">
+                    Haz que tu belleza deslumbre con nuestra selección de alta gama.
+                  </p>
+                  <h2 class="fs-3 text-dark text-uppercase ls-0 fw-bold">
+                    Venta al Mayor y Detal
                   </h2>
-                  <a href="#" class="btn btn-dark rounded-3 px-3 py-2 mt-3">Compra Ahora</a>
+                  <a href="#" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b1.jpg" class="jarallax-img" alt="slideshow">
-          <div class="banner-content w-100 my-5">
+          <img src="assets/img/b1.webp" class="jarallax-img w-100" alt="slideshow" />
+          <div class="banner-content w-100 my-3">
             <div class="container">
               <div class="row justify-content-center text-center">
-                <div class="col-md-12 pt-2">
-                  <p class="fs-3 text-dark"><b>Tu piel, tu arte. Embellece cada día con lo mejor del maquillaje.</b></p>
-                  <h2 class="display-1 text-dark text-uppercase ls-0">Venta al Mayor y Detal</h2>
-                  <a href="#" class="btn btn-dark rounded-3 px-3 py-2 mt-3">Compra Ahora</a>
+                <div class="col-md-12 pt-1">
+                  <p class="fs-6 text-dark fw-bold">
+                    Tu piel, tu arte. Embellece cada día con lo mejor del maquillaje.
+                  </p>
+                  <h2 class="fs-3 text-dark text-uppercase ls-0 fw-bold">
+                    Venta al Mayor y Detal
+                  </h2>
+                  <a href="#" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b2.jpg" class="jarallax-img" alt="slideshow">
-          <div class="banner-content w-100 my-5">
+          <img src="assets/img/b2.webp" class="jarallax-img w-100" alt="slideshow" />
+          <div class="banner-content w-100 my-3">
             <div class="container">
               <div class="row justify-content-center text-center">
-                <div class="col-md-12 pt-2">
-                  <p class="fs-3 text-dark"><b>Eleva tu belleza con maquillaje exclusivo. ¡Brilla con confianza!</b></p>
-                  <h2 class="display-1 text-dark text-uppercase ls-0">Venta al Mayor y Detal</h2>
-                  <a href="#" class="btn btn-dark rounded-3 px-3 py-2 mt-3">Compra Ahora</a>
+                <div class="col-md-12 pt-1">
+                  <p class="fs-6 text-dark fw-bold">
+                    Eleva tu belleza con maquillaje exclusivo. ¡Brilla con confianza!
+                  </p>
+                  <h2 class="fs-3 text-dark text-uppercase ls-0 fw-bold">
+                    Venta al Mayor y Detal
+                  </h2>
+                  <a href="#" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b3.jpg" class="jarallax-img" alt="slideshow">
-          <div class="banner-content w-100 my-5">
+          <img src="assets/img/b3.webp" class="jarallax-img w-100" alt="slideshow" />
+          <div class="banner-content w-100 my-3">
             <div class="container">
               <div class="row justify-content-center text-center">
-                <div class="col-md-12 pt-2">
-                  <p class="fs-3 text-dark"><b>Estilo, elegancia y calidad en cada aplicación. ¡Pruébalo!</b></p>
-                  <h2 class="display-1 text-dark text-uppercase ls-0">Venta al Mayor y Detal</h2>
-                  <a href="#" class="btn btn-dark rounded-3 px-3 py-2 mt-3">Compra Ahora</a>
+                <div class="col-md-12 pt-1">
+                  <p class="fs-6 text-dark fw-bold">
+                    Estilo, elegancia y calidad en cada aplicación. ¡Pruébalo!
+                  </p>
+                  <h2 class="fs-3 text-dark text-uppercase ls-0 fw-bold">
+                    Venta al Mayor y Detal
+                  </h2>
+                  <a href="#" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
@@ -93,9 +106,7 @@
         </div>
       </div>
     </div>
-
   </section>
-
 
 
    <section id="shop-categories" class="section-padding">
