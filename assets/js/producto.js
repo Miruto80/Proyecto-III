@@ -288,14 +288,7 @@ $(document).on('click', '.ver-detalles', function () {
 		validarkeyup(/^[0-9]{1,8}$/,$(this),
 		$("#scantidad_mayor"),"El formato debe ser de 1 a 8");
 	});
-	$("#cantidad_mayor").on("keypress",function(e){
-		validarkeypress(/^[0-9-\b]*$/,e);
-	});
 	
-	$("#cantidad_mayor").on("keyup",function(){
-		validarkeyup(/^[0-9]{1,8}$/,$(this),
-		$("#scantidad_mayor"),"El formato debe ser de 1 a 8");
-	});
 	$("#precio_detal").on("keypress",function(e){
 		validarkeypress(/^[0-9-\b]*$/,e);
 	});
