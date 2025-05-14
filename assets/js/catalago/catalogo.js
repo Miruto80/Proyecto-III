@@ -54,6 +54,16 @@ function openModal(element) {
     document.getElementById('form-imagen').value = imagen;
 }
 
+function muestraMensaje(icono, tiempo, titulo, mensaje) {
+    Swal.fire({
+        icon: icono,
+        timer: tiempo,
+        title: titulo,
+        html: mensaje,
+        showConfirmButton: false,
+    });
+  }
+
 document.addEventListener("DOMContentLoaded", () => {
     const formCarrito = document.getElementById("form-carrito");
     const btnAgregarCarrito = document.getElementById("btn-agregar-carrito");
@@ -71,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    muestraMensaje('success', 1000, '¡Agregado!', 'El producto se agregó al carrito.');
                     const ulCarrito = document.querySelector('.carrito-dropdown');
                     if (!ulCarrito) {
                         console.error("No se encontró el <ul> del carrito en el HTML.");
@@ -111,6 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             e.preventDefault();
                             eliminarProducto(id);
                         });
+
+                        muestraMensaje('success',1000,'¡Agregado!', 'El producto se agregó al carrito.');
+
                         setTimeout(() => location.reload(), 500);
                     } else {
                       
