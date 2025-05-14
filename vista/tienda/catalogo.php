@@ -38,7 +38,7 @@
                   <h2 class="fs-3 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
-                  <a href="#" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
+                  <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
