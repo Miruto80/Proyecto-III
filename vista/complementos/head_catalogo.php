@@ -16,4 +16,6 @@
   <link rel="stylesheet" type="text/css" href="assets/css/catalago/style.css">
 
 
-  <script src="assets/js/libreria/moment.js"></script>
+
+  <script src="assets/js/libreria/moment.js"></script>  
+  <script src="assets/js/libreria/sweetalert2.js"></script>
