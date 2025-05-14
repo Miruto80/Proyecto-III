@@ -162,6 +162,7 @@
                                      data-imagen="<?php echo $producto['imagen']; ?>"
 	                                   data-categoria="<?php echo $producto['id_categoria']; ?>"
                                      onclick="openModal(this)">
+
                                         <figure>
                                             <p title="<?php echo htmlspecialchars($producto['nombre']); ?>">
                                                 <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>" class="tab-image img-fluid rounded-3">
@@ -191,6 +192,10 @@
                         </div>
                         
                     </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="?pagina=catalogo_producto" class="btn btn-primary btn-lg px-5">Ver Todos los productos</a>
                 </div>
                 <!-- FIN GRIP DE PRODUCTO -->
                    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
