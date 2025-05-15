@@ -87,7 +87,7 @@ function actualizarCantidad(id, cantidad) {
     })
     .catch(error => {
         console.error("Error:", error);
-        alert("Error al procesar la solicitud.");
+      
     });
 }
 
