@@ -3,7 +3,7 @@ session_start();
 
 
 
-require_once('C:\xampp\htdocs\Proyecto-III\modelo\vercarrito.php');
+require_once('modelo\vercarrito.php');
 
 $nombre = isset($_SESSION["nombre"]) && !empty($_SESSION["nombre"]) ? $_SESSION["nombre"] : "Estimado Cliente";
 $apellido = isset($_SESSION["apellido"]) && !empty($_SESSION["apellido"]) ? $_SESSION["apellido"] : ""; 
