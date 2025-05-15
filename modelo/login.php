@@ -10,7 +10,9 @@ class Login extends Conexion {
     private $clave;
     private $nombres;
     private $apellidos;
-    private $id_rol; 
+    private $id_rol;
+    private $telefono;
+    private $correo; 
 
     function __construct(){ // Metodo para BD
         $this->conex = new Conexion();
@@ -51,6 +53,50 @@ class Login extends Conexion {
 }
 
 
+    public function registrar() {
+
+        $registro = "INSERT INTO personas(cedula, nombre, apellido, correo, telefono, clave, estatus, id_tipo)
+            VALUES(:cedula,:nombre, :apellido, :correo, :telefono,:clave, 1,2)";
+
+        $strExec = $this->conex->prepare($registro);
+        $strExec->bindParam(':cedula', $this->cedula);
+        $strExec->bindParam(':nombre', $this->nombre);
+        $strExec->bindParam(':apellido', $this->apellido);
+        $strExec->bindParam(':correo', $this->correo);
+        $strExec->bindParam(':telefono', $this->telefono);
+        $strExec->bindParam(':clave', $this->clave);
+
+        $resul = $strExec->execute();
+        if ($resul) {
+            $res['respuesta'] = 1;
+            $res['accion'] = 'incluir';
+        } else {
+            $res['respuesta'] = 0;
+            $res['accion'] = 'incluir';
+        }
+
+        return $res;
+    } //fin registrar
+
+
+     public function existeCedula() {
+        $consulta = "SELECT cedula FROM personas WHERE cedula = :cedula";
+        $strExec = $this->conex->prepare($consulta);
+        $strExec->bindParam(':cedula', $this->cedula);
+        $strExec->execute();
+        return $strExec->rowCount() > 0;
+    }
+
+
+     
+    public function existeCorreo() {
+        $consulta = "SELECT correo FROM personas WHERE correo = :correo";
+        $strExec = $this->conex->prepare($consulta);
+        $strExec->bindParam(':correo', $this->correo);
+        $strExec->execute();
+        return $strExec->rowCount() > 0;
+    }
+
    
     public function get_IdUsuario() {
         return $this->id_usuario;
@@ -74,6 +120,7 @@ class Login extends Conexion {
 
     public function set_Clave($clave) {
         $this->clave = $clave;
+         // $this->clave = password_hash($clave, PASSWORD_DEFAULT);  encriptar clave
     }
 
     public function get_Nombre() {
@@ -99,4 +146,19 @@ class Login extends Conexion {
     public function set_Id_rol($id_rol) {
         $this->id_rol = $id_rol;
     }
+
+    public function set_Telefono($telefono)
+    {
+        $this->telefono = $telefono;
+    }
+
+    public function get_Correo()
+    {
+        return $this->correo;
+    }
+    public function set_Correo($correo)
+    {
+        $this->correo = ucfirst(strtolower($correo));
+    }
+   
 }
