@@ -38,7 +38,7 @@
                   <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
-                  <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
+                  <a href="?pagina=catalogo_producto" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
@@ -56,7 +56,7 @@
                   <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
-                  <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
+                  <a href="?pagina=catalogo_producto" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
@@ -74,7 +74,7 @@
                   <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
-                  <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
+                  <a href="?pagina=catalogo_producto" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
@@ -92,7 +92,7 @@
                   <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
-                  <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
+                  <a href="?pagina=catalogo_producto" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
