@@ -38,18 +38,21 @@
         </div>
       </div>
       <div class="row justify-content-center align-items-center">
-        <div class="col-md-5">
+        <div class="col-md-12">
           <h2 class="fw-bold fs-1 mt-5">
-            Somos tienda física ubicada en la av 20 con calles 29 y 30 CC Barquisimeto plaza, Estado Lara, Venezuela. Ven y visítanos
+            Tienda física ubicada en la av 20 con calles 29 y 30 CC Barquisimeto plaza, Estado Lara, Venezuela. Ven y visítanos
           </h2>   
-            <div class="d-grid gap-2">
-              <a href="https://www.instagram.com/lovemakeupyk/" class="btn btn-dark btn-lg" target="_blank">Ir a Google Maps</a>
-            </div>
-        
         </div>
-        <div class="col-md-7">
-          <img src="assets/img/02.jpg" alt="image" class="img-fluid">
-        </div>
+   <div class="col-md-12 mt-3">
+  <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3928.392977210938!2d-69.3236822!3d10.0668507!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e8767c1ba2d21fb%3A0x6864564ca75c44e4!2sBarquisimeto%20Plaza!5e0!3m2!1ses!2sve!4v1747239622868!5m2!1ses!2sve"  
+    width="100%" 
+    height="450" 
+    style="border: 0;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
+   </div>
       </div>
     </div>
   </section>
@@ -118,8 +121,6 @@
       </div>
     </div>
   </section>
-
-
 <!-- php Publicidad Insta, Publicidad calidad, footer y JS--> 
 <?php include 'vista/complementos/footer_catalogo.php' ?>
   

@@ -14,13 +14,14 @@ $catalogo = new Catalogo();
 $categorias = $catalogo->obtenerCategorias();
 
 
-    if (isset($_GET['categoria'])) {
-        // Si se pasa una categoría, se filtra por esa categoría
-        $registro = $catalogo->obtenerPorCategoria($_GET['categoria']);
-    } else {
-        // Si no se pasa categoría, se obtienen los productos activos
-        $registro = $catalogo->obtenerProductosActivos();
-    }
+ if (isset($_GET['categoria'])) {
+    // Si no hay búsqueda, pero sí categoría
+    $registro = $catalogo->obtenerPorCategoria($_GET['categoria']);
+} else {
+    // Si no hay ni búsqueda ni categoría, muestra todo
+    $registro = $catalogo->obtenerProductosActivos();
+}
+
 
 
  if (isset($_POST['cerrar'])) {

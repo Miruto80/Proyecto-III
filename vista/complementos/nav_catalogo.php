@@ -18,16 +18,16 @@
    <div class="col-sm-12 col-md-4 col-lg-7 d-none d-md-block">
           <div class="search-bar row justify-content-between bg-light p-2 rounded-4">
             <div class="col-11">
-              <form id="search-form" class="text-center" action="index.html" method="post">
-                <input type="text" class="form-control border-0 bg-transparent"
-                  placeholder="Búsqueda de más de 1.000 productos">
-
-              </form>
-
+            <form id="search-form" class="text-center" action="index.php" method="get">
+  <input type="hidden" name="pagina" value="catalogo_producto">
+  <input type="text" name="busqueda" class="form-control border-0 bg-transparent"
+    placeholder="Búsqueda de más de 1.000 productos">
+</form>
             </div>
             <div class="col-1">
-              <i class="fa-solid fa-magnifying-glass" style="font-size: 25px;"></i>
+            <i class="fa-solid fa-magnifying-glass" style="font-size: 25px; cursor:pointer;" onclick="document.getElementById('search-form').submit();"></i>
             </div>
+
           </div>
          
              <div id="saludo" class="text-center mt-1"></div>
