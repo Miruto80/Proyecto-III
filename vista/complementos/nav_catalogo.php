@@ -5,7 +5,7 @@
 
         <div class="col-sm-6 col-md-5 col-lg-3 justify-content-center justify-content-lg-between text-center text-sm-start d-flex gap-3">
           <div class="d-flex align-items-center">
-            <a href="?pagina=catalago">
+            <a href="?pagina=catalogo">
               <img src="assets/img/logo2.png" alt="logo" class="img-fluid" height="50px" width="110px">
             </a>
             <button class="navbar navbar-toggler ms-3 d-block d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
