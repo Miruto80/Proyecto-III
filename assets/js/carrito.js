@@ -1,18 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll('.btn-mas, .btn-menos').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            const id = this.getAttribute('data-id');
-            const accion = this.classList.contains('btn-mas') ? 'incrementar' : 'decrementar';
-            actualizarCantidad(id, accion);
 
-        });
-    });
-
-
-    
-
-    // Botones de eliminar dentro del carrito
     document.querySelectorAll('.btn-eliminar').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
@@ -20,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
             eliminarProducto(id);
         });
     });
+   
 });
 
 function actualizarCantidad(id, accion) {
@@ -55,7 +43,7 @@ function actualizarCantidad(id, accion) {
 
 
 function eliminarProducto(id) {
-    fetch('controlador/carrito.php', {
+    fetch('/proyecto-III/controlador/carrito.php', {
         method: 'POST',
         body: new URLSearchParams({ accion: 'eliminar', id })
     })

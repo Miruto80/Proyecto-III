@@ -52,6 +52,8 @@ function openModal(element) {
     document.getElementById('form-precio-mayor').value = precioMayor;
     document.getElementById('form-cantidad-mayor').value = cantidadMayor;
     document.getElementById('form-imagen').value = imagen;
+    document.getElementById('form-stock-disponible').value = stockDisponible;
+    
 }
 
 function muestraMensaje(icono, tiempo, titulo, mensaje) {
@@ -73,6 +75,32 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
 
             const formData = new FormData(formCarrito);
+
+            const stockDisponible = parseInt(formData.get("stockDisponible"));
+            const idProducto = formData.get("id");
+            console.log(stockDisponible)
+            console.log(idProducto)
+
+            const itemExistente = document.querySelector(`li[data-id="${idProducto}"]`);
+            let cantidadActual = 0;
+            if (itemExistente) {
+             const textoCantidad = itemExistente.querySelector('.cantidad-texto')?.textContent;
+             const match = textoCantidad.match(/^(\d+)/);
+              if (match) {
+               cantidadActual = parseInt(match[1]);
+             }
+            }
+
+      if(stockDisponible === 0){
+                muestraMensaje('error', 1000, 'Sin stock', 'Este producto no está disponible actualmente.');
+        return;
+            }
+   if (cantidadActual >= stockDisponible) {
+             muestraMensaje('error', 1000, 'Stock limitado', 'Ya has agregado el máximo permitido.');
+                  return;
+            } 
+
+      
 
             fetch("controlador/carrito.php", {
                 method: "POST",
