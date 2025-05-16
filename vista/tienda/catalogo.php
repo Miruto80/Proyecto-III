@@ -318,6 +318,7 @@
 <!-- php Publicidad Insta, Publicidad calidad, footer y JS--> 
 
 <?php include 'vista/complementos/footer_catalogo.php' ?>
+
   
 </body>
 
