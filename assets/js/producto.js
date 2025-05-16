@@ -176,6 +176,28 @@ $(document).on('click', '.ver-detalles', function () {
   });
 }
 
+function cambiarEstatusProducto(id_producto, estatus_actual) {
+  Swal.fire({
+      title: estatus_actual == 2 ? '¿Reactivar producto?' : '¿Desactivar producto?',
+      text: estatus_actual == 2 ? '¿Quieres volver a activar este producto?' : '¿Quieres desactivar este producto?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: estatus_actual == 2 ? 'Sí, activar' : 'Sí, desactivar',
+      cancelButtonText: 'Cancelar'
+  }).then((result) => {
+      if (result.isConfirmed) {
+          const datos = new FormData();
+          datos.append('id_producto', id_producto);
+          datos.append('estatus_actual', estatus_actual);
+          datos.append('accion', 'cambiarEstatus');
+          enviaAjax(datos)
+        }
+      });
+    }
+
+
   
   function muestraMensaje(icono, tiempo, titulo, mensaje) {
     Swal.fire({
@@ -227,6 +249,13 @@ $(document).on('click', '.ver-detalles', function () {
           } else if (lee.accion == 'eliminar') {
             if (lee.respuesta == 1) {
               muestraMensaje("success", 1000, "Se ha eliminado con éxito", "Los datos se han borrado correctamente");
+              setTimeout(function () {
+                location.href = "?pagina=producto";
+              }, 1000);
+            }
+          } else if (lee.accion == 'cambiarEstatus') {
+            if (lee.respuesta == 1) {
+              muestraMensaje("success", 1000, "Se ha Cambiado el estatus con con éxito", "Los datos se han borrado correctamente");
               setTimeout(function () {
                 location.href = "?pagina=producto";
               }, 1000);
