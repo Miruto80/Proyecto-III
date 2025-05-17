@@ -4,6 +4,7 @@
   position: sticky;
   top: 0;
   width: 100%;
+  transition: top 0.6s ease-in-out ;
   background: white;
   z-index: 1000;
 }
