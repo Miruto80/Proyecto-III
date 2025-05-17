@@ -1,4 +1,15 @@
 <!--ENCABEZADO LOGO CARRITO Y LOGIN-->
+<style>
+  header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: white;
+  z-index: 1000;
+}
+
+</style>
+
   <header>
     <div class="container-lg">
       <div class="row py-4">
@@ -121,5 +132,27 @@
     </div>
 
   </header>
+
+  <script>
+   let ultimaPosicionScroll = 0;
+const header = document.querySelector("header");
+const nav = document.querySelector("nav"); 
+
+window.addEventListener("scroll", () => {
+  let posicionScroll = window.scrollY || document.documentElement.scrollTop;
+  
+  if (posicionScroll > ultimaPosicionScroll) {
+   
+    nav.style.display = "none";
+  } else {
+   
+    nav.style.display = "block";
+  }
+  
+  ultimaPosicionScroll = posicionScroll;
+});
+
+
+  </script>
 
 
