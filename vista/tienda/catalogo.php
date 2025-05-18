@@ -27,7 +27,7 @@
     <div class="slideshow slide-in arrow-absolute text-white position-relative">
       <div class="swiper-wrapper">
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b4.webp" class="jarallax-img w-100" alt="slideshow" />
+          <img src="assets/img/b01.webp" class="jarallax-img w-100" alt="slideshow" />
           <div class="banner-content w-100 my-3">
             <div class="container">
               <div class="row justify-content-center text-center">
@@ -38,14 +38,14 @@
                   <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
-                  <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
+                  <a href="?pagina=catalogo_producto" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b1.webp" class="jarallax-img w-100" alt="slideshow" />
+          <img src="assets/img/b02.webp" class="jarallax-img w-100" alt="slideshow" />
           <div class="banner-content w-100 my-3">
             <div class="container">
               <div class="row justify-content-center text-center">
@@ -56,14 +56,14 @@
                   <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
-                  <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
+                  <a href="?pagina=catalogo_producto" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b2.webp" class="jarallax-img w-100" alt="slideshow" />
+          <img src="assets/img/b03.webp" class="jarallax-img w-100" alt="slideshow" />
           <div class="banner-content w-100 my-3">
             <div class="container">
               <div class="row justify-content-center text-center">
@@ -74,14 +74,14 @@
                   <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
-                  <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
+                  <a href="?pagina=catalogo_producto" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="swiper-slide jarallax">
-          <img src="assets/img/b3.webp" class="jarallax-img w-100" alt="slideshow" />
+          <img src="assets/img/b04.webp" class="jarallax-img w-100" alt="slideshow" />
           <div class="banner-content w-100 my-3">
             <div class="container">
               <div class="row justify-content-center text-center">
@@ -92,7 +92,7 @@
                   <h2 class="fs-2 text-dark text-uppercase ls-0 fw-bold">
                     Venta al Mayor y Detal
                   </h2>
-                  <a href="?pagina=login" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
+                  <a href="?pagina=catalogo_producto" class="btn btn-dark rounded-3 px-3 py-1 mt-2">Compra Ahora</a>
                 </div>
               </div>
             </div>
@@ -318,6 +318,7 @@
 <!-- php Publicidad Insta, Publicidad calidad, footer y JS--> 
 
 <?php include 'vista/complementos/footer_catalogo.php' ?>
+
   
 </body>
 

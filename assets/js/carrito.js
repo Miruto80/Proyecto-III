@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function actualizarCantidad(id, accion) {
-    fetch('/proyecto-III/controlador/carrito.php', {
+    fetch('controlador/carrito.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `id=${encodeURIComponent(id)}&accion=${accion}`
@@ -43,7 +43,7 @@ function actualizarCantidad(id, accion) {
 
 
 function eliminarProducto(id) {
-    fetch('/proyecto-III/controlador/carrito.php', {
+    fetch('controlador/carrito.php', {
         method: 'POST',
         body: new URLSearchParams({ accion: 'eliminar', id })
     })

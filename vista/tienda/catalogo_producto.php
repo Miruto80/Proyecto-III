@@ -144,6 +144,7 @@
   <input type="hidden" name="precio_mayor" id="form-precio-mayor">
   <input type="hidden" name="cantidad_mayor" id="form-cantidad-mayor">
   <input type="hidden" name="imagen" id="form-imagen">
+  <input type="hidden" name="stockDisponible" id="form-stock-disponible">
   <hr>
   <button type="button" id="btn-agregar-carrito" class="btn btn-primary w-100 mt-2">
     <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
