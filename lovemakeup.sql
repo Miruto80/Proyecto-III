@@ -328,11 +328,10 @@ CREATE TABLE `lista_deseo` (
   `descripcion` varchar(150) DEFAULT NULL
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `lista_deseo` (`id_lista`, `id_producto`, `id_persona`, `nombre`, `descripcion`) VALUES
-(1, 1, 1, `polvo`, `sas`);
 
---indices de la tabla lista deseo
-
+--
+-- Indices de la tabla lista deseo
+--
 ALTER TABLE `lista_deseo`
   ADD PRIMARY KEY (`id_lista`),
   ADD KEY `id_producto` (`id_producto`),
@@ -456,11 +455,13 @@ ALTER TABLE `rol_usuario`
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
---AUTO INCREMENT de las tablas volcadas
-
+--
+-- AUTO INCREMENT de las tablas volcadas
+--
 ALTER TABLE `lista_deseo`
-  MODIFY `id_lista` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_lista` int(11) NOT NULL AUTO_INCREMENT;
 
+--
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
