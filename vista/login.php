@@ -24,14 +24,16 @@
       <h2>Inicio de Sesión</h2>
       <span class="sub-heading1">Ingrese su usuario y clave para acceder al sistema</span>
     
-      <form action="?pagina=login" method="POST" autocomplete="off">
+      <form action="?pagina=login" method="POST" autocomplete="off" class="form-login">
         <label for="name"><i class="fa-solid fa-user"></i> Cédula</label>
-        <input class="form-control1" type="text" name="usuario" id="usuario" placeholder="Cédula:" required>
+        <input class="form-control1" type="text" name="usuario" id="usuario" placeholder="Cédula:" >
+        <p id="textousuario"></p>
 
         <label for="password"><i class="fa-solid fa-lock"></i> Contraseña</label>
         <div class="password-input1">
-          <input type="password" name="clave" id="password" class="form-control1" placeholder="Contraseña:" required>
+          <input type="password" name="clave" id="password" class="form-control1" placeholder="Contraseña:" >
           <span id="show-password" class="fa fa-eye"></span>
+         <p id="textopassword"></p>
         </div>
 
         <button type="submit" name="ingresar" class="btn-primary1 mt1">Iniciar Sesión</button>
@@ -39,7 +41,7 @@
   
       <div class="button-group1">
         <a href="?pagina=forgot-password" class="btn-small1 btn-left1">Olvidó su contraseña</a>
-        <a href="#" class="btn-small1 btn-right1" data-bs-toggle="modal" data-bs-target="#registroCliente">Registrar</a>
+        <a id="openModal" class="btn-small1 btn-right1"><i class="fa-solid fa-user-plus"></i> Registrarse</a>
       </div>
     </div>
 
@@ -53,54 +55,61 @@
       <img src="assets/img/t2.svg" alt="" />
     </div>
 
-    <!-- Modal para registrar cliente
-    <div class="modal fade" id="registroCliente" tabindex="-1" aria-labelledby="registroClienteLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
+ 
+    <!-- |||||||||||| MODAL |||||||||||-->
+    <div id="myModal" class="modal">
         <div class="modal-content">
-          <div class="modal-header header-color">
-            <h1 class="modal-title fs-5" id="registroClienteLabel">Registrar Cliente</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-          </div>
-          <div class="modal-body">
-            <form id="formRegistrarCliente" method="POST" action="controlador/registrocliente.php" autocomplete="off">
-              <div class="row">
-                <div class="col-md-6">
-                  <label for="cedula">Cédula</label>
-                  <input type="text" class="form-control" name="cedula" required>
-                </div>
-                <div class="col-md-6">
-                  <label for="nombre">Nombre</label>
-                  <input type="text" class="form-control" name="nombre" required>
-                </div>
-                <div class="col-md-6">
-                  <label for="apellido">Apellido</label>
-                  <input type="text" class="form-control" name="apellido" required>
-                </div>
-                <div class="col-md-6">
-                  <label for="correo">Correo</label>
-                  <input type="email" class="form-control" name="correo" required>
-                </div>
-                <div class="col-md-6">
-                  <label for="telefono">Teléfono</label>
-                  <input type="text" class="form-control" name="telefono" required>
-                </div>
-                <div class="col-md-6">
-                  <label for="clave">Contraseña</label>
-                  <input type="password" class="form-control" name="clave" required>
-                </div>
-              </div>
-              <br>
-              <div class="text-center">
-                <button type="submit" class="btn btn-primary">Registrar</button>
-                <button type="reset" class="btn btn-secondary">Limpiar</button>
-              </div>
-            </form>
-          </div>
+            <div class="modal-header">
+               <h2 style="color:#fc6998;"> <i class="fa-solid fa-user-plus" ></i> Registro Para Nuevo Usuario </h2>
+                <span class="close" id="closeModal">X</span>
+            </div>
+           <form method="POST" action="?pagina=login" autocomplete="off" id="registrocliente" class="form-registro">
+            <div class="modal-body">
+
+                <label class="labelform"> <i class="fa-solid fa-id-card"></i> Cedula:</label>
+                <input type="text" class="inputform" id="cedula" name="cedula" placeholder="Cedula: 11222333 ">
+                <span id="textocedula" class="alert-text"></span>
+                
+               <div class="input-group">
+                    <div class="input-wrapper">
+                      <label class="labelform"> <i class="fa-solid fa-user"></i> Nombre:</label>
+                        <input type="text" class="inputform" id="nombre" name="nombre" placeholder="Nombre: juan">
+                        <span id="textonombre" class="alert-text"></span>
+                    </div>
+    
+                 <div class="input-wrapper">
+                    <label class="labelform"> <i class="fa-solid fa-user"></i> Apellido:</label>
+                     <input type="text" class="inputform" id="apellido" name="apellido" placeholder="Apellido: perez">
+                    <span id="textoapellido" class="alert-text"></span>
+                 </div>
+                 </div>
+
+                <label class="labelform"> <i class="fa-solid fa-mobile"></i> Telefono:</label>
+                <input type="text"class="inputform"  id="telefono" name="telefono" placeholder="Telefono: 04000000000 ">
+                 <span id="textotelefono" class="alert-text"></span>
+
+                <label class="labelform"> <i class="fa-solid fa-envelope"></i> Correo:</label>
+                <input type="text" class="inputform" id="correo" name="correo" placeholder="Correo: tucorreo@dominio.com">
+                 <span id="textocorreo" class="alert-text"></span>
+
+                <label class="labelform"> <i class="fa-solid fa-lock"></i> Constraseña:</label>
+                <input type="text" class="inputform" id="clave" name="clave" placeholder="Contraseña:">
+                 <span id="textoclave" class="alert-text"></span>
+
+            </div>
+            <div class="modal-footer">
+                <button class="save-btn" id="registrar"> <i class="fa-solid fa-user-plus"></i> Registrar</button>
+                 </form>
+               <button class="cancel-btn" id="closeModalFooter" type="button">Cancelar</button>
+            </div>
+      
         </div>
-      </div>
-    </div> -->
+    </div>
+
+
 
     <script src="assets/js/login.js"></script>
+
 
     <?php if(isset($_SESSION['message'])): ?>
       <script>

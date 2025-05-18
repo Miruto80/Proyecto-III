@@ -119,7 +119,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode($result);
             exit;
         }
+    }elseif ($accion === 'cambiarEstatus') {
+        if (!empty($_POST['id_producto']) && isset($_POST['estatus_actual'])) {
+            $id_producto = $_POST['id_producto'];
+            $estatus_actual = $_POST['estatus_actual']; // Recibido desde AJAX
+    
+            // Llamamos la función en el modelo PASANDO el estatus actual
+            $result = $objproducto->cambiarEstatusProducto($id_producto, $estatus_actual);
+            echo json_encode($result);
+            exit;
+        }
     }
+    
+    
+    
 }
 
 // Por defecto carga la vista (GET u otra petición)

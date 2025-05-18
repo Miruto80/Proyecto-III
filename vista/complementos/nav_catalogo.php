@@ -1,11 +1,23 @@
 <!--ENCABEZADO LOGO CARRITO Y LOGIN-->
+<style>
+  header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  transition: top 0.6s ease-in-out ;
+  background: white;
+  z-index: 1000;
+}
+
+</style>
+
   <header>
     <div class="container-lg">
       <div class="row py-4">
 
         <div class="col-sm-6 col-md-5 col-lg-3 justify-content-center justify-content-lg-between text-center text-sm-start d-flex gap-3">
           <div class="d-flex align-items-center">
-            <a href="?pagina=catalago">
+            <a href="?pagina=catalogo">
               <img src="assets/img/logo2.png" alt="logo" class="img-fluid" height="50px" width="110px">
             </a>
             <button class="navbar navbar-toggler ms-3 d-block d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
@@ -18,19 +30,19 @@
    <div class="col-sm-12 col-md-4 col-lg-7 d-none d-md-block">
           <div class="search-bar row justify-content-between bg-light p-2 rounded-4">
             <div class="col-11">
-              <form id="search-form" class="text-center" action="index.html" method="post">
-                <input type="text" class="form-control border-0 bg-transparent"
-                  placeholder="Búsqueda de más de 1.000 productos">
-
-              </form>
-
+            <form id="search-form" class="text-center" action="index.php" method="get">
+  <input type="hidden" name="pagina" value="catalogo_producto">
+  <input type="text" name="busqueda" class="form-control border-0 bg-transparent"
+    placeholder="Búsqueda de más de 1.000 productos">
+</form>
             </div>
             <div class="col-1">
-              <i class="fa-solid fa-magnifying-glass" style="font-size: 25px;"></i>
+            <i class="fa-solid fa-magnifying-glass" style="font-size: 25px; cursor:pointer;" onclick="document.getElementById('search-form').submit();"></i>
             </div>
+
           </div>
          
-             <div id="saludo" class="text-center mt-1"></div>
+             <div id="saludo" class="text-center mt-1 text-dark"></div>
 
         </div>
 
@@ -121,5 +133,27 @@
     </div>
 
   </header>
+
+  <script>
+   let ultimaPosicionScroll = 0;
+const header = document.querySelector("header");
+const nav = document.querySelector("nav"); 
+
+window.addEventListener("scroll", () => {
+  let posicionScroll = window.scrollY || document.documentElement.scrollTop;
+  
+  if (posicionScroll > ultimaPosicionScroll) {
+   
+    nav.style.display = "none";
+  } else {
+   
+    nav.style.display = "block";
+  }
+  
+  ultimaPosicionScroll = posicionScroll;
+});
+
+
+  </script>
 
 

@@ -71,7 +71,7 @@ public function consultar() {
         INNER JOIN 
             categoria ON productos.id_categoria = categoria.id_categoria
 		WHERE 
-            productos.estatus = 1
+            productos.estatus IN (1,2)
     ";
 
     $consulta = $this->conex->prepare($registro);
@@ -126,6 +126,21 @@ public function eliminar() {
     $resul = $strExec->execute();
     return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
 }
+
+public function cambiarEstatusProducto($id_producto, $estatus_actual) {
+    $nuevo_estatus = ($estatus_actual == 2) ? 1 : 2; // Alternar estado
+
+    $query = "UPDATE productos SET estatus = :nuevo_estatus WHERE id_producto = :id_producto";
+    $strExec = $this->conex->prepare($query);
+    $strExec->bindParam(':nuevo_estatus', $nuevo_estatus, PDO::PARAM_INT);
+    $strExec->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+    $resul = $strExec->execute();
+
+    return $resul ? ['respuesta' => 1, 'accion' => 'cambiarEstatus', 'nuevo_estatus' => $nuevo_estatus] : ['respuesta' => 0, 'accion' => 'cambiarEstatus'];
+}
+
+
+
 
 	
 

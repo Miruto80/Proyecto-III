@@ -28,10 +28,11 @@ if (isset($_POST['ingresar'])) {
                 
                 $_SESSION["cedula"] = $resultado->cedula;
                 $_SESSION["telefono"] = $resultado->telefono;
-                $_SESSION["correo"] = $resultado->correo;    
+                $_SESSION["correo"] = $resultado->correo;
+                $_SESSION["estatus"] = $resultado->estatus;      
 
                 // Registrar en la bitácora
-                 $accion = 'Inicio de sesión';
+                $accion = 'Inicio de sesión';
                 $descripcion = 'El usuario ha iniciado sesión exitosamente.';
                 $objlogin->registrarBitacora($resultado->id_persona, $accion, $descripcion);  
 
@@ -55,6 +56,7 @@ if (isset($_POST['ingresar'])) {
             $_SESSION['message'] = array('title' => 'Cedula y/o clave Invalida', 'text' => 'Por favor, verifica tus datos y vuelve a intentarlo', 'icon' => 'error');
             header('Location: ?pagina=login'); 
             exit;
+            
         } 
     } 
 } else if (isset($_POST['cerrar'])) {
@@ -68,6 +70,37 @@ if (isset($_POST['ingresar'])) {
     session_destroy(); // Se cierra la sesión
     header('Location: ?pagina=login');
     exit;
-} else {
+} else if (isset($_POST['registrar'])) {
+
+    $nombre = $_POST['nombre'];
+    $apellido = $_POST['apellido'];
+    $cedula = $_POST['cedula'];
+    $telefono = $_POST['telefono'];
+    $correo = $_POST['correo'];
+    $clave = $_POST['clave'];
+
+    $objlogin->set_Nombre($nombre);
+    $objlogin->set_Apellido($apellido);
+    $objlogin->set_Cedula($cedula);
+    $objlogin->set_Telefono($telefono);
+    $objlogin->set_Correo($correo);
+    $objlogin->set_Clave($clave);
+
+    //  Verificar si la cédula ya existe
+    if ($objlogin->existeCedula()) {
+        $res = array('respuesta' => 0, 'accion' => 'incluir', 'text' => 'La cédula ya está registrada.');
+        echo json_encode($res);
+    }
+    // Si la cédula no existe, verificar si el correo ya existe
+    else if ($objlogin->existeCorreo()) {
+        $res = array('respuesta' => 0, 'accion' => 'incluir', 'text' => 'El correo electrónico ya está registrado.');
+        echo json_encode($res);
+    }
+    // Si ni la cédula ni el correo existen, proceder con el registro
+    else {
+        $resultadoRegistro = $objlogin->registrar();
+        echo json_encode($resultadoRegistro);
+    }
+} else{
     require_once 'vista/login.php';
 }

@@ -6,6 +6,25 @@
   <title> Producto | LoveMakeup  </title>
 </head>
 
+<style>
+  .producto-desactivado {
+    background-color: #6c757d !important; /* Gris oscuro */
+    color: #ffffff !important; /* Texto en blanco */
+}
+
+.producto-desactivado td, 
+.producto-desactivado th {
+    color: #ffffff !important; /* Asegurar que el texto en las celdas también sea blanco */
+}
+
+.producto-desactivado button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+</style>
+
 <body class="g-sidenav-show bg-gray-100">
 
 <?php include 'complementos/sidebar.php' ?>
@@ -62,8 +81,11 @@
                 </tr>
               </thead>
               <tbody>
-                <?php foreach ($registro as $dato) { ?>
-                  <tr>
+              <?php foreach ($registro as $dato) { 
+        $claseFila = ($dato["estatus"] == 2) ? "producto-desactivado" : "";
+        $botonesDeshabilitados = ($dato["estatus"] == 2) ? "disabled" : "";
+    ?>
+                 <tr class="<?php echo ($dato['estatus'] == 2) ? 'producto-desactivado' : ''; ?>">
                     <td><?php echo htmlspecialchars($dato['nombre']) ?></td>
                     <td><?php echo htmlspecialchars($dato['descripcion']) ?></td>
                     <td><?php echo htmlspecialchars($dato['marca']) ?></td>
@@ -77,19 +99,26 @@
                     <td><?php echo htmlspecialchars($dato['nombre_categoria']) ?></td>
                     <td>
                       <form method="POST" action="">
-                        <button type="button" class="btn btn-primary btn-sm modificar"
-                          onclick="abrirModalModificar(this)"> 
-                          <i class="fas fa-pencil-alt" title="Editar"></i>
-                        </button>
+                      <button type="button" class="btn btn-primary btn-s modificar" 
+            onclick="abrirModalModificar(this)" <?php echo ($dato['estatus'] == 2) ? 'disabled' : ''; ?>> 
+            <i class="fas fa-pencil-alt" title="Editar"></i>
+        </button>
 
-                        <button type="button" class="btn btn-danger btn-sm eliminar"
-                          onclick="eliminarproducto(<?php echo $dato['id_producto']; ?>)">
-                          <i class="fas fa-trash-alt" title="Eliminar"></i>
-                        </button>
+                        <button type="button" class="btn btn-danger btn-s eliminar"
+            onclick="eliminarproducto(<?php echo $dato['id_producto']; ?>)" <?php echo ($dato['estatus'] == 2) ? 'disabled' : ''; ?>>
+            <i class="fas fa-trash-alt" title="Eliminar"></i>
+        </button>
 
-                        <button type="button" class="btn btn-sm btn-info ver-detalles" title="Click para ver detalles">
+                        <button type="button" class="btn btn-s btn-info ver-detalles" title="Click para ver detalles">
                           <i class="fa fa-eye"></i>
                         </button>
+                        <button type="button" class="btn btn-warning text-light btn-desactivar" 
+            onclick="cambiarEstatusProducto(<?php echo $dato['id_producto']; ?>, <?php echo $dato['estatus']; ?>)">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </button>
+</button>
+
+
                       </form>
                     </td>
                   </tr>

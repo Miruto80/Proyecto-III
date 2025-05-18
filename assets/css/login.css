@@ -84,7 +84,7 @@ body {
     background: rgb(236, 233, 233);
   } 
   
-  form {
+  .form-login {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -98,7 +98,7 @@ body {
   }
   .input-group1 {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     width: 100%;
   }
   label {
@@ -187,7 +187,7 @@ body {
 
 .btn-small1 {
     background: #0000; /* Color de fondo */
-    color: #007bff; 
+    color: #000000; 
     padding: 5px 10px; 
     border: none; 
     border-radius: 5px;
@@ -209,3 +209,183 @@ body {
 .btn-small1:hover {
     background: #e0e0e0; /* Color de fondo al pasar el mouse */
 }
+
+
+
+#textousuario {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 14px; 
+    color: red; 
+}
+
+#textopassword{
+    margin-top: 1px; 
+    margin-bottom: 0; 
+    font-size: 14px; 
+    color: red; 
+}
+
+
+/*||||||||||| MODAL - FORM  REGISTRO CLIENTE ||||||||||||||||*/
+.form-registro {
+    margin: 0; /* Elimina el margen externo */
+    padding: 0; /* Elimina el espacio interno */
+}
+
+
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+}
+
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    width: 80%;
+    max-width: 500px; /* Tamaño máximo en pantallas grandes */
+    opacity: 0; /* Inicialmente invisible */
+    transform: scale(0.9); /* Efecto de escala */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+
+.modal.show {
+    opacity: 1;
+}
+
+.modal.show .modal-content {
+    opacity: 1;
+    transform: scale(1);
+}
+
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+
+.close {
+    color: red;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 5px; /* Espaciado interno */
+}
+
+
+.labelform {
+     margin-bottom: 0px; /* Reduce espacio debajo del label */
+    font-size: 14px;
+    color: black;
+}
+
+.inputform {
+    padding: 10px; /* Mantenemos el espacio interno de 10px */
+    border: 1px solid rgb(160, 157, 157); /* Color de borde del estilo N°1 */
+    border-radius: 5px; /* Borde redondeado */
+    width: 95%; /* Adaptable como el estilo N°2 */
+    max-width: 500px; /* Limita el tamaño máximo para evitar que sea demasiado ancho */
+}
+
+
+.modal-footer {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-footer button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+.save-btn {
+    background-color: green;
+    color: white;
+    width: 30%;
+}
+
+.save-btn:hover {
+    background-color: #08a208;
+}
+
+
+.cancel-btn {
+    background-color: gray;
+    color: white;
+   width: 30%;
+}
+
+.cancel-btn:hover{
+    background-color: #8c8686;
+}
+
+
+@media screen and (max-width: 480px) {
+    .modal-content {
+        width: 90%; /* Más ancho en móviles */
+        max-width: 350px;
+    }
+
+    .modal-header {
+        flex-direction: column; /* Ajusta el encabezado en móviles */
+        align-items: center;
+        text-align: center;
+    }
+
+    .modal-footer {
+        flex-direction: column; /* Botones en vertical en móviles */
+        gap: 10px;
+    }
+}
+
+.alert-text{
+    margin-top: 0px; /* Reduce espacio arriba del span */
+    font-size: 12px; /* Ajusta tamaño si es necesario */
+    color: red; /* Mantener visible si es un mensaje de alerta */
+}
+
+.input-group {
+    display: flex;
+    gap: 15px; /* Espaciado entre los inputs */
+    width: 98%;
+}
+
+.input-wrapper {
+    flex: 1; /* Ajusta el ancho de cada input */
+}
+

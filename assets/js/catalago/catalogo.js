@@ -1,3 +1,8 @@
+window.onload = function() {
+    if (window.location.search.includes("busqueda=")) {
+        window.history.replaceState({}, document.title, "index.php?pagina=catalogo_producto");
+    }
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     const checkboxes = document.querySelectorAll('.filtro-checkbox');
@@ -52,7 +57,19 @@ function openModal(element) {
     document.getElementById('form-precio-mayor').value = precioMayor;
     document.getElementById('form-cantidad-mayor').value = cantidadMayor;
     document.getElementById('form-imagen').value = imagen;
+    document.getElementById('form-stock-disponible').value = stockDisponible;
+    
 }
+
+function muestraMensaje(icono, tiempo, titulo, mensaje) {
+    Swal.fire({
+        icon: icono,
+        timer: tiempo,
+        title: titulo,
+        html: mensaje,
+        showConfirmButton: false,
+    });
+  }
 
 document.addEventListener("DOMContentLoaded", () => {
     const formCarrito = document.getElementById("form-carrito");
@@ -64,6 +81,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const formData = new FormData(formCarrito);
 
+            const stockDisponible = parseInt(formData.get("stockDisponible"));
+            const idProducto = formData.get("id");
+            console.log(stockDisponible)
+            console.log(idProducto)
+
+            const itemExistente = document.querySelector(`li[data-id="${idProducto}"]`);
+            let cantidadActual = 0;
+            if (itemExistente) {
+             const textoCantidad = itemExistente.querySelector('.cantidad-texto')?.textContent;
+             const match = textoCantidad.match(/^(\d+)/);
+              if (match) {
+               cantidadActual = parseInt(match[1]);
+             }
+            }
+
+      if(stockDisponible === 0){
+                muestraMensaje('error', 1000, 'Sin stock', 'Este producto no está disponible actualmente.');
+        return;
+            }
+   if (cantidadActual >= stockDisponible) {
+             muestraMensaje('error', 1000, 'Stock limitado', 'Ya has agregado el máximo permitido.');
+                  return;
+            } 
+
+      
+
             fetch("controlador/carrito.php", {
                 method: "POST",
                 body: formData,
@@ -71,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    muestraMensaje('success', 1000, '¡Agregado!', 'El producto se agregó al carrito.');
                     const ulCarrito = document.querySelector('.carrito-dropdown');
                     if (!ulCarrito) {
                         console.error("No se encontró el <ul> del carrito en el HTML.");
@@ -111,6 +155,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             e.preventDefault();
                             eliminarProducto(id);
                         });
+
+                        muestraMensaje('success',1000,'¡Agregado!', 'El producto se agregó al carrito.');
+
                         setTimeout(() => location.reload(), 500);
                     } else {
                       

@@ -88,14 +88,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST['id'], $_POST['nombre'], $_POST['precio_detal'], $_POST['precio_mayor'], $_POST['cantidad_mayor'], $_POST['imagen'])) {
         $id = $_POST['id'];
 
+
         // Convertimos a float e int lo necesario
         $precio_detal = floatval($_POST['precio_detal']);
         $precio_mayor = floatval($_POST['precio_mayor']);
         $cantidad_mayor = intval($_POST['cantidad_mayor']);
+        $stockDisponible = isset($_POST['stockDisponible']) ? intval($_POST['stockDisponible']) : 0 ;
 
         if (isset($_SESSION['carrito'][$id])) {
-            $_SESSION['carrito'][$id]['cantidad'] += 1;
+            $nuevaCantidad = $_SESSION['carrito'][$id]['cantidad'] + 1;
+        
+            if ($nuevaCantidad > $stockDisponible) {
+                echo json_encode(['success' => false, 'mensaje' => 'No puedes agregar más del stock disponible.']);
+                exit;
+            }
+        
+            $_SESSION['carrito'][$id]['cantidad'] = $nuevaCantidad;
         } else {
+            if ($stockDisponible < 1) {
+                echo json_encode(['success' => false, 'mensaje' => 'Producto sin stock.']);
+                exit;
+            }
+        
             $_SESSION['carrito'][$id] = [
                 'id' => $id,
                 'nombre' => $_POST['nombre'],
@@ -103,7 +117,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 'precio_detal' => $precio_detal,
                 'precio_mayor' => $precio_mayor,
                 'cantidad_mayor' => $cantidad_mayor,
-                'cantidad' => 1
+                'cantidad' => 1,
+                'stockDisponible' => $stockDisponible
             ];
         }
 
