@@ -42,7 +42,7 @@
 
           </div>
          
-             <div id="saludo" class="text-center mt-1"></div>
+             <div id="saludo" class="text-center mt-1 text-dark"></div>
 
         </div>
 

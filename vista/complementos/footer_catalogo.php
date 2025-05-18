@@ -138,11 +138,11 @@
         var saludo = "";
 
         if (hora >= 6 && hora < 12) {
-            saludo = "Buenos días, " + nombreCompleto;
+            saludo = "Buenos días <i class='fa-solid fa-cloud-su'></i>, " + nombreCompleto;
         } else if (hora >= 12 && hora < 18) {
-            saludo = "Buenas tardes, " + nombreCompleto;
+            saludo = "Buenas tardes <i class='fa-solid fa-sun'></i>, " + nombreCompleto;
         } else {
-            saludo = "Buenas noches, " + nombreCompleto;
+            saludo = "Buenas noches <i class='fa-solid fa-moon'></i>, " + nombreCompleto;
         }
 
         document.getElementById("saludo").innerHTML = saludo;
