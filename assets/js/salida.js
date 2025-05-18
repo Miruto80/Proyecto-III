@@ -4,7 +4,18 @@ document.addEventListener('DOMContentLoaded', function() {
   const fechaHoy = new Date().toISOString().split('T')[0];
   document.querySelectorAll('input[type="date"]').forEach(input => {
     input.max = fechaHoy;
+    input.value = fechaHoy; // Establecer la fecha de hoy por defecto
   });
+
+  // Agregar campo de fecha oculto para la fecha actual en el formulario de registro
+  const formRegistro = document.getElementById('formRegistroPedido');
+  if (formRegistro && !formRegistro.querySelector('input[name="fecha_pedido"]')) {
+    const fechaPedidoInput = document.createElement('input');
+    fechaPedidoInput.type = 'hidden';
+    fechaPedidoInput.name = 'fecha_pedido';
+    fechaPedidoInput.value = fechaHoy;
+    formRegistro.appendChild(fechaPedidoInput);
+  }
 
   // Manejo de eventos para agregar productos
   const btnAgregarProducto = document.getElementById('agregarFilaProducto');
@@ -79,9 +90,9 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Configurar validación del formulario de registro
-  const formRegistro = document.getElementById('formRegistroPedido');
-  if (formRegistro) {
-    formRegistro.addEventListener('submit', function(e) {
+  const formRegistroPedido = document.getElementById('formRegistroPedido');
+  if (formRegistroPedido) {
+    formRegistroPedido.addEventListener('submit', function(e) {
       if (!validarFormularioPedido(this)) {
         e.preventDefault();
       }
@@ -200,78 +211,105 @@ function configurarEventosFilas() {
 function configurarEventosFila(fila) {
   const selectProducto = fila.querySelector('.select-producto');
   const inputCantidad = fila.querySelector('.cantidad');
+  const precioUnitarioInput = fila.querySelector('.precio-unitario');
   const btnRemover = fila.querySelector('.remover-producto');
   
-// Evento para selección de producto
-selectProducto.addEventListener('change', function() {
-  // Verificar que se haya seleccionado un producto
-  if (!this.value) {
-    return; // No hacer nada si no hay selección
-  }
-  
-  // Obtener precio y stock con valores por defecto seguros
-  const precioUnitario = this.options[this.selectedIndex].getAttribute('data-precio') || '0';
-  const stock = this.options[this.selectedIndex].getAttribute('data-stock') || '0';
-  
-  // Convertir a números explícitamente para asegurar comparaciones correctas
-  const precioNumerico = parseFloat(precioUnitario);
-  const stockNumerico = parseInt(stock, 10);
-  
-  // Actualizar precio unitario
-  fila.querySelector('.precio-unitario').value = precioNumerico.toFixed(2);
-  
-  // Limitar cantidad al stock disponible
-  inputCantidad.max = stockNumerico;
-  inputCantidad.value = stockNumerico > 0 ? 1 : 0; // Establecer a 1 si hay stock, 0 si no
-  
-  // Mostrar alerta según nivel de stock
-  if (stockNumerico > 0 && stockNumerico < 5) {
-    muestraMensaje("info", 3000, "Stock bajo", `¡Atención! Este producto tiene solo ${stockNumerico} unidades disponibles.`);
-  } else if (stockNumerico <= 0) {
-    muestraMensaje("warning", 3000, "Sin stock", "Este producto no tiene stock disponible.");
-    this.value = ''; // Limpiar selección
-    return;
-  }
-  
-  // Verificar si se seleccionó el mismo producto en otra fila
-  checkProductoDuplicado(this);
-  
-  // Actualizar subtotales
-  calcularSubtotal(fila);
-});
-
-// Función para verificar productos duplicados
-function checkProductoDuplicado(select) {
-  const productoId = select.value;
-  let conteo = 0;
-  
-  // Contar cuántas veces aparece este producto en todas las filas
-  document.querySelectorAll('.select-producto').forEach(sel => {
-    if (sel.value === productoId) {
-      conteo++;
+  // Evento para selección de producto
+  selectProducto.addEventListener('change', function() {
+    // Verificar que se haya seleccionado un producto
+    if (!this.value) {
+      // Limpiar valores si no hay selección
+      inputCantidad.value = '0';
+      precioUnitarioInput.value = '0.00';
+      calcularSubtotal(fila);
+      return;
     }
+    
+    // Obtener precio y stock con valores por defecto seguros
+    const precioUnitario = this.options[this.selectedIndex].getAttribute('data-precio') || '0';
+    const stock = this.options[this.selectedIndex].getAttribute('data-stock') || '0';
+    
+    // Convertir a números explícitamente para asegurar comparaciones correctas
+    const precioNumerico = parseFloat(precioUnitario);
+    const stockNumerico = parseInt(stock, 10);
+    
+    // Actualizar precio unitario automáticamente
+    precioUnitarioInput.value = precioNumerico.toFixed(2);
+    
+    // Establecer cantidad por defecto y límites
+    inputCantidad.max = stockNumerico;
+    
+    // Verificar si hay stock disponible
+    if (stockNumerico <= 0) {
+      muestraMensaje("error", 3000, "Sin stock", "Este producto no tiene stock disponible.");
+      // Limpiar selección
+      this.value = '';
+      inputCantidad.value = '0';
+      precioUnitarioInput.value = '0.00';
+      calcularSubtotal(fila);
+      return;
+    }
+    
+    // Establecer cantidad predeterminada a 1 si hay stock
+    inputCantidad.value = 1;
+    
+    // Mostrar alerta según nivel de stock
+    if (stockNumerico > 0 && stockNumerico < 5) {
+      muestraMensaje("warning", 3000, "Stock bajo", 
+        `¡Atención! Este producto tiene solo ${stockNumerico} unidades disponibles.`);
+    }
+    
+    // Verificar si se seleccionó el mismo producto en otra fila
+    checkProductoDuplicado(this);
+    
+    // Actualizar subtotales
+    calcularSubtotal(fila);
   });
-  
-  // Si aparece más de una vez, mostrar advertencia
-  if (conteo > 1) {
-    muestraMensaje("warning", 3000, "Producto duplicado", 
-      "Este producto ya está en el pedido. Considere aumentar la cantidad en lugar de agregar otra línea.");
+
+  // Función para verificar productos duplicados
+  function checkProductoDuplicado(select) {
+    const productoId = select.value;
+    let conteo = 0;
+    
+    // Contar cuántas veces aparece este producto en todas las filas
+    document.querySelectorAll('.select-producto').forEach(sel => {
+      if (sel.value === productoId) {
+        conteo++;
+      }
+    });
+    
+    // Si aparece más de una vez, mostrar advertencia
+    if (conteo > 1) {
+      muestraMensaje("warning", 3000, "Producto duplicado", 
+        "Este producto ya está en el pedido. Considere aumentar la cantidad en lugar de agregar otra línea.");
+    }
   }
-}
   
   // Evento para cambio de cantidad
   if (inputCantidad) {
     inputCantidad.addEventListener('input', function() {
+      // Validar que sea un número positivo
+      let cantidad = parseInt(this.value) || 0;
+      if (cantidad < 0) {
+        cantidad = 0;
+        this.value = cantidad;
+      }
+      
       // Si hay un producto seleccionado
       if (selectProducto && selectProducto.value) {
-        const stock = selectProducto.options[selectProducto.selectedIndex].getAttribute('data-stock');
-        const cantidad = parseInt(this.value) || 0;
+        const stock = parseInt(selectProducto.options[selectProducto.selectedIndex].getAttribute('data-stock')) || 0;
+        
+        // Validar que no sea cero
+        if (cantidad === 0) {
+          muestraMensaje("warning", 3000, "Cantidad inválida", "La cantidad debe ser mayor a cero");
+        }
         
         // Validar que no exceda el stock
-        if (cantidad > parseInt(stock)) {
-          muestraMensaje("warning", 3000, "Stock insuficiente", 
+        if (cantidad > stock) {
+          muestraMensaje("error", 3000, "Stock insuficiente", 
             `Solo hay ${stock} unidades disponibles de este producto`);
           this.value = stock;
+          cantidad = stock;
         }
       }
       

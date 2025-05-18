@@ -134,7 +134,7 @@
               <br>
               <div class="text-center">
                 <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
-                <button type="reset" class="btn btn-primary">Limpiar</button>
+                <button type="reset" class="btn btn-secondary">Limpiar</button>
               </div>
             </form>
           </div>
