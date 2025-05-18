@@ -307,6 +307,8 @@ CREATE TABLE `rol_usuario` (
   `estatus` int(2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+
 --
 -- Volcado de datos para la tabla `rol_usuario`
 --
@@ -317,6 +319,25 @@ INSERT INTO `rol_usuario` (`id_tipo`, `nombre`, `nivel`, `estatus`) VALUES
 --
 -- Índices para tablas volcadas
 --
+
+CREATE TABLE `lista_deseo` (
+  `id_lista` int(11) NOT NULL,
+  `id_producto` int(11) DEFAULT NULL,
+  `id_persona` int(11) DEFAULT NULL,
+  `nombre` varchar(150) DEFAULT NULL,
+  `descripcion` varchar(150) DEFAULT NULL
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `lista_deseo` (`id_lista`, `id_producto`, `id_persona`, `nombre`, `descripcion`) VALUES
+(1, 1, 1, `polvo`, `sas`);
+
+--indices de la tabla lista deseo
+
+ALTER TABLE `lista_deseo`
+  ADD PRIMARY KEY (`id_lista`),
+  ADD KEY `id_producto` (`id_producto`),
+  ADD KEY `id_persona` (`id_persona`);
+
 
 --
 -- Indices de la tabla `bitacora`
@@ -435,7 +456,11 @@ ALTER TABLE `rol_usuario`
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
---
+--AUTO INCREMENT de las tablas volcadas
+
+ALTER TABLE `lista_deseo`
+  MODIFY `id_lista` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
@@ -536,6 +561,12 @@ ALTER TABLE `rol_usuario`
 --
 
 --
+ALTER TABLE `lista_deseo`
+  ADD CONSTRAINT `lista_deseo_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`),
+  ADD CONSTRAINT `lista_deseo_ibfk_2` FOREIGN KEY (`id_persona`) REFERENCES `personas` (`id_persona`);
+
+
+
 -- Filtros para la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
