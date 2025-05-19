@@ -87,7 +87,7 @@
                   <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Ej: Entrega en 24 horas" required>
                 </div>
                 <div class="text-center mt-4">
-                  <button type="submit" class="btn btn-primary" id="registrar">Registrar</button>
+                  <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
                   <button type="reset" class="btn btn-secondary">Limpiar</button>
                 </div>
               </form>

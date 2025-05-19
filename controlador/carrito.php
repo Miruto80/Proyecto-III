@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+$sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
 // Función para calcular subtotal de un producto
 function calcularSubtotal($cantidad, $precio_unitario) {
     return number_format($cantidad * $precio_unitario, 2, '.', '');
@@ -84,6 +84,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 
+    if($sesion_activa){
+
     // Agregar nuevo producto al carrito
     if (isset($_POST['id'], $_POST['nombre'], $_POST['precio_detal'], $_POST['precio_mayor'], $_POST['cantidad_mayor'], $_POST['imagen'])) {
         $id = $_POST['id'];
@@ -142,14 +144,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             'total_general' => calcularTotalGeneral()
         ]);
         exit;
-    }
+    }};
 
-    // Si faltan datos
-    echo json_encode(['success' => false, 'mensaje' => 'Datos incompletos.']);
-    exit;
+   
 }
 
-echo json_encode(['success' => false, 'mensaje' => 'Método no permitido.']);
+echo json_encode(['success' => false, 'mensaje' => '']);
 
 
 
