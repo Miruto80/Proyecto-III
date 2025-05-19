@@ -112,7 +112,7 @@
   <div class="modal-dialog  modal-lg modal-dialog-centered">
     <div class="modal-content">
     <div class="modal-header header-color">
-        <h1 class="modal-title fs-5" id="1">Registrar Usuario</h1>
+        <h1 class="modal-title fs-5" id="1"> <i class="fa-solid fa-user-plus"></i> Registrar Usuario</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
