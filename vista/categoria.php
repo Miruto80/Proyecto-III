@@ -71,51 +71,60 @@
             </div>
           </div>
         </div>
-        <!-- Modal para registrar -->
-        <div class="modal fade" id="registro" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header header-color">
-                <h1 class="modal-title fs-5" id="1">Registrar Categoria</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <form id="formRegistrar" autocomplete="off">
-                  <label>NOMBRE</label>
-                  <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ejemplo: Polvo" required> <br>
-                  <div class="text-center">
-                    <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
-                    <button type="reset" class="btn btn-primary">Limpiar</button>
+              <!-- Modal Registro -->
+              <div class="modal fade" id="registro" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header header-color">
+                      <h5 class="modal-title">Registrar Categoría</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form id="formRegistrar" autocomplete="off">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" class="form-control" maxlength="30" placeholder="Ejemplo: Polvo">
+                        <span id="snombre" class="text-danger"></span><br>
+                        <div class="text-center">
+                          <button type="button" id="registrar" class="btn btn-primary">Registrar</button>
+                          <button type="reset" class="btn btn-secondary">Limpiar</button>
+                        </div>
+                      </form>
+                    </div>
                   </div>
-                </form>
+                </div>
               </div>
+
+              <!-- Modal Modificar -->
+              <div class="modal fade" id="modificar" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Modificar Categoría</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form id="formModificar" autocomplete="off">
+                        <input type="hidden" id="id_categoria_modificar" name="id_categoria">
+                        <label for="nombre_modificar">Nombre</label>
+                        <input type="text" id="nombre_modificar" name="nombre" class="form-control" maxlength="30">
+                        <span id="snombre_modificar" class="text-danger"></span><br>
+                        <div class="text-center">
+                          <button type="button" id="btnModificar" class="btn btn-primary">Modificar</button>
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
-        <!-- Modal para modificar -->
-        <div class="modal fade" id="modificar" tabindex="-1" aria-labelledby="modificarLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="modificarLabel">Modificar Categoria</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <form id="formModificar" autocomplete="off">
-                  <input type="hidden" name="id_categoria" id="id_categoria_modificar">
-                  <label>NOMBRE</label>
-                  <input type="text" class="form-control" name="nombre" id="nombre_modificar" required>
-                  <br>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="btnModificar">Modificar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-              </div>
-              </form>
-            </div>
-          </div>
-        </div>
-        <?php include 'complementos/footer.php'; ?>
-        <script src="assets/js/categoria.js"></script>
-      </body>
-    </html>
+      </div>
+    </div>
+    <?php include 'complementos/footer.php'; ?>
+    <script src="assets/js/categoria.js"></script>
+  </main>
+</body>
+</html>
