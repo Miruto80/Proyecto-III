@@ -8,6 +8,17 @@
 <title>Consejos de Belleza | LoveMakeup</title>
 </head>
 
+<style>
+img{
+  cursor: pointer;
+transition: transform 0.2s;
+}
+
+  img:hover{
+    transform: scale(1.1);
+  }
+</style>
+
 <body>
 
 <!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
