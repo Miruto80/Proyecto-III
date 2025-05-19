@@ -11,10 +11,27 @@ document.getElementById('registrar').addEventListener('click', function () {
     enviaAjax(formData);
 });
 
+$('#btnAbrirRegistrar').on('click', function () {
+  // Limpiar formulario
+  $('#formRegistrar')[0].reset();
+  $('#id_proveedor').val('');
+  $('#accion').val('registrar');
+  $('#modalTitle').text('Registrar Proveedor');
+  
+  // Limpiar validaciones y mensajes
+  $('#formRegistrar .is-invalid').removeClass('is-invalid');
+  $('#formRegistrar .is-valid').removeClass('is-valid');
+  $('#formRegistrar span.text-danger').text('');
+
+  $('#registro').modal('show'); // mostrar modal
+});
+
 // Manejar el botón de modificar
 document.getElementById('btnModificar').addEventListener('click', function () {
     // Validar campos requeridos
     if (!validarFormulario('formModificar')) {
+        // Mostrar mensaje general si la validación falla
+        muestraMensaje("error", 2000, "Error", "Por favor corrige los campos con errores antes de modificar.");
         return;
     }
 
@@ -29,7 +46,8 @@ function validarFormulario(formId) {
     const form = document.getElementById(formId);
     const campos = form.querySelectorAll('[required]');
     let valido = true;
-    
+
+    // Validar campos vacíos y mostrar error visual
     campos.forEach(campo => {
         if (!campo.value.trim()) {
             campo.classList.add('is-invalid');
@@ -38,11 +56,50 @@ function validarFormulario(formId) {
             campo.classList.remove('is-invalid');
         }
     });
-    
-    if (!valido) {
-        muestraMensaje("warning", 3000, "Campos incompletos", "Por favor, complete todos los campos obligatorios");
+
+    // Validaciones específicas por campo y mostrar mensaje en los spans correspondientes
+    if (formId === 'formRegistrar') {
+        if (validarkeyup(/^[0-9]{7,8}$/, $("#numero_documento"), $("#snumero_documento"), "Ingrese una cédula válida") === 0) {
+            valido = false;
+        }
+
+        if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $("#nombre"), $("#snombre"), "Solo letras entre 3 y 30 caracteres") === 0) {
+            valido = false;
+        }
+
+        if (validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, $("#correo"), $("#scorreo"), "El formato debe incluir @ y un dominio con punto") === 0) {
+            valido = false;
+        }
+
+        if (validarkeyup(/^(04|02)[0-9]{9}$/, $("#telefono"), $("#stelefono"), "Debe comenzar en 04 o 02 y tener el formato 04xx-XXXXXXX") === 0) {
+            valido = false;
+        }
+
+        if (validarkeyup(/^.{3,70}$/, $("#direccion"), $("#sdireccion"), "La dirección debe tener entre 3 y 100 caracteres") === 0) {
+            valido = false;
+        }
+    } else if (formId === 'formModificar') {
+        if (validarkeyup(/^[0-9]{7,8}$/, $("#numero_documento_modificar"), $("#snumero_documento_modificar"), "Ingrese una cédula válida") === 0) {
+            valido = false;
+        }
+
+        if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $("#nombre_modificar"), $("#snombre_modificar"), "Solo letras entre 3 y 30 caracteres") === 0) {
+            valido = false;
+        }
+
+        if (validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, $("#correo_modificar"), $("#scorreo_modificar"), "El formato debe incluir @ y un dominio con punto") === 0) {
+            valido = false;
+        }
+
+        if (validarkeyup(/^(04|02)[0-9]{9}$/, $("#telefono_modificar"), $("#stelefono_modificar"), "Debe comenzar en 04 o 02 y tener el formato 04xx-XXXXXXX") === 0) {
+            valido = false;
+        }
+
+        if (validarkeyup(/^.{3,70}$/, $("#direccion_modificar"), $("#sdireccion_modificar"), "La dirección debe tener entre 3 y 100 caracteres") === 0) {
+            valido = false;
+        }
     }
-    
+
     return valido;
 }
 
@@ -58,17 +115,14 @@ function abrirModalModificar(id_proveedor) {
         body: datos,
     })
     .then(response => {
-        // Verificar si la respuesta es JSON válido
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
             return response.json();
         } else {
-            // Si no es JSON, mostramos un error y rechazamos la promesa
             throw new Error('La respuesta no es un JSON válido.');
         }
     })
     .then(data => {
-        // Llenar el formulario con los datos obtenidos
         document.getElementById('id_proveedor_modificar').value = data.id_proveedor;
         document.getElementById('tipo_documento_modificar').value = data.tipo_documento || '';
         document.getElementById('numero_documento_modificar').value = data.numero_documento || '';
@@ -77,7 +131,10 @@ function abrirModalModificar(id_proveedor) {
         document.getElementById('telefono_modificar').value = data.telefono || '';
         document.getElementById('direccion_modificar').value = data.direccion || '';
         
-        // Mostrar el modal
+        $('#formModificar .is-invalid').removeClass('is-invalid');
+        $('#formModificar .is-valid').removeClass('is-valid');
+        $('#formModificar span.text-danger').text('');
+        
         $('#modificar').modal('show');
     })
     .catch(error => {
@@ -124,12 +181,10 @@ function enviaAjax(datos) {
         body: datos,
     })
     .then(response => {
-        // Verificar primero si la respuesta es JSON válido
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
             return response.json();
         } else {
-            // Si no es JSON, convertimos la respuesta a texto para ver qué está devolviendo
             return response.text().then(text => {
                 throw new Error('La respuesta no es JSON válido. Respuesta recibida: ' + 
                     (text.length > 100 ? text.substring(0, 100) + '...' : text));
@@ -140,6 +195,12 @@ function enviaAjax(datos) {
         if (data.accion === 'incluir') {
             if (data.respuesta === 1) {
                 document.getElementById('formRegistrar').reset();
+
+                // Limpiar validaciones y mensajes después de reset
+                $('#formRegistrar .is-invalid').removeClass('is-invalid');
+                $('#formRegistrar .is-valid').removeClass('is-valid');
+                $('#formRegistrar span.text-danger').text('');
+
                 muestraMensaje("success", 1500, "Se ha registrado con éxito", "El proveedor se ha registrado exitosamente");
                 setTimeout(() => location.reload(), 1500);
             } else {
@@ -160,11 +221,112 @@ function enviaAjax(datos) {
                 muestraMensaje("error", 2000, "ERROR", "ERROR al eliminar el proveedor");
             }
         }
+        
     })
     .catch(error => {
-        // Mostrar mensaje de error más informativo
         console.error("Error en la solicitud AJAX:", error);
         muestraMensaje("error", 5000, "Error de comunicación", 
             "ERROR en la comunicación con el servidor: " + error.message);
     });
 }
+
+// Eventos keypress y keyup para validar ingreso correcto de caracteres y mostrar mensajes debajo, para registro
+$("#numero_documento").on("keypress", function(e) {
+    validarkeypress(/^[0-9-\b]*$/, e);
+});
+$("#numero_documento").on("keyup", function() {
+    validarkeyup(/^[0-9]{7,8}$/, $(this), $("#snumero_documento"), "Ingrese su cedula");
+});
+
+$("#nombre").on("keypress", function(e) {
+    validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
+});
+$("#nombre").on("keyup", function() {
+    validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $(this), $("#snombre"), "Solo letras entre 3 y 30 caracteres");
+});
+
+$("#correo").on("keypress", function(e) {
+    validarkeypress(/^[a-zA-Z0-9._%+-@\b]*$/, e);
+});
+$("#correo").on("keyup", function() {
+    validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, $(this), $("#scorreo"), "El formato debe incluir @ y un dominio con punto (ej: proveedor@dominio.com)");
+});
+
+$("#telefono").on("keypress", function(e) {
+    validarkeypress(/^[0-9\b-]*$/, e);
+});
+$("#telefono").on("keyup", function() {
+    validarkeyup(/^(04|02)[0-9]{9}$/, $(this), $("#stelefono"), "Debe comenzar en 04 o 02 y tener el formato 04xx-XXXXXXX");
+});
+
+$("#direccion").on("keypress", function(e) {
+    validarkeypress(/^[a-zA-Z0-9\s\#\-\.,]*$/, e);
+});
+$("#direccion").on("keyup", function() {
+    validarkeyup(/^.{3,70}$/, $(this), $("#sdireccion"), "La dirección debe tener entre 3 y 70 caracteres");
+});
+
+// Eventos keypress y keyup para modificar (mismos patrones que registro)
+$("#numero_documento_modificar").on("keypress", function(e) {
+    validarkeypress(/^[0-9-\b]*$/, e);
+});
+$("#numero_documento_modificar").on("keyup", function() {
+    validarkeyup(/^[0-9]{7,8}$/, $(this), $("#snumero_documento_modificar"), "Ingrese una cédula válida");
+});
+
+$("#nombre_modificar").on("keypress", function(e) {
+    validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
+});
+$("#nombre_modificar").on("keyup", function() {
+    validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $(this), $("#snombre_modificar"), "Solo letras entre 3 y 30 caracteres");
+});
+
+$("#correo_modificar").on("keypress", function(e) {
+    validarkeypress(/^[a-zA-Z0-9._%+-@\b]*$/, e);
+});
+$("#correo_modificar").on("keyup", function() {
+    validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, $(this), $("#scorreo_modificar"), "El formato debe incluir @ y un dominio con punto (ej: proveedor@dominio.com)");
+});
+
+$("#telefono_modificar").on("keypress", function(e) {
+    validarkeypress(/^[0-9\b-]*$/, e);
+});
+$("#telefono_modificar").on("keyup", function() {
+    validarkeyup(/^(04|02)[0-9]{9}$/, $(this), $("#stelefono_modificar"), "Debe comenzar en 04 o 02 y tener el formato 04xx-XXXXXXX");
+});
+
+$("#direccion_modificar").on("keypress", function(e) {
+    validarkeypress(/^[a-zA-Z0-9\s\#\-\.,]*$/, e);
+});
+$("#direccion_modificar").on("keyup", function() {
+    validarkeyup(/^.{3,70}$/, $(this), $("#sdireccion_modificar"), "La dirección debe tener entre 3 y 70 caracteres");
+});
+
+// Función para validar por keypress - permite solo caracteres que pasen la regex
+function validarkeypress(er, e) {
+    let key = e.keyCode || e.which;
+    let tecla = String.fromCharCode(key);
+    if (!er.test(tecla)) {
+        e.preventDefault();
+    }
+}
+
+// Función para validar por keyup - muestra mensaje y retorna 1 si válido, 0 si no
+function validarkeyup(er, etiqueta, etiquetamensaje, mensaje) {
+    let valor = etiqueta.val();
+    if (valor.trim() === '') {
+        etiqueta.removeClass('is-valid').addClass('is-invalid');
+        etiquetamensaje.text("Este campo es obligatorio");
+        return 0;
+    }
+    if (er.test(valor)) {
+        etiquetamensaje.text('');
+        etiqueta.removeClass('is-invalid').addClass('is-valid');
+        return 1;
+    } else {
+        etiquetamensaje.text(mensaje);
+        etiqueta.removeClass('is-valid').addClass('is-invalid');
+        return 0;
+    }
+}
+
