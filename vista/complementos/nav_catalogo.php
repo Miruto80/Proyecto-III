@@ -175,16 +175,18 @@ const nav = document.querySelector("nav");
 window.addEventListener("scroll", () => {
   let posicionScroll = window.scrollY || document.documentElement.scrollTop;
 
-  if (posicionScroll > ultimaPosicionScroll) {
-    nav.classList.add("nav-hidden");  
-    setTimeout(() => {
-      nav.classList.add("nav-hidden-display");
-    }, 300);
-  } else if (posicionScroll === 0) {
-    nav.classList.remove("nav-hidden-display"); 
-    setTimeout(() => {
-      nav.classList.remove("nav-hidden");
-    }, 10);
+  if (window.innerWidth > 768) {
+    if (posicionScroll > ultimaPosicionScroll) {
+      nav.classList.add("nav-hidden");  
+      setTimeout(() => {
+        nav.classList.add("nav-hidden-display");
+      }, 300);
+    } else if (posicionScroll === 0) {
+      nav.classList.remove("nav-hidden-display"); 
+      setTimeout(() => {
+        nav.classList.remove("nav-hidden");
+      }, 10);
+    }
   }
 
   ultimaPosicionScroll = posicionScroll;
