@@ -124,18 +124,21 @@
         <div class="row">  <!-- F1 -->
           <div class="col">
             <label>NOMBRE</label>
-              <input type="text" class="form-control "name="nombre"  id="">
+              <input type="text" class="form-control "name="nombre"  id="nombre">
+               <span id="textonombre" class="alert-text"></span>
           </div>
           <div class="col">
              <label>APELLIDO</label>
-              <input type="text" class="form-control "name="apellido"  id="">
+              <input type="text" class="form-control "name="apellido"  id="apellido">
+               <span id="textoapellido" class="alert-text"></span>
           </div>
         </div>
 
           <div class="row">  <!-- F2 -->
           <div class="col">
              <label>N° DE CEDULA</label>
-              <input type="text" class="form-control "name="cedula"  id="">
+              <input type="text" class="form-control "name="cedula"  id="cedula">
+               <span id="textocedula" class="alert-text"></span>
           </div>
           <div class="col">
              <label>ROL</label>
@@ -151,18 +154,21 @@
           <div class="row">  <!-- F3 -->
           <div class="col">
               <label>TELEFONO</label>
-              <input type="text" class="form-control "name="telefono"  id="">
+              <input type="text" class="form-control "name="telefono"  id="telefono">
+               <span id="textotelefono" class="alert-text"></span>
           </div>
           <div class="col">
               <label>CORREO</label>
-              <input type="text" class="form-control "name="correo"  id="">
+              <input type="text" class="form-control "name="correo"  id="correo">
+               <span id="textocorreo" class="alert-text"></span>
           </div>
         </div>
 
           <div class="row">  <!-- F4 -->
           <div class="col">
              <label>CONSTRASEÑA</label>
-              <input type="text" class="form-control "name="clave"  id="">
+              <input type="text" class="form-control "name="clave"  id="clave">
+                 <span id="textoclave" class="alert-text"></span>
           </div>
         
         </div>
