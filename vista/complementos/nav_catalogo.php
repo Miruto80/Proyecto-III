@@ -9,12 +9,32 @@
   z-index: 1000;
 }
 
+.slideb{
+text-align: end;
+font-weight: bold;
+color: #212529ff;
+}
+
 </style>
+
+<script>
+              //obtener tasa del localstorage
+             document.addEventListener("DOMContentLoaded", function () {
+              setInterval(function () {
+                let valor = localStorage.getItem("tasadeldia");
+                 if (valor) {
+                document.getElementById("bcv").textContent = "Tasa del Dia: " + valor +"Bs";
+               }
+              }, 1);
+    
+              });
+
+</script>
 
   <header>
     <div class="container-lg">
       <div class="row py-4">
-
+      <p id="bcv" class=" slideb m-0 p-0"></p>   
         <div class="col-sm-6 col-md-5 col-lg-3 justify-content-center justify-content-lg-between text-center text-sm-start d-flex gap-3">
           <div class="d-flex align-items-center">
             <a href="?pagina=catalogo">
@@ -155,5 +175,6 @@ window.addEventListener("scroll", () => {
 
 
   </script>
+  <script src="assets/js/tasa.js"></script>
 
 
