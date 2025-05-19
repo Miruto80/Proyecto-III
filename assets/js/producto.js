@@ -443,16 +443,17 @@ function validarenvio() {
       
   }
   //Función para validar por keyup
-  function validarkeyup(er,etiqueta,etiquetamensaje,
-  mensaje){
-    a = er.test(etiqueta.val());
-    if(a){
-      etiquetamensaje.text("");
-      return 1;
+  function validarkeyup(er, $input, $mensaje, mensaje) {
+    const valor = $input.val().trim();
+    if (er.test(valor)) {
+        $input.removeClass('is-invalid').addClass('is-valid');
+        $mensaje.text('');
+        return 1;
     }
-    else{
-      etiquetamensaje.text(mensaje);
-      return 0;
+    else {
+        $input.removeClass('is-valid').addClass('is-invalid');
+        $mensaje.text(mensaje);
+        return 0;
     }
-  }
+}
   
