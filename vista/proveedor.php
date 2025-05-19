@@ -31,10 +31,11 @@
                 <h4 class="mb-0">
                   <i class="fa-solid fa-truck-moving mr-2" style="color: #f6c5b4;"></i> Proveedores
                 </h4>
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
-                  <span class="icon text-white"><i class="fas fa-file-medical"></i></span>
-                  <span class="text-white">Registrar</span>
-                </button>
+              <button id="btnAbrirRegistrar" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
+                <span class="icon text-white"><i class="fas fa-file-medical"></i></span>
+                <span class="text-white">Registrar</span>
+              </button>
+
               </div>
 
               <div class="table-responsive">
@@ -92,7 +93,7 @@
             <form id="formRegistrar" autocomplete="off">
               <div class="row">
                 <div class="col-md-6">
-                  <label>TIPO DOCUMENTO</label>
+                  <label>TIPO DE DOCUMENTO</label>
                   <select class="form-control" name="tipo_documento" id="tipo_documento" required>
                     <option value="">Seleccione...</option>
                     <option value="V">V</option>
@@ -102,39 +103,44 @@
                   </select>
                 </div>
                 <div class="col-md-6">
-                  <label>NÚMERO DOCUMENTO</label>
-                  <input type="text" class="form-control" name="numero_documento" id="numero_documento" placeholder="Ejemplo: 12345678" required>
+                  <label>NÚMERO DE DOCUMENTO</label>
+                  <input type="text" class="form-control" name="numero_documento" id="numero_documento" placeholder="Ejemplo: 12345678" maxlength="8" required>
+                  <span id="snumero_documento" class="text-danger"></span>              
                 </div>
               </div>
               <br>
               <div class="row">
                 <div class="col-md-12">
                   <label>NOMBRE</label>
-                  <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ejemplo: Proveedor XYZ" required>
+                  <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ejemplo: Proveedor XYZ" maxlength="30" required>
+                  <span id="snombre" class="text-danger"></span>
                 </div>
               </div>
               <br>
               <div class="row">
                 <div class="col-md-6">
                   <label>CORREO</label>
-                  <input type="email" class="form-control" name="correo" id="correo" placeholder="Ejemplo: proveedor@ejemplo.com">
-                </div>
+                  <input type="email" class="form-control" name="correo" id="correo" placeholder="Ejemplo: proveedor@ejemplo.com" maxlength="60" required>
+                  <span id="scorreo" class="text-danger"></span>
+                 </div>
                 <div class="col-md-6">
                   <label>TELÉFONO</label>
-                  <input type="text" class="form-control" name="telefono" id="telefono" placeholder="Ejemplo: 04121234567">
+                  <input type="text" class="form-control" name="telefono" id="telefono" placeholder="Ejemplo: 04121234567" maxlength="11" required>
+                  <span id="stelefono" class="text-danger"></span>
                 </div>
               </div>
               <br>
               <div class="row">
                 <div class="col-md-12">
                   <label>DIRECCIÓN</label>
-                  <textarea class="form-control" name="direccion" id="direccion" rows="3" placeholder="Ejemplo: Av. Principal, Local #123"></textarea>
-                </div>
+                  <textarea class="form-control" name="direccion" id="direccion" rows="3" placeholder="Ejemplo: Av. Principal, Local #123" maxlength="70" required></textarea>
+                <span id="sdireccion" class="text-danger"></span>
+               </div>
               </div>
               <br>
               <div class="text-center">
                 <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
-                <button type="reset" class="btn btn-secondary">Limpiar</button>
+                <button type="reset" class="btn btn-primary">Limpiar</button>
               </div>
             </form>
           </div>
@@ -155,7 +161,7 @@
               <input type="hidden" name="id_proveedor" id="id_proveedor_modificar">
               <div class="row">
                 <div class="col-md-6">
-                  <label>TIPO DOCUMENTO</label>
+                  <label>TIPO DE DOCUMENTO</label>
                   <select class="form-control" name="tipo_documento" id="tipo_documento_modificar" required>
                     <option value="">Seleccione...</option>
                     <option value="V">V</option>
@@ -165,33 +171,38 @@
                   </select>
                 </div>
                 <div class="col-md-6">
-                  <label>NÚMERO DOCUMENTO</label>
-                  <input type="text" class="form-control" name="numero_documento" id="numero_documento_modificar" required>
+                  <label>NÚMERO DE DOCUMENTO</label>
+                  <input type="text" class="form-control" name="numero_documento" id="numero_documento_modificar" placeholder="Ejemplo: 12345678" maxlength="8" required>
+                  <span id="snumero_documento_modificar" class="text-danger"></span>
                 </div>
               </div>
               <br>
               <div class="row">
                 <div class="col-md-12">
                   <label>NOMBRE</label>
-                  <input type="text" class="form-control" name="nombre" id="nombre_modificar" required>
+                  <input type="text" class="form-control" name="nombre" id="nombre_modificar" placeholder="Ejemplo: Proveedor XYZ" maxlength="30" required>
+                  <span id="snombre_modificar" class="text-danger"></span>
                 </div>
               </div>
               <br>
               <div class="row">
                 <div class="col-md-6">
                   <label>CORREO</label>
-                  <input type="email" class="form-control" name="correo" id="correo_modificar">
-                </div>
+                  <input type="email" class="form-control" name="correo" id="correo_modificar" placeholder="Ejemplo: proveedor@ejemplo.com" maxlength="60" required>
+                  <span id="scorreo_modificar" class="text-danger"></span>
+                 </div>
                 <div class="col-md-6">
                   <label>TELÉFONO</label>
-                  <input type="text" class="form-control" name="telefono" id="telefono_modificar">
+                  <input type="text" class="form-control" name="telefono" id="telefono_modificar" placeholder="Ejemplo: 04121234567" maxlength="11" required>
+                  <span id="stelefono_modificar" class="text-danger"></span>
                 </div>
               </div>
               <br>
               <div class="row">
                 <div class="col-md-12">
                   <label>DIRECCIÓN</label>
-                  <textarea class="form-control" name="direccion" id="direccion_modificar" rows="3"></textarea>
+                  <textarea class="form-control" name="direccion" id="direccion_modificar" rows="3" placeholder="Ejemplo: Av. Principal, Local #123" maxlength="70" required></textarea>
+                  <span id="sdireccion_modificar" class="text-danger"></span>
                 </div>
               </div>
               <br>
