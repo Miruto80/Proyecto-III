@@ -14,6 +14,20 @@ text-align: end;
 font-weight: bold;
 color: #212529ff;
 }
+nav {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.nav-hidden {
+  opacity: 0;
+  transform: translateY(-15px);
+}
+
+.nav-hidden-display {
+  display: none;
+}
+
+
 
 </style>
 
@@ -155,23 +169,28 @@ color: #212529ff;
   </header>
 
   <script>
-   let ultimaPosicionScroll = 0;
-const header = document.querySelector("header");
-const nav = document.querySelector("nav"); 
+ let ultimaPosicionScroll = 0;
+const nav = document.querySelector("nav");
 
 window.addEventListener("scroll", () => {
   let posicionScroll = window.scrollY || document.documentElement.scrollTop;
-  
+
   if (posicionScroll > ultimaPosicionScroll) {
-   
-    nav.style.display = "none";
-  } else {
-   
-    nav.style.display = "block";
+    nav.classList.add("nav-hidden");  
+    setTimeout(() => {
+      nav.classList.add("nav-hidden-display");
+    }, 300);
+  } else if (posicionScroll === 0) {
+    nav.classList.remove("nav-hidden-display"); 
+    setTimeout(() => {
+      nav.classList.remove("nav-hidden");
+    }, 10);
   }
-  
+
   ultimaPosicionScroll = posicionScroll;
 });
+
+
 
 
   </script>
