@@ -348,67 +348,82 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
     $("#sprecio_mayor"), "El formato debe ser de 1 a 8 y 2 decimales");
   });
 
-	$("#stock_maximo").on("keypress",function(e){
-		validarkeypress(/^[0-9-\b]*$/,e);
-	});
-	
-	$("#stock_minimo").on("keyup",function(){
-		validarkeyup(/^[0-9]{1,8}$/,$(this),
-		$("#sstock_minimo"),"El formato debe ser de 1 a 8");
-	});
-	
+$("#stock_maximo").on("keypress", function(e){
+    validarkeypress(/^[0-9-\b]*$/, e);
+});
+
+$("#stock_maximo").on("keyup", function(){
+    validarkeyup(/^[0-9]{1,8}$/, $(this),
+    $("#sstock_maximo"), "El formato debe ser de 1 a 8");
+});
+
+$("#stock_minimo").on("keypress", function(e){
+    validarkeypress(/^[0-9-\b]*$/, e);
+});
+
+$("#stock_minimo").on("keyup", function(){
+    validarkeyup(/^[0-9]{1,8}$/, $(this),
+    $("#sstock_minimo"), "El formato debe ser de 1 a 8");
+});
+
 	
   
-  function validarenvio() {
-    if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/,
-        $("#nombre"), $("#snombre"), "Solo letras entre 3 y 30 caracteres") == 0) {
-        muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo nombre");
-        return false;
-    }
-    
-    else if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/,
-        $("#marca"), $("#smarca"), "Solo letras entre 3 y 30 caracteres") == 0) {
-        muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo marca");
-        return false;
-    }
-    
-    else if (validarkeyup(/^[0-9]{1,8}$/,
-        $("#cantidad_mayor"), $("#scantidad_mayor"), "El formato debe ser de 1 a 8") == 0) {
-        muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo cantidad mayor");
-        return false;
-    }
-    
-    else if (validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/,
-    $("#precio_detal"), $("#sprecio_detal"), "El formato debe ser de 1 a 8 y 2 decimales") == 0) {
+function validarenvio() {
+  if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/,
+      $("#nombre"), $("#snombre"), "Solo letras entre 3 y 30 caracteres") == 0) {
+      muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo nombre");
+      return false;
+  }
+  
+  else if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/,
+      $("#marca"), $("#smarca"), "Solo letras entre 3 y 30 caracteres") == 0) {
+      muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo marca");
+      return false;
+  }
+
+  else if ($("#descripcion").val().trim().length === 0) {
+      muestraMensaje("error", 2000, "Error", "La descripción no puede estar vacía");
+      return false;
+  }
+  
+  else if (validarkeyup(/^[0-9]{1,8}$/,
+      $("#cantidad_mayor"), $("#scantidad_mayor"), "El formato debe ser de 1 a 8") == 0) {
+      muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo cantidad mayor");
+      return false;
+  }
+
+  
+  else if (validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/,
+  $("#precio_detal"), $("#sprecio_detal"), "El formato debe ser de 1 a 8 y 2 decimales") == 0) {
     muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo precio detal");
     return false;
-}
-
-else if (validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/,
-    $("#precio_mayor"), $("#sprecio_mayor"), "El formato debe ser de 1 a 8 y 2 decimales") == 0) {
+  }
+  
+  else if (validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/,
+  $("#precio_mayor"), $("#sprecio_mayor"), "El formato debe ser de 1 a 8 y 2 decimales") == 0) {
     muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo precio mayor");
     return false;
-}
+  }
+  else if (validarkeyup(/^[0-9]{1,8}$/,
+      $("#stock_maximo"), $("#sstock_maximo"), "El formato debe ser de 1 a 8") == 0) {
+      muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo stock máximo");
+      return false;
+  }
 
-    
-    else if (validarkeyup(/^[0-9]{1,8}$/,
-        $("#stock_maximo"), $("#sstock_maximo"), "El formato debe ser de 1 a 8") == 0) {
-        muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo stock máximo");
-        return false;
-    }
-    
-    else if (validarkeyup(/^[0-9]{1,8}$/,
-        $("#stock_minimo"), $("#sstock_minimo"), "El formato debe ser de 1 a 8") == 0) {
-        muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo stock mínimo");
-        return false;
-    }
-    else if ($("#categoria").val() === null || $("#categoria").val() === "") {
+  else if (validarkeyup(/^[0-9]{1,8}$/,
+      $("#stock_minimo"), $("#sstock_minimo"), "El formato debe ser de 1 a 8") == 0) {
+      muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo stock mínimo");
+      return false;
+  }
+
+  else if ($("#categoria").val() === null || $("#categoria").val() === "") {
       muestraMensaje("error", 2000, "Error", "Debes seleccionar una categoría");
       return false;
   }
-    
-    return true;
+  
+  return true;
 }
+
 
   function validarkeypress(er,e){
 	

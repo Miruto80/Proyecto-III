@@ -1,8 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  
   <?php include 'complementos/head.php'; ?>
   <title> Tipo de Usuario | LoveMakeup </title>
+  <style>
+    .text-danger {
+        min-height: 2.2em; /* Ajusta este valor según el tamaño de tu texto */
+        display: block; /* Asegura que el span ocupe toda la línea */
+        margin-top: 0.1em; /* Espacio entre el campo y el mensaje */
+        color: #dc3545; /* Color rojo para el mensaje de error */
+        font-size: 1.0rem; /* Tamaño de fuente para el mensaje */
+    }
+  </style>
 </head>
 <body class="g-sidenav-show bg-gray-100">
   <?php include 'complementos/sidebar.php'; ?>
@@ -86,14 +96,19 @@
           <div class="modal-body">
             <form id="formRegistrar" autocomplete="off">
               <label>NOMBRE</label>
-              <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ejemplo: Admin" required> <br>
+              <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ejemplo: Admin" maxlength="30" required> <br>
+              <span id="snombre" class="text-danger"></span>  
+
               <label>NIVEL</label>
               <input type="number" class="form-control" name="nivel" id="nivel" placeholder="Ejemplo: 1" required> <br>
+              <span id="snivel" class="text-danger"></span>  
+
               <label>ESTATUS</label>
               <select class="form-control" name="estatus" id="estatus" required>
                 <option value="1">Activo</option>
                 <option value="0">Inactivo</option>
               </select> <br>
+
               <div class="text-center">
                 <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
                 <button type="reset" class="btn btn-primary">Limpiar</button>
@@ -115,17 +130,23 @@
           <div class="modal-body">
             <form id="formModificar" autocomplete="off">
               <input type="hidden" name="id_tipo" id="id_tipo_modificar">
+              
               <label>NOMBRE</label>
-              <input type="text" class="form-control" name="nombre" id="nombre_modificar" required>
+              <input type="text" class="form-control" name="nombre" id="nombre_modificar" placeholder="Ejemplo: Admin" maxlength="30" required>
+              <span id="snombre_modificar" class="text-danger"></span>
               <br>
+
               <label>NIVEL</label>
               <input type="number" class="form-control" name="nivel" id="nivel_modificar" required>
+              <span id="snivel_modificar" class="text-danger"></span>
               <br>
+
               <label>ESTATUS</label>
               <select class="form-control" name="estatus" id="estatus_modificar" required>
                 <option value="1">Activo</option>
                 <option value="0">Inactivo</option>
               </select> <br>
+
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" id="btnModificar">Modificar</button>

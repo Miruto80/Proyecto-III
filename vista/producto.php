@@ -162,7 +162,7 @@
             <div class="row mb-3">
               <div class="col-md-12">
                 <label for="descripcion">Descripcion</label>
-                <textarea class="form-control" type="textarea" id="descripcion" name="descripcion" placeholder="Escribe la descripcion" required></textarea>
+                <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Escribe la descripción" required></textarea>
                 <span id="sdescripcion"></span>
               </div>
             </div>
@@ -234,7 +234,6 @@
 
   <script src="assets/js/producto.js"></script>
 
-  <!-- Modal detalles producto, sin cambios -->
   <div class="modal fade" id="modalDetallesProducto" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">

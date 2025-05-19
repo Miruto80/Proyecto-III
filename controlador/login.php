@@ -28,7 +28,8 @@ if (isset($_POST['ingresar'])) {
                 
                 $_SESSION["cedula"] = $resultado->cedula;
                 $_SESSION["telefono"] = $resultado->telefono;
-                $_SESSION["correo"] = $resultado->correo;    
+                $_SESSION["correo"] = $resultado->correo;
+                $_SESSION["estatus"] = $resultado->estatus;      
 
                 // Registrar en la bitácora
                 $accion = 'Inicio de sesión';

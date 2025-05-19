@@ -90,9 +90,6 @@
                         <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#verDetallesModal<?php echo $compra['id_compra']; ?>">
                           <i class="fas fa-eye" title="Ver detalles"></i>
                         </button>
-                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarModal<?php echo $compra['id_compra']; ?>">
-                          <i class="fas fa-trash-alt" title="Eliminar"></i>
-                        </button>
                       </td>
                     </tr>
 
@@ -223,28 +220,6 @@
                               
                               <div class="text-center mt-4">
                                 <button type="submit" name="modificar_compra" class="btn btn-primary">Guardar Cambios</button>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                              </div>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Modal para Eliminar -->
-                    <div class="modal fade" id="eliminarModal<?php echo $compra['id_compra']; ?>" tabindex="-1" aria-labelledby="eliminarModalLabel<?php echo $compra['id_compra']; ?>" aria-hidden="true">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <div class="modal-header header-color">
-                            <h5 class="modal-title" id="eliminarModalLabel<?php echo $compra['id_compra']; ?>">Confirmar Eliminación</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            <p>¿Está seguro que desea eliminar la compra? Esta acción no se puede deshacer y afectará al inventario.</p>
-                            <form method="POST" action="">
-                              <input type="hidden" name="id_compra" value="<?php echo $compra['id_compra']; ?>">
-                              <div class="text-center mt-4">
-                                <button type="submit" name="eliminar_compra" class="btn btn-danger">Eliminar</button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                               </div>
                             </form>
