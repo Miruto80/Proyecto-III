@@ -143,7 +143,7 @@ nav {
              <?php if ($sesion_activa): ?>
               <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
                 <a href="?pagina=catalogo_favorito" class="nav-link fw-bold px-4 py-3" style="color:#ff71d8;">
-                <i class="fa-solid fa-heart"></i> Mis Favoritos </a>
+                <i class="fa-solid fa-heart"></i> Mi Lista de Deseos </a>
               </li>
 
               <li class="nav-item border-end-0 border-lg-end-0 border-lg-end dropdown">
