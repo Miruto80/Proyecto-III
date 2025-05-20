@@ -56,6 +56,7 @@ function eliminarCategoria(id_categoria) {
             datos.append('eliminar', 'eliminar');
             enviaAjax(datos);
         }
+
     });
 }
 
