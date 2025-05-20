@@ -241,7 +241,7 @@
         </button>
     <?php else: ?>
         <a href="?pagina=login" class="btn btn-primary w-100 mt-2">
-            <i class="fa-solid fa-heart"></i> Inicia sesión para guardar
+            <i class="fa-solid fa-heart"></i> Añadir a Deseos
         </a>
     <?php endif; ?>
 
