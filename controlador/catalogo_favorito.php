@@ -7,7 +7,7 @@ $nombreCompleto = trim($nombre . " " . $apellido);
 
 $sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
 
-require_once 'modelo/catalogo.php';
+require_once 'modelo/catalogo_favorito.php';
 
 $catalogo = new Catalogo();
 
