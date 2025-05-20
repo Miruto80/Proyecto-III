@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             Swal.fire({
                 title: "Registro requerido",
-                text: "Necesitas registrarte antes de iniciar sesión. ¿Deseas continuar?",
+                text: "Necesitas registrarte para realizar esta accion. ¿Deseas continuar?",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Sí, continuar",
