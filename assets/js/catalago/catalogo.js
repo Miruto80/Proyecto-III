@@ -120,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         console.error("No se encontró el <ul> del carrito en el HTML.");
                         return;
                     }
+                      
 
                     const liVacio = ulCarrito.querySelector('li.text-center');
                     if (liVacio) {
@@ -186,3 +187,27 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btnCart = document.querySelectorAll("button[href='?pagina=login']");
+
+    btnCart.forEach((btnCart) =>{
+        btnCart.addEventListener("click", (event) => {
+            event.preventDefault();
+            
+            Swal.fire({
+                title: "Registro requerido",
+                text: "Necesitas registrarte antes de iniciar sesión. ¿Deseas continuar?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, continuar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "?pagina=login"; 
+                }
+            });
+        });
+    }
+)});
+

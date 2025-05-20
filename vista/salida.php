@@ -210,10 +210,12 @@
                         <select class="form-control select-producto" name="id_producto[]" required>
                           <option value="">Seleccione un producto</option>
                           <?php foreach($productos as $producto): ?>
+                            
                             <option value="<?php echo $producto['id_producto']; ?>" 
-                                    data-precio="<?php echo $producto['precio_venta']; ?>"
+                                    data-precio="<?php echo $producto['precio_unitario']; ?>"
                                     data-stock="<?php echo $producto['stock_disponible']; ?>">
                               <?php echo $producto['nombre'] . ' - ' . $producto['marca']; ?>
+                             
                             </option>
                           <?php endforeach; ?>
                         </select>
@@ -227,11 +229,7 @@
                       <td>
                         <span class="subtotal">0.00</span>
                       </td>
-                      <td>
-                        <button type="button" class="btn btn-danger remover-producto ">
-                          <i class="fas fa-trash-alt"></i>
-                        </button>
-                      </td>
+                    
                     </tr>
                   </tbody>
                   <tfoot>
@@ -242,7 +240,7 @@
                         <input type="hidden" name="precio_total_general" id="precio_total_hidden" value="0">
                         <button type="button" class="btn btn-success btn-sm" id="agregarFilaProducto">
                           <i class="fas fa-plus"></i> Agregar producto
-                        </button>
+                        
                       </td>
                     </tr>
                   </tfoot>
