@@ -146,19 +146,29 @@
   <input type="hidden" name="imagen" id="form-imagen">
   <input type="hidden" name="stockDisponible" id="form-stock-disponible">
   <hr>
+ 
+  <?php if ($sesion_activa): ?>
   <button type="button" id="btn-agregar-carrito" class="btn btn-primary w-100 mt-2">
     <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
   </button>
-    <?php if ($sesion_activa): ?>
+
+
         <button class="btn btn-primary w-100 mt-2 btn-favorito" 
                 data-id="<?php echo $producto['id_producto']; ?>">
             <i class="fa-solid fa-heart"></i> Añadir a deseos
         </button>
     <?php else: ?>
-        <a href="?pagina=login" class="btn btn-primary w-100 mt-2">
-            <i class="fa-solid fa-heart"></i> Inicia sesión para guardar
-        </a>
+
+      <button  href="?pagina=login" class="btn btn-primary w-100 mt-2">
+            <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
+      </button>
+
+        <button  href="?pagina=login" class="btn btn-primary w-100 mt-2">
+            <i class="fa-solid fa-heart"></i> Añadir a Deseos
+        </button>
+        
     <?php endif; ?>
+
 
 
 
