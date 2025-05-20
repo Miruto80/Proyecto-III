@@ -1,18 +1,22 @@
 $(document).on('click', '.ver-detalles', function () {
-    const fila = $(this).closest('tr');
-  
-    const cantidadMayor = fila.find('.cantidad_mayor').text();
-    const precioMayor = fila.find('.precio_mayor').text();
-    const stockMaximo = fila.find('.stock_maximo').text();
-    const stockMinimo = fila.find('.stock_minimo').text();
-  
-    $('#modal-cantidad-mayor').text(cantidadMayor);
-    $('#modal-precio-mayor').text(precioMayor);
-    $('#modal-stock-maximo').text(stockMaximo);
-    $('#modal-stock-minimo').text(stockMinimo);
-  
-    $('#modalDetallesProducto').modal('show');
-  });
+  const fila = $(this).closest('tr');
+
+  // Acceder a los datos almacenados en los atributos data-*
+  const cantidadMayor = fila.data('cantidad-mayor');
+  const precioMayor = fila.data('precio-mayor');
+  const stockMaximo = fila.data('stock-maximo');
+  const stockMinimo = fila.data('stock-minimo');
+
+  // Asignar los valores a los elementos del modal
+  $('#modal-cantidad-mayor').text(cantidadMayor);
+  $('#modal-precio-mayor').text(precioMayor);
+  $('#modal-stock-maximo').text(stockMaximo);
+  $('#modal-stock-minimo').text(stockMinimo);
+
+  // Mostrar el modal con los detalles
+  $('#modalDetallesProducto').modal('show');
+});
+
   
   $('#btnAbrirRegistrar').on('click', function () {
     // Limpiar formulario
@@ -43,118 +47,77 @@ $(document).on('click', '.ver-detalles', function () {
   // modificar al abrir el modal
   function abrirModalModificar(boton) {
     const fila = $(boton).closest('tr');
-  
+
+    // Obtener ID del producto desde el botón de eliminación
     const botonEliminarOnclick = fila.find('button.eliminar').attr('onclick');
-  
     let id_producto = null;
-  
+
     if (botonEliminarOnclick) {
-  
-      const match = botonEliminarOnclick.match(/(\d+)/);
-  
-      if (match) {
-  
-        id_producto = match[0];
-  
-      }
-  
+        const match = botonEliminarOnclick.match(/(\d+)/);
+        if (match) {
+            id_producto = match[0];
+        }
     }
-  
-  
+
     if (!id_producto) {
-  
-      console.error('No se pudo obtener el id_producto para modificar');
-  
-      return;
-  
+        console.error('No se pudo obtener el id_producto para modificar');
+        return;
     }
-  
-  
+
+    // Obtener datos visibles desde la tabla
     const nombre = fila.find('td').eq(0).text().trim();
-  
     const descripcion = fila.find('td').eq(1).text().trim();
-  
     const marca = fila.find('td').eq(2).text().trim();
-  
-    const cantidadMayor = fila.find('.cantidad_mayor').text().trim();
-  
-    const precioMayor = fila.find('.precio_mayor').text().trim();
-  
-    const precioDetal = fila.find('td').eq(5).text().trim();
-    
-    const stockMaximo = fila.find('.stock_maximo').text().trim();
-  
-    const stockMinimo = fila.find('.stock_minimo').text().trim();
-  
-    const categoriaTexto = fila.find('td').eq(10).text().trim();
-  
-    const imagenSrc = fila.find('td').eq(9).find('img').attr('src');
-  
-    $('#imagenActual').val(imagenSrc);
-  
-    // Buscar el valor del select que corresponde al texto de la categoria
-  
-    const categoriaSelect = $("#categoria option").filter(function () {
-  
-      return $(this).text().trim() === categoriaTexto;
-  
-    }).val();
-  
-  
+    const precioDetal = fila.find('td').eq(3).text().trim();
+    const stockDisponible = fila.find('td').eq(4).text().trim();
+    const imagenSrc = fila.find('td').eq(5).find('img').attr('src');
+    const categoriaTexto = fila.find('td').eq(6).text().trim();
+
+    // Obtener datos ocultos desde data-*
+    const cantidadMayor = fila.data('cantidad-mayor');
+    const precioMayor = fila.data('precio-mayor');
+    const stockMaximo = fila.data('stock-maximo');
+    const stockMinimo = fila.data('stock-minimo');
+
+    // Asignar valores al formulario
     $('#id_producto').val(id_producto);
-  
     $('#nombre').val(nombre);
-  
     $('#descripcion').val(descripcion);
-  
     $('#marca').val(marca);
-  
     $('#cantidad_mayor').val(cantidadMayor);
-  
     $('#precio_mayor').val(precioMayor);
-  
     $('#precio_detal').val(precioDetal);
-    
     $('#stock_maximo').val(stockMaximo);
-  
     $('#stock_minimo').val(stockMinimo);
-  
-  
+
+    // Mantener la lógica original de búsqueda de categoría
+    const categoriaSelect = $("#categoria option").filter(function () {
+        return $(this).text().trim() === categoriaTexto;
+    }).val();
+
     if (categoriaSelect !== undefined) {
-  
-      $('#categoria').val(categoriaSelect);
-  
+        $('#categoria').val(categoriaSelect);
     } else {
-  
-      // Si no encuentra coincidencia, limpiar selección para evitar error
-  
-      $('#categoria').val('');
-  
+        $('#categoria').val('');
     }
-  
+
     $('#accion').val('modificar');
-  
-  
-    // Mostrar imagen actual, solo si existe y no mostrar la predeterminada por defecto
-  
+
+    // **Corrección en la imagen**  
+    $('#imagenActual').val(imagenSrc); // Se guarda la imagen actual correctamente  
     if (imagenSrc && imagenSrc !== 'assets/img/logo.PNG') {
-  
-      $('#imagen').attr('src', imagenSrc);
-  
+        $('#imagen').attr('src', imagenSrc);
     } else {
-  
-      $('#imagen').attr('src', 'assets/img/logo.PNG');
-  
+        $('#imagen').attr('src', 'assets/img/logo.PNG');
     }
-  
-  
+
     // Abrir modal
-  
     $('#modalTitle').text('Modificar Producto');
-  
     $('#registro').modal('show');
-  
-  }
+}
+
+
+
   
   function eliminarproducto(id_producto) {
   Swal.fire({

@@ -69,12 +69,8 @@
                   <th class="text-white">Nombre</th>
                   <th class="text-white">Descripcion</th>
                   <th class="text-white">Marca</th>
-                  <th class="text-white" style="display:none;">Al mayor</th>
-                  <th class="text-white" style="display:none;">Precio M</th>
                   <th class="text-white">Precio</th>
                   <th class="text-white">Stock</th>
-                  <th class="text-white" style="display:none;">Stock_m</th>
-                  <th class="text-white" style="display:none;">Stock_m</th>
                   <th class="text-white"><i class="fa-solid fa-image"></i></th>
                   <th class="text-white">Categoria</th>
                   <th class="text-white">ACCION</th>
@@ -85,16 +81,17 @@
         $claseFila = ($dato["estatus"] == 2) ? "producto-desactivado" : "";
         $botonesDeshabilitados = ($dato["estatus"] == 2) ? "disabled" : "";
     ?>
-                 <tr class="<?php echo ($dato['estatus'] == 2) ? 'producto-desactivado' : ''; ?>">
+                 <tr class="<?php echo ($dato['estatus'] == 2) ? 'producto-desactivado' : ''; ?>
+                   "data-cantidad-mayor="<?php echo htmlspecialchars($dato['cantidad_mayor']); ?>"
+                    data-precio-mayor="<?php echo htmlspecialchars($dato['precio_mayor']); ?>"
+                    data-stock-maximo="<?php echo htmlspecialchars($dato['stock_maximo']); ?>"
+                    data-stock-minimo="<?php echo htmlspecialchars($dato['stock_minimo']); ?>">
+
                     <td><?php echo htmlspecialchars($dato['nombre']) ?></td>
                     <td><?php echo htmlspecialchars($dato['descripcion']) ?></td>
                     <td><?php echo htmlspecialchars($dato['marca']) ?></td>
-                    <td class="cantidad_mayor" style="display:none;"><?php echo htmlspecialchars($dato['cantidad_mayor']) ?></td>
-                    <td class="precio_mayor" style="display:none;"><?php echo htmlspecialchars($dato['precio_mayor']) ?></td>
                     <td><?php echo htmlspecialchars($dato['precio_detal']) ?></td>
                     <td><?php echo htmlspecialchars($dato['stock_disponible']) ?></td>
-                    <td class="stock_maximo" style="display:none;"><?php echo htmlspecialchars($dato['stock_maximo']) ?></td>
-                    <td class="stock_minimo" style="display:none;"><?php echo htmlspecialchars($dato['stock_minimo']) ?></td>
                     <td><img src="<?php echo htmlspecialchars($dato['imagen']) ?>" alt="Imagen del producto" width="60" height="60"></td>
                     <td><?php echo htmlspecialchars($dato['nombre_categoria']) ?></td>
                     <td>
@@ -116,9 +113,6 @@
             onclick="cambiarEstatusProducto(<?php echo $dato['id_producto']; ?>, <?php echo $dato['estatus']; ?>)">
             <i class="fa-solid fa-triangle-exclamation"></i>
         </button>
-</button>
-
-
                       </form>
                     </td>
                   </tr>
