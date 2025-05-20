@@ -112,7 +112,7 @@
   <div class="modal-dialog  modal-lg modal-dialog-centered">
     <div class="modal-content">
     <div class="modal-header header-color">
-        <h1 class="modal-title fs-5" id="1">Registrar Usuario</h1>
+        <h1 class="modal-title fs-5" id="1"> <i class="fa-solid fa-user-plus"></i> Registrar Usuario</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
@@ -124,45 +124,75 @@
         <div class="row">  <!-- F1 -->
           <div class="col">
             <label>NOMBRE</label>
-              <input type="text" class="form-control "name="nombre"  id="">
+              <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user"></i></span>
+                  <input type="text" class="form-control "name="nombre"  id="nombre" placeholder="nombre:">
+              </div>
+               <span id="textonombre" class="alert-text"></span>
           </div>
+
           <div class="col">
              <label>APELLIDO</label>
-              <input type="text" class="form-control "name="apellido"  id="">
+               <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user"></i></span>
+                   <input type="text" class="form-control "name="apellido"  id="apellido" placeholder="apellido:">
+              </div>
+               <span id="textoapellido" class="alert-text"></span>
           </div>
         </div>
 
           <div class="row">  <!-- F2 -->
           <div class="col">
              <label>N° DE CEDULA</label>
-              <input type="text" class="form-control "name="cedula"  id="">
+                 <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-id-card"></i></span>
+                  <input type="text" class="form-control "name="cedula"  id="cedula" placeholder="cedula:">
+              </div>
+         
+               <span id="textocedula" class="alert-text"></span>
           </div>
           <div class="col">
              <label>ROL</label>
-              <select class="form-control" name="id_rol" required>
-                <option value="">Seleccione una Rol:</option>
-                 <?php foreach($rol as $rol) {?>
-                 <option value="<?php echo $rol['id_tipo'];?>"> <?php echo $rol['nombre']." - Nivel ".$rol['nivel'];?> </option>
-                 <?php } ?>
-            </select>
+              <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user-tag"></i></span>
+                    <select class="form-select" name="id_rol" required>
+                      <option value="">Seleccione una Rol:</option>
+                        <?php foreach($rol as $rol) {?>
+                      <option value="<?php echo $rol['id_tipo'];?>"> <?php echo $rol['nombre']." - Nivel ".$rol['nivel'];?> </option>
+                        <?php } ?>
+                    </select>
+              </div>
+             
           </div>
         </div>
 
           <div class="row">  <!-- F3 -->
           <div class="col">
               <label>TELEFONO</label>
-              <input type="text" class="form-control "name="telefono"  id="">
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-mobile-screen-button"></i></span>
+                  <input type="text" class="form-control "name="telefono"  id="telefono" placeholder="Telefono:">
+              </div>  
+               <span id="textotelefono" class="alert-text"></span>
           </div>
           <div class="col">
               <label>CORREO</label>
-              <input type="text" class="form-control "name="correo"  id="">
+              <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-envelope"></i></span>
+                  <input type="text" class="form-control "name="correo"  id="correo" placeholder="Correo:">
+              </div>  
+              <span id="textocorreo" class="alert-text"></span>
           </div>
         </div>
 
           <div class="row">  <!-- F4 -->
           <div class="col">
              <label>CONSTRASEÑA</label>
-              <input type="text" class="form-control "name="clave"  id="">
+              <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-unlock"></i></span>
+                  <input type="text" class="form-control "name="clave"  id="clave" placeholder="Constraseña:">
+              </div>  
+              <span id="textoclave" class="alert-text"></span>
           </div>
         
         </div>

@@ -24,6 +24,28 @@ deleteButtons.forEach(function (button) {
   });
 });
 
+//Función para validar por Keypress
+function validarkeypress(er,e){
+  key = e.keyCode;
+    tecla = String.fromCharCode(key);
+    a = er.test(tecla);
+    if(!a){
+    e.preventDefault();
+    }
+}
+//Función para validar por keyup
+function validarkeyup(er,etiqueta,etiquetamensaje,
+mensaje){
+  a = er.test(etiqueta.val());
+  if(a){
+    etiquetamensaje.text("");
+    return 1;
+  }
+  else{
+    etiquetamensaje.text(mensaje);
+    return 0;
+  }
+}
 
 $(document).ready(function() {
 
@@ -35,6 +57,71 @@ $(document).ready(function() {
     enviaAjax(datos);
  
   });
+
+
+  $("#cedula").on("keypress",function(e){
+    validarkeypress(/^[0-9-\b]*$/,e);
+  });
+  
+  $("#cedula").on("keyup",function(){
+    validarkeyup(/^[0-9]{7,8}$/,$(this),
+    $("#textocedula"),"El formato debe ser 1222333");
+  });
+
+
+   $("#telefono").on("keypress", function (e) {
+      validarkeypress(/^[0-9-\-]*$/, e);
+    });
+  
+    $("#telefono").on("keyup", function () {
+      validarkeyup(/^[0-9]{4}[-]{1}[0-9]{7}$/, $(this),
+        $("#textotelefono"), "El formato debe ser 0000-0000000");
+    });
+  
+    $("#telefono").on("input", function () {
+      var input = $(this).val().replace(/[^0-9]/g, '');
+      if (input.length > 4) {
+        input = input.substring(0, 4) + '-' + input.substring(4, 11);
+      }
+      $(this).val(input);
+    });
+
+
+     $("#correo").on("keypress", function (e) {
+      validarkeypress(/^[a-zA-Z0-9._%+-@\b]*$/, e);
+    });
+
+    $("#correo").on("keyup", function () {
+      validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $(this),
+          $("#textocorreo"), "El formato debe incluir @ y ser válido.");
+    });
+
+    $("#nombre").on("keypress", function (e) {
+    validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
+    });
+
+    $("#nombre").on("keyup", function () {
+    validarkeyup(/^[a-zA-Z]{3,50}$/, $(this),
+      $("#textonombre"), "El formato debe ser solo letras");
+    });
+
+    $("#apellido").on("keypress", function (e) {
+      validarkeypress(/^[a-z-A-Z-\b]*$/, e);
+    });
+
+    $("#apellido").on("keyup", function () {
+    validarkeyup(/^[a-z-A-Z]{3,50}$/, $(this),
+      $("#textoapellido"), "El formato debe ser solo letras");
+    });
+
+    $("#clave").on("keypress", function(e) {
+       validarkeyup(/^.{8,16}$/, e);
+    });
+    
+    $("#clave").on("keyup", function() {
+      validarkeyup(/^.{8,16}$/, $(this), $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+    })
+
 
 
 });
