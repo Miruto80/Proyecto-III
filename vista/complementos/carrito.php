@@ -3,6 +3,13 @@
 $carrito = $_SESSION['carrito'] ?? [];
 ?> 
 
+<style>
+  .contador{
+  color: #fff;
+  background-color: #ff71d8;
+}
+</style>
+
 <script src="assets/js/carrito.js"></script>
 <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasCart">
   <div class="offcanvas-header justify-content-center">
@@ -12,8 +19,8 @@ $carrito = $_SESSION['carrito'] ?? [];
   <div class="offcanvas-body">
     <div class="order-md-last" id="reloader">
       <h4 class="d-flex justify-content-between align-items-center mb-3">
-        <span class="text-primary">Tu carrito</span>
-        <span class="badge bg-primary rounded-pill contador"><?php echo count($carrito); ?></span>
+        <span class="" style="color: #ff71d8; font-weight:bold;">Tu carrito</span>
+        <span class="badge  rounded-pill contador  m-0 p-2"><?php echo count($carrito); ?></span>
       </h4>
 
       <ul class="list-group mb-3 carrito-dropdown" id="listgroup">
@@ -78,7 +85,7 @@ $carrito = $_SESSION['carrito'] ?? [];
         <?php endif; ?>
       </ul>
 
-      <a href="?pagina=vercarrito" class="w-100 btn btn-primary btn-lg">Ver carrito</a>
+      <a href="?pagina=vercarrito" class="w-100 btn  btn-lg" style="background-color: #ff71d8;color:#fff; font-weight:bold;">Ver carrito</a>
     </div>
   </div>
 </div>

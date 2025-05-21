@@ -27,6 +27,14 @@ nav {
   display: none;
 }
 
+.contadorL{
+  margin-left: 20px;
+  margin-bottom: 2px;
+  display:flex;
+  width: 22px;
+  color: #fff;
+  background-color: #ff71d8;
+}
 
 
 </style>
@@ -100,6 +108,7 @@ nav {
             <li>
               <a href="#" class="p-2 mx-1" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
                 aria-controls="offcanvasCart">
+                <span class="badge  rounded-pill contador contadorL"><?php echo count($carrito); ?></span>
                  <i class="fa-solid fa-cart-shopping" style="font-size: 25px;"></i>
               </a>
             </li>
