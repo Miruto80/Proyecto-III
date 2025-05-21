@@ -106,9 +106,9 @@ nav {
 
             <?php if ($sesion_activa): ?>
             <li>
-              <a href="#" class="p-2 mx-1" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
+              <a href="#" class="p-0 m-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
                 aria-controls="offcanvasCart">
-                <span class="badge  rounded-pill contador contadorL"><?php echo count($carrito); ?></span>
+                <span class="badge  rounded-pill contador contadorL "><?php echo count($carrito); ?></span>
                  <i class="fa-solid fa-cart-shopping" style="font-size: 25px;"></i>
               </a>
             </li>
