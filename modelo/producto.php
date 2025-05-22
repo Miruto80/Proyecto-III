@@ -26,7 +26,17 @@ function __construct(){
     $this->conex = $this->conex->conex();
 }
 
-
+public function registrarBitacora($id_persona, $accion, $descripcion) {
+    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
+                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
+    
+    $strExec = $this->conex->prepare($consulta);
+    $strExec->bindParam(':accion', $accion);
+    $strExec->bindParam(':descripcion', $descripcion);
+    $strExec->bindParam(':id_persona', $id_persona);
+    
+    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
+}
 
 public function registrar(){
     $registro ="INSERT INTO productos(nombre,descripcion,marca,cantidad_mayor,precio_mayor,precio_detal,stock_disponible,stock_maximo,stock_minimo,imagen,id_categoria,estatus)
