@@ -14,7 +14,20 @@ $(document).ready(function () {
   });
 
   if (productosStockBajo.length > 0) {
-      muestraMensaje('warning',5000,'¡Atención! Stock bajo', `Los siguientes productos están cerca o han alcanzado el stock mínimo: <strong>${productosStockBajo.join(', ')}</strong>.`);
+    Swal.fire({
+      icon: "warning",
+      title: "¡Atención! Stock bajo",
+      html: `Estos productos están cerca o han alcanzado el stock mínimo: <strong>${productosStockBajo.join(', ')}</strong>.`,
+      toast: true,
+      position: "top",
+      showConfirmButton: false,
+      timer: 5000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+      }
+  });
   }
 });
 
