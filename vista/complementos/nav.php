@@ -12,9 +12,13 @@
              <i class="fa-solid fa-user-gear" aria-hidden="true"></i>
          </span>
         <ul class="dropdown-menu" id="dropdownOptions" aria-labelledby="dropdownIcon">
-            <li><a class="dropdown-item" href="#">• Cambiar Clave</a></li>
-            <li><a class="dropdown-item" href="#">• Modificar Datos</a></li>
-       </ul>
+           <li> 
+             <a class="dropdown-item text-primary"><b><?php 
+               echo "Rol:"." ".$_SESSION['nombre_usuario'];
+             ?></b></a>
+           </li>
+           <li><a class="dropdown-item" href="?pagina=datos"><i class="fa-solid fa-user-pen"></i> Modificar Datos</a></li>
+        </ul>
       <div class="nombre-usuario">
          <?php 
            echo $_SESSION['nombre']." ".$_SESSION['apellido'];
