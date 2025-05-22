@@ -14,7 +14,7 @@ $(document).ready(function () {
   });
 
   if (productosStockBajo.length > 0) {
-      muestraMensaje('warning',5000,'¡Atención! Stock bajo', `Los siguientes productos están cerca o han alcanzado el stock mínimo: <strong>${productosStockBajo.join(', ')}</strong>.`);
+      muestraMensaje('warning',3000,'¡Atención! Stock bajo', `Los siguientes productos están cerca o han alcanzado el stock mínimo: <strong>${productosStockBajo.join(', ')}</strong>.`);
   }
 });
 
