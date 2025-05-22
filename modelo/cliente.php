@@ -55,7 +55,7 @@ class Cliente extends Conexion
         $registro="SELECT p.*, ru.id_tipo, ru.nombre AS nombre_tipo, ru.nivel
         FROM personas p 
         INNER JOIN rol_usuario ru ON p.id_tipo = ru.id_tipo
-        WHERE ru.nivel = 1"; // Filtra solo el nivel 1
+        WHERE ru.nivel = 1 AND p.estatus >=1"; // Filtra solo el nivel 1
     
         $consulta = $this->conex->prepare($registro);
         $resul = $consulta->execute();
