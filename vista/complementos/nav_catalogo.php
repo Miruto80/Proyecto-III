@@ -37,6 +37,8 @@ nav {
 }
 
 
+
+
 </style>
 
 <script>
@@ -90,23 +92,11 @@ nav {
 
         <div class="col-sm-6 col-md-3 col-lg-2 d-flex justify-content-end gap-5 align-items-center mt-4 mt-sm-0 justify-content-center justify-content-sm-end">
           <ul class="d-flex justify-content-end list-unstyled m-0">
-            <li>
-             <?php if ($sesion_activa): ?>
-               <!-- Si hay sesión activa, muestra el botón de cerrar sesión con otro ícono -->
-             <a href="#" class="p-2 mx-1" data-bs-toggle="modal" data-bs-target="#cerrar">
-                  <i class="fa-solid fa-right-from-bracket" style="font-size: 25px; color:red;"></i> <!-- Ícono de salida -->
-               </a>
-            <?php else: ?>
-              <!-- Si no hay sesión activa, muestra el ícono de usuario para iniciar sesión -->
-              <a href="?pagina=login" class="p-2 mx-1">
-               <i class="fa-solid fa-circle-user" style="font-size: 25px;"></i>
-              </a>
-           <?php endif; ?>
-            </li>
+         
 
             <?php if ($sesion_activa): ?>
             <li>
-              <a href="#" class="p-0 m-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
+              <a href="#" class="p-0 m-0 " data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
                 aria-controls="offcanvasCart">
                 <span class="badge  rounded-pill contador contadorL "><?php echo count($carrito); ?></span>
                  <i class="fa-solid fa-cart-shopping" style="font-size: 25px;"></i>
@@ -119,6 +109,20 @@ nav {
                 aria-controls="offcanvasSearch">
                <i class="fa-solid fa-magnifying-glass" style="font-size: 25px;"></i>
               </a>
+            </li>
+
+            <li>
+             <?php if ($sesion_activa): ?>
+               <!-- Si hay sesión activa, muestra el botón de cerrar sesión con otro ícono -->
+             <a href="#" class="p-2 mx-1" data-bs-toggle="modal" data-bs-target="#cerrar">
+                  <i class="fa-solid fa-right-from-bracket" style="font-size: 25px; color:red;"></i> <!-- Ícono de salida -->
+               </a>
+            <?php else: ?>
+              <!-- Si no hay sesión activa, muestra el ícono de usuario para iniciar sesión -->
+              <a href="?pagina=login" class="p-2 mx-1">
+               <i class="fa-solid fa-circle-user" style="font-size: 25px;"></i>
+              </a>
+           <?php endif; ?>
             </li>
           </ul>
           
