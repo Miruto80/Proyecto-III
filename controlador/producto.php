@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id_persona = $_SESSION["id"]; 
             // Registrar en la bitácora
                 $accion = 'Cambiar Estatus de Producto';
-                $descripcion = 'Se Cambio Estatu del producto: ' . $_POST['id_producto'] . ' ' . $_POST['estatus_actual'];
+                $descripcion = 'Se Cambio Estatus del producto: ' . $_POST['id_producto'] . ' ' . $_POST['estatus_actual'];
                 $objproducto->registrarBitacora($id_persona, $accion, $descripcion);
             } /* FIN BITACORA */
 
