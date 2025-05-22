@@ -51,6 +51,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $result = $objproducto->registrar();
+
+             /* BITACORA */
+            if ($result['respuesta'] == 1) {
+                $id_persona = $_SESSION["id"]; 
+            // Registrar en la bitácora
+                $accion = 'Registro de Producto';
+                $descripcion = 'Se registró el producto: ' . $_POST['nombre'] . ' ' . $_POST['marca'];
+                $objproducto->registrarBitacora($id_persona, $accion, $descripcion);
+            } /* FIN BITACORA */
+
+
             echo json_encode($result);
             exit;
         }
@@ -109,6 +120,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             $result = $objproducto->modificar();
+              /* BITACORA */
+            if ($result['respuesta'] == 1) {
+                $id_persona = $_SESSION["id"]; 
+            // Registrar en la bitácora
+                $accion = 'Modificación de Producto';
+                $descripcion = 'Se Modifico el producto: ' . $_POST['nombre'] . ' ' . $_POST['marca'];
+                $objproducto->registrarBitacora($id_persona, $accion, $descripcion);
+            } /* FIN BITACORA */
+
             echo json_encode($result);
             exit;
         }
@@ -116,6 +136,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!empty($_POST['id_producto'])) {
             $objproducto->set_id_producto($_POST['id_producto']);
             $result = $objproducto->eliminar();
+            
+            /* BITACORA */
+            if ($result['respuesta'] == 1) {
+                $id_persona = $_SESSION["id"]; 
+            // Registrar en la bitácora
+                $accion = 'Eliminación  de Producto';
+                $descripcion = 'Se Elimino el producto: ' . $_POST['id_producto'];
+                $objproducto->registrarBitacora($id_persona, $accion, $descripcion);
+            } /* FIN BITACORA */
+
             echo json_encode($result);
             exit;
         }
@@ -126,6 +156,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
             // Llamamos la función en el modelo PASANDO el estatus actual
             $result = $objproducto->cambiarEstatusProducto($id_producto, $estatus_actual);
+
+              /* BITACORA */
+            if ($result['respuesta'] == 1) {
+                $id_persona = $_SESSION["id"]; 
+            // Registrar en la bitácora
+                $accion = 'Cambiar Estatus de Producto';
+                $descripcion = 'Se Cambio Estatu del producto: ' . $_POST['id_producto'] . ' ' . $_POST['estatus_actual'];
+                $objproducto->registrarBitacora($id_persona, $accion, $descripcion);
+            } /* FIN BITACORA */
+
             echo json_encode($result);
             exit;
         }
