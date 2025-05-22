@@ -1,18 +1,23 @@
 $(document).ready(function () {
+  let productosStockBajo = [];
+
   $('tbody tr').each(function () {
       const fila = $(this);
       const nombreProducto = fila.find('td').eq(0).text().trim();
       const stockDisponible = parseInt(fila.find('td').eq(4).text().trim(), 10);
       const stockMinimo = parseInt(fila.data('stock-minimo'), 10);
 
-      // Verificar si el stock está cerca del mínimo (por ejemplo, 10% por encima del mínimo)
+      // Verificar si el stock está cerca o ha alcanzado el mínimo
       if (stockDisponible <= stockMinimo || stockDisponible <= stockMinimo + (stockMinimo * 0.1)) {
-          muestraMensaje('warning',5000,'¡Atención! Stock bajo',`El producto <strong>"${nombreProducto}"</strong> está cerca o ha alcanzado el stock mínimo.`
-          );
-          return false; // Para evitar múltiples alertas
+          productosStockBajo.push(`"${nombreProducto}"`);
       }
   });
+
+  if (productosStockBajo.length > 0) {
+      muestraMensaje('warning',5000,'¡Atención! Stock bajo', `Los siguientes productos están cerca o han alcanzado el stock mínimo: <strong>${productosStockBajo.join(', ')}</strong>.`);
+  }
 });
+
 
 
 $(document).on('click', '.ver-detalles', function () {
