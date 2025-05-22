@@ -20,7 +20,7 @@
         </a>
       </div>
       
-      <span class="logo"><i class="fa-solid fa-fingerprint"></i></span>
+      <span class="logo"><i class="fa-solid fa-shop"></i></span>
       <h2>Inicio de Sesión</h2>
       <span class="sub-heading1">Ingrese su usuario y clave para acceder al sistema</span>
     
