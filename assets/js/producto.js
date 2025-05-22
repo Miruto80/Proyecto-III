@@ -335,6 +335,16 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
 	$("#precio_detal").on("keyup", function() {
     validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/, $(this), 
     $("#sprecio_detal"), "El formato debe ser de 1 a 8 y 2 decimales");
+    let precioDetal = parseFloat($(this).val());
+    let precioMayor = parseFloat($("#precio_mayor").val());
+
+    if (precioDetal < precioMayor) {
+        $("#sprecio_detal").text("El precio al detal no puede ser menor que el precio al mayor");
+        $(this).val("");
+        $(this).removeClass('is-valid').addClass('is-invalid');
+    } else {
+        $("#sprecio_detal").text("");
+    }
   });
   
 	$("#precio_mayor").on("keypress", function(e) {
@@ -344,7 +354,18 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
   $("#precio_mayor").on("keyup", function() {
     validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/, $(this), 
     $("#sprecio_mayor"), "El formato debe ser de 1 a 8 y 2 decimales");
-  });
+
+    let precioDetal = parseFloat($("#precio_detal").val());
+    let precioMayor = parseFloat($(this).val());
+
+    if (precioMayor > precioDetal) {
+        $("#sprecio_mayor").text("El precio al mayor no puede ser mayor que el precio al detal");
+        $(this).val("");
+        $(this).removeClass('is-valid').addClass('is-invalid');
+    } else {
+        $("#sprecio_mayor").text("");
+    }
+});
 
 $("#stock_maximo").on("keypress", function(e){
     validarkeypress(/^[0-9-\b]*$/, e);
@@ -353,6 +374,16 @@ $("#stock_maximo").on("keypress", function(e){
 $("#stock_maximo").on("keyup", function(){
     validarkeyup(/^[0-9]{1,8}$/, $(this),
     $("#sstock_maximo"), "El formato debe ser de 1 a 8");
+    let stockMaximo = parseInt($(this).val());
+    let stockMinimo = parseInt($("#stock_minimo").val());
+
+    if (stockMaximo < stockMinimo) {
+        $("#sstock_maximo").text("El stock máximo no puede ser menor que el stock mínimo");
+        $(this).val("");
+        $(this).removeClass('is-valid').addClass('is-invalid');
+    } else {
+        $("#sstock_maximo").text("");
+    }
 });
 
 $("#stock_minimo").on("keypress", function(e){
@@ -360,8 +391,19 @@ $("#stock_minimo").on("keypress", function(e){
 });
 
 $("#stock_minimo").on("keyup", function(){
-    validarkeyup(/^[0-9]{1,8}$/, $(this),
-    $("#sstock_minimo"), "El formato debe ser de 1 a 8");
+  validarkeyup(/^[0-9]{1,8}$/, $(this),
+  $("#sstock_minimo"), "El formato debe ser de 1 a 8");
+
+  let stockMaximo = parseInt($("#stock_maximo").val());
+  let stockMinimo = parseInt($(this).val());
+
+  if (stockMinimo > stockMaximo) {
+      $("#sstock_minimo").text("El stock mínimo no puede ser mayor que el stock máximo");
+      $(this).val("");
+      $(this).removeClass('is-valid').addClass('is-invalid');
+  } else {
+      $("#sstock_minimo").text("");
+  }
 });
 
 	

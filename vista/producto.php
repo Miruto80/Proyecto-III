@@ -167,14 +167,14 @@
                 <span id="scantidad_mayor"  style="color: red;"></span>
               </div>
               <div class="col-md-4">
-                <label for="precio_mayor">Precio al mayor</label>
-                <input class="form-control" type="text" id="precio_mayor" name="precio_mayor" />
-                <span id="sprecio_mayor"  style="color: red;"></span>
-              </div>
-              <div class="col-md-4">
                 <label for="precio_detal">Precio al detal</label>
                 <input class="form-control" type="text" id="precio_detal" name="precio_detal" />
                 <span id="sprecio_detal"  style="color: red;"></span>
+              </div>
+              <div class="col-md-4">
+                <label for="precio_mayor">Precio al mayor</label>
+                <input class="form-control" type="text" id="precio_mayor" name="precio_mayor" />
+                <span id="sprecio_mayor"  style="color: red;"></span>
               </div>
             <div class="row mb-3">
               <div class="col-md-4">
