@@ -10,6 +10,7 @@ $(document).ready(function () {
       // Verificar si el stock está cerca o ha alcanzado el mínimo
       if (stockDisponible <= stockMinimo || stockDisponible <= stockMinimo + (stockMinimo * 0.1)) {
           productosStockBajo.push(`"${nombreProducto}"`);
+          fila.find('td').eq(4).html('<i class="fa-solid fa-triangle-exclamation" style="color: red;"></i> ' + stockDisponible);
       }
   });
 
