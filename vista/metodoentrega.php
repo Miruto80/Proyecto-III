@@ -3,15 +3,6 @@
 <head>
   <?php include 'complementos/head.php'; ?> 
   <title>Método de Entrega | LoveMakeup</title>
-  <style>
-    .text-danger {
-        min-height: 2.2em; /* Ajusta este valor según el tamaño de tu texto */
-        display: block; /* Asegura que el span ocupe toda la línea */
-        margin-top: 0.1em; /* Espacio entre el campo y el mensaje */
-        color: #dc3545; /* Color rojo para el mensaje de error */
-        font-size: 1.0rem; /* Tamaño de fuente para el mensaje */
-    }
-  </style>
 </head>
 <body class="g-sidenav-show bg-gray-100">
 
@@ -86,21 +77,20 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-            <form id="formRegistrar" autocomplete="off">
-    <label>Nombre</label>
-    <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ej: Tarjeta de crédito" maxlength="30" required>
-    <span id="snombre" class="text-danger"></span> <!-- Mensaje de error aquí -->
-
-    <label class="mt-2">Descripción</label>
-    <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Ej: Visa, MasterCard, etc." maxlength="70" required>
-    <span id="sdescripcion" class="text-danger"></span> <!-- Mensaje de error aquí -->
-
-    <div class="text-center mt-4">
-        <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
-        <button type="reset" class="btn btn-secondary">Limpiar</button>
-    </div>
-</form>
-
+              <form id="formRegistrar" autocomplete="off">
+                <div class="mb-3">
+                  <label for="nombre" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ej: Envío express" required>
+                </div>
+                <div class="mb-3">
+                  <label for="descripcion" class="form-label">Descripción</label>
+                  <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Ej: Entrega en 24 horas" required>
+                </div>
+                <div class="text-center mt-4">
+                  <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
+                  <button type="reset" class="btn btn-secondary">Limpiar</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -115,27 +105,29 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-            <form id="formModificar" autocomplete="off">
-    <input type="hidden" name="id_metodoentrega" id="id_metodoentrega_modificar">
-    
-    <label>Nombre</label>
-    <input type="text" class="form-control" name="nombre" id="nombre_modificar" placeholder="Ej: Tarjeta de crédito" maxlength="30" required>
-    <span id="snombre_modificar" class="text-danger"></span> <!-- Mensaje de error aquí -->
-
-    <label class="mt-2">Descripción</label>
-    <input type="text" class="form-control" name="descripcion" id="descripcion_modificar" placeholder="Ej: Visa, MasterCard, etc." maxlength="70" required>
-    <span id="sdescripcion_modificar" class="text-danger"></span> <!-- Mensaje de error aquí -->
-
-    <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="btnModificar">Modificar</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-    </div>
-</form>
+              <form id="formModificar" autocomplete="off">
+                <input type="hidden" name="id_entrega" id="id_entrega_modificar">
+                <div class="mb-3">
+                  <label for="nombre_modificar" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" name="nombre" id="nombre_modificar" required>
+                </div>
+                <div class="mb-3">
+                  <label for="descripcion_modificar" class="form-label">Descripción</label>
+                  <input type="text" class="form-control" name="descripcion" id="descripcion_modificar" required>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary" id="btnModificar">Modificar</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-      </div>
 
+<?php include 'complementos/footer.php'; ?>
+<script src="assets/js/metodoentrega.js"></script>
+<script src="assets/js/demo/datatables-demo.js"></script>
 
 <!-- Modal detalles producto -->
 <div class="modal fade" id="modalDetallesMetodo" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
@@ -155,11 +147,5 @@
   </div>
 </div>
 
-<?php include 'complementos/footer.php'; ?>
-<script src="assets/js/metodoentrega.js"></script>
-<script src="assets/js/demo/datatables-demo.js"></script>
-
-
 </body>
 </html>
-

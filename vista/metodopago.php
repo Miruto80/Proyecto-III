@@ -3,15 +3,6 @@
 <head>
   <?php include 'complementos/head.php'; ?> 
   <title> Método de Pago | LoveMakeup </title>
-    <style>
-    .text-danger {
-        min-height: 2.2em; /* Ajusta este valor según el tamaño de tu texto */
-        display: block; /* Asegura que el span ocupe toda la línea */
-        margin-top: 0.1em; /* Espacio entre el campo y el mensaje */
-        color: #dc3545; /* Color rojo para el mensaje de error */
-        font-size: 1.0rem; /* Tamaño de fuente para el mensaje */
-    }
-  </style>
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
@@ -91,12 +82,12 @@
             <div class="modal-body">
             <form id="formRegistrar" autocomplete="off">
     <label>Nombre</label>
-    <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ej: Tarjeta de crédito" maxlength="30" required>
-    <span id="snombre" class="text-danger"></span> <!-- Mensaje de error aquí -->
+    <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ej: Tarjeta de crédito" required>
+    <small id="snombre" class="text-danger"></small> <!-- Mensaje de error aquí -->
 
     <label class="mt-2">Descripción</label>
-    <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Ej: Visa, MasterCard, etc." maxlength="70" required>
-    <span id="sdescripcion" class="text-danger"></span> <!-- Mensaje de error aquí -->
+    <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Ej: Visa, MasterCard, etc." required>
+    <small id="sdescripcion" class="text-danger"></small> <!-- Mensaje de error aquí -->
 
     <div class="text-center mt-4">
         <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
@@ -122,12 +113,12 @@
     <input type="hidden" name="id_metodopago" id="id_metodopago_modificar">
     
     <label>Nombre</label>
-    <input type="text" class="form-control" name="nombre" id="nombre_modificar" placeholder="Ej: Tarjeta de crédito" maxlength="30" required>
-    <span id="snombre_modificar" class="text-danger"></span> <!-- Mensaje de error aquí -->
+    <input type="text" class="form-control" name="nombre" id="nombre_modificar" required>
+    <small id="snombre_modificar" class="text-danger"></small> <!-- Mensaje de error aquí -->
 
     <label class="mt-2">Descripción</label>
-    <input type="text" class="form-control" name="descripcion" id="descripcion_modificar" placeholder="Ej: Visa, MasterCard, etc." maxlength="70" required>
-    <span id="sdescripcion_modificar" class="text-danger"></span> <!-- Mensaje de error aquí -->
+    <input type="text" class="form-control" name="descripcion" id="descripcion_modificar" required>
+    <small id="sdescripcion_modificar" class="text-danger"></small> <!-- Mensaje de error aquí -->
 
     <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="btnModificar">Modificar</button>
