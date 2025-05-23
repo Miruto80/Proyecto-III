@@ -178,57 +178,6 @@
 
 
 
-<?php
-require_once (__DIR__ . '/../modelo/conexion.php');
-$db = new Conexion();
-$conex = $db->Conex();
-?>
-
-<!-- Grafica de Torta perrona-->
-<html>
-  <head>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-      google.charts.load("current", {packages:["corechart"]});
-      google.charts.setOnLoadCallback(drawChart);
-
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Producto', 'Cantidad Vendida'],
-          <?php
-          $SQL = "SELECT p.nombre, SUM(d.cantidad) AS cantidad_vendida
-                  FROM detalle d
-                  JOIN productos p ON d.id_producto = p.id_producto
-                  GROUP BY d.id_producto
-                  ORDER BY cantidad_vendida DESC
-                  LIMIT 5";
-          $stmt = $conex->prepare($SQL);
-          $stmt->execute();
-          while ($resultado = $stmt->fetch(PDO::FETCH_ASSOC)) {
-              echo "['" . $resultado['nombre'] . "', " . $resultado['cantidad_vendida'] . "],";
-          }
-          ?>
-        ]);
-
-        var options = {
-          title: 'Top 5 Productos Más Vendidos',
-          is3D: true,
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
-        chart.draw(data, options);
-      }
-    </script>
-  </head>
-  <body>
-    <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
-  </body>
-</html>
-
-
-
-
-
            <br> <br>
     </div>
     </div>  
