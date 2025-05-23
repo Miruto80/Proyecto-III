@@ -1,9 +1,11 @@
 <?php 
 
 require_once('modelo/conexion.php');
+require_once('modelo/categoria.php');
 
 class producto extends Conexion{
  private $conex;
+ private $objcategoria;
  private $id_producto;
  private $nombre;
  private $descripcion;
@@ -24,6 +26,7 @@ class producto extends Conexion{
 function __construct(){
     $this->conex = new Conexion();
     $this->conex = $this->conex->conex();
+	$this->objcategoria = new categoria();
 }
 
 public function registrarBitacora($id_persona, $accion, $descripcion) {
@@ -52,7 +55,7 @@ public function registrar(){
     $strExec->bindParam(':stock_maximo',$this->stock_maximo);
     $strExec->bindParam(':stock_minimo',$this->stock_minimo);
     $strExec->bindParam(':imagen',$this->imagen);
-    $strExec->bindParam(':id_categoria', $this->categoria); // este es el valor que faltaba
+    $strExec->bindParam(':id_categoria', $this->categoria);
 
     $resul = $strExec->execute();
 
@@ -149,17 +152,13 @@ public function cambiarEstatusProducto($id_producto, $estatus_actual) {
     return $resul ? ['respuesta' => 1, 'accion' => 'cambiarEstatus', 'nuevo_estatus' => $nuevo_estatus] : ['respuesta' => 0, 'accion' => 'cambiarEstatus'];
 }
 
-
-
-
 	
-
 public function obtenerCategoria() {
-	$query = "SELECT * FROM categoria WHERE estatus = 1";
-	$consulta = $this->conex->prepare($query);
-	$consulta->execute();
-	return $consulta->fetchAll(PDO::FETCH_ASSOC);
+	return $this->objcategoria->consultar();
 } 
+
+
+
 function set_id_producto($valor)
 {
 	$this->id_producto = $valor;

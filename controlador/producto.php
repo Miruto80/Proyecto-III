@@ -15,7 +15,6 @@ $categoria = $objproducto->obtenerCategoria();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $accion = isset($_POST['accion']) ? $_POST['accion'] : null;
 
-    // Para eliminar puedes seguir pendiente de tu variable 'eliminar' si quieres
     if ($accion === 'registrar') {
         if (!empty($_POST['nombre'])) {
             $objproducto->set_nombre($_POST['nombre']);
@@ -102,21 +101,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $objproducto->set_imagen($rutaDestino);
 
             } else {
-
-                // No se sube imagen nueva, entonces mantener la imagen actual pasada desde un campo oculto
-
-                // o consultar la imagen actual de la BD para no perderla
-
                 if (isset($_POST['imagenActual']) && !empty($_POST['imagenActual'])) {
 
                     $objproducto->set_imagen($_POST['imagenActual']);
 
                 } else {
-
-                    // Si no viene imagen actual, poner la predeterminada
-
                     $objproducto->set_imagen('assets/img/logo.PNG');
-
                 }
             }
             $result = $objproducto->modificar();
