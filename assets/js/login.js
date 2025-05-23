@@ -163,7 +163,7 @@ mensaje){
 $(document).ready(function(){
   //VALIDACION DE DATOS  
   $("#usuario").on("keypress",function(e){
-    validarkeypress(/^[0-9-\b]*$/,e);
+    validarkeypress(/^[0-9\b]*$/,e);
   });
   
   $("#usuario").on("keyup",function(){
@@ -222,7 +222,7 @@ $(document).ready(function(){
 
 
   $("#cedula").on("keypress",function(e){
-    validarkeypress(/^[0-9-\b]*$/,e);
+    validarkeypress(/^[0-9\b]*$/,e);
   });
   
   $("#cedula").on("keyup",function(){
