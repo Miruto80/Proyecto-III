@@ -95,6 +95,8 @@ nav {
          
 
             <?php if ($sesion_activa): ?>
+              <?php if($_SESSION["nivel_rol"] == 1) { ?>
+              
             <li>
               <a href="#" class="p-0 m-0 " data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
                 aria-controls="offcanvasCart">
@@ -102,6 +104,7 @@ nav {
                  <i class="fa-solid fa-cart-shopping" style="font-size: 25px;"></i>
               </a>
             </li>
+            <?php } ?>
             <?php endif; ?>
 
            <li class="d-md-none">
@@ -154,6 +157,7 @@ nav {
                 <a href="?pagina=catalogo_contacto" class="nav-link fw-bold px-4 py-3">Contactos</a>
               </li>
              <?php if ($sesion_activa): ?>
+              <?php if($_SESSION["nivel_rol"] == 1) { ?>
               <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
                 <a href="?pagina=catalogo_favorito" class="nav-link fw-bold px-4 py-3" style="color:#ff71d8;">
                 <i class="fa-solid fa-heart"></i> Mi Lista de Deseos </a>
@@ -171,6 +175,13 @@ nav {
                   <i class="fa-solid fa-bag-shopping"></i> Mis Pedidos </a></li>
                 </ul>
               </li>
+              <?php } ?>
+               <?php if($_SESSION["nivel_rol"] == 3) { ?>
+              <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
+                <a href="?pagina=home" class="nav-link fw-bold px-4 py-3" style="color:#ff71d8;">
+                <i class="fa-solid fa-share"></i> Volver </a>
+              </li>
+                <?php } ?>
              <?php endif; ?>
             </ul>
 

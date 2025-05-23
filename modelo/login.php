@@ -33,10 +33,11 @@ class Login extends Conexion {
         $strExec->execute();
         $resultado = $strExec->fetchObject();
         if ($resultado) {
-            if ($resultado->estatus != 1) {
-                $resultado->noactiva = true; // para indicar que la cuenta está suspendida o inactiva
-            }
+            if (!in_array($resultado->estatus, [1, 2, 3])) {
+                $resultado->noactiva = true;
+             }
         }
+
         return $resultado;
     }
    

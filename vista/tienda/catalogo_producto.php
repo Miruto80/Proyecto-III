@@ -52,9 +52,11 @@
                         <div class="section-header d-flex flex-wrap justify-content-between pb-2 mt-5 mt-lg-0">
                             <h2 class="section-title">Productos</h2>
                               <?php if ($sesion_activa): ?>
+                                 <?php if($_SESSION["nivel_rol"] == 1) { ?>
                             <div class="d-flex align-items-center">
                                 <a href="?pagina=vercarrito" class="btn btn-dark rounded-1"><i class="fa fa-cart-plus me-2"></i> Ver Carrito</a>
                             </div>
+                              <?php } ?>
                                <?php endif; ?>
                         </div>
                     </div>

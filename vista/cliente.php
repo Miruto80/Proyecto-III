@@ -4,6 +4,7 @@
 <head> 
   <!-- php barra de navegacion-->
   <?php include 'complementos/head.php' ?> 
+  <link rel="stylesheet" href="assets/css/estatus.css">
   <title> Cliente | LoveMakeup  </title> 
 </head>
  
@@ -40,12 +41,7 @@
         Cliente</h4>
            
        <!-- Button que abre el Modal N1 Registro -->
-          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
-            <span class="icon text-white">
-            <i class="fas fa-file-medical"></i>
-            </span>
-            <span class="text-white">Registrar</span>
-          </button>
+       
       </div>
           
 
@@ -55,9 +51,9 @@
               <thead class="table-color">
                 <tr>
                   <th class="text-white">#</th>
+                   <th class="text-white">Cedula</th>
                   <th class="text-white">Nombre</th>
                   <th class="text-white">Apellido</th>
-                  <th class="text-white">Cedula</th>
                   <th class="text-white">Telefono</th>
                   <th class="text-white">Correo</th>
 
@@ -67,29 +63,63 @@
               </thead>
               <tbody>
               <?php
+                  $estatus_texto = array(
+                    1 => "Cliente Activo",
+                    2 => "Cliente Favorito",
+                    3 => "Mal Cliente"
+                  );
+              
+                  $estatus_classes = array(
+                    1 => 'activos',
+                    2 => 'favoritos',
+                    3 => 'malclientes' 
+                  );
+
                   foreach ($registro as $dato){
                 ?>
                 <tr>
                   <td><?php echo $dato['id_persona']?></td>
+                   <td><?php echo $dato['cedula']?></td>
                   <td><?php echo $dato['nombre']?></td>
                   <td><?php echo $dato['apellido']?></td>
-                  <td><?php echo $dato['cedula']?></td>
                   <td><?php echo $dato['telefono']?></td>
                   <td><?php echo $dato['correo']?></td>
-                  <td><?php echo $dato['estatus']?></td>
+                  <td>
+                  <span class="<?= $estatus_classes[$dato['estatus']] ?>">
+                    <?php echo $estatus_texto[$dato['estatus']] ?>
+                  </span>
+                  </td>
                 
                   <td>
-                    <form method="POST" action="?pagina=usuario">
-                     <!--  <button name="modificar" class="btn btn-primary btn-sm modificar"> 
-                        <i class="fas fa-pencil-alt" title="Editar"> </i> 
-                       </button> -->
-                        
-                        <button name="eliminar" class="btn btn-danger btn-sm eliminar" value="<?php echo $dato['id_persona']?>">
-                          <i class="fas fa-trash-alt" title="Eliminar"> </i>
-                        </button>
-                        <input type="hidden" name="eliminar" value="<?php echo $dato['id_persona']?>">
-                     </form>
-                  </td>
+                      <form method="POST" action="?pagina=cliente" id="formestatus">
+                        <input type="hidden" name="id_persona" id="id_persona_hidden">
+
+                  <?php if ($dato['estatus'] == 1) { ?>
+                    <button type="button" class="btn btn-primary btn-sm favorito" data-id="<?php echo $dato['id_persona']; ?>">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                  <?php } else { ?>
+                    <button type="button" class="btn btn-dark btn-sm clienteactivo" data-id="<?php echo $dato['id_persona']; ?>">
+                       <i class="fa-solid fa-star-half"></i>
+                    </button>
+                  <?php } ?>
+
+                  <?php if ($dato['estatus'] <= 2) { ?>
+                    <button type="button" class="btn btn-warning btn-sm malcliente" data-id="<?php echo $dato['id_persona']; ?>">
+                       <i class="fa-solid fa-face-angry"></i>
+                   </button>
+                  <?php } ?>
+
+                  <button type="button" class="btn btn-info btn-sm"
+                   data-bs-toggle="modal"
+                   data-bs-target="#editarModal"
+                   data-id="<?php echo $dato['id_persona']; ?>"
+                   data-cedula="<?php echo $dato['cedula']; ?>" 
+                   data-correo="<?php echo $dato['correo']; ?>">
+                  <i class="fas fa-pencil-alt" title="Editar"></i> 
+                </button>
+                </form>
+              </td>
                 </tr>
                <?php } ?>
               </tbody>
@@ -103,36 +133,50 @@
     </div>  
     </div><!-- FIN CARD PRINCIPAL-->  
 
+<style>
+  .text-g{
+    font-size:15px;
+  }
+</style>
 
 <!-- Modal -->
-<div class="modal fade" id="registro" tabindex="1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog  modal-lg modal-dialog-centered">
+<div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
     <div class="modal-content">
-    <div class="modal-header header-color">
-        <h1 class="modal-title fs-5" id="1">Registrar Cliente</h1>
+      <div class="modal-header header-color">
+        <h5 class="modal-title text-dark" id="modalLabel"><i class="fas fa-pencil-alt"></i> Editar Datos del Cliente</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-
-      <div class="modal-body"> <!-- Modal contenido -->
-      
-      <form action="">
-        <input type="text" class="form-control "name=""  id=""> <br>
-        <input type="text" class="form-control "name=""  id=""> <br>
-<br>
-      <div class="text-center">
-        <button type="button" class="btn btn-primary">Registrar</button>
-        <button type="reset" class="btn btn-primary">Limpiar</button>
-        </div>
-      </form>
-
-      
-
-
-      </div> <!-- FIN Modal contenido -->
-      
+      <div class="modal-body">
+        <form method="POST" action="?pagina=cliente" id="formdatosactualizar">
+          <div class="mb-3">
+            <label for="cedula" class="form-label text-g">Cédula</label>
+             <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-id-card"></i></span>
+                   <input type="text" class="form-control" id="modalCedula" name="cedula">
+              </div>
+                <span id="textocedulamodal" class="text-danger"></span>
+          </div>
+          <div class="mb-3">
+            <label for="correo" class="form-label text-g">Correo Electrónico</label>
+             <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-envelope"></i></span>
+                  <input type="email" class="form-control" id="modalCorreo" name="correo">
+              </div>  
+              <span id="textocorreomodal" class="text-danger"></span>
+          </div>
+          <input type="hidden" id="modalIdPersona" name="id_persona">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success text-dark" name="actualizar" id="actualizar"><i class="fa-solid fa-floppy-disk"></i> Actualizar datos</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
     </div>
   </div>
 </div>
+
+<!--FIN Modal -->
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>

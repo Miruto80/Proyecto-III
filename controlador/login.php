@@ -16,7 +16,7 @@ if (isset($_POST['ingresar'])) {
        
         $resultado = $objlogin->verificarUsuario();
         if ($resultado) {
-            if ($resultado->estatus == 1) { // Account is active
+            if (in_array($resultado->estatus, [1, 2, 3])) { // Permitir estatus 1, 2 y 3
 
                 $_SESSION["id"] = $resultado->id_persona;
                 $_SESSION["nombre"] = $resultado->nombre;

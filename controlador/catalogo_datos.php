@@ -113,27 +113,15 @@ if (isset($_POST['actualizar'])) {
 
    }
 
-
-/*
-   if ($objdatos->existeCorreo($correo)) {
-         $res = array('respuesta' => 0, 'accion' => 'actualizar', 'text' => 'El correo electrónico ya está registrado.');
-         echo json_encode($res);
-         exit; // Se detiene la ejecución si el correo existe
-   } else{
-     
-      $objdatos->set_Id_persona($id_persona); 
-      $result = $objdatos->eliminar();
-      echo json_encode($result);
-
-      session_destroy();
-   }
-      */
  
-}else if ($sesion_activa) {
+} if ($sesion_activa) {
+     if($_SESSION["nivel_rol"] == 1) { 
       require_once('vista/tienda/catalogo_datos.php');
+    } else{
+        header('Location: ?pagina=catalogo');
+    }   
 } else {
    header('Location: ?pagina=catalogo');
 }
-
 
 ?>

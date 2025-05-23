@@ -24,33 +24,6 @@ class Cliente extends Conexion
    
 
 
-    public function registrar() {
-
-        $registro = "INSERT INTO personas(cedula, nombre, apellido, correo, telefono, clave, estatus, id_tipo)
-            VALUES(:cedula,:nombre, :apellido, :correo, :telefono,:clave, 1,:id_rol)";
-
-        $strExec = $this->conex->prepare($registro);
-        $strExec->bindParam(':cedula', $this->cedula);
-        $strExec->bindParam(':nombre', $this->nombre);
-        $strExec->bindParam(':apellido', $this->apellido);
-        $strExec->bindParam(':correo', $this->correo);
-        $strExec->bindParam(':telefono', $this->telefono);
-        $strExec->bindParam(':clave', $this->clave);
-        $strExec->bindParam(':id_rol', $this->id_rol);
-
-        $resul = $strExec->execute();
-        if ($resul) {
-            $res['respuesta'] = 1;
-            $res['accion'] = 'incluir';
-        } else {
-            $res['respuesta'] = 0;
-            $res['accion'] = 'incluir';
-        }
-
-        return $res;
-    } //fin registrar
-
-
     public function consultar(){
         $registro="SELECT p.*, ru.id_tipo, ru.nombre AS nombre_tipo, ru.nivel
         FROM personas p 
@@ -69,25 +42,89 @@ class Cliente extends Conexion
     } //fin consultar
     
 
-    public function eliminar(){
-        try {
-            $registro = "DELETE FROM personas WHERE id_persona = :id_persona";
-            $strExec = $this->conex->prepare($registro);
-            $strExec->bindParam(':id_persona', $this->id_persona);
-            $result = $strExec->execute();
-                if ($result){
-                    $res=array('respuesta'=>1,'accion'=>'eliminar');
-                } else{
-                    $res=array('respuesta'=>0,'accion'=>'eliminar');
-                }
+     public function favorito(){
+        $registro = "UPDATE personas SET estatus = 2 WHERE id_persona = :id_persona";
 
-                return $res;
-            } catch (PDOException $e) {
-                echo "Error: " . $e->getMessage();
-            }
+        $strExec = $this->conex->prepare($registro);
+        $strExec->bindParam(':id_persona', $this->id_persona);
+
+        $resul = $strExec->execute();
+        if ($resul) {
+            $res=array('respuesta'=>1,'accion'=>'favorito');
+        } else {
+            $res=array('respuesta'=>0,'accion'=>'favorito');
+        }
+        return $res;
+    }
+
+    public function malcliente(){ 
+        $registro = "UPDATE personas SET estatus = 3 WHERE id_persona = :id_persona";
+
+        $strExec = $this->conex->prepare($registro);
+        $strExec->bindParam(':id_persona', $this->id_persona);
+
+        $resul = $strExec->execute();
+        if ($resul) {
+            $res=array('respuesta'=>1,'accion'=>'malcliente');
+        } else {
+            $res=array('respuesta'=>0,'accion'=>'malcliente');
+        }
+        return $res;
+    } 
+
+
+  public function clienteactivo(){
+        $registro = "UPDATE personas SET estatus = 1 WHERE id_persona = :id_persona";
+
+        $strExec = $this->conex->prepare($registro);
+        $strExec->bindParam(':id_persona', $this->id_persona);
+
+        $resul = $strExec->execute();
+        if ($resul) {
+            $res=array('respuesta'=>1,'accion'=>'clienteactivo');
+        } else {
+            $res=array('respuesta'=>0,'accion'=>'clienteactivo');
+        }
+        return $res;
     }
   
+    public function actualizar(){
+        $registro = "UPDATE personas SET cedula = :cedula, correo = :correo WHERE id_persona = :id_persona";
 
+        $strExec = $this->conex->prepare($registro);
+        $strExec->bindParam(':id_persona', $this->id_persona);
+        $strExec->bindParam(':cedula', $this->cedula);
+        $strExec->bindParam(':correo', $this->correo);
+
+        $resul = $strExec->execute();
+        if ($resul) {
+            $res=array('respuesta'=>1,'accion'=>'actualizar');
+        } else {
+            $res=array('respuesta'=>0,'accion'=>'actualizar');
+        }
+        return $res;
+    }
+
+
+    public function existeCedula() {
+        $consulta = "SELECT cedula FROM personas WHERE cedula = :cedula";
+        $strExec = $this->conex->prepare($consulta);
+        $strExec->bindParam(':cedula', $this->cedula);
+        $strExec->execute();
+        return $strExec->rowCount() > 0;
+    }
+
+
+     
+    public function existeCorreo() {
+        $consulta = "SELECT correo FROM personas WHERE correo = :correo";
+        $strExec = $this->conex->prepare($consulta);
+        $strExec->bindParam(':correo', $this->correo);
+        $strExec->execute();
+        return $strExec->rowCount() > 0;
+    }
+    
+    
     public function get_Id_Persona()
     {
         return $this->id_persona;

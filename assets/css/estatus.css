@@ -1,0 +1,32 @@
+.activos {
+    background-color:#1cc88a;
+    color: #ffffff;
+    padding: 5px;
+    width: 100%;
+    border-radius: 15px; 
+    text-align: center;
+    display: inline-block;
+  }
+  
+  .favoritos {
+    background-color: #3f61fa;
+    color: #FFFFFF;
+    padding: 5px;
+    width: 100%;
+    border-radius: 15px; 
+    text-align: center;
+    display: inline-block;
+  }
+
+  .malclientes {
+    background-color: rgb(255, 145, 0);
+    color: #FFFFFF;
+    padding: 5px;
+    width: 100%;
+    border-radius: 15px; 
+    text-align: center;
+    display: inline-block;
+  } 
+
+
+  

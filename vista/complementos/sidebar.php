@@ -15,7 +15,8 @@
       
 
     <ul class="navbar-nav">
-        <li class="nav-item">
+        
+         <li class="nav-item">
           <a class="nav-link active" href="?pagina=home">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
               <i class="fa-solid fa-house text-dark text-sm"></i>
@@ -23,7 +24,16 @@
             <span class="nav-link-text ms-1">Inicio</span>
           </a>
         </li>
-        
+          <?php if($_SESSION["nivel_rol"] == 3) { ?>
+        <li class="nav-item">
+          <a class="nav-link" href="?pagina=catalogo">
+            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="fa-solid fa-bag-shopping text-dark text-sm"></i>
+            </div>
+            <span class="nav-link-text ms-1">Ver Tienda</span>
+          </a>
+        </li>
+          <?php } ?>
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Administrar</h6>
         </li>

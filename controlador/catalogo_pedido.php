@@ -7,6 +7,7 @@ $nombreCompleto = trim($nombre . " " . $apellido);
 
 $sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
 
+
 require_once 'modelo/catalogo.php';
 
 $catalogo = new Catalogo();
@@ -25,11 +26,15 @@ $categorias = $catalogo->obtenerCategorias();
     // Verifica si la consulta está retornando productos
    
 
+
 if ($sesion_activa) {
-    require_once('vista/tienda/catalogo_pedido.php');
+     if($_SESSION["nivel_rol"] == 1) { 
+      require_once('vista/tienda/catalogo_pedido.php');
+    } else{
+        header('Location: ?pagina=catalogo');
+    }   
 } else {
    header('Location: ?pagina=catalogo');
 }
-
 
 ?>
