@@ -13,8 +13,8 @@ class Login extends Conexion {
     private $id_rol;
     private $telefono;
     private $correo; 
-    private $encryptionKey = "MotorLoveMakeup"; // Usa una clave segura
-    private $cipherMethod = "AES-256-CBC";
+    private $encryptionKey = "MotorLoveMakeup"; // clave de encriptacion
+    private $cipherMethod = "AES-256-CBC"; //formato de encriptacion
 
     function __construct(){ // Metodo para BD
         $this->conex = new Conexion();
