@@ -9,6 +9,7 @@
     $objusuario = new Usuario();
     
     $rol = $objusuario->obtenerRol();
+    $roll = $objusuario->obtenerRol();
     $registro = $objusuario->consultar();
 
 if (isset($_POST['registrar'])) {
@@ -37,6 +38,21 @@ if (isset($_POST['registrar'])) {
         echo json_encode($resultadoRegistro);
     }
 
+} else if(isset($_POST['actualizar'])){
+   $id_persona = $_POST['id_persona'];
+   $cedula = $_POST['cedula'];
+   $correo = $_POST['correo'];
+   $id_rol = $_POST['id_rol'];
+  
+
+    $objusuario->set_Id_Usuario($id_persona);
+    $objusuario->set_Cedula($cedula); 
+    $objusuario->set_Correo($correo);
+     $objusuario->set_Id_rol($id_rol);    
+    $result = $objusuario->actualizar();
+    echo json_encode($result);
+
+      
 } else if(isset($_POST['eliminar'])){
       $id_usuario = $_POST['eliminar'];
 

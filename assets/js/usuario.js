@@ -24,6 +24,26 @@ deleteButtons.forEach(function (button) {
   });
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+  var editarModal = document.getElementById("editarModal");
+  editarModal.addEventListener("show.bs.modal", function(event) {
+    var button = event.relatedTarget; // Botón que activó el modal
+    var idPersona = button.getAttribute("data-id");
+    var cedula = button.getAttribute("data-cedula");
+    var correo = button.getAttribute("data-correo");
+    var id_tipo = button.getAttribute("data-id_tipo");
+    var nombre_rol = button.getAttribute("data-nombre_rol");
+
+    // Asignar valores al modal
+    document.getElementById("modalIdPersona").value = idPersona;
+    document.getElementById("modalCedula").value = cedula;
+    document.getElementById("modalCorreo").value = correo;
+    document.getElementById("modalrol").value = id_tipo;
+    document.getElementById("modalrol").textContent = nombre_rol;
+  });
+});
+
+
 //Función para validar por Keypress
 function validarkeypress(er,e){
   key = e.keyCode;
@@ -58,9 +78,32 @@ $(document).ready(function() {
  
   });
 
+  
+  $('#actualizar').on("click", function () {
+    Swal.fire({
+      title: '¿Desea Cambiar estos datos del Usuario?',
+      text: '',
+      icon: 'question',
+      showCancelButton: true,
+      color: "#00000",
+      confirmButtonColor: '#58c731',
+      cancelButtonColor: '#42515A',
+      confirmButtonText: ' SI ',
+      cancelButtonText: 'NO'
+    }).then((result) => {
+      if (result.isConfirmed) {
+       
+        var datos = new FormData($('#formdatosactualizar')[0]);
+        datos.append('actualizar', 'actualizar');
+        enviaAjax(datos);
+      }
+    });
+ });
+
+
 
   $("#cedula").on("keypress",function(e){
-    validarkeypress(/^[0-9-\b]*$/,e);
+    validarkeypress(/^[0-9\b]*$/,e);
   });
   
   $("#cedula").on("keyup",function(){
@@ -165,12 +208,12 @@ function enviaAjax(datos) {
                 }
               } else if (lee.accion == 'actualizar') {
                 if (lee.respuesta == 1) {
-                  muestraMensaje("success", 1000, "Se ha Modificado con éxito", "Su registro se ha Actualizado exitosamente");
+                  muestraMensaje("success", 2000, "Se ha Modificado con éxito", "Su registro se ha Actualizado exitosamente");
                   setTimeout(function () {
                     location = '?pagina=usuario';
                   }, 1000);
                 } else {
-                  muestraMensaje("error", 2000, "ERROR", "ERROR");
+                  muestraMensaje("error", 2000, lee.text,"");
                 }
               } else if (lee.accion == 'eliminar') {
                 if (lee.respuesta == 1) {

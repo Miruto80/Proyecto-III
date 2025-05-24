@@ -5,6 +5,7 @@
   <!-- php barra de navegacion-->
   <?php include 'complementos/head.php' ?> 
   <title> Usuario | LoveMakeup  </title> 
+ <link rel="stylesheet" href="assets/css/estatus.css">
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
@@ -60,7 +61,6 @@
                   <th class="text-white">Cedula</th>
                   <th class="text-white">Telefono</th>
                   <th class="text-white">Correo</th>
-                  <th class="text-white">Clave</th>
                   <th class="text-white">Rol</th>
                   <th class="text-white">Estatus</th>
                   <th class="text-white">ACCION</th>
@@ -68,6 +68,18 @@
               </thead>
               <tbody>
               <?php
+                $estatus_texto = array(
+                    1 => "Activo",
+                    2 => "Cliente Favorito",
+                    3 => "Inactivo"
+                  );
+              
+                  $estatus_classes = array(
+                    1 => 'activos',
+                    2 => 'favoritos',
+                    3 => 'malclientes' 
+                  );
+
                   foreach ($registro as $dato){
                 ?>
                 <tr>
@@ -77,15 +89,26 @@
                   <td><?php echo $dato['cedula']?></td>
                   <td><?php echo $dato['telefono']?></td>
                   <td><?php echo $dato['correo']?></td>
-                  <td><?php echo $dato['clave']?></td>
                   <td><?php echo $dato['nombre_tipo']?></td>
-                  <td><?php echo $dato['estatus']?></td>
+                  <td>
+                    <span class="<?= $estatus_classes[$dato['estatus']] ?>">
+                      <?php echo $estatus_texto[$dato['estatus']] ?>
+                    </span>
+                  </td>
                 
                   <td>
                     <form method="POST" action="?pagina=usuario">
-                     <!--  <button name="modificar" class="btn btn-primary btn-sm modificar"> 
-                        <i class="fas fa-pencil-alt" title="Editar"> </i> 
-                       </button> -->
+                      <button type="button" class="btn btn-primary btn-sm"
+                   data-bs-toggle="modal"
+                   data-bs-target="#editarModal"
+                   data-id="<?php echo $dato['id_persona']; ?>"
+                   data-cedula="<?php echo $dato['cedula']; ?>" 
+                   data-correo="<?php echo $dato['correo']; ?>"
+                   data-nombre_rol="<?php echo $dato['nombre_tipo']; ?>"
+                   data-id_tipo="<?php echo $dato['id_tipo']; ?>" >
+                   
+                  <i class="fas fa-pencil-alt" title="Editar"></i> 
+                </button>
                         
                         <button name="eliminar" class="btn btn-danger btn-sm eliminar" value="<?php echo $dato['id_persona']?>">
                           <i class="fas fa-trash-alt" title="Eliminar"> </i>
@@ -126,7 +149,7 @@
             <label>NOMBRE</label>
               <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user"></i></span>
-                  <input type="text" class="form-control "name="nombre"  id="nombre" placeholder="nombre:">
+                  <input type="text" class="form-control "name="nombre"  id="nombre" placeholder="nombre: juan">
               </div>
                <span id="textonombre" class="alert-text"></span>
           </div>
@@ -135,7 +158,7 @@
              <label>APELLIDO</label>
                <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user"></i></span>
-                   <input type="text" class="form-control "name="apellido"  id="apellido" placeholder="apellido:">
+                   <input type="text" class="form-control "name="apellido"  id="apellido" placeholder="apellido: perez">
               </div>
                <span id="textoapellido" class="alert-text"></span>
           </div>
@@ -146,7 +169,7 @@
              <label>N° DE CEDULA</label>
                  <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-id-card"></i></span>
-                  <input type="text" class="form-control "name="cedula"  id="cedula" placeholder="cedula:">
+                  <input type="text" class="form-control "name="cedula"  id="cedula" placeholder="cedula: 11222333">
               </div>
          
                <span id="textocedula" class="alert-text"></span>
@@ -171,7 +194,7 @@
               <label>TELEFONO</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-mobile-screen-button"></i></span>
-                  <input type="text" class="form-control "name="telefono"  id="telefono" placeholder="Telefono:">
+                  <input type="text" class="form-control "name="telefono"  id="telefono" placeholder="Telefono: 04240001122">
               </div>  
                <span id="textotelefono" class="alert-text"></span>
           </div>
@@ -179,7 +202,7 @@
               <label>CORREO</label>
               <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-envelope"></i></span>
-                  <input type="text" class="form-control "name="correo"  id="correo" placeholder="Correo:">
+                  <input type="text" class="form-control "name="correo"  id="correo" placeholder="Correo: tucorreo@dominio.com">
               </div>  
               <span id="textocorreo" class="alert-text"></span>
           </div>
@@ -201,27 +224,74 @@
       <br>
 
       <div class="text-center">
-        <button type="button" class="btn btn-success" id="registrar">Registrar</button>
-        <button type="reset" class="btn btn-primary">Limpiar</button>
+        <button type="button" class="btn btn-success" id="registrar"> <i class="fa-solid fa-floppy-disk"></i> Registrar</button>
+        <button type="reset" class="btn btn-primary"> <i class="fa-solid fa-eraser"></i>  Limpiar</button>
         </div>
 
 
 
-
-
-
-
-
       </form>
-
-      
-
 
       </div> <!-- FIN Modal contenido -->
       
     </div>
   </div>
 </div>
+
+
+<!-- Modal MODIFCAR -->
+<div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header header-color">
+        <h5 class="modal-title text-dark" id="modalLabel"><i class="fas fa-pencil-alt"></i> Editar Datos del Usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="?pagina=cliente" id="formdatosactualizar">
+          <div class="mb-3">
+            <label for="cedula" class="form-label text-g">Cédula</label>
+             <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-id-card"></i></span>
+                   <input type="text" class="form-control" id="modalCedula" name="cedula">
+              </div>
+                <span id="textocedulamodal" class="text-danger"></span>
+          </div>
+          <div class="mb-3">
+            <label for="correo" class="form-label text-g">Correo Electrónico</label>
+             <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-envelope"></i></span>
+                  <input type="email" class="form-control" id="modalCorreo" name="correo">
+              </div>  
+              <span id="textocorreomodal" class="text-danger"></span>
+          </div>
+          <div class="mb-3">
+             <label for="rol" class="form-label text-g">Rol</label>
+                 <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user-tag"></i></span>
+                    <select class="form-select" name="id_rol">
+                      <option id="modalrol"> </option>
+                        <?php foreach($roll as $rol) {?>
+                          <option value="<?php echo $rol['id_tipo'];?>"> <?php echo $rol['nombre']." - Nivel ".$rol['nivel'];?> </option>
+                        <?php } ?>
+                    </select>
+              </div>             
+          </div>
+          
+          
+          <input type="hidden" id="modalIdPersona" name="id_persona">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success text-dark" name="actualizar" id="actualizar"><i class="fa-solid fa-floppy-disk"></i> Actualizar datos</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--FIN Modal -->
+
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
 <!-- para el datatable-->

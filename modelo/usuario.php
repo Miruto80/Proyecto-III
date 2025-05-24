@@ -106,6 +106,24 @@ class Usuario extends Conexion
         return $consulta->fetchAll(PDO::FETCH_ASSOC);
     }
 
+     public function actualizar(){
+        $registro = "UPDATE personas SET cedula = :cedula, correo = :correo, id_tipo = :id_rol WHERE id_persona = :id_usuario";
+
+        $strExec = $this->conex->prepare($registro);
+        $strExec->bindParam(':id_usuario', $this->id_usuario);
+        $strExec->bindParam(':cedula', $this->cedula);
+        $strExec->bindParam(':correo', $this->correo);
+        $strExec->bindParam(':id_rol', $this->id_rol);
+
+        $resul = $strExec->execute();
+        if ($resul) {
+            $res=array('respuesta'=>1,'accion'=>'actualizar');
+        } else {
+            $res=array('respuesta'=>0,'accion'=>'actualizar');
+        }
+        return $res;
+    }
+
 
     public function get_Id_Usuario()
     {
