@@ -20,8 +20,13 @@
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.instagram.com/lovemakeupyk/" target="_blank" class="text-secondary-emphasis">
+                  <a href="https://wa.link/0e2clu" target="_blank" class="text-secondary-emphasis">
                   <i class="fa-brands fa-whatsapp" style="font-size: 30px; color: #fa48c9;"></i>
+                  </a>
+                </li>
+                 <li>
+                  <a href="https://www.facebook.com/lovemakeupyk/" target="_blank" class="text-secondary-emphasis">
+                  <i class="fa-brands fa-facebook" style="font-size: 30px; color: #fa48c9;"></i>
                   </a>
                 </li>
                
