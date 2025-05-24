@@ -138,7 +138,7 @@
         var saludo = "";
 
         if (hora >= 6 && hora < 12) {
-            saludo = "Buenos días <i class='fa-solid fa-cloud-su'></i>, " + nombreCompleto;
+            saludo = "Buenos días <i class='fa-solid fa-cloud-sun'></i>, " + nombreCompleto;
         } else if (hora >= 12 && hora < 18) {
             saludo = "Buenas tardes <i class='fa-solid fa-sun'></i>, " + nombreCompleto;
         } else {
