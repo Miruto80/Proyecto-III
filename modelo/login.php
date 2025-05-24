@@ -13,33 +13,64 @@ class Login extends Conexion {
     private $id_rol;
     private $telefono;
     private $correo; 
+    private $encryptionKey = "MotorLoveMakeup"; // Usa una clave segura
+    private $cipherMethod = "AES-256-CBC";
 
     function __construct(){ // Metodo para BD
         $this->conex = new Conexion();
         $this->conex = $this->conex->Conex();
     } 
 
-    public function verificarUsuario() {
-        $consulta = "SELECT p.*, ru.nombre AS nombre_usuario, ru.nivel
-                     FROM personas p
-                     INNER JOIN rol_usuario ru ON p.id_tipo = ru.id_tipo
+    private function encryptClave($clave) {
+    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipherMethod));
+     // Se genera un IV aleatorio
+    $encrypted = openssl_encrypt($clave, $this->cipherMethod, $this->encryptionKey, 0, $iv);
+     //Se encripta la clave con AES-256-CBC
+    return base64_encode($iv . $encrypted); // Guarda IV junto con el cifrado
+    }
 
-                     WHERE p.cedula = :cedula 
-                     AND p.clave = :clave";
-                     
-        $strExec = $this->conex->prepare($consulta);
-        $strExec->bindParam(':cedula', $this->cedula);
-        $strExec->bindParam(':clave', $this->clave);
-        $strExec->execute();
-        $resultado = $strExec->fetchObject();
-        if ($resultado) {
+    private function decryptClave($claveEncriptada) {
+    $data = base64_decode($claveEncriptada);
+    //Recuperamos el IV y los datos cifrados en binario.
+    $ivLength = openssl_cipher_iv_length($this->cipherMethod);
+    //Obtener la longitud del IV, Para saber cuántos bytes tomar.
+    $iv = substr($data, 0, $ivLength);
+    //Extraer el IV → Separamos el IV del texto cifrado.
+    $encryptedData = substr($data, $ivLength);
+    //Extraer los datos cifrados, Ahora tenemos solo el texto cifrado.
+    $claveDesencriptada = openssl_decrypt($encryptedData, $this->cipherMethod, $this->encryptionKey, 0, $iv);
+    // Desencriptar con OpenSSL, Convertimos el texto cifrado en la clave original.
+    return $claveDesencriptada;
+    }
+
+    
+    public function verificarUsuario() {
+    $consulta = "SELECT p.*, ru.nombre AS nombre_usuario, ru.nivel, p.clave
+                 FROM personas p
+                 INNER JOIN rol_usuario ru ON p.id_tipo = ru.id_tipo
+                 WHERE p.cedula = :cedula";
+                 
+    $strExec = $this->conex->prepare($consulta);
+    $strExec->bindParam(':cedula', $this->cedula);
+    $strExec->execute();
+    $resultado = $strExec->fetchObject();
+
+    if ($resultado) {
+        // Desencriptar la clave almacenada
+        $claveDesencriptada = $this->decryptClave($resultado->clave);
+
+        // Comparar con la clave ingresada
+        if ($claveDesencriptada === $this->clave) {
             if (!in_array($resultado->estatus, [1, 2, 3])) {
                 $resultado->noactiva = true;
-             }
+            }
+            return $resultado;
         }
-
-        return $resultado;
     }
+
+    return null; // Retorna null si las credenciales no coinciden
+}
+
    
     public function registrarBitacora($id_persona, $accion, $descripcion) {
     $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
@@ -55,30 +86,31 @@ class Login extends Conexion {
 
 
     public function registrar() {
+    $registro = "INSERT INTO personas(cedula, nombre, apellido, correo, telefono, clave, estatus, id_tipo)
+        VALUES(:cedula,:nombre, :apellido, :correo, :telefono,:clave, 1,2)";
 
-        $registro = "INSERT INTO personas(cedula, nombre, apellido, correo, telefono, clave, estatus, id_tipo)
-            VALUES(:cedula,:nombre, :apellido, :correo, :telefono,:clave, 1,2)";
+    $strExec = $this->conex->prepare($registro);
+    $strExec->bindParam(':cedula', $this->cedula);
+    $strExec->bindParam(':nombre', $this->nombre);
+    $strExec->bindParam(':apellido', $this->apellido);
+    $strExec->bindParam(':correo', $this->correo);
+    $strExec->bindParam(':telefono', $this->telefono);
+    
+    // Encriptar la clave antes de almacenarla
+    $claveEncriptada = $this->encryptClave($this->clave);
+    $strExec->bindParam(':clave', $claveEncriptada);
 
-        $strExec = $this->conex->prepare($registro);
-        $strExec->bindParam(':cedula', $this->cedula);
-        $strExec->bindParam(':nombre', $this->nombre);
-        $strExec->bindParam(':apellido', $this->apellido);
-        $strExec->bindParam(':correo', $this->correo);
-        $strExec->bindParam(':telefono', $this->telefono);
-        $strExec->bindParam(':clave', $this->clave);
+    $resul = $strExec->execute();
+    if ($resul) {
+        $res['respuesta'] = 1;
+        $res['accion'] = 'incluir';
+    } else {
+        $res['respuesta'] = 0;
+        $res['accion'] = 'incluir';
+    }
 
-        $resul = $strExec->execute();
-        if ($resul) {
-            $res['respuesta'] = 1;
-            $res['accion'] = 'incluir';
-        } else {
-            $res['respuesta'] = 0;
-            $res['accion'] = 'incluir';
-        }
-
-        return $res;
-    } //fin registrar
-
+    return $res;
+}
 
      public function existeCedula() {
         $consulta = "SELECT cedula FROM personas WHERE cedula = :cedula";

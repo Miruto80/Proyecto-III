@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-05-2025 a las 05:07:27
+-- Tiempo de generación: 24-05-2025 a las 05:12:40
 -- Versión del servidor: 10.4.18-MariaDB
 -- Versión de PHP: 8.0.3
 
@@ -197,7 +197,7 @@ CREATE TABLE `personas` (
   `apellido` varchar(40) DEFAULT NULL,
   `correo` varchar(250) DEFAULT NULL,
   `telefono` varchar(15) DEFAULT NULL,
-  `clave` varchar(20) DEFAULT NULL,
+  `clave` varchar(512) DEFAULT NULL,
   `estatus` int(2) DEFAULT NULL,
   `id_tipo` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -207,7 +207,7 @@ CREATE TABLE `personas` (
 --
 
 INSERT INTO `personas` (`id_persona`, `cedula`, `nombre`, `apellido`, `correo`, `telefono`, `clave`, `estatus`, `id_tipo`) VALUES
-(1, '10200300', 'Jefe', 'LoveMakeup', 'lovemakeupca@gmail.com', '04241002030', 'love1234', 1, 1);
+(1, '10200300', 'Jefe', 'LoveMakeup', 'lovemakeupca@gmail.com', '04241002030', 'KBrKmaUtzcJkZ1FYynYZbW5yVExwaVFPNkF1RWM1KzJxbUR0QXc9PQ==', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -260,6 +260,13 @@ CREATE TABLE `proveedor` (
   `direccion` varchar(150) DEFAULT NULL,
   `estatus` int(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `proveedor`
+--
+
+INSERT INTO `proveedor` (`id_proveedor`, `numero_documento`, `tipo_documento`, `nombre`, `correo`, `telefono`, `direccion`, `estatus`) VALUES
+(1, '900800700', 'J', 'Inveriones Casa de Maquijalle', 'inversionescasa@hotmail.com', '02518862233', 'av lara', 1);
 
 -- --------------------------------------------------------
 
@@ -391,9 +398,9 @@ ALTER TABLE `notificaciones`
 --
 ALTER TABLE `pedido`
   ADD PRIMARY KEY (`id_pedido`),
-  ADD UNIQUE KEY `id_persona` (`id_persona`),
   ADD KEY `id_entrega` (`id_entrega`),
-  ADD KEY `id_metodopago` (`id_metodopago`);
+  ADD KEY `id_metodopago` (`id_metodopago`),
+  ADD KEY `id_persona` (`id_persona`) USING BTREE;
 
 --
 -- Indices de la tabla `pedido_detalles`
@@ -539,7 +546,7 @@ ALTER TABLE `productos`
 -- AUTO_INCREMENT de la tabla `proveedor`
 --
 ALTER TABLE `proveedor`
-  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `reserva`
