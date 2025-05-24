@@ -149,7 +149,7 @@
     }
 
     var nombreUsuario = "<?php echo $nombreCompleto; ?>"; // Usa el nombre y apellido de sesión o valores por defecto
-obtenerSaludo(nombreUsuario)
+  obtenerSaludo(nombreUsuario)
 </script>
 
 <!-- Modal -->

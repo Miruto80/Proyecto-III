@@ -13,12 +13,28 @@ class Datos extends Conexion{
     private $correo;
     private $clave;
     private $estatus;
-
+    private $encryptionKey = "MotorLoveMakeup"; 
+    private $cipherMethod = "AES-256-CBC";
+    
     function __construct() {
         $this->conex = new Conexion();
         $this->conex = $this->conex->Conex();
     }
 
+    private function encryptClave($clave) {
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipherMethod)); 
+        $encrypted = openssl_encrypt($clave, $this->cipherMethod, $this->encryptionKey, 0, $iv);
+        return base64_encode($iv . $encrypted);
+    }
+
+    private function decryptClave($claveEncriptada) {
+        $data = base64_decode($claveEncriptada);
+        $ivLength = openssl_cipher_iv_length($this->cipherMethod);
+        $iv = substr($data, 0, $ivLength);
+        $encryptedData = substr($data, $ivLength);    
+        $claveDesencriptada = openssl_decrypt($encryptedData, $this->cipherMethod, $this->encryptionKey, 0, $iv);
+        return $claveDesencriptada;
+    }
 
     public function actualizar(){
         $registro = "UPDATE personas SET nombre = :nombre, apellido = :apellido, cedula = :cedula, telefono = :telefono, correo = :correo WHERE id_persona = :id_persona";
@@ -45,7 +61,9 @@ class Datos extends Conexion{
 
         $strExec = $this->conex->prepare($registro);
         $strExec->bindParam(':id_persona', $this->id_persona);
-        $strExec->bindParam(':clave', $this->clave);
+        // Encriptar la clave antes de almacenarla
+        $claveEncriptada = $this->encryptClave($this->clave);
+        $strExec->bindParam(':clave', $claveEncriptada);
 
         $resul = $strExec->execute();
         if ($resul) {
@@ -94,15 +112,18 @@ class Datos extends Conexion{
         return $strExec->rowCount() > 0;
     }
 
-  public function obtenerClave($id_persona) {
-    $consulta = "SELECT clave FROM personas WHERE id_persona = :id_persona"; // Ajusta según la columna real
-    $strExec = $this->conex->prepare($consulta);
-    $strExec->bindParam(':id_persona', $id_persona); // Asegura que sea un entero
-    $strExec->execute();
+   public function obtenerClave($id_persona) {
+        $consulta = "SELECT clave FROM personas WHERE id_persona = :id_persona"; 
+        $strExec = $this->conex->prepare($consulta);
+        $strExec->bindParam(':id_persona', $id_persona);
+        $strExec->execute();
     
-    $fila = $strExec->fetch(PDO::FETCH_ASSOC);
-    return $fila ? $fila['clave'] : null;
-}
+        $fila = $strExec->fetch(PDO::FETCH_ASSOC);
+        if ($fila && isset($fila['clave'])) {
+            return $this->decryptClave($fila['clave']);
+        }
+        return null; // Retorna null si no se encuentra
+    }
 
 
 

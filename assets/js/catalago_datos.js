@@ -116,6 +116,19 @@ mensaje){
   }
 }
 
+function validarkeyup(er, etiqueta, etiquetamensaje, mensaje) {
+  let elemento = $(etiqueta); // Convertir a jQuery
+  let a = er.test(elemento.val()); // Usar .val() correctamente
+  if (a) {
+    etiquetamensaje.text("");
+    return 1;
+  } else {
+    etiquetamensaje.text(mensaje);
+    return 0;
+  }
+}
+
+
 $(document).ready(function() {
 
     $("#cedula").on("keypress",function(e){
@@ -290,7 +303,15 @@ function enviaAjax(datos) {
       timeout: 10000,
       success: function (respuesta) {
         console.log(respuesta);
-        var lee = JSON.parse(respuesta);
+        try {
+    // Eliminar contenido HTML en caso de que aparezca
+    var respuestaLimpiada = respuesta.split("<!DOCTYPE html>")[0].trim();
+    var lee = JSON.parse(respuestaLimpiada);
+    console.log("JSON parseado correctamente:", lee);
+} catch (error) {
+    console.error("Error al parsear JSON:", error.message);
+}
+
         try {
   
            if (lee.accion == 'actualizar') {
@@ -321,7 +342,7 @@ function enviaAjax(datos) {
                   muestraMensaje("error", 2000, "ERROR", lee.text);
                 }
               }
-  
+            
         } catch (e) {
           alert("Error en JSON " + e.name);
         }

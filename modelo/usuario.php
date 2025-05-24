@@ -15,10 +15,18 @@ class Usuario extends Conexion
     private $id_rol;
     private $clave;
     private $estatus;
-
+    private $encryptionKey = "MotorLoveMakeup"; 
+    private $cipherMethod = "AES-256-CBC";
+    
     function __construct() {
         $this->conex = new Conexion();
         $this->conex = $this->conex->Conex();
+    }
+
+    private function encryptClave($clave) {
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipherMethod)); 
+        $encrypted = openssl_encrypt($clave, $this->cipherMethod, $this->encryptionKey, 0, $iv);
+        return base64_encode($iv . $encrypted);
     }
 
     public function registrarBitacora($id_persona, $accion, $descripcion) {
@@ -45,7 +53,9 @@ class Usuario extends Conexion
         $strExec->bindParam(':apellido', $this->apellido);
         $strExec->bindParam(':correo', $this->correo);
         $strExec->bindParam(':telefono', $this->telefono);
-        $strExec->bindParam(':clave', $this->clave);
+        // Encriptar la clave antes de almacenarla
+        $claveEncriptada = $this->encryptClave($this->clave);
+        $strExec->bindParam(':clave', $claveEncriptada);
         $strExec->bindParam(':id_rol', $this->id_rol);
 
         $resul = $strExec->execute();
