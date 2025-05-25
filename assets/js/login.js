@@ -14,6 +14,29 @@ showPasswordButton.addEventListener('click', () => {
   }
 });
 
+//Función para validar por Keypress
+function validarkeypress(er,e){
+  key = e.keyCode;
+    tecla = String.fromCharCode(key);
+    a = er.test(tecla);
+    if(!a){
+    e.preventDefault();
+    }
+}
+//Función para validar por keyup
+function validarkeyup(er,etiqueta,etiquetamensaje,
+mensaje){
+  a = er.test(etiqueta.val());
+  if(a){
+    etiquetamensaje.text("");
+    return 1;
+  }
+  else{
+    etiquetamensaje.text(mensaje);
+    return 0;
+  }
+}
+
 
 // ||||||||||||||| MODAL ||||||||||||||||||||
  document.addEventListener("DOMContentLoaded", function () {
@@ -216,28 +239,7 @@ $(document).ready(function() {
 
 
 
-//Función para validar por Keypress
-function validarkeypress(er,e){
-  key = e.keyCode;
-    tecla = String.fromCharCode(key);
-    a = er.test(tecla);
-    if(!a){
-    e.preventDefault();
-    }
-}
-//Función para validar por keyup
-function validarkeyup(er,etiqueta,etiquetamensaje,
-mensaje){
-  a = er.test(etiqueta.val());
-  if(a){
-    etiquetamensaje.text("");
-    return 1;
-  }
-  else{
-    etiquetamensaje.text(mensaje);
-    return 0;
-  }
-}
+
 
 //|||||| VALIDACION DEL FORM LOGIN Y REGISTRO CLIENTE
 $(document).ready(function(){
@@ -409,14 +411,21 @@ function enviaAjax(datos) {
       timeout: 10000,
       success: function (respuesta) {
         console.log(respuesta);
-        var lee = JSON.parse(respuesta);
+        try {
+    // Eliminar contenido HTML en caso de que aparezca
+    var respuestaLimpiada = respuesta.split("<!DOCTYPE html>")[0].trim();
+    var lee = JSON.parse(respuestaLimpiada);
+    console.log("JSON parseado correctamente:", lee);
+} catch (error) {
+    console.error("Error al parsear JSON:", error.message);
+}
+
         try {
   
            if (lee.accion == 'incluir') {
                 if (lee.respuesta == 1) {  
                   muestraMensaje("success", 2000, "Se ha registrado con éxito", "Ya puede Iniciar Session con Exitosamente");
-                  
-
+                
                     // Vaciar los inputs después del mensaje
                   setTimeout(() => {
                   document.getElementById("cedula").value = "";

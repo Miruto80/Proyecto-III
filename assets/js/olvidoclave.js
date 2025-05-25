@@ -1,16 +1,53 @@
-
+//Función para validar por Keypress
+function validarkeypress(er,e){
+  key = e.keyCode;
+    tecla = String.fromCharCode(key);
+    a = er.test(tecla);
+    if(!a){
+    e.preventDefault();
+    }
+}
+//Función para validar por keyup
+function validarkeyup(er,etiqueta,etiquetamensaje,
+mensaje){
+  a = er.test(etiqueta.val());
+  if(a){
+    etiquetamensaje.text("");
+    return 1;
+  }
+  else{
+    etiquetamensaje.text(mensaje);
+    return 0;
+  }
+}
 
 $(document).ready(function() {
-
-
-  $('#validar').on("click", function () {
-         
-    var datos = new FormData($('#forclave')[0]);
-    datos.append('validar', 'validar');
-    enviaAjax(datos);
  
-  });
 
+ $('#validar').on("click", function(event) {
+        event.preventDefault(); // Evita la recarga de la página
+
+        if (validarFormulario()) {
+             var datos = new FormData($('#forclave')[0]);
+             datos.append('validar', 'validar');
+             enviaAjax(datos);
+        } else {
+             Swal.fire({
+            icon: "info",
+            title: "Dato Vacio",
+            text: "Por favor, colocolar el correo electronico",
+            toast: true,
+            position: "top",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+        }
+    });
 
      $("#correo").on("keypress", function (e) {
       validarkeypress(/^[a-zA-Z0-9._%+-@\b]*$/, e);
@@ -26,6 +63,19 @@ $(document).ready(function() {
 });
 
 
+function validarFormulario() {
+    let valido = true;
+
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/.test($("#correo").val())) {
+        $("#textocorreo").text("Formato incorrecto.");
+        valido = false;
+    } else {
+        $("#textocorreo").text("");
+    }
+
+
+    return valido;
+}
 
 
 
