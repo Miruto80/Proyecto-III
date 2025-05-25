@@ -232,6 +232,8 @@
   <hr>
 
 <?php if ($sesion_activa): ?>
+
+  
   <button type="button" id="btn-agregar-carrito" class="btn btn-primary w-100 mt-2">
     <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
   </button>

@@ -67,13 +67,18 @@ $total = 0;
         <!-- Step Indicator -->
         <div class="cart-step">
     <div class="step-number">1</div>
-    <div class="current-step">Shopping Cart</div>
+    <div class="current-step"><a  href="?pagina=vercarrito" class="">
+          Carrito de Compras
+  </a></div>
     <div>→</div>
-    <div><a href="?pagina=verpedidoweb"> 2 Checkout Details</a></div>
+    <div><a  href="?pagina=verpedidoweb" class="">
+           2 Detalles de Compra
+  </a></div>
     <div>→</div>
-    <div>3 Order Complete</div>
+    <div>3 Pedido Completo</div>
   </div>
     </div>
+</div>
 
     <?php if (empty($carrito)): ?>
       
