@@ -33,7 +33,7 @@ $(document).ready(function () {
 });
 
 $('#btnLimpiar').on("click", function () {
-  $('#nombre, #descripcion, #marca, #cantidad_mayor, #precio_mayor, #precio_detal, #stock_maximo, #stock_minimo').val('').removeClass('is-valid is-invalid');
+  $('#nombre, #descripcion, #marca, #cantidad_mayor, #precio_mayor, #precio_detal, #stock_maximo, #stock_minimo, #categoria').val('').removeClass('is-valid is-invalid');
   $('#imagen').attr("src", "assets/img/logo.PNG");
 });
 
