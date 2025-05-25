@@ -326,84 +326,77 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
 	
 	$("#cantidad_mayor").on("keyup",function(){
 		validarkeyup(/^[0-9]{1,8}$/,$(this),
-		$("#scantidad_mayor"),"El formato debe ser de 1 a 8");
+		$("#scantidad_mayor"),"Solo numeros hasta 8 digitos");
 	});
 	
 	$("#precio_detal").on("keypress", function(e) {
     validarkeypress(/^[0-9.]$/, e);
   });
 	
-	$("#precio_detal").on("keyup", function() {
-    validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/, $(this), 
-    $("#sprecio_detal"), "El formato debe ser de 1 a 8 y 2 decimales");
+  $("#precio_detal").on("keyup", function() {
     let precioDetal = parseFloat($(this).val());
     let precioMayor = parseFloat($("#precio_mayor").val());
 
     if (precioDetal < precioMayor) {
         $("#sprecio_detal").text("El precio al detal no puede ser menor que el precio al mayor");
-        $(this).val("");
-        $(this).removeClass('is-valid').addClass('is-invalid');
+        $(this).val("").removeClass('is-valid').addClass('is-invalid');
     } else {
         $("#sprecio_detal").text("");
+        validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/, $(this), $("#sprecio_detal"), "Solo numeros hasta 8 digitos y 2 decimales");
     }
-  });
+});
   
 	$("#precio_mayor").on("keypress", function(e) {
     validarkeypress(/^[0-9.]$/, e);
   });
 	
   $("#precio_mayor").on("keyup", function() {
-    validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/, $(this), 
-    $("#sprecio_mayor"), "El formato debe ser de 1 a 8 y 2 decimales");
-
     let precioDetal = parseFloat($("#precio_detal").val());
     let precioMayor = parseFloat($(this).val());
 
     if (precioMayor > precioDetal) {
         $("#sprecio_mayor").text("El precio al mayor no puede ser mayor que el precio al detal");
-        $(this).val("");
-        $(this).removeClass('is-valid').addClass('is-invalid');
+        $(this).val("").removeClass('is-valid').addClass('is-invalid');
     } else {
         $("#sprecio_mayor").text("");
+        validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/, $(this), $("#sprecio_mayor"), "Solo numeros hasta 8 digitos y 2 decimales");
     }
 });
+
+
 
 $("#stock_maximo").on("keypress", function(e){
     validarkeypress(/^[0-9-\b]*$/, e);
 });
 
-$("#stock_maximo").on("keyup", function(){
-    validarkeyup(/^[0-9]{1,8}$/, $(this),
-    $("#sstock_maximo"), "El formato debe ser de 1 a 8");
-    let stockMaximo = parseInt($(this).val());
-    let stockMinimo = parseInt($("#stock_minimo").val());
+$("#stock_maximo").on("keyup", function() {
+  let stockMaximo = parseInt($(this).val());
+  let stockMinimo = parseInt($("#stock_minimo").val());
 
-    if (stockMaximo < stockMinimo) {
-        $("#sstock_maximo").text("El stock máximo no puede ser menor que el stock mínimo");
-        $(this).val("");
-        $(this).removeClass('is-valid').addClass('is-invalid');
-    } else {
-        $("#sstock_maximo").text("");
-    }
+  if (stockMaximo < stockMinimo) {
+      $("#sstock_maximo").text("El stock máximo no puede ser menor que el stock mínimo");
+      $(this).val("").removeClass('is-valid').addClass('is-invalid');
+  } else {
+      $("#sstock_maximo").text("");
+      validarkeyup(/^[0-9]{1,8}$/, $(this), $("#sstock_maximo"), "Solo numeros hasta 8 digitos");
+  }
 });
+
 
 $("#stock_minimo").on("keypress", function(e){
     validarkeypress(/^[0-9-\b]*$/, e);
 });
 
-$("#stock_minimo").on("keyup", function(){
-  validarkeyup(/^[0-9]{1,8}$/, $(this),
-  $("#sstock_minimo"), "El formato debe ser de 1 a 8");
-
+$("#stock_minimo").on("keyup", function() {
   let stockMaximo = parseInt($("#stock_maximo").val());
   let stockMinimo = parseInt($(this).val());
 
   if (stockMinimo > stockMaximo) {
       $("#sstock_minimo").text("El stock mínimo no puede ser mayor que el stock máximo");
-      $(this).val("");
-      $(this).removeClass('is-valid').addClass('is-invalid');
+      $(this).val("").removeClass('is-valid').addClass('is-invalid');
   } else {
       $("#sstock_minimo").text("");
+      validarkeyup(/^[0-9]{1,8}$/, $(this), $("#sstock_minimo"), "Solo numeros hasta 8 digitos");
   }
 });
 
@@ -428,31 +421,31 @@ function validarenvio() {
   }
   
   else if (validarkeyup(/^[0-9]{1,8}$/,
-      $("#cantidad_mayor"), $("#scantidad_mayor"), "El formato debe ser de 1 a 8") == 0) {
+      $("#cantidad_mayor"), $("#scantidad_mayor"), "Solo numeros hasta 8 digitos") == 0) {
       muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo cantidad mayor");
       return false;
   }
 
   
   else if (validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/,
-  $("#precio_detal"), $("#sprecio_detal"), "El formato debe ser de 1 a 8 y 2 decimales") == 0) {
+  $("#precio_detal"), $("#sprecio_detal"), "Solo numeros hasta 8 digitos y 2 decimales") == 0) {
     muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo precio detal");
     return false;
   }
   
   else if (validarkeyup(/^[0-9]{1,8}(\.[0-9]{1,2})?$/,
-  $("#precio_mayor"), $("#sprecio_mayor"), "El formato debe ser de 1 a 8 y 2 decimales") == 0) {
+  $("#precio_mayor"), $("#sprecio_mayor"), "Solo numeros hasta 8 digitos y 2 decimales") == 0) {
     muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo precio mayor");
     return false;
   }
   else if (validarkeyup(/^[0-9]{1,8}$/,
-      $("#stock_maximo"), $("#sstock_maximo"), "El formato debe ser de 1 a 8") == 0) {
+      $("#stock_maximo"), $("#sstock_maximo"), "Solo numeros hasta 8 digitos") == 0) {
       muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo stock máximo");
       return false;
   }
 
   else if (validarkeyup(/^[0-9]{1,8}$/,
-      $("#stock_minimo"), $("#sstock_minimo"), "El formato debe ser de 1 a 8") == 0) {
+      $("#stock_minimo"), $("#sstock_minimo"), "Solo numeros hasta 8 digitos") == 0) {
       muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo stock mínimo");
       return false;
   }
