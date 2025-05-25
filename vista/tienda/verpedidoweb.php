@@ -191,13 +191,14 @@ input[type=checkbox]{
 </style>
 
 <div class="cart-step">
-    <div class="step-number">1</div>
+    <div class="">1</div>
     <div class="current-step"><a  href="?pagina=vercarrito" class="">
           Carrito de Compras
   </a></div>
     <div>→</div>
-    <div><a  href="?pagina=verpedidoweb" class="">
-           2 Detalles de Compra
+    <div class="step-number">2</div>
+    <div class=""><a  href="?pagina=verpedidoweb" class="">
+            Detalles de Compra
   </a></div>
     <div>→</div>
     <div>3 Pedido Completo</div>
