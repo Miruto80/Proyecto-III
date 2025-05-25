@@ -33,17 +33,10 @@ $(document).ready(function () {
 });
 
 $('#btnLimpiar').on("click", function () {
-  $('#nombre').val("");
-    $('#descripcion').val("");
-    $('#marca').val("");
-    $('#cantidad_mayor').val("");
-    $('#precio_mayor').val("");
-    $('#precio_detal').val("");
-    $('#stock_maximo').val("");
-    $('#stock_minimo').val("");
-    $('#categoria').val('');
-    $('#imagen').attr("src", "assets/img/logo.PNG");
-  });
+  $('#nombre, #descripcion, #marca, #cantidad_mayor, #precio_mayor, #precio_detal, #stock_maximo, #stock_minimo').val('').removeClass('is-valid is-invalid');
+  $('#imagen').attr("src", "assets/img/logo.PNG");
+});
+
 
 
 
