@@ -32,6 +32,19 @@ $(document).ready(function () {
   }
 });
 
+$('#btnLimpiar').on("click", function () {
+  $('#nombre').val("");
+    $('#descripcion').val("");
+    $('#marca').val("");
+    $('#cantidad_mayor').val("");
+    $('#precio_mayor').val("");
+    $('#precio_detal').val("");
+    $('#stock_maximo').val("");
+    $('#stock_minimo').val("");
+    $('#categoria').val('');
+    $('#imagen').attr("src", "assets/img/logo.PNG");
+  });
+
 
 
 $(document).on('click', '.ver-detalles', function () {
