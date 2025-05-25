@@ -38,11 +38,12 @@
     	<h4 class="text-center color-g mb-1">Olvido de Contraseña</h4>
 		<hr class="bg-dark">
     	<h6 class="text-center mb-3">Estimado Cliente, <?php echo $_SESSION["nombres"]." ".$_SESSION["apellidos"]; ?> </h6>
-        <form action="?pagina=olvidoclave" method="POST">
+        <form action="?pagina=olvidoclave" method="POST" id="forclave" autocomplete="off">
 		<div class="mb-3 text-center">
             <label for="input" class="form-label fw-bold text-g">Ingrese su correo Electronico</label>
-            <input type="text" id="input" class="form-control text-center" placeholder="correo: tucorreo@dominio.com"> 
-        </div>
+            <input type="text" id="correo" name="correo" class="form-control text-center" placeholder="correo: tucorreo@dominio.com"> 
+            <span id="textocorreo"></span>
+		</div>
         <div class="d-flex justify-content-between">
 			<button type="submit" name="cerrarolvido" class="btn btn-danger">Cancelar</button>
 				
@@ -51,5 +52,6 @@
         </div>
     </div>
  <script src="assets/js/core/bootstrap.min.js"></script>
+  <script src="assets/js/olvidoclave.js"></script>
 </body>
 </html>
