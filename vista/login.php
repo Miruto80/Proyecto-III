@@ -40,7 +40,7 @@
       </form>
   
       <div class="button-group1">
-        <a href="?pagina=forgot-password" class="btn-small1 btn-left1">Olvidó su contraseña</a>
+        <a id="openModalclave" class="btn-small1 btn-left1">Olvidó su Contraseña</a>
         <a id="openModal" class="btn-small1 btn-right1"><i class="fa-solid fa-user-plus"></i> Registrarse</a>
       </div>
     </div>
@@ -92,7 +92,7 @@
                 <input type="text" class="inputform" id="correo" name="correo" placeholder="Correo: tucorreo@dominio.com">
                  <span id="textocorreo" class="alert-text"></span>
 
-                <label class="labelform"> <i class="fa-solid fa-lock"></i> Constraseña:</label>
+                <label class="labelform"> <i class="fa-solid fa-lock"></i> Contraseña:</label>
                 <input type="text" class="inputform" id="clave" name="clave" placeholder="Contraseña:">
                  <span id="textoclave" class="alert-text"></span>
 
@@ -106,6 +106,31 @@
         </div>
     </div>
 
+
+<!-- |||||||||||| MODAL |||||||||||-->
+    <div id="myModalclave" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+               <h2 style="color:#fc6998;"><i class="fa-solid fa-lock"></i> Olvido de Contraseña</h2>
+                <span class="close" id="closeModalclave">X</span>
+            </div>
+           <form method="POST" action="?pagina=login" autocomplete="off" id="olvidoclave" class="form-registro">
+            <div class="modal-body">
+
+                <label class="labelform"> <i class="fa-solid fa-id-card"></i> Introducir el Nro. de Cedula</label>
+                <input type="text" class="inputform" id="cedulac" name="cedula" placeholder="Cedula: 11222333 ">
+                <span id="textocedulac" class="alert-text"></span>
+                
+
+            </div>
+            <div class="modal-footer">
+                <button class="save-btn" id="validarolvido">Validar</button>
+                 </form>
+               <button class="cancel-btn" id="closeModalFooterclave" type="button">Cancelar</button>
+            </div>
+      
+        </div>
+    </div>
 
 
     <script src="assets/js/login.js"></script>

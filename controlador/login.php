@@ -101,6 +101,31 @@ if (isset($_POST['ingresar'])) {
         $resultadoRegistro = $objlogin->registrar();
         echo json_encode($resultadoRegistro);
     }
+} else if (isset($_POST['validarclave'])) {
+
+    $cedula = $_POST['cedula'];
+    $objlogin->set_Cedula($cedula);
+    
+  
+     $persona = $objlogin->obtenerPersonaPorCedula();
+
+    if ($persona) {
+        $res = array('respuesta' => 1, 'accion' => 'validarclave');
+        echo json_encode($res);
+        $_SESSION["nombres"] = $persona->nombre;
+        $_SESSION["apellidos"] = $persona->apellido;
+        $_SESSION["correos"] = $persona->correo;
+        $_SESSION["iduser"] = 1;
+        
+        exit;
+    } else {
+        $res = array('respuesta' => 0, 'accion' => 'validarclave', 'text' => 'Cédula incorrecta o no hay registro');
+        echo json_encode($res);
+    }
+} if (isset($_POST['cerrarolvido'])) {    
+    session_destroy(); // Se cierra la sesión
+    header('Location: ?pagina=login');
+    exit;
 } else{
     require_once 'vista/login.php';
 }

@@ -13,8 +13,8 @@ class Login extends Conexion {
     private $id_rol;
     private $telefono;
     private $correo; 
-    private $encryptionKey = "MotorLoveMakeup"; // clave de encriptacion
-    private $cipherMethod = "AES-256-CBC"; //formato de encriptacion
+    private $encryptionKey = "MotorLoveMakeup"; // Usa una clave segura
+    private $cipherMethod = "AES-256-CBC";
 
     function __construct(){ // Metodo para BD
         $this->conex = new Conexion();
@@ -119,6 +119,20 @@ class Login extends Conexion {
         $strExec->execute();
         return $strExec->rowCount() > 0;
     }
+
+    public function obtenerPersonaPorCedula() {
+    $consulta = "SELECT * FROM personas WHERE cedula = :cedula";
+    $strExec = $this->conex->prepare($consulta);
+    $strExec->bindParam(':cedula', $this->cedula);
+    $strExec->execute();
+    
+    if ($strExec->rowCount() > 0) {
+        return $strExec->fetchObject();
+    }
+
+    return null; // Retorna null si no se encuentra la cédula
+    }
+
 
 
      

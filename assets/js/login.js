@@ -54,6 +54,46 @@ showPasswordButton.addEventListener('click', () => {
         });
     });
 
+
+ // ||||||||||||||| MODAL ||||||||||||||||||||
+ document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("myModalclave");
+        let clickCount = 0; // Contador de clics en el fondo
+
+        // Inicialmente ocultar el modal
+        modal.style.display = "none";
+
+        // Mostrar el modal solo cuando se presione el botón
+        document.getElementById("openModalclave").addEventListener("click", function() {
+            modal.style.display = "flex";
+            setTimeout(() => modal.classList.add("show"), 10);
+            clickCount = 0; // Reiniciar contador al abrir el modal
+        });
+
+        // Función para cerrar el modal solo con doble clic
+        function closeModal() {
+            modal.classList.remove("show");
+            setTimeout(() => modal.style.display = "none", 300);
+            clickCount = 0; // Reiniciar el contador
+        }
+
+        document.getElementById("closeModalclave").addEventListener("click", closeModal);
+        document.getElementById("closeModalFooterclave").addEventListener("click", closeModal);
+
+        // Detectar doble clic en el fondo oscuro para cerrar el modal
+        modal.addEventListener("click", function(event) {
+            if (event.target === modal) {
+                clickCount++;
+                
+                if (clickCount === 2) {
+                    closeModal();
+                }
+
+                setTimeout(() => { clickCount = 0; }, 500); // Reinicia el contador después de 500ms
+            }
+        });
+    });
+
 //|||||||||||||| VALIDAR ENVIO ||||||||||||||||||||||
 function validarFormulario() {
     let valido = true;
@@ -132,7 +172,47 @@ $(document).ready(function() {
 });
 
 
+//|||||||||||||| VALIDAR ENVIO ||||||||||||||||||||||
+function validarFor() {
+    let valido = true;
 
+     if (!/^[0-9]{7,8}$/.test($("#cedulac").val())) {
+        $("#textocedulac").text("Formato incorrecto.");
+        valido = false;
+    } else {
+        $("#textocedulac").text("");
+    }
+
+    return valido;
+}
+
+//|||||| ENVIO OLVIDO CLAVE FORM
+$(document).ready(function() {
+    $('#validarolvido').on("click", function(event) {
+        event.preventDefault(); // Evita la recarga de la página
+
+        if (validarFor()) {
+            var datos = new FormData($('#olvidoclave')[0]);
+            datos.append('validarclave', 'validarclave');
+            enviaAjax(datos); // Enviar los datos solo si todas las validaciones son correctas
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Debe Colocar el nro de cedula",
+                toast: true,
+                position: "top",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+        }
+    });
+});
 
 
 
@@ -219,7 +299,15 @@ $(document).ready(function(){
             return false; // Evita que el formulario continúe con el envío
         }
     });
-
+ 
+  $("#cedulac").on("keypress",function(e){
+    validarkeypress(/^[0-9\b]*$/,e);
+  });
+  
+  $("#cedulac").on("keyup",function(){
+    validarkeyup(/^[0-9]{7,8}$/,$(this),
+    $("#textocedulac"),"El formato debe ser 1222333");
+  });
 
   $("#cedula").on("keypress",function(e){
     validarkeypress(/^[0-9\b]*$/,e);
@@ -351,6 +439,15 @@ function enviaAjax(datos) {
                   muestraMensaje("success", 1000, "Se ha eliminado con éxito", "Los datos se han borrado correctamente ");
                   setTimeout(function () {
                      location = '?pagina=usuario';
+                  }, 1000);
+                } else {
+                  muestraMensaje("error", 2000, "ERROR", lee.text);
+                }
+              } else if (lee.accion == 'validarclave') {
+                if (lee.respuesta == 1) {
+                  muestraMensaje("success", 1000, "Verificado con Exito", "");
+                  setTimeout(function () {
+                     location = '?pagina=olvidoclave';
                   }, 1000);
                 } else {
                   muestraMensaje("error", 2000, "ERROR", lee.text);
