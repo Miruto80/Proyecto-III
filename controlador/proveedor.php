@@ -31,6 +31,10 @@ if (empty($_SESSION["id"])) {
 require_once 'modelo/proveedor.php';
 
 $objproveedor = new Proveedor(); 
+if(isset($_POST['generar'])){
+			$objproveedor = new Proveedor();
+			$objproveedor->generarPDF();
+		}
 
 try {
     if(isset($_POST['registrar'])) {
@@ -107,10 +111,6 @@ try {
         $error_message = $e->getMessage();
         $registro = $objproveedor->consultar();
         if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-             $id_persona = $_SESSION["id"];
-             $accion = 'Acceso a Módulo';
-             $descripcion = 'módulo de Proveedor';
-             $objproveedor->registrarBitacora($id_persona, $accion, $descripcion);
             require_once 'vista/proveedor.php';
         }else{
             require_once 'vista/seguridad/privilegio.php';
