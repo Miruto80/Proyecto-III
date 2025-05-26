@@ -205,7 +205,7 @@ class Login extends Conexion {
     }
     public function set_Correo($correo)
     {
-        $this->correo = ucfirst(strtolower($correo));
+       $this->correo = strtolower($correo);
     }
    
 }

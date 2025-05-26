@@ -13,7 +13,7 @@
       exit;
 
 } else  if (isset($_POST['validar'])) {    
-    $correo = $_POST['correo'];
+    $correo = strtolower($_POST['correo']);
     $correodato = $_SESSION['correos'];    
 
     if ($correo === $correodato) {
