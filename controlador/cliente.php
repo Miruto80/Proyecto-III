@@ -21,6 +21,14 @@ if (isset($_POST['favorito'])) {
     } else {
         $objcliente->set_Id_persona($id_persona);
         $result = $objcliente->favorito();
+         /* BITACORA */
+        if ($result['respuesta'] == 1) {
+            $id_persona = $_SESSION["id"]; 
+            // Registrar en la bitácora
+            $accion = 'Cambio de Estatus de Cliente';
+            $descripcion = 'Se cambio estatus A: Favorito ID: '.$id_persona;
+            $objcliente->registrarBitacora($id_persona, $accion, $descripcion);
+        } /* FIN BITACORA */
         echo json_encode($result);
     }
 }else if(isset($_POST['malcliente'])){
@@ -33,6 +41,14 @@ if (isset($_POST['favorito'])) {
   
     $objcliente->set_Id_persona($id_persona); 
     $result = $objcliente->malcliente();
+     /* BITACORA */
+        if ($result['respuesta'] == 1) {
+            $id_persona = $_SESSION["id"]; 
+            // Registrar en la bitácora
+            $accion = 'Cambio de Estatus de Cliente';
+            $descripcion = 'Se cambio estatus A: Mal Cliente ID: '.$id_persona;
+            $objcliente->registrarBitacora($id_persona, $accion, $descripcion);
+        } /* FIN BITACORA */
     echo json_encode($result);
     }
       
@@ -46,6 +62,14 @@ if (isset($_POST['favorito'])) {
   
     $objcliente->set_Id_persona($id_persona); 
     $result = $objcliente->clienteactivo();
+    /* BITACORA */
+        if ($result['respuesta'] == 1) {
+            $id_persona = $_SESSION["id"]; 
+            // Registrar en la bitácora
+            $accion = 'Cambio de Estatus de Cliente';
+            $descripcion = 'Se cambio estatus A: cliente activo ID: '.$id_persona;
+            $objcliente->registrarBitacora($id_persona, $accion, $descripcion);
+        } /* FIN BITACORA */
     echo json_encode($result);
    } 
       
@@ -54,11 +78,19 @@ if (isset($_POST['favorito'])) {
    $cedula = $_POST['cedula'];
    $correo = $_POST['correo'];
   
-
     $objcliente->set_Id_persona($id_persona);
     $objcliente->set_Cedula($cedula); 
     $objcliente->set_Correo($correo);  
     $result = $objcliente->actualizar();
+     /* BITACORA */
+        if ($result['respuesta'] == 1) {
+            $id_persona = $_SESSION["id"]; 
+            // Registrar en la bitácora
+            $accion = 'Modificación de Cliente';
+            $descripcion = 'Se Modifico de Cliente ID:'.$id_persona.' Cedula:'.$cedula;
+            $objcliente->registrarBitacora($id_persona, $accion, $descripcion);
+        } 
+    /* FIN BITACORA */
     echo json_encode($result);
 
       
