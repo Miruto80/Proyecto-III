@@ -31,6 +31,16 @@
                 <h4 class="mb-0">
                   <i class="fa-solid fa-truck-moving mr-2" style="color: #f6c5b4;"></i> Proveedores
                 </h4>
+
+<form id="formGenerarPDF" method="POST" target="_blank">
+  <input type="hidden" name="nombre" value="Listado de proveedores">
+  <button type="submit" name="generar" class="btn btn-danger">
+    Generar PDF
+  </button>
+</form>
+
+
+
               <button id="btnAbrirRegistrar" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
                 <span class="icon text-white"><i class="fas fa-file-medical"></i></span>
                 <span class="text-white">Registrar</span>
@@ -215,6 +225,110 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal para generar reporte PDF de proveedores -->
+<div class="modal fade" id="modal3" tabindex="-1" aria-labelledby="modal3Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-warning">
+                <h5 class="modal-title" id="modal3Label">Reporte de Proveedor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="f" autocomplete="off" target="_blank">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre">
+                            <span id="snombre" class="form-text text-muted"></span>
+                        </div>       
+                    </div>
+
+                    <div class="row my-4">
+                        <div class="col text-center">
+                            <button type="submit" class="btn btn-warning" id="generar" name="generar">
+                                GENERAR PDF
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-dark">
+                <button type="button" class="btn btn-warning w-100" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<?php
+require_once (__DIR__ . '/../modelo/conexion.php');
+$db = new Conexion();
+$conex = $db->Conex();
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <title>Gráfica Proveedores</title>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Proveedor', 'Total de Compras'],
+        <?php
+        $SQL = "SELECT pr.nombre, COUNT(c.id_compra) AS total_compras
+                FROM compra c
+                JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
+                GROUP BY pr.nombre
+                ORDER BY total_compras DESC
+                LIMIT 5";
+        $stmt = $conex->prepare($SQL);
+        $stmt->execute();
+        while ($resultado = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            echo "['" . addslashes($resultado['nombre']) . "', " . $resultado['total_compras'] . "],";
+        }
+        ?>
+      ]);
+
+      var options = {
+        title: 'Top 5 Proveedores con Más Compras Realizadas',
+        is3D: true,
+      };
+
+      var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+      chart.draw(data, options);
+
+      // Capturar imagen en base64 después de renderizar la gráfica
+      google.visualization.events.addListener(chart, 'ready', function () {
+        var chartImageURI = chart.getImageURI();
+        document.getElementById('imagenGrafica').value = chartImageURI;
+      });
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Aquí se dibuja la gráfica -->
+  <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
+
+  <!-- Input oculto para guardar la imagen base64 -->
+  <input type="hidden" id="imagenGrafica" name="imagenGrafica">
+
+  <?php include 'complementos/footer.php'; ?>
+</body>
+</html>
+
+
+
+
+
 
     <?php include 'complementos/footer.php'; ?>
     <script src="assets/js/proveedor.js"></script>

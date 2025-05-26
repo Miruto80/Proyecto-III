@@ -59,7 +59,7 @@ function validarFormulario(formId) {
 
     // Validaciones específicas por campo y mostrar mensaje en los spans correspondientes
     if (formId === 'formRegistrar') {
-        if (validarkeyup(/^[0-9]{7,8}$/, $("#numero_documento"), $("#snumero_documento"), "Ingrese una cédula válida") === 0) {
+        if (validarkeyup(/^[0-9]{7,9}$/, $("#numero_documento"), $("#snumero_documento"), "Ingrese una cédula válida") === 0) {
             valido = false;
         }
 
@@ -79,7 +79,7 @@ function validarFormulario(formId) {
             valido = false;
         }
     } else if (formId === 'formModificar') {
-        if (validarkeyup(/^[0-9]{7,8}$/, $("#numero_documento_modificar"), $("#snumero_documento_modificar"), "Ingrese una cédula válida") === 0) {
+        if (validarkeyup(/^[0-9]{7,9}$/, $("#numero_documento_modificar"), $("#snumero_documento_modificar"), "Ingrese una cédula válida") === 0) {
             valido = false;
         }
 
@@ -235,7 +235,7 @@ $("#numero_documento").on("keypress", function(e) {
     validarkeypress(/^[0-9-\b]*$/, e);
 });
 $("#numero_documento").on("keyup", function() {
-    validarkeyup(/^[0-9]{7,8}$/, $(this), $("#snumero_documento"), "Ingrese su cedula");
+    validarkeyup(/^[0-9]{7,9}$/, $(this), $("#snumero_documento"), "Ingrese su cedula");
 });
 
 $("#nombre").on("keypress", function(e) {
@@ -271,7 +271,7 @@ $("#numero_documento_modificar").on("keypress", function(e) {
     validarkeypress(/^[0-9-\b]*$/, e);
 });
 $("#numero_documento_modificar").on("keyup", function() {
-    validarkeyup(/^[0-9]{7,8}$/, $(this), $("#snumero_documento_modificar"), "Ingrese una cédula válida");
+    validarkeyup(/^[0-9]{7,9}$/, $(this), $("#snumero_documento_modificar"), "Ingrese una cédula válida");
 });
 
 $("#nombre_modificar").on("keypress", function(e) {

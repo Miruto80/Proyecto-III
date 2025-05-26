@@ -1,4 +1,9 @@
 <?php
+require_once('dompdf/vendor/autoload.php'); //archivo para cargar las funciones de la 
+//libreria DOMPDF
+// lo siguiente es hacer rerencia al espacio de trabajo
+use Dompdf\Dompdf;
+use Dompdf\Options;
 require_once 'conexion.php';
 class proveedor extends Conexion {
     private $conex;
@@ -16,17 +21,101 @@ class proveedor extends Conexion {
         $this->conex = $this->conex->Conex();
     }
 
-    public function registrarBitacora($id_persona, $accion, $descripcion) {
-    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
-    
-    $strExec = $this->conex->prepare($consulta);
-    $strExec->bindParam(':accion', $accion);
-    $strExec->bindParam(':descripcion', $descripcion);
-    $strExec->bindParam(':id_persona', $id_persona);
-    
-    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
+
+
+
+
+
+ // Método privado que convierte una imagen a base64
+private function imgToBase64($imgPath)
+{
+    if (file_exists($imgPath)) {
+        $imgData = file_get_contents($imgPath);
+        $base64 = base64_encode($imgData);
+        return 'data:image/png;base64,' . $base64;
+    } else {
+        return '';
     }
+}
+
+public function generarPDF()
+{
+    try {
+        $conex = $this->conex;
+
+        // Si no se ha seteado $this->nombre o está vacío, trae todos
+        if (empty($this->nombre)) {
+            $resultado = $conex->prepare("SELECT nombre FROM proveedor");
+            $resultado->execute();
+        } else {
+            $resultado = $conex->prepare("SELECT nombre FROM proveedor WHERE nombre LIKE :nombre");
+            $resultado->bindValue(':nombre', '%' . $this->nombre . '%');
+            $resultado->execute();
+        }
+
+        $proveedores = $resultado->fetchAll(PDO::FETCH_ASSOC);
+
+        // ...el resto de tu código para el PDF sin cambios
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $imageBase64 = $this->imgToBase64('img/logo.png');
+
+        $html = '
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; font-size: 10px; }
+                table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+                th, td { border: 1px solid #000; padding: 4px; text-align: center; word-wrap: break-word; }
+                th { background-color: rgb(243, 108, 164); color: #000; }
+                td { background-color: #FFF; }
+                h1 { text-align: center; font-size: 16px; }
+            </style>
+        </head>
+        <body>
+            <h1>LISTA DE PROVEEDORES</h1>
+            <center><img src="' . $imageBase64 . '" style="margin: 10px auto;" width="100" /></center>
+            <p><strong>Fecha y Hora de Expedición: </strong>' . $fechaHoraActual . '</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+        if (!empty($proveedores)) {
+            foreach ($proveedores as $prov) {
+                $html .= '<tr><td>' . htmlspecialchars($prov['nombre']) . '</td></tr>';
+            }
+        } else {
+            $html .= '<tr><td colspan="1">No se encontraron registros.</td></tr>';
+        }
+
+        $html .= '
+                </tbody>
+            </table>
+        </body>
+        </html>';
+
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $pdf = new \Dompdf\Dompdf($options);
+        $pdf->setPaper("A4", "landscape");
+        $pdf->loadHtml($html);
+        $pdf->render();
+        $pdf->stream('LISTA_DE_PROVEEDORES.pdf', ["Attachment" => false]);
+
+    } catch (Exception $e) {
+        echo "Error al generar el PDF: " . $e->getMessage();
+    }
+}
+
+
+
+
+
+
     
     public function registrar() {
         $registro = "INSERT INTO proveedor(numero_documento, tipo_documento, nombre, correo, telefono, direccion, estatus) 
