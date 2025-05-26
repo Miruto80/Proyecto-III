@@ -200,10 +200,7 @@ input[type=checkbox]{
     <div class=""><a  href="?pagina=verpedidoweb" class="">
             Detalles de Compra
   </a></div>
-    <div>→</div>
-    <div>3 Pedido Completo</div>
-  </div>
-    </div>
+    
 </div>
 
 <div class="row m-3">

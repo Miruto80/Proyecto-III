@@ -70,9 +70,7 @@ $total = 0;
     <div class="current-step"> Carrito de Compras</div>
     <div>→</div>
     <div><a href="?pagina=verpedidoweb"> 2  Detalles de Compra</a></div>
-    <div>→</div>
-    <div>3 Pedido Completo</div>
-  </div>
+   
     </div>
 
     <?php if (empty($carrito)): ?>
