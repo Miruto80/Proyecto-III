@@ -22,7 +22,17 @@ class proveedor extends Conexion {
     }
 
 
-
+public function registrarBitacora($id_persona, $accion, $descripcion) {
+    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
+                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
+    
+    $strExec = $this->conex->prepare($consulta);
+    $strExec->bindParam(':accion', $accion);
+    $strExec->bindParam(':descripcion', $descripcion);
+    $strExec->bindParam(':id_persona', $id_persona);
+    
+    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
+    }
 
 
    // Método privado para convertir imagen a base64 (si la usas localmente)
@@ -40,7 +50,7 @@ class proveedor extends Conexion {
         $proveedores = $this->consultar();
         $fechaHoraActual = date('d/m/Y h:i A');
 
-               $html = '
+        $html = '
         <html>
         <head>
             <style>

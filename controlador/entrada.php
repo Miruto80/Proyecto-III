@@ -57,6 +57,15 @@ if (isset($_POST['registrar_compra'])) {
         } else {
             // Respuesta normal para peticiones no-AJAX
             if ($respuesta['respuesta'] == 1) {
+
+                /* BITACORA */
+           
+            $id_persona = $_SESSION["id"]; 
+            // Registrar en la bitácora
+            $accion = 'Registro de compra';
+            $descripcion = 'Se compra la compra: ';
+            $entrada->registrarBitacora($id_persona, $accion, $descripcion);
+
                 $_SESSION['mensaje'] = "Compra registrada exitosamente";
                 $_SESSION['tipo_mensaje'] = "success";
             } else {
@@ -107,6 +116,7 @@ if (isset($_POST['modificar_compra'])) {
         } else {
             // Respuesta normal para peticiones no-AJAX
             if ($respuesta['respuesta'] == 1) {
+                
                 $_SESSION['mensaje'] = "Compra actualizada exitosamente";
                 $_SESSION['tipo_mensaje'] = "success";
             } else {
@@ -137,6 +147,7 @@ if (isset($_POST['eliminar_compra'])) {
         } else {
             // Respuesta normal para peticiones no-AJAX
             if ($respuesta['respuesta'] == 1) {
+
                 $_SESSION['mensaje'] = "Compra eliminada exitosamente";
                 $_SESSION['tipo_mensaje'] = "success";
             } else {
