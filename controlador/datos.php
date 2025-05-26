@@ -112,6 +112,10 @@ if (isset($_POST['actualizar'])) {
 
  
 }else{
+     $id_persona = $_SESSION["id"];
+    $accion = 'Acceso a Módulo';
+    $descripcion = 'módulo de Modificar datos';
+    $objdatos->registrarBitacora($id_persona, $accion, $descripcion);
     require_once 'vista/seguridad/datos.php';
 } 
 

@@ -15,6 +15,18 @@ class proveedor extends Conexion {
         $this->conex = new Conexion();
         $this->conex = $this->conex->Conex();
     }
+
+    public function registrarBitacora($id_persona, $accion, $descripcion) {
+    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
+                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
+    
+    $strExec = $this->conex->prepare($consulta);
+    $strExec->bindParam(':accion', $accion);
+    $strExec->bindParam(':descripcion', $descripcion);
+    $strExec->bindParam(':id_persona', $id_persona);
+    
+    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
+    }
     
     public function registrar() {
         $registro = "INSERT INTO proveedor(numero_documento, tipo_documento, nombre, correo, telefono, direccion, estatus) 

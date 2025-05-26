@@ -40,6 +40,10 @@ elseif (isset($_POST['eliminar'])) {
 } 
 // Mostrar vista si no hay POST
 else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+    $id_persona = $_SESSION["id"];
+    $accion = 'Acceso a Módulo';
+    $descripcion = 'módulo de Metodo Entrega';
+    $objEntrega->registrarBitacora($id_persona, $accion, $descripcion);
     require_once 'vista/metodoentrega.php';
 }else{
     require_once 'vista/seguridad/privilegio.php';

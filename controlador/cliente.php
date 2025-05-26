@@ -63,6 +63,10 @@ if (isset($_POST['favorito'])) {
 
       
 } else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+    $id_persona = $_SESSION["id"];
+    $accion = 'Acceso a Módulo';
+    $descripcion = 'módulo de Cliente';
+    $objcliente->registrarBitacora($id_persona, $accion, $descripcion);
     require_once 'vista/cliente.php';
 }else{
     require_once 'vista/seguridad/privilegio.php';

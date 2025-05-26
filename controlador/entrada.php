@@ -165,6 +165,11 @@ $proveedores = $entrada->consultarProveedores();
 
 // Cargamos la vista
 if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+    $id_persona = $_SESSION["id"];
+    $accion = 'Acceso a Módulo';
+    $descripcion = 'módulo de Compra';
+    
+    $entrada->registrarBitacora($id_persona, $accion, $descripcion);
     require_once 'vista/entrada.php';
 }else{
     require_once 'vista/seguridad/privilegio.php';

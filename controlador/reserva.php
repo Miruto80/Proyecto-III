@@ -157,6 +157,10 @@ try {
     } else {
         // Mostrar error en la interfaz
         $error_message = $e->getMessage();
+         $id_persona = $_SESSION["id"];
+        $accion = 'Acceso a Módulo';
+        $descripcion = 'módulo de Reverva';
+        $objreserva->registrarBitacora($id_persona, $accion, $descripcion);
         require_once 'vista/reserva.php';
     }
 }

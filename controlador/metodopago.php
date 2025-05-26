@@ -32,6 +32,10 @@ if (isset($_POST['registrar'])) {
         echo json_encode($result);
     }
 } else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+    $id_persona = $_SESSION["id"];
+    $accion = 'Acceso a Módulo';
+    $descripcion = 'módulo de Metodo Pago';
+    $objMetodoPago->registrarBitacora($id_persona, $accion, $descripcion);
     require_once 'vista/metodopago.php';
 }else{
     require_once 'vista/seguridad/privilegio.php';
