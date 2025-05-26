@@ -18,6 +18,15 @@ if (isset($_POST['registrar'])) {
         $objtipousuario->set_Nivel($_POST['nivel']);
         $objtipousuario->set_Estatus(1); // Estatus activo por defecto
         $result = $objtipousuario->registrar();
+
+       /* BITACORA */
+        if (isset($result['respuesta']) && $result['respuesta'] == 1) {
+            $id_persona = $_SESSION["id"]; // ID de la persona que realiza la acción
+            $accion = 'Registrar de tipo usuario';
+            $descripcion = 'Se registró de tipo usuario: ' . $_POST['nombre'] . ' ' . $_POST['nivel'];
+            $objtipousuario->registrarBitacora($id_persona, $accion, $descripcion);
+        } /*FIN  BITACORA */
+
         echo json_encode($result);
     }
 } elseif (isset($_POST['modificar'])) {
@@ -28,6 +37,14 @@ if (isset($_POST['registrar'])) {
         $objtipousuario->set_Nivel($_POST['nivel']);
         $objtipousuario->set_Estatus($_POST['estatus']);
         $result = $objtipousuario->modificar();
+
+          if (isset($result['respuesta']) && $result['respuesta'] == 1) {
+            $id_persona = $_SESSION["id"]; // ID de la persona que realiza la acción
+            $accion = 'Modificación de tipo usuario';
+            $descripcion = 'Se Modifico de tipo usuario: ' . $_POST['nombre'] . ' ' . $_POST['nivel'];
+            $objtipousuario->registrarBitacora($id_persona, $accion, $descripcion);
+        } /*FIN  BITACORA */
+
         echo json_encode($result);
     }
 } elseif (isset($_POST['eliminar'])) {
@@ -35,6 +52,14 @@ if (isset($_POST['registrar'])) {
     if (!empty($_POST['id_tipo'])) {
         $objtipousuario->set_Id_tipo($_POST['id_tipo']);
         $result = $objtipousuario->eliminar();
+
+        if (isset($result['respuesta']) && $result['respuesta'] == 1) {
+            $id_persona = $_SESSION["id"]; // ID de la persona que realiza la acción
+            $accion = 'Eliminación de tipo usuario';
+            $descripcion = 'Se eliminó de tipo usuario: ' .$_POST['id_tipo'];
+            $objtipousuario->registrarBitacora($id_persona, $accion, $descripcion);
+        } /*FIN  BITACORA */
+
         echo json_encode($result);
     }
 } else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
