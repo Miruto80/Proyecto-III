@@ -198,7 +198,7 @@ input[type=checkbox]{
     <div>→</div>
     <div class="step-number">2</div>
     <div class=""><a  href="?pagina=verpedidoweb" class="">
-            Detalles de Compra
+           Procesar Pago
   </a></div>
     
 </div>
@@ -259,7 +259,7 @@ input[type=checkbox]{
                                         <span>Banco de Destino:</span>
                                        <select class="form-select" id="banco_destino" name="banco_destino"  required>
                                        <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
-                                       <option value="0108-BBVA Provincial">0108-BBVA Provincial</option>
+                                       <option value="0105-Banco Mercantil">0105-Banco Mercantil</option>
                                       
                                          </select>
 
@@ -277,7 +277,7 @@ input[type=checkbox]{
 
 
 
-                                    <div class="col-4"><span>Metodo de Pago:</span>
+                                    <div class="col-6"><span>Metodo de Pago:</span>
                                 
                 
                                     <select class="form-select text-gray-900" name="id_metodopago" id="metodopago" required>
@@ -289,7 +289,7 @@ input[type=checkbox]{
 
 
                                     </div>
-                                    <div class="col-4"><span>Metodo de Entrega:</span>
+                                    <div class="col-6"><span>Metodo de Entrega:</span>
                                 
                                       <select class="form-select text-gray-900" name="id_entrega" id="metodoentrega" required>
                                       <option disabled selected>Seleccione un Metodo de Entrega</option>
@@ -299,7 +299,7 @@ input[type=checkbox]{
                                          </select>
                                     </div>
 
-                             <div class="col-4"><span>Direccion de Entrega:</span>
+                             <div class="col-12"><span>Direccion de Entrega:</span>
                                     <input class="form-control" type="text" id="direccion" name="direccion" placeholder="Ingrese la Direccion a Detalle">
                                </div>
 
@@ -310,7 +310,7 @@ input[type=checkbox]{
                                
                         </form> <!-- fin del formulario -->
 
- <button class="btns btn-success" id="btn-guardar-pedido">Place order</button>
+ <button class="btns btn-success" id="btn-guardar-pedido">Realizar Pedido</button>
                              <p class="text-muted text-center">Compra con confianza, tu mejor elección te espera.
                         </div>                        
                     </div>
@@ -318,7 +318,7 @@ input[type=checkbox]{
      <div class="col-md-5">
         <div class="right border">
         <div class="header">Resumen del Pedido</div>
-        <p><?= count($carrito) ?> item<?= count($carrito) !== 1 ? 's' : '' ?></p>
+        <p><?= count($carrito) ?> producto<?= count($carrito) !== 1 ? 's' : '' ?></p>
 
       <?php foreach ($carrito as $item):
     $id = $item['id'];
@@ -345,10 +345,7 @@ input[type=checkbox]{
 <?php endforeach; ?>
     </div>
      
-        <div class="row lower">
-            <div class="col text-left">Delivery</div>
-            <div class="col text-right">Free</div>
-        </div>
+       
         <div class="row lower">
             <div class="col text-left"><b>Total a Pagar</b></div>
             <div class="col text-right"><b>$<?= number_format($total, 2) ?></b></div>
