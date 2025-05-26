@@ -2,8 +2,21 @@
      session_start();
      if (empty($_SESSION["id"])){
        header("location:?pagina=login");
-     } /*  Validacion URL  */
+       exit;
+     } 
+       require_once 'modelo/pedidoweb.php';
+
+       $pedido = new PedidoWeb();
+       $pedidos = $pedido->consultarPedidosCompletos();
+       
      
-    require_once 'vista/pedidoweb.php';
+       foreach ($pedidos as &$p) {
+           $p['detalles'] = $pedido->consultarDetallesPedido($p['id_pedido']);
+       }
+       
+
+      require_once 'vista/pedidoweb.php';
+
+  
 
 ?>

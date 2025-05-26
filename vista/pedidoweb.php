@@ -49,47 +49,81 @@
 
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+          <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ID</th>
-                  <th class="text-white">ACCION</th>
+                  <th class="text-white" style="display: none;">ID</th>
+                  <th class="text-white" style="display: none;">Tipo</th>
+                  <th class="text-white">Fecha</th>
+                  <th class="text-white"style="display: none;">Estado</th>
+                  <th class="text-white">Total</th>
+                  <th class="text-white">Referencia</th>
+                  <th class="text-white">usuario</th>
+                 <th class="text-white">Teléfono</th>
+                  <th class="text-white">Método Entrega</th>
+                 <th class="text-white">Método Pago</th>
+                 <th class="text-white">Acción</th>
                 </tr>
               </thead>
               <tbody>
     
-                <tr>
-                 <td>1</td>
-                 <td>1</td>
-                 <td>1</td>
-                 <td>1</td>
-                  <td>
-                    <form method="POST" action="">
-                       <button name="modificar" class="btn btn-primary btn-sm modificar"> 
-                        Confirmar Pago 
-                       </button>
-                        
-                        <button name="eliminar" class="btn btn-danger btn-sm eliminar">
-                          <i class="fas fa-trash-alt" title="Eliminar"> </i>
-                        </button>
-                     </form>
-                  </td>
-                </tr>
-            
-              </tbody>
-                               
-          </table> <!-- Fin tabla--> 
-      </div>  <!-- Fin div table-->
+              <?php foreach ($pedidos as $pedido): ?>
+  <tr style="text-align: center;">
+    <td style="display: none;"><?= $pedido['id_pedido'] ?></td>
+    <td style="display: none;"><?= $pedido['tipo'] ?></td>
+    <td><?= $pedido['fecha'] ?></td>
+    <td style="display: none;"><?= $pedido['estado'] ?></td>
+    <td><?= $pedido['precio_total'] ?>$</td>
+    <td><?= $pedido['referencia_bancaria'] ?></td>
+    <td><?=$_SESSION['nombre']?></td>
+    <td><?= $pedido['telefono_emisor'] ?></td>
+    <td><?= $pedido['metodo_entrega'] ?></td>
+    <td><?= $pedido['metodo_pago'] ?></td>
+    <td>
+    <button
+          class="btn btn-primary btn-sm ver-detalles"
+          data-detalles='<?= json_encode($pedido["detalles"]) ?>'
+          title="Ver productos del pedido">
+          <i class="fa fa-eye"></i> 
+        </button>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+</tbody>
+          </table>
+        </div>
 
-
-            </div><!-- FIN CARD N-1 -->  
+      </div>
     </div>
-    </div>  
-    </div><!-- FIN CARD PRINCIPAL-->  
+  </div>
+</div>
 
+<div class="modal fade" id="modalDetallesProducto" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalLabel">Productos del Pedido</h5>
+        <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-detalles-producto">
+              <!-- Se llena desde JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
      <!-- modal tasa -->
 
      <div class="modal fade" id="registro" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -121,6 +155,8 @@
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
 <script src="assets/js/tasa.js"></script>
+<script src="assets/js/pedidoweb.js"></script>
+
 </body>
 
 </html>
