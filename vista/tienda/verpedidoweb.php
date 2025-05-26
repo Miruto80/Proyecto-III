@@ -131,7 +131,7 @@ input:focus::-webkit-input-placeholder
 .lower{
     line-height: 2;
 }
-.btn{
+.btns{
     background-color: rgb(23, 4, 189);
     border-color: rgb(23, 4, 189);
     color: white;
@@ -141,7 +141,7 @@ input:focus::-webkit-input-placeholder
     padding: 1.5vh;
     border-radius: 0;
 }
-.btn:focus{
+.btns:focus{
     box-shadow: none;
     outline: none;
     box-shadow: none;
@@ -149,7 +149,7 @@ input:focus::-webkit-input-placeholder
     -webkit-box-shadow: none;
     transition: none; 
 }
-.btn:hover{
+.btns:hover{
     color: white;
 }
 a{
@@ -212,9 +212,7 @@ input[type=checkbox]{
                             <div class="row">
                                 <span class="header">Detalles de Pago</span>
                                 <div class="icons">
-                                    <img src="https://img.icons8.com/color/48/000000/visa.png"/>
-                                    <img src="https://img.icons8.com/color/48/000000/mastercard-logo.png"/>
-                                    <img src="https://img.icons8.com/color/48/000000/maestro.png"/>
+                                   
                                 </div>
                             </div>
                         <form class="form row " id="formPedido" >
@@ -224,22 +222,7 @@ input[type=checkbox]{
                              <input type="hidden" name="precio_total" id="precio_total" value="<?= $total ?> ">
                              <input type="hidden" name="tipo" id="tipo" value="2">
 
-                                <span  class="col-6" name="referencia_bancaria">Referencia Bancaria:</span> 
-                                <span class="col-6" name="telefono_emisor">Telefono Emisor:</span>
-                                <div class="col-md-6">
-                                <input type="text" class="form-control m-1" name="referencia_bancaria" id="referencia_bancaria" placeholder="Ejem: 0456">
-                                </div>
-                               <div class="col-md-6">
-                                <input type="text" class="form-control m-1" name="telefono_emisor" id="telefono_emisor" placeholder="Ejem: 424">
-                                </div>
-                                <div class="row">
-
-                             
-
-                           
-
-
-                                    <div class="col-4">
+                             <div class="col-6">
                                         <span>Banco de Origen:</span>
                                 
                                        <select class="form-select" id="banco" name="banco"  required>
@@ -275,6 +258,28 @@ input[type=checkbox]{
 
                                     </div>
 
+                                    <div class="col-6">
+                                        <span>Banco de Destino:</span>
+                                       <select class="form-select" id="banco_destino" name="banco_destino"  required>
+                                       <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
+                                       <option value="0108-BBVA Provincial">0108-BBVA Provincial</option>
+                                      
+                                         </select>
+
+                                    </div>
+
+                                <span  class="col-6" name="referencia_bancaria">Referencia Bancaria:</span> 
+                                <span class="col-6" name="telefono_emisor">Telefono Emisor:</span>
+                                <div class="col-md-6">
+                                <input type="text" class="form-control m-1" name="referencia_bancaria" id="referencia_bancaria" placeholder="Ejem: 0456">
+                                </div>
+                               <div class="col-md-6">
+                                <input type="text" class="form-control m-1" name="telefono_emisor" id="telefono_emisor" placeholder="Ejem: 424">
+                                </div>
+                                <div class="row">
+
+
+
                                     <div class="col-4"><span>Metodo de Pago:</span>
                                 
                 
@@ -289,29 +294,33 @@ input[type=checkbox]{
                                     </div>
                                     <div class="col-4"><span>Metodo de Entrega:</span>
                                 
-                                    <select class="form-select text-gray-900" name="id_entrega" id="metodoentrega" required>
+                                      <select class="form-select text-gray-900" name="id_entrega" id="metodoentrega" required>
                                       <option disabled selected>Seleccione un Metodo de Entrega</option>
                                          <?php foreach ($metodos_entrega as $me): ?>
                                         <option value="<?= $me['id_entrega'] ?>"><?= $me['nombre'] ?></option>
                                         <?php endforeach; ?>
-                                    </select>
+                                         </select>
+                                    </div>
 
-                               
+                             <div class="col-4"><span>Direccion de Entrega:</span>
+                                    <input class="form-control" type="text" id="direccion" name="direccion" placeholder="Ingrese la Direccion a Detalle">
+                               </div>
 
 
-                             </div>
+</p>
                                 </div>
 
                                
                         </form> <!-- fin del formulario -->
 
-
+ <button class="btns btn-success" id="btn-guardar-pedido">Place order</button>
+                             <p class="text-muted text-center">Compra con confianza, tu mejor elección te espera.
                         </div>                        
                     </div>
 
      <div class="col-md-5">
         <div class="right border">
-        <div class="header">Order Summary</div>
+        <div class="header">Resumen del Pedido</div>
         <p><?= count($carrito) ?> item<?= count($carrito) !== 1 ? 's' : '' ?></p>
 
       <?php foreach ($carrito as $item):
@@ -353,8 +362,6 @@ input[type=checkbox]{
      <input type="hidden" id="id_detalle_reserva">
          <input type="hidden" id="condicion" value="Sin Validar">
       
-        <button class="btn btn-success" id="btn-guardar-pedido">Place order</button>
-        <p class="text-muted text-center">Complimentary Shipping & Returns</p>
      </div>
             </div>
                 </div>

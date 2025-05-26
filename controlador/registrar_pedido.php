@@ -10,6 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'referencia_bancaria' => $_POST['referencia_bancaria'],
         'telefono_emisor' => $_POST['telefono_emisor'],
         'banco' => $_POST['banco'],
+        'banco_destino' => $_POST['banco_destino'],
+        'direccion' => $_POST['direccion'],
         'id_metodopago' => $_POST['id_metodopago'],
         'id_entrega' => $_POST['id_entrega'],
         'id_persona' => $_SESSION['id'],

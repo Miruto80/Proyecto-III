@@ -58,9 +58,11 @@
                   <th class="text-white"style="display: none;">Estado</th>
                   <th class="text-white">Total</th>
                   <th class="text-white">Referencia</th>
+                  <th class="text-white">Banco Destino</th>
                   <th class="text-white">usuario</th>
                  <th class="text-white">Teléfono</th>
                   <th class="text-white">Método Entrega</th>
+                  <th class="text-white">Direccion</th>
                  <th class="text-white">Método Pago</th>
                  <th class="text-white">Acción</th>
                 </tr>
@@ -75,9 +77,11 @@
     <td style="display: none;"><?= $pedido['estado'] ?></td>
     <td><?= $pedido['precio_total'] ?>$</td>
     <td><?= $pedido['referencia_bancaria'] ?></td>
+    <td><?= $pedido['banco_destino'] ?></td>
     <td><?=$_SESSION['nombre']?></td>
     <td><?= $pedido['telefono_emisor'] ?></td>
     <td><?= $pedido['metodo_entrega'] ?></td>
+    <td><?= $pedido['direccion'] ?></td>
     <td><?= $pedido['metodo_pago'] ?></td>
     <td>
     <button

@@ -17,7 +17,9 @@ class PedidoWeb extends Conexion {
         p.estado,
         p.precio_total,
         p.referencia_bancaria,
+        p.banco_destino,
         p.telefono_emisor,
+        p.direccion,
         me.nombre AS metodo_entrega,
         mp.nombre AS metodo_pago
     FROM pedido p
