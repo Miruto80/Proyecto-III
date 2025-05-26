@@ -20,6 +20,7 @@ if(isset($_POST['registrar'])){
        $objcategoria->set_Nombre($_POST['nombre']);
    
        $result=$objcategoria->registrar();
+       
        echo json_encode($result);
        
    }

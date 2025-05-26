@@ -21,6 +21,15 @@
     $total = 0;
     $carrito = $_SESSION['carrito'] ?? [];
     
-    require_once 'vista/tienda/verpedidoweb.php';
-
+    
+if ($sesion_activa) {
+     if($_SESSION["nivel_rol"] == 1) { 
+      require_once 'vista/tienda/verpedidoweb.php';
+    } else{
+        header('Location: ?pagina=catalogo');
+    } 
+} else {
+    header('Location: ?pagina=catalogo');
+    exit;
+}
 ?>
