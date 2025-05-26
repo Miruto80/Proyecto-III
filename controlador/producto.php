@@ -168,6 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Por defecto carga la vista (GET u otra petición)
 $id_persona = $_SESSION["id"];
 $accion = 'Acceso a Módulo';
-$descripcion = 'accedió al módulo de productos.';
+$descripcion = 'módulo de Producto.';
 $objproducto->registrarBitacora($id_persona, $accion, $descripcion);
 require_once 'vista/producto.php';

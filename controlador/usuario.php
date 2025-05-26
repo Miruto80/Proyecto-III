@@ -31,7 +31,7 @@ if (isset($_POST['registrar'])) {
             $id_persona = $_SESSION["id"]; 
             // Registrar en la bitácora
             $accion = 'Registro de usuario';
-            $descripcion = 'Se registró el usuario: ' . $_POST['nombre'] . ' ' . $_POST['apellido'];
+            $descripcion = 'Se registró el usuario: ' . $_POST['cedula'] . ' ' . $_POST['nombre']. ' ' . $_POST['apellido'];
             $objusuario->registrarBitacora($id_persona, $accion, $descripcion);
         } /* FIN BITACORA */
 
@@ -48,8 +48,15 @@ if (isset($_POST['registrar'])) {
     $objusuario->set_Id_Usuario($id_persona);
     $objusuario->set_Cedula($cedula); 
     $objusuario->set_Correo($correo);
-     $objusuario->set_Id_rol($id_rol);    
+    $objusuario->set_Id_rol($id_rol);    
     $result = $objusuario->actualizar();
+      /* BITACORA */
+        if (isset($result['respuesta']) && $result['respuesta'] == 1) {
+            $id_persona = $_SESSION["id"]; // ID de la persona que realiza la acción
+            $accion = 'Modificacion de usuario';
+            $descripcion = 'Se Modifico el usuario con ID: ' .$id_persona.' '.$cedula.' '.$correo;
+            $objusuario->registrarBitacora($id_persona, $accion, $descripcion);
+        } /*FIN  BITACORA */
     echo json_encode($result);
 
       
