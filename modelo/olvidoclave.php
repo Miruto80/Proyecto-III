@@ -48,9 +48,9 @@ class Clave extends Conexion{
 
         $resul = $strExec->execute();
         if ($resul) {
-            $res=array('respuesta'=>1,'accion'=>'clave');
+            $res=array('respuesta'=>1,'accion'=>'actualizar');
         } else {
-            $res=array('respuesta'=>0,'accion'=>'clave');
+            $res=array('respuesta'=>0,'accion'=>'actualizar');
         }
         return $res;
     } // fin actulizar

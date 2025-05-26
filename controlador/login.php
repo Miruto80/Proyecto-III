@@ -112,6 +112,7 @@ if (isset($_POST['ingresar'])) {
     if ($persona) {
         $res = array('respuesta' => 1, 'accion' => 'validarclave');
         echo json_encode($res);
+        $_SESSION["persona"] = $persona->id_persona;
         $_SESSION["nombres"] = $persona->nombre;
         $_SESSION["apellidos"] = $persona->apellido;
         $_SESSION["correos"] = $persona->correo;
