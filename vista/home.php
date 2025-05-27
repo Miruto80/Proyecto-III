@@ -47,7 +47,7 @@
                         <h5 class="font-weight-bolder mb-0 mt-3" style="color:black;">
                         $<?php echo number_format($totales['total_ventas'], 2); ?>
                     </h5>
-                        <span class="text-sm"  style="color:black;"><b>Venta</b></span>
+                        <span class="text-sm"  style="color:black;"><b>Ventas totales</b></span>
                     </div>
                     
                 </div>
