@@ -66,8 +66,8 @@ class VentaWeb {
                 unset($this->datos['id_pedido']);
             }
     
-            $sql = "INSERT INTO pedido (referencia_bancaria, telefono_emisor, banco,banco_destino, id_metodopago, id_entrega, direccion , id_persona, estado, precio_total, tipo)
-                    VALUES (:referencia_bancaria, :telefono_emisor, :banco,:banco_destino, :id_metodopago, :id_entrega,:direccion, :id_persona, :estado, :precio_total, :tipo)";
+            $sql = "INSERT INTO pedido (referencia_bancaria, telefono_emisor, banco,banco_destino,direccion, id_metodopago, id_entrega, id_persona, estado, precio_total, tipo)
+                    VALUES (:referencia_bancaria, :telefono_emisor, :banco,:banco_destino,:direccion, :id_metodopago, :id_entrega, :id_persona, :estado, :precio_total, :tipo)";
             $stmt = $this->conex->prepare($sql);
             $stmt->execute($this->datos);
             return $this->conex->lastInsertId();
@@ -106,7 +106,7 @@ class VentaWeb {
     }
 
     public function vaciarCarrito() {
-        session_start();
+      
         $_SESSION['carrito'] = []; // Vaciar el carrito
     }
 
