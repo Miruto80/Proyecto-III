@@ -114,7 +114,7 @@
                 </div>
                 <div class="col-md-6">
                   <label>NÚMERO DE DOCUMENTO</label>
-                  <input type="text" class="form-control" name="numero_documento" id="numero_documento" placeholder="Ejemplo: 12345678" maxlength="8" required>
+                  <input type="text" class="form-control" name="numero_documento" id="numero_documento" placeholder="Ejemplo: 12345678" maxlength="10" required>
                   <span id="snumero_documento" class="text-danger"></span>              
                 </div>
               </div>
@@ -182,7 +182,7 @@
                 </div>
                 <div class="col-md-6">
                   <label>NÚMERO DE DOCUMENTO</label>
-                  <input type="text" class="form-control" name="numero_documento" id="numero_documento_modificar" placeholder="Ejemplo: 12345678" maxlength="8" required>
+                  <input type="text" class="form-control" name="numero_documento" id="numero_documento_modificar" placeholder="Ejemplo: 12345678" maxlength="10" required>
                   <span id="snumero_documento_modificar" class="text-danger"></span>
                 </div>
               </div>
@@ -264,67 +264,10 @@
 
 
 
-
-<?php
-require_once (__DIR__ . '/../modelo/conexion.php');
-$db = new Conexion();
-$conex = $db->Conex();
-?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <title>Gráfica Proveedores</title>
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  <script type="text/javascript">
-    google.charts.load("current", {packages:["corechart"]});
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-      var data = google.visualization.arrayToDataTable([
-        ['Proveedor', 'Total de Compras'],
-        <?php
-        $SQL = "SELECT pr.nombre, COUNT(c.id_compra) AS total_compras
-                FROM compra c
-                JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
-                GROUP BY pr.nombre
-                ORDER BY total_compras DESC
-                LIMIT 5";
-        $stmt = $conex->prepare($SQL);
-        $stmt->execute();
-        while ($resultado = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            echo "['" . addslashes($resultado['nombre']) . "', " . $resultado['total_compras'] . "],";
-        }
-        ?>
-      ]);
-
-      var options = {
-        title: 'Top 5 Proveedores con Más Compras Realizadas',
-        is3D: true,
-      };
-
-      var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
-      chart.draw(data, options);
-
-      // Capturar imagen en base64 después de renderizar la gráfica
-      google.visualization.events.addListener(chart, 'ready', function () {
-        var chartImageURI = chart.getImageURI();
-        document.getElementById('imagenGrafica').value = chartImageURI;
-      });
-    }
-  </script>
-</head>
-<body>
-
-  <!-- Aquí se dibuja la gráfica -->
-  <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
-
-  <!-- Input oculto para guardar la imagen base64 -->
-  <input type="hidden" id="imagenGrafica" name="imagenGrafica">
-
-  <?php include 'complementos/footer.php'; ?>
-</body>
-</html>
-
+              <!-- Mostrar gráfica sin afectar los botones -->
+              <div style="text-align:center; margin-top:20px;">
+                <img src="controlador/grafico_proveedores.png" alt="Gráfico de pastel de proveedores">
+              </div>
 
 
 

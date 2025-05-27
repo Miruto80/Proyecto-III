@@ -22,88 +22,72 @@ class proveedor extends Conexion {
     }
 
 
-public function registrarBitacora($id_persona, $accion, $descripcion) {
-    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
-    
-    $strExec = $this->conex->prepare($consulta);
-    $strExec->bindParam(':accion', $accion);
-    $strExec->bindParam(':descripcion', $descripcion);
-    $strExec->bindParam(':id_persona', $id_persona);
-    
-    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
+private function imgToBase64($imgPath) {
+    if (file_exists($imgPath)) {
+        $imgData = file_get_contents($imgPath);
+        return 'data:image/png;base64,' . base64_encode($imgData);
+    }
+    return ''; // Si la imagen no existe, devuelve cadena vacía
+}
+
+
+    public function generarPDF() {
+
+    $proveedores = $this->consultar();
+    $fechaHoraActual = date('d/m/Y h:i A');
+
+    // Ruta de la imagen de la gráfica
+    $graficoBase64 = $this->imgToBase64('controlador/grafico_proveedores.png');
+
+    $html = '
+    <html>
+    <head>
+        <style>
+            body { font-family: Arial, sans-serif; font-size: 10px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #000; padding: 4px; text-align: center; }
+            th { background-color: rgb(243, 108, 164); color: #000; }
+        </style>
+    </head>
+    <body>
+        <h1>LISTA DE PROVEEDORES</h1>
+        <p><strong>Fecha y Hora de Expedición: </strong>' . $fechaHoraActual . '</p>';
+
+    // Agregar la imagen del gráfico si existe
+    if (!empty($graficoBase64)) {
+        $html .= '<div style="text-align:center;"><img src="' . $graficoBase64  . '" width="600"></div><br>';
     }
 
+    $html .= '<table><thead><tr>
+                <th>Nombre</th>
+                <th>Tipo Documento</th>
+                <th>N° Documento</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+              </tr></thead><tbody>';
 
-   // Método privado para convertir imagen a base64 (si la usas localmente)
-    private function imgToBase64($imgPath) {
-        if (file_exists($imgPath)) {
-            $imgData = file_get_contents($imgPath);
-            $base64 = base64_encode($imgData);
-            return 'data:image/png;base64,' . $base64;
-        } else {
-            return '';
-        }
+    foreach ($proveedores as $p) {
+        $html .= '<tr>
+                    <td>' . htmlspecialchars($p['nombre']) . '</td>
+                    <td>' . htmlspecialchars($p['tipo_documento']) . '</td>
+                    <td>' . htmlspecialchars($p['numero_documento']) . '</td>
+                    <td>' . htmlspecialchars($p['correo']) . '</td>
+                    <td>' . htmlspecialchars($p['telefono']) . '</td>
+                    <td>' . htmlspecialchars($p['direccion']) . '</td>
+                  </tr>';
     }
 
-    public function generarPDF($graficoBase64 = '') {
-        $proveedores = $this->consultar();
-        $fechaHoraActual = date('d/m/Y h:i A');
+    $html .= '</tbody></table></body></html>';
 
-        $html = '
-        <html>
-        <head>
-            <style>
-                body { font-family: Arial, sans-serif; font-size: 10px; }
-                table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-                th, td { border: 1px solid #000; padding: 4px; text-align: center; word-wrap: break-word; }
-                th { background-color: rgb(243, 108, 164); color: #000; }
-                td { background-color: #FFF; }
-                h1 { text-align: center; font-size: 16px; }
-            </style>
-        </head>
-        <body>
-            <h1>LISTA DE PROVEEDORES</h1>
-            <center><img src="' . $imageBase64 . '" style="margin: 10px auto;" width="100" /></center>
-            <p><strong>Fecha y Hora de Expedición: </strong>' . $fechaHoraActual . '</p>
-            <table>
-                <tbody>';
-        // Agrega la imagen de la gráfica si existe
-        if (!empty($graficoBase64)) {
-            $html .= '<div style="text-align:center;"><img src="' . $graficoBase64 . '" width="400" /></div><br>';
-        }
+    // Generar el PDF con DOMPDF
+    $dompdf = new Dompdf();
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+    $dompdf->stream("Reporte_Proveedores.pdf", array("Attachment" => false));
+}
 
-        $html .= '<table><thead><tr>
-                    <th>Nombre</th>
-                    <th>Tipo Documento</th>
-                    <th>N° Documento</th>
-                    <th>Correo</th>
-                    <th>Teléfono</th>
-                    <th>Dirección</th>
-                  </tr></thead><tbody>';
-
-        foreach ($proveedores as $p) {
-            $html .= '<tr>
-                        <td>' . htmlspecialchars($p['nombre']) . '</td>
-                        <td>' . htmlspecialchars($p['tipo_documento']) . '</td>
-                        <td>' . htmlspecialchars($p['numero_documento']) . '</td>
-                        <td>' . htmlspecialchars($p['correo']) . '</td>
-                        <td>' . htmlspecialchars($p['telefono']) . '</td>
-                        <td>' . htmlspecialchars($p['direccion']) . '</td>
-                      </tr>';
-        }
-
-        $html .= '</tbody></table></body></html>';
-
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-
-        // Enviar PDF al navegador
-        header("Content-type: application/pdf");
-        echo $dompdf->output();
-    }
 
 
 
@@ -193,3 +177,4 @@ public function registrarBitacora($id_persona, $accion, $descripcion) {
     }
 }
 ?>
+

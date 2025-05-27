@@ -32,9 +32,80 @@ require_once 'modelo/proveedor.php';
 
 $objproveedor = new Proveedor(); 
 if(isset($_POST['generar'])){
-			$objproveedor = new Proveedor();
-			$objproveedor->generarPDF();
-		}
+    $objproveedor->generarPDF();
+    exit; // Evitar que se cargue la vista después del PDF
+}
+
+
+
+
+
+
+
+
+// Generar gráfico antes de cargar la vista
+function generarGrafico() {
+    require_once ('assets/js/jpgraph/src/jpgraph.php');
+    require_once ('assets/js/jpgraph/src/jpgraph_pie.php');
+    require_once ('assets/js/jpgraph/src/jpgraph_pie3d.php');
+    
+    $db = new Conexion();
+    $conex = $db->Conex();
+
+    // Obtener los datos de proveedores
+    $SQL = "SELECT pr.nombre, COUNT(c.id_compra) AS total_compras
+            FROM compra c
+            JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
+            GROUP BY pr.nombre
+            ORDER BY total_compras DESC
+            LIMIT 5";
+    $stmt = $conex->prepare($SQL);
+    $stmt->execute();
+
+    $data = [];
+    $labels = [];
+
+    while ($resultado = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $labels[] = $resultado['nombre'];
+        $data[] = $resultado['total_compras'];
+    }
+
+    // Crear el gráfico
+    $graph = new PieGraph(900, 500);
+    $graph->title->Set("Top 5 Proveedores con Más Compras");
+
+    $p1 = new PiePlot3D($data);
+    $p1->SetLegends($labels);
+    $p1->SetCenter(0.5, 0.5);
+    $p1->ShowBorder();
+    $p1->SetColor('black');
+    $p1->ExplodeSlice(1);
+
+    $graph->Add($p1);
+
+// Eliminar la imagen antes de crear una nueva
+$imagePath = __DIR__ . "/grafico_proveedores.png";
+if (file_exists($imagePath)) {
+    unlink($imagePath); // Borra la imagen anterior
+}
+
+// Generar el nuevo gráfico
+$graph->Stroke($imagePath);
+
+}
+
+// Llamar la función para generar la gráfica ANTES de cargar la vista
+generarGrafico();
+
+
+
+
+
+
+
+
+
+
 
 try {
     if(isset($_POST['registrar'])) {
@@ -111,10 +182,6 @@ try {
         $error_message = $e->getMessage();
         $registro = $objproveedor->consultar();
         if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-            $id_persona = $_SESSION["id"];
-            $accion = 'Acceso a Módulo';
-            $descripcion = 'módulo de Proveedor.';   
-            $objproveedor->registrarBitacora($id_persona, $accion, $descripcion);
             require_once 'vista/proveedor.php';
         }else{
             require_once 'vista/seguridad/privilegio.php';
