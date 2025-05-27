@@ -1,370 +1,435 @@
 <?php
 require_once 'conexion.php';
 
-class Salida {
+class Salida extends Conexion {
     private $conex;
     private $id_pedido;
-    private $datosPedido;
-    private $detallesPedido;
+    private $tipo;
+    private $fecha;
     private $estado;
-    
+    private $precio_total;
+    private $referencia_bancaria;
+    private $telefono_emisor;
+    private $banco;
+    private $banco_destino;
+    private $direccion;
+    private $id_entrega;
+    private $id_metodopago;
+    private $id_persona;
+    private $detalles; // Para almacenar los detalles del pedido (productos)
+
     function __construct() {
         $this->conex = new Conexion();
         $this->conex = $this->conex->Conex();
     }
-    
+
+    public function registrar() {
+        try {
+            $this->conex->beginTransaction();
+            
+            // Validación de datos antes de insertar
+            if (empty($this->id_persona) || empty($this->id_metodopago) || empty($this->id_entrega) || empty($this->detalles)) {
+                throw new Exception('Datos incompletos para el registro de la venta');
+            }
+            
+            // Insertamos la cabecera del pedido
+            $registro = "INSERT INTO pedido(tipo, fecha, estado, precio_total, referencia_bancaria, 
+                        telefono_emisor, banco, banco_destino, direccion, id_entrega, id_metodopago, id_persona) 
+                        VALUES ('2', NOW(), 'Pendiente', :precio_total, :referencia_bancaria, 
+                        :telefono_emisor, :banco, :banco_destino, :direccion, :id_entrega, :id_metodopago, :id_persona)";
+            
+            $strExec = $this->conex->prepare($registro);
+            $strExec->bindValue(':precio_total', $this->precio_total);
+            $strExec->bindValue(':referencia_bancaria', $this->referencia_bancaria);
+            $strExec->bindValue(':telefono_emisor', $this->telefono_emisor);
+            $strExec->bindValue(':banco', $this->banco);
+            $strExec->bindValue(':banco_destino', $this->banco_destino);
+            $strExec->bindValue(':direccion', $this->direccion);
+            $strExec->bindValue(':id_entrega', $this->id_entrega);
+            $strExec->bindValue(':id_metodopago', $this->id_metodopago);
+            $strExec->bindValue(':id_persona', $this->id_persona);
+            
+            if (!$strExec->execute()) {
+                $error = $strExec->errorInfo();
+                throw new Exception('Error al registrar la venta: ' . $error[2]);
+            }
+            
+            // Obtenemos el ID del pedido recién insertado
+            $id_pedido = $this->conex->lastInsertId();
+            
+            // Insertamos los detalles del pedido
+            foreach ($this->detalles as $detalle) {
+                // Validación de datos del detalle
+                if (empty($detalle['id_producto']) || empty($detalle['cantidad']) || empty($detalle['precio_unitario'])) {
+                    throw new Exception('Datos de producto incompletos');
+                }
+                
+                // Verificamos que el producto exista y tenga stock suficiente
+                $stock_disponible = $this->verificarStock($detalle['id_producto']);
+                if ($stock_disponible === false) {
+                    throw new Exception('Producto no encontrado');
+                }
+                
+                if ($stock_disponible < $detalle['cantidad']) {
+                    throw new Exception('Stock insuficiente para el producto');
+                }
+                
+                $registro_detalle = "INSERT INTO pedido_detalles(cantidad, precio_unitario, id_pedido, id_producto) 
+                                   VALUES (:cantidad, :precio_unitario, :id_pedido, :id_producto)";
+                $strExecDetalle = $this->conex->prepare($registro_detalle);
+                $strExecDetalle->bindValue(':cantidad', $detalle['cantidad']);
+                $strExecDetalle->bindValue(':precio_unitario', $detalle['precio_unitario']);
+                $strExecDetalle->bindValue(':id_pedido', $id_pedido);
+                $strExecDetalle->bindValue(':id_producto', $detalle['id_producto']);
+                
+                if (!$strExecDetalle->execute()) {
+                    $error = $strExecDetalle->errorInfo();
+                    throw new Exception('Error al registrar el detalle de la venta: ' . $error[2]);
+                }
+                
+                // Actualizamos el stock del producto
+                $actualizar_stock = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad 
+                                   WHERE id_producto = :id_producto";
+                $strExecStock = $this->conex->prepare($actualizar_stock);
+                $strExecStock->bindValue(':cantidad', $detalle['cantidad']);
+                $strExecStock->bindValue(':id_producto', $detalle['id_producto']);
+                
+                if (!$strExecStock->execute()) {
+                    $error = $strExecStock->errorInfo();
+                    throw new Exception('Error al actualizar el stock: ' . $error[2]);
+                }
+            }
+            
+            $this->conex->commit();
+            return ['respuesta' => 1, 'accion' => 'incluir', 'id_pedido' => $id_pedido];
+            
+        } catch (Exception $e) {
+            if ($this->conex->inTransaction()) {
+                $this->conex->rollBack();
+            }
+            return ['respuesta' => 0, 'accion' => 'incluir', 'error' => $e->getMessage()];
+        }
+    }
+
+    public function modificar() {
+        try {
+            $this->conex->beginTransaction();
+            
+            // Validar que exista el pedido
+            $pedido_existe = $this->consultarPedido($this->id_pedido);
+            if (empty($pedido_existe)) {
+                return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'El pedido no existe'];
+            }
+            
+            // Actualizamos el estado del pedido
+            $registro = "UPDATE pedido SET estado = :estado WHERE id_pedido = :id_pedido";
+            $strExec = $this->conex->prepare($registro);
+            $strExec->bindParam(':estado', $this->estado);
+            $strExec->bindParam(':id_pedido', $this->id_pedido);
+            $resul = $strExec->execute();
+            
+            if (!$resul) {
+                $this->conex->rollBack();
+                $error = $strExec->errorInfo();
+                return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $error[2]];
+            }
+            
+            $this->conex->commit();
+            return ['respuesta' => 1, 'accion' => 'actualizar'];
+            
+        } catch (Exception $e) {
+            if ($this->conex->inTransaction()) {
+                $this->conex->rollBack();
+            }
+            return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $e->getMessage()];
+        }
+    }
+
+    public function eliminar() {
+        try {
+            $this->conex->beginTransaction();
+            
+            // Validar que exista el pedido
+            $pedido_existe = $this->consultarPedido($this->id_pedido);
+            if (empty($pedido_existe)) {
+                return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => 'El pedido no existe'];
+            }
+            
+            // Recuperamos los detalles para devolver el stock
+            $detalles = $this->consultarDetallesPedido($this->id_pedido);
+            
+            // Devolvemos el stock de los productos
+            foreach ($detalles as $detalle) {
+                $actualizar_stock = "UPDATE productos SET stock_disponible = stock_disponible + :cantidad 
+                                   WHERE id_producto = :id_producto";
+                $strExecStock = $this->conex->prepare($actualizar_stock);
+                $strExecStock->bindParam(':cantidad', $detalle['cantidad']);
+                $strExecStock->bindParam(':id_producto', $detalle['id_producto']);
+                $resulStock = $strExecStock->execute();
+                
+                if (!$resulStock) {
+                    $this->conex->rollBack();
+                    $error = $strExecStock->errorInfo();
+                    return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $error[2]];
+                }
+            }
+            
+            // Eliminamos los detalles
+            $eliminar_detalles = "DELETE FROM pedido_detalles WHERE id_pedido = :id_pedido";
+            $strExecEliminar = $this->conex->prepare($eliminar_detalles);
+            $strExecEliminar->bindParam(':id_pedido', $this->id_pedido);
+            $resulEliminar = $strExecEliminar->execute();
+            
+            if (!$resulEliminar) {
+                $this->conex->rollBack();
+                $error = $strExecEliminar->errorInfo();
+                return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $error[2]];
+            }
+            
+            // Eliminamos la cabecera
+            $eliminar_cabecera = "DELETE FROM pedido WHERE id_pedido = :id_pedido";
+            $strExecEliminarCab = $this->conex->prepare($eliminar_cabecera);
+            $strExecEliminarCab->bindParam(':id_pedido', $this->id_pedido);
+            $resulEliminarCab = $strExecEliminarCab->execute();
+            
+            if (!$resulEliminarCab) {
+                $this->conex->rollBack();
+                $error = $strExecEliminarCab->errorInfo();
+                return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $error[2]];
+            }
+            
+            $this->conex->commit();
+            return ['respuesta' => 1, 'accion' => 'eliminar'];
+            
+        } catch (Exception $e) {
+            if ($this->conex->inTransaction()) {
+                $this->conex->rollBack();
+            }
+            return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $e->getMessage()];
+        }
+    }
+
+    public function consultar() {
+        try {
+            $registro = "SELECT p.id_pedido, CONCAT(per.nombre, ' ', per.apellido) as cliente, p.fecha, 
+                        p.estado, p.precio_total, mp.nombre as metodo_pago, me.nombre as metodo_entrega,
+                        p.banco, p.banco_destino 
+                        FROM pedido p 
+                        JOIN personas per ON p.id_persona = per.id_persona 
+                        JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago 
+                        JOIN metodo_entrega me ON p.id_entrega = me.id_entrega 
+                        WHERE p.tipo = '2' 
+                        ORDER BY p.id_pedido DESC";
+            $consulta = $this->conex->prepare($registro);
+            $resul = $consulta->execute();
+            
+            if (!$resul) {
+                $error = $consulta->errorInfo();
+                return [];
+            }
+            
+            return $consulta->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    public function consultarDetallesPedido($id_pedido) {
+        try {
+            $registro = "SELECT pd.id_detalle, pd.cantidad, pd.precio_unitario, 
+                        p.id_producto, p.nombre as nombre_producto 
+                        FROM pedido_detalles pd 
+                        JOIN productos p ON pd.id_producto = p.id_producto 
+                        WHERE pd.id_pedido = :id_pedido";
+            $consulta = $this->conex->prepare($registro);
+            $consulta->bindParam(':id_pedido', $id_pedido);
+            $resul = $consulta->execute();
+            
+            if (!$resul) {
+                $error = $consulta->errorInfo();
+                return [];
+            }
+            
+            return $consulta->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    public function consultarPedido($id_pedido) {
+        try {
+            $registro = "SELECT p.*, CONCAT(per.nombre, ' ', per.apellido) as cliente 
+                        FROM pedido p 
+                        JOIN personas per ON p.id_persona = per.id_persona 
+                        WHERE p.id_pedido = :id_pedido";
+            $consulta = $this->conex->prepare($registro);
+            $consulta->bindParam(':id_pedido', $id_pedido);
+            $resul = $consulta->execute();
+            
+            if (!$resul) {
+                $error = $consulta->errorInfo();
+                return null;
+            }
+            
+            return $consulta->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    public function consultarCliente($cedula) {
+        try {
+            $registro = "SELECT id_persona, cedula, nombre, apellido, correo, telefono 
+                        FROM personas 
+                        WHERE cedula = :cedula AND estatus = 1";
+            $consulta = $this->conex->prepare($registro);
+            $consulta->bindParam(':cedula', $cedula);
+            $resul = $consulta->execute();
+            
+            if (!$resul) {
+                $error = $consulta->errorInfo();
+                return null;
+            }
+            
+            return $consulta->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    private function verificarStock($id_producto) {
+        try {
+            $query = "SELECT stock_disponible FROM productos WHERE id_producto = :id_producto AND estatus = 1";
+            $consulta = $this->conex->prepare($query);
+            $consulta->bindParam(':id_producto', $id_producto);
+            $consulta->execute();
+            
+            return $consulta->fetchColumn();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
     // Setters
     public function set_Id_pedido($id_pedido) {
         $this->id_pedido = $id_pedido;
     }
-    
-    public function set_DatosPedido($datosPedido) {
-        $this->datosPedido = $datosPedido;
-    }
-    
-    public function set_DetallesPedido($detallesPedido) {
-        $this->detallesPedido = $detallesPedido;
-    }
-    
+
     public function set_Estado($estado) {
         $this->estado = $estado;
     }
-    
-    /**
-     * Obtiene todos los pedidos con información relacionada
-     */
-    public function listarPedidos() {
-        try {
-            $stmt = $this->conex->prepare("
-                SELECT p.*, mp.nombre as metodo_pago, me.nombre as metodo_entrega 
-                FROM pedido p
-                LEFT JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago
-                LEFT JOIN metodo_entrega me ON p.id_entrega = me.id_entrega
-                ORDER BY p.fecha DESC
-            ");
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error al listar pedidos: " . $e->getMessage();
-            return false;
-        }
+
+    public function set_Precio_total($precio_total) {
+        $this->precio_total = $precio_total;
     }
-    
-    /**
-     * Obtiene los detalles de un pedido específico
-     */
-    public function obtenerDetallesPedido($id_pedido = null) {
-        try {
-            if ($id_pedido === null) {
-                $id_pedido = $this->id_pedido;
-            }
-            
-            $stmt = $this->conex->prepare("
-                SELECT pd.*, pr.nombre as nombre_producto, pr.marca 
-                FROM pedido_detalles pd
-                JOIN productos pr ON pd.id_producto = pr.id_producto
-                WHERE pd.id_pedido = :id_pedido
-            ");
-            $stmt->bindParam(':id_pedido', $id_pedido, PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error al obtener detalles del pedido: " . $e->getMessage();
-            return false;
-        }
+
+    public function set_Referencia_bancaria($referencia_bancaria) {
+        $this->referencia_bancaria = $referencia_bancaria;
     }
-    
-    /**
-     * Obtiene un pedido específico por su ID
-     */
-    public function obtenerPedido($id_pedido = null) {
-        try {
-            if ($id_pedido === null) {
-                $id_pedido = $this->id_pedido;
-            }
-            
-            $stmt = $this->conex->prepare("
-                SELECT p.*, mp.nombre as metodo_pago, me.nombre as metodo_entrega 
-                FROM pedido p
-                LEFT JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago
-                LEFT JOIN metodo_entrega me ON p.id_entrega = me.id_entrega
-                WHERE p.id_pedido = :id_pedido
-            ");
-            $stmt->bindParam(':id_pedido', $id_pedido, PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error al obtener pedido: " . $e->getMessage();
-            return false;
-        }
+
+    public function set_Telefono_emisor($telefono_emisor) {
+        $this->telefono_emisor = $telefono_emisor;
     }
-    
-    /**
-     * Registra un nuevo pedido y sus detalles
-     */
-    public function registrarPedido() {
+
+    public function set_Banco($banco) {
+        $this->banco = $banco;
+    }
+
+    public function set_Banco_destino($banco_destino) {
+        $this->banco_destino = $banco_destino;
+    }
+
+    public function set_Direccion($direccion) {
+        $this->direccion = $direccion;
+    }
+
+    public function set_Id_entrega($id_entrega) {
+        $this->id_entrega = $id_entrega;
+    }
+
+    public function set_Id_metodopago($id_metodopago) {
+        $this->id_metodopago = $id_metodopago;
+    }
+
+    public function set_Id_persona($id_persona) {
+        $this->id_persona = $id_persona;
+    }
+
+    public function set_Detalles($detalles) {
+        $this->detalles = $detalles;
+    }
+
+    public function consultarProductos() {
         try {
-            $this->conex->beginTransaction();
+            $query = "SELECT id_producto, nombre, descripcion, marca, precio_detal, stock_disponible 
+                     FROM productos 
+                     WHERE estatus = 1 AND stock_disponible > 0";
+            $consulta = $this->conex->prepare($query);
+            $consulta->execute();
             
-            // Insertar el pedido principal
-            $stmt = $this->conex->prepare("
-                INSERT INTO pedido (tipo, fecha, estado, precio_total, referencia_bancaria, telefono_emisor, banco, id_entrega, id_metodopago) 
-                VALUES (:tipo, NOW(), :estado, :precio_total, :referencia_bancaria, :telefono_emisor, :banco, :id_entrega, :id_metodopago)
-            ");
-            
-            $stmt->bindParam(':tipo', $this->datosPedido['tipo'], PDO::PARAM_STR);
-            $stmt->bindParam(':estado', $this->datosPedido['estado'], PDO::PARAM_STR);
-            $stmt->bindParam(':precio_total', $this->datosPedido['precio_total'], PDO::PARAM_STR);
-            $stmt->bindParam(':referencia_bancaria', $this->datosPedido['referencia_bancaria'], PDO::PARAM_STR);
-            $stmt->bindParam(':telefono_emisor', $this->datosPedido['telefono_emisor'], PDO::PARAM_STR);
-            $stmt->bindParam(':banco', $this->datosPedido['banco'], PDO::PARAM_STR);
-            $stmt->bindParam(':id_entrega', $this->datosPedido['id_entrega'], PDO::PARAM_INT);
-            $stmt->bindParam(':id_metodopago', $this->datosPedido['id_metodopago'], PDO::PARAM_INT);
-            
-            $stmt->execute();
-            $id_pedido = $this->conex->lastInsertId();
-            
-            // Insertar los detalles del pedido
-            foreach ($this->detallesPedido as $detalle) {
-                // Validar que exista el producto y que tenga stock suficiente
-                $stmt_stock = $this->conex->prepare("
-                    SELECT stock_disponible FROM productos WHERE id_producto = :id_producto
-                ");
-                $stmt_stock->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                $stmt_stock->execute();
-                $producto = $stmt_stock->fetch(PDO::FETCH_ASSOC);
-                
-                if (!$producto) {
-                    throw new Exception("El producto con ID {$detalle['id_producto']} no existe.");
-                }
-                
-                $cantidad = $detalle['cantidad'];
-                if ($producto['stock_disponible'] < $cantidad) {
-                    throw new Exception("Stock insuficiente para el producto ID {$detalle['id_producto']}.");
-                }
-                
-                // Registrar detalle del pedido
-                $stmt_detalle = $this->conex->prepare("
-                    INSERT INTO pedido_detalles (cantidad, precio_unitario, id_pedido, id_producto)
-                    VALUES (:cantidad, :precio_unitario, :id_pedido, :id_producto)
-                ");
-                
-                $stmt_detalle->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
-                $stmt_detalle->bindParam(':precio_unitario', $detalle['precio_unitario'], PDO::PARAM_STR);
-                $stmt_detalle->bindParam(':id_pedido', $id_pedido, PDO::PARAM_INT);
-                $stmt_detalle->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                $stmt_detalle->execute();
-                
-                // Actualizar stock del producto
-                $stmt_update = $this->conex->prepare("
-                    UPDATE productos 
-                    SET stock_disponible = stock_disponible - :cantidad
-                    WHERE id_producto = :id_producto
-                ");
-                
-                $stmt_update->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
-                $stmt_update->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                $stmt_update->execute();
-            }
-            
-            // Crear notificación para el pedido
-            $stmt_notif = $this->conex->prepare("
-                INSERT INTO notificaciones (titulo, mensaje, fecha, estado, id_pedido)
-                VALUES (:titulo, :mensaje, CURDATE(), 'sin_leer', :id_pedido)
-            ");
-            
-            $titulo = "Nuevo pedido registrado";
-            $mensaje = "Se ha registrado un nuevo pedido con ID: {$id_pedido}";
-            
-            $stmt_notif->bindParam(':titulo', $titulo, PDO::PARAM_STR);
-            $stmt_notif->bindParam(':mensaje', $mensaje, PDO::PARAM_STR);
-            $stmt_notif->bindParam(':id_pedido', $id_pedido, PDO::PARAM_INT);
-            $stmt_notif->execute();
-            
-            $this->conex->commit();
-            return array('respuesta' => 1, 'id_pedido' => $id_pedido);
+            return $consulta->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
-            $this->conex->rollBack();
-            return array('respuesta' => 0, 'error' => $e->getMessage());
+            return [];
         }
     }
-    
-    /**
-     * Actualiza un pedido existente
-     */
-    public function actualizarPedido() {
+
+    public function consultarMetodosPago() {
         try {
-            $stmt = $this->conex->prepare("
-                UPDATE pedido 
-                SET estado = :estado, 
-                    referencia_bancaria = :referencia_bancaria,
-                    telefono_emisor = :telefono_emisor,
-                    banco = :banco,
-                    id_entrega = :id_entrega,
-                    id_metodopago = :id_metodopago
-                WHERE id_pedido = :id_pedido
-            ");
+            $query = "SELECT id_metodopago, nombre, descripcion 
+                     FROM metodo_pago 
+                     WHERE estatus = 1";
+            $consulta = $this->conex->prepare($query);
+            $consulta->execute();
             
-            $stmt->bindParam(':estado', $this->datosPedido['estado'], PDO::PARAM_STR);
-            $stmt->bindParam(':referencia_bancaria', $this->datosPedido['referencia_bancaria'], PDO::PARAM_STR);
-            $stmt->bindParam(':telefono_emisor', $this->datosPedido['telefono_emisor'], PDO::PARAM_STR);
-            $stmt->bindParam(':banco', $this->datosPedido['banco'], PDO::PARAM_STR);
-            $stmt->bindParam(':id_entrega', $this->datosPedido['id_entrega'], PDO::PARAM_INT);
-            $stmt->bindParam(':id_metodopago', $this->datosPedido['id_metodopago'], PDO::PARAM_INT);
-            $stmt->bindParam(':id_pedido', $this->id_pedido, PDO::PARAM_INT);
+            return $consulta->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    public function consultarMetodosEntrega() {
+        try {
+            $query = "SELECT id_entrega, nombre, descripcion 
+                     FROM metodo_entrega 
+                     WHERE estatus = 1";
+            $consulta = $this->conex->prepare($query);
+            $consulta->execute();
             
+            return $consulta->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    public function existeCedula($cedula) {
+        try {
+            $consulta = "SELECT cedula FROM personas WHERE cedula = :cedula";
+            $stmt = $this->conex->prepare($consulta);
+            $stmt->bindParam(':cedula', $cedula);
             $stmt->execute();
-            
-            // Crear notificación para la actualización
-            $stmt_notif = $this->conex->prepare("
-                INSERT INTO notificaciones (titulo, mensaje, fecha, estado, id_pedido)
-                VALUES (:titulo, :mensaje, CURDATE(), 'sin_leer', :id_pedido)
-            ");
-            
-            $titulo = "Pedido actualizado";
-            $mensaje = "Se ha actualizado el pedido con ID: {$this->id_pedido}";
-            
-            $stmt_notif->bindParam(':titulo', $titulo, PDO::PARAM_STR);
-            $stmt_notif->bindParam(':mensaje', $mensaje, PDO::PARAM_STR);
-            $stmt_notif->bindParam(':id_pedido', $this->id_pedido, PDO::PARAM_INT);
-            $stmt_notif->execute();
-            
-            return array('respuesta' => 1);
-        } catch (PDOException $e) {
-            return array('respuesta' => 0, 'error' => $e->getMessage());
+            return $stmt->rowCount() > 0;
+        } catch (Exception $e) {
+            return false;
         }
     }
-    
-    /**
-     * Elimina un pedido y sus detalles
-     */
-    public function eliminarPedido() {
+
+    public function registrarCliente($datos) {
         try {
-            $this->conex->beginTransaction();
+            $consulta = "INSERT INTO personas (cedula, nombre, apellido, telefono, correo, id_tipo, estatus) 
+                         VALUES (:cedula, :nombre, :apellido, :telefono, :correo, 1, 1)";
             
-            // Primero recuperamos los detalles para restaurar stock
-            $detalles = $this->obtenerDetallesPedido();
+            $stmt = $this->conex->prepare($consulta);
+            $stmt->bindParam(':cedula', $datos['cedula']);
+            $stmt->bindParam(':nombre', $datos['nombre']);
+            $stmt->bindParam(':apellido', $datos['apellido']);
+            $stmt->bindParam(':telefono', $datos['telefono']);
+            $stmt->bindParam(':correo', $datos['correo']);
             
-            // Restaurar stock de productos
-            foreach ($detalles as $detalle) {
-                $stmt_update = $this->conex->prepare("
-                    UPDATE productos 
-                    SET stock_disponible = stock_disponible + :cantidad
-                    WHERE id_producto = :id_producto
-                ");
-                
-                $stmt_update->bindParam(':cantidad', $detalle['cantidad'], PDO::PARAM_INT);
-                $stmt_update->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                $stmt_update->execute();
+            if ($stmt->execute()) {
+                return $this->conex->lastInsertId();
             }
-            
-            // Eliminar notificaciones relacionadas
-            $stmt_notif = $this->conex->prepare("
-                DELETE FROM notificaciones WHERE id_pedido = :id_pedido
-            ");
-            $stmt_notif->bindParam(':id_pedido', $this->id_pedido, PDO::PARAM_INT);
-            $stmt_notif->execute();
-            
-            // Eliminar detalles del pedido
-            $stmt_detalles = $this->conex->prepare("
-                DELETE FROM pedido_detalles WHERE id_pedido = :id_pedido
-            ");
-            $stmt_detalles->bindParam(':id_pedido', $this->id_pedido, PDO::PARAM_INT);
-            $stmt_detalles->execute();
-            
-            // Finalmente eliminar el pedido
-            $stmt_pedido = $this->conex->prepare("
-                DELETE FROM pedido WHERE id_pedido = :id_pedido
-            ");
-            $stmt_pedido->bindParam(':id_pedido', $this->id_pedido, PDO::PARAM_INT);
-            $stmt_pedido->execute();
-            
-            $this->conex->commit();
-            return array('respuesta' => 1);
-        } catch (PDOException $e) {
-            $this->conex->rollBack();
-            return array('respuesta' => 0, 'error' => $e->getMessage());
-        }
-    }
-    
-    /**
-     * Actualiza el estado de un pedido
-     */
-    public function actualizarEstadoPedido() {
-        try {
-            $stmt = $this->conex->prepare("
-                UPDATE pedido SET estado = :estado WHERE id_pedido = :id_pedido
-            ");
-            
-            $stmt->bindParam(':estado', $this->estado, PDO::PARAM_STR);
-            $stmt->bindParam(':id_pedido', $this->id_pedido, PDO::PARAM_INT);
-            
-            $stmt->execute();
-            
-            // Crear notificación para el cambio de estado
-            $stmt_notif = $this->conex->prepare("
-                INSERT INTO notificaciones (titulo, mensaje, fecha, estado, id_pedido)
-                VALUES (:titulo, :mensaje, CURDATE(), 'sin_leer', :id_pedido)
-            ");
-            
-            $titulo = "Estado de pedido actualizado";
-            $mensaje = "El pedido {$this->id_pedido} ha sido actualizado a: {$this->estado}";
-            
-            $stmt_notif->bindParam(':titulo', $titulo, PDO::PARAM_STR);
-            $stmt_notif->bindParam(':mensaje', $mensaje, PDO::PARAM_STR);
-            $stmt_notif->bindParam(':id_pedido', $this->id_pedido, PDO::PARAM_INT);
-            $stmt_notif->execute();
-            
-            return array('respuesta' => 1);
-        } catch (PDOException $e) {
-            return array('respuesta' => 0, 'error' => $e->getMessage());
-        }
-    }
-    
-    /**
-     * Obtiene los métodos de pago disponibles
-     */
-    public function obtenerMetodosPago() {
-        try {
-            $stmt = $this->conex->prepare("
-                SELECT * FROM metodo_pago WHERE estatus = 1
-            ");
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error al obtener métodos de pago: " . $e->getMessage();
             return false;
-        }
-    }
-    
-    /**
-     * Obtiene los métodos de entrega disponibles
-     */
-    public function obtenerMetodosEntrega() {
-        try {
-            $stmt = $this->conex->prepare("
-                SELECT * FROM metodo_entrega WHERE estatus = 1
-            ");
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error al obtener métodos de entrega: " . $e->getMessage();
-            return false;
-        }
-    }
-    
-    /**
-     * Obtiene los productos disponibles en inventario
-     */
-    public function obtenerProductos() {
-        try {
-            $stmt = $this->conex->prepare("
-                SELECT * FROM productos WHERE estatus = 1 AND stock_disponible > 0
-            ");
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error al obtener productos: " . $e->getMessage();
+        } catch (Exception $e) {
             return false;
         }
     }

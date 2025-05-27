@@ -9,6 +9,20 @@ require_once 'modelo/salida.php';
 
 $salida = new Salida();
 
+// Generar o verificar el token CSRF
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $_SESSION['mensaje'] = "Error de validación del formulario";
+        $_SESSION['tipo_mensaje'] = "danger";
+        header("Location: ?pagina=salida");
+        exit;
+    }
+}
+
 // Detectar si la solicitud es AJAX
 function esAjax() {
     return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
@@ -20,213 +34,238 @@ function sanitizar($dato) {
     return htmlspecialchars(trim($dato), ENT_QUOTES, 'UTF-8');
 }
 
-// Procesar el registro de un nuevo pedido
-if (isset($_POST['registrar'])) {
-    // Recopilar datos del pedido
-    $datosPedido = array(
-        'tipo' => isset($_POST['tipo']) ? sanitizar($_POST['tipo']) : 'salida',
-        'estado' => isset($_POST['estado']) ? sanitizar($_POST['estado']) : 'pendiente',
-        'precio_total' => isset($_POST['precio_total_general']) ? floatval($_POST['precio_total_general']) : 0,
-        'referencia_bancaria' => isset($_POST['referencia_bancaria']) ? sanitizar($_POST['referencia_bancaria']) : null,
-        'telefono_emisor' => isset($_POST['telefono_emisor']) ? sanitizar($_POST['telefono_emisor']) : null,
-        'banco' => isset($_POST['banco']) ? sanitizar($_POST['banco']) : null,
-        'id_entrega' => isset($_POST['id_entrega']) ? intval($_POST['id_entrega']) : null,
-        'id_metodopago' => isset($_POST['id_metodopago']) ? intval($_POST['id_metodopago']) : null
-    );
+// Procesar la búsqueda de cliente por cédula (AJAX)
+if (isset($_POST['buscar_cliente'])) {
+    if (isset($_POST['cedula'])) {
+        $cedula = sanitizar($_POST['cedula']);
+        $cliente = $salida->consultarCliente($cedula);
+        
+        if ($cliente) {
+            $_SESSION['cliente_encontrado'] = true;
+            $_SESSION['datos_cliente'] = $cliente;
+        } else {
+            $_SESSION['cliente_encontrado'] = false;
+        }
+        
+        if (esAjax()) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'respuesta' => $cliente ? 1 : 0,
+                'cliente' => $cliente
+            ]);
+            exit;
+        } else {
+            header("Location: ?pagina=salida");
+            exit;
+        }
+    }
+}
+
+// Procesar el registro de nuevo cliente
+if (isset($_POST['registrar_cliente'])) {
+    if (esAjax()) {
+        header('Content-Type: application/json');
+        
+        try {
+            // Validar datos del cliente
+            $cedula = sanitizar($_POST['cedula']);
+            $nombre = sanitizar($_POST['nombre']);
+            $apellido = sanitizar($_POST['apellido']);
+            $telefono = sanitizar($_POST['telefono']);
+            $correo = sanitizar($_POST['correo']);
+
+            // Verificar si la cédula ya existe
+            if ($salida->existeCedula($cedula)) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'La cédula ya está registrada'
+                ]);
+                exit;
+            }
+
+            // Registrar el nuevo cliente
+            $id_cliente = $salida->registrarCliente([
+                'cedula' => $cedula,
+                'nombre' => $nombre,
+                'apellido' => $apellido,
+                'telefono' => $telefono,
+                'correo' => $correo
+            ]);
+
+            if ($id_cliente) {
+                echo json_encode([
+                    'success' => true,
+                    'id_cliente' => $id_cliente,
+                    'message' => 'Cliente registrado exitosamente'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Error al registrar el cliente'
+                ]);
+            }
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+        exit;
+    }
+}
+
+// Procesar el registro de una nueva venta
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_venta'])) {
+    // Asegurarnos de que no haya salida previa
+    ob_clean();
     
-    $salida->set_DatosPedido($datosPedido);
-    
-    // Recopilar detalles del pedido
-    $detalles = array();
-    if (isset($_POST['id_producto']) && is_array($_POST['id_producto'])) {
+    try {
+        // Validar que existan los datos necesarios
+        if (!isset($_POST['id_persona']) || !isset($_POST['id_metodopago']) || !isset($_POST['id_entrega'])) {
+            throw new Exception('Faltan datos requeridos para la venta');
+        }
+
+        // Configurar datos básicos de la venta
+        $salida->set_Id_persona(intval($_POST['id_persona']));
+        $salida->set_Id_metodopago(intval($_POST['id_metodopago']));
+        $salida->set_Id_entrega(intval($_POST['id_entrega']));
+        $salida->set_Precio_total(floatval($_POST['precio_total']));
+        
+        // Configurar datos de pago móvil si el método es pago móvil (id = 1)
+        if ($_POST['id_metodopago'] == '1') {
+            if (!isset($_POST['referencia_bancaria']) || !isset($_POST['telefono_emisor']) || !isset($_POST['banco'])) {
+                throw new Exception('Faltan datos del pago móvil');
+            }
+            $salida->set_Referencia_bancaria(sanitizar($_POST['referencia_bancaria']));
+            $salida->set_Telefono_emisor(sanitizar($_POST['telefono_emisor']));
+            $salida->set_Banco(sanitizar($_POST['banco']));
+            if (isset($_POST['banco_destino'])) {
+                $salida->set_Banco_destino(sanitizar($_POST['banco_destino']));
+            }
+        }
+
+        // Configurar dirección si existe
+        if (isset($_POST['direccion'])) {
+            $salida->set_Direccion(sanitizar($_POST['direccion']));
+        }
+        
+        // Procesar detalles de productos
+        $detalles = [];
+        if (!isset($_POST['id_producto']) || !is_array($_POST['id_producto']) || empty($_POST['id_producto'])) {
+            throw new Exception('No hay productos seleccionados');
+        }
+
         for ($i = 0; $i < count($_POST['id_producto']); $i++) {
             if (!empty($_POST['id_producto'][$i]) && isset($_POST['cantidad'][$i]) && $_POST['cantidad'][$i] > 0) {
-                $detalle = array(
+                $detalle = [
                     'id_producto' => intval($_POST['id_producto'][$i]),
                     'cantidad' => intval($_POST['cantidad'][$i]),
                     'precio_unitario' => floatval($_POST['precio_unitario'][$i])
-                );
+                ];
                 $detalles[] = $detalle;
             }
         }
-    }
-    
-    $salida->set_DetallesPedido($detalles);
-    
-    // Validar datos
-    if (empty($detalles) || 
-        empty($datosPedido['id_entrega']) || 
-        empty($datosPedido['id_metodopago'])) {
+
+        if (empty($detalles)) {
+            throw new Exception('No hay productos válidos para registrar');
+        }
         
-        $_SESSION['mensaje'] = "Error: Datos incompletos para el registro del pedido.";
-        $_SESSION['tipo_mensaje'] = "danger";
-        header("Location: ?pagina=salida");
-        exit;
-    }
-    
-    // Registrar pedido
-    $respuesta = $salida->registrarPedido();
-    
-    if (esAjax()) {
-        // Devolver respuesta JSON para peticiones AJAX
-        header('Content-Type: application/json');
-        echo json_encode($respuesta);
-        exit;
-    } else {
-        // Respuesta normal para peticiones no-AJAX
+        $salida->set_Detalles($detalles);
+        
+        // Registrar la venta
+        $respuesta = $salida->registrar();
+        
+        header('Content-Type: application/json; charset=utf-8');
         if ($respuesta['respuesta'] == 1) {
-            $_SESSION['mensaje'] = "Pedido registrado correctamente con ID: {$respuesta['id_pedido']}";
-            $_SESSION['tipo_mensaje'] = "success";
+            echo json_encode([
+                'respuesta' => 1,
+                'mensaje' => 'Venta registrada exitosamente',
+                'id_pedido' => $respuesta['id_pedido']
+            ]);
         } else {
-            $_SESSION['mensaje'] = "Error al registrar el pedido: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
-            $_SESSION['tipo_mensaje'] = "danger";
+            echo json_encode([
+                'respuesta' => 0,
+                'error' => isset($respuesta['error']) ? $respuesta['error'] : 'Error desconocido al registrar la venta'
+            ]);
         }
-        
-        header("Location: ?pagina=salida");
+        exit;
+
+    } catch (Exception $e) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'respuesta' => 0,
+            'error' => $e->getMessage()
+        ]);
         exit;
     }
 }
 
-// Procesar la actualización de un pedido existente
-if (isset($_POST['actualizar'])) {
-    if (isset($_POST['id_pedido'])) {
-        $id_pedido = intval($_POST['id_pedido']);
+// Procesar la modificación del estado de una venta
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modificar_venta'])) {
+    if (isset($_POST['id_pedido']) && isset($_POST['estado_pedido'])) {
+        $salida->set_Id_pedido(intval($_POST['id_pedido']));
+        $salida->set_Estado(sanitizar($_POST['estado_pedido']));
         
-        // Recopilar datos del pedido
-        $datosPedido = array(
-            'estado' => isset($_POST['estado']) ? sanitizar($_POST['estado']) : 'pendiente',
-            'referencia_bancaria' => isset($_POST['referencia_bancaria']) ? sanitizar($_POST['referencia_bancaria']) : null,
-            'telefono_emisor' => isset($_POST['telefono_emisor']) ? sanitizar($_POST['telefono_emisor']) : null,
-            'banco' => isset($_POST['banco']) ? sanitizar($_POST['banco']) : null,
-            'id_entrega' => isset($_POST['id_entrega']) ? intval($_POST['id_entrega']) : null,
-            'id_metodopago' => isset($_POST['id_metodopago']) ? intval($_POST['id_metodopago']) : null
-        );
-        
-        $salida->set_Id_pedido($id_pedido);
-        $salida->set_DatosPedido($datosPedido);
-        
-        // Actualizar pedido
-        $respuesta = $salida->actualizarPedido();
+        // Modificar el estado de la venta
+        $respuesta = $salida->modificar();
         
         if (esAjax()) {
-            // Devolver respuesta JSON para peticiones AJAX
             header('Content-Type: application/json');
             echo json_encode($respuesta);
             exit;
         } else {
-            // Respuesta normal para peticiones no-AJAX
-            if ($respuesta['respuesta'] == 1) {
-                $_SESSION['mensaje'] = "Pedido actualizado correctamente";
-                $_SESSION['tipo_mensaje'] = "success";
-            } else {
-                $_SESSION['mensaje'] = "Error al actualizar el pedido: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
-                $_SESSION['tipo_mensaje'] = "danger";
-            }
-            
+            // Regenerar token CSRF
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             header("Location: ?pagina=salida");
             exit;
         }
     }
 }
 
-// Procesar la eliminación de un pedido
-if (isset($_POST['eliminar'])) {
-    if (isset($_POST['id_pedido'])) {
-        $id_pedido = intval($_POST['id_pedido']);
-        $salida->set_Id_pedido($id_pedido);
+// Procesar la eliminación de una venta
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar_venta'])) {
+    if (!empty($_POST['eliminar_venta'])) {
+        $salida->set_Id_pedido(intval($_POST['eliminar_venta']));
         
-        // Eliminar pedido
-        $respuesta = $salida->eliminarPedido();
+        // Eliminar la venta
+        $respuesta = $salida->eliminar();
         
         if (esAjax()) {
-            // Devolver respuesta JSON para peticiones AJAX
             header('Content-Type: application/json');
             echo json_encode($respuesta);
             exit;
         } else {
-            // Respuesta normal para peticiones no-AJAX
             if ($respuesta['respuesta'] == 1) {
-                $_SESSION['mensaje'] = "Pedido eliminado correctamente";
+                $_SESSION['mensaje'] = "Venta eliminada exitosamente";
                 $_SESSION['tipo_mensaje'] = "success";
             } else {
-                $_SESSION['mensaje'] = "Error al eliminar el pedido: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
+                $_SESSION['mensaje'] = "Error al eliminar la venta: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
                 $_SESSION['tipo_mensaje'] = "danger";
             }
             
+            // Regenerar token CSRF
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             header("Location: ?pagina=salida");
             exit;
         }
     }
 }
 
-// Actualizar el estado de un pedido
-if (isset($_POST['actualizar_estado'])) {
-    if (isset($_POST['id_pedido']) && isset($_POST['estado'])) {
-        $id_pedido = intval($_POST['id_pedido']);
-        $estado = sanitizar($_POST['estado']);
-        
-        $salida->set_Id_pedido($id_pedido);
-        $salida->set_Estado($estado);
-        
-        // Actualizar estado
-        $respuesta = $salida->actualizarEstadoPedido();
-        
-        if (esAjax()) {
-            // Devolver respuesta JSON para peticiones AJAX
-            header('Content-Type: application/json');
-            echo json_encode($respuesta);
-            exit;
-        } else {
-            // Respuesta normal para peticiones no-AJAX
-            if ($respuesta['respuesta'] == 1) {
-                $_SESSION['mensaje'] = "Estado del pedido actualizado correctamente";
-                $_SESSION['tipo_mensaje'] = "success";
-            } else {
-                $_SESSION['mensaje'] = "Error al actualizar el estado del pedido: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
-                $_SESSION['tipo_mensaje'] = "danger";
-            }
-            
-            header("Location: ?pagina=salida");
-            exit;
-        }
+// Si es una solicitud GET normal, mostrar la vista
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // Consultar datos para la vista
+    $ventas = $salida->consultar();
+
+    // Obtener la lista de productos y métodos de pago/entrega para los formularios
+    $productos_lista = $salida->consultarProductos();
+    $metodos_pago = $salida->consultarMetodosPago();
+    $metodos_entrega = $salida->consultarMetodosEntrega();
+
+    // Cargamos la vista
+    if ($_SESSION["nivel_rol"] >= 2) { // Validación si es administrador o vendedor
+        require_once 'vista/salida.php';
+    } else {
+        require_once 'vista/seguridad/privilegio.php';
     }
-}
-
-// Carga los detalles de un pedido específico para mostrarlos en modal
-if (isset($_POST['cargar_detalles']) && isset($_POST['id_pedido'])) {
-    $id_pedido = intval($_POST['id_pedido']);
-    
-    // Obtener pedido y sus detalles
-    $pedido = $salida->obtenerPedido($id_pedido);
-    $detalles = $salida->obtenerDetallesPedido($id_pedido);
-    
-    // Devolver los datos en formato JSON
-    header('Content-Type: application/json');
-    echo json_encode([
-        'pedido' => $pedido,
-        'detalles' => $detalles
-    ]);
-    exit;
-}
-
-// Consultar datos para la vista
-$pedidos = $salida->listarPedidos();
-
-// Si hay un ID en la URL, consultamos los detalles de ese pedido
-$detalles_pedido = [];
-if (isset($_GET['id'])) {
-    $detalles_pedido = $salida->obtenerDetallesPedido(intval($_GET['id']));
-}
-
-// Obtener datos necesarios para formularios
-$metodosPago = $salida->obtenerMetodosPago();
-$metodosEntrega = $salida->obtenerMetodosEntrega();
-$productos = $salida->obtenerProductos();
-
-// Cargamos la vista
-if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-    require_once 'vista/salida.php';
-}else{
-    require_once 'vista/seguridad/privilegio.php';
 }
 ?>
