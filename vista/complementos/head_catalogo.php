@@ -19,3 +19,6 @@
 
   <script src="assets/js/libreria/moment.js"></script>  
   <script src="assets/js/libreria/sweetalert2.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.css"/>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.js.iife.js"></script>

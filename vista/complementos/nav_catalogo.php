@@ -78,10 +78,15 @@ nav {
         <div class="col-sm-6 col-md-3 col-lg-2 d-flex justify-content-end gap-5 align-items-center mt-4 mt-sm-0 justify-content-center justify-content-sm-end">
           <ul class="d-flex justify-content-end list-unstyled m-0">
          
-
+            
             <?php if ($sesion_activa): ?>
               <?php if($_SESSION["nivel_rol"] == 1) { ?>
-              
+                
+                <button type="button" class="btn btn-primary" id="btnExtra">
+        <span class="icon text-white">
+            <i class="fas fa-info-circle"></i>
+        </span>
+    </button>
             <li>
               <a href="#" class="p-0 m-0 " data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
                 aria-controls="offcanvasCart">
