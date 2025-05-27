@@ -211,3 +211,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 )});
 
+$('#btnExtra').on("click", function () {
+  
+    const driver = window.driver.js.driver;
+    
+    const driverObj = new driver({
+        nextBtnText: 'Siguiente',
+        prevBtnText: 'Anterior',
+      popoverClass: 'driverjs-theme',
+      closeBtn:false,
+      steps: [
+        { element: '#search-form', popover: { title: 'Buscador', description: 'Aqui puedes buscar cualquier producto de nuestro catalogo', side: "left", }},
+        { element: '.section-title', popover: { title: 'Productos mas vendidos', description: 'Nuestra seleccion de los 10 productos mas vendidos', side: "bottom", align: 'start' }},
+        { element: '.product-item', popover: { title: 'Productos', description: 'Estas son las cartas de nuestros productos puedes darle click para ver mas detalles del producto', side: "left", align: 'start' }},
+        { element: '.categorias', popover: { title: 'Filtrado por categoria', description: 'Aqui podras seleccionar las categorias y te saldran los productos asociados', side: "left", align: 'start' }},
+        { element: '.ver-detalles', popover: { title: 'Ver detalles', description: 'Haz clic aquí para ver más información sobre un producto específico.', side: "left", align: 'start' }},
+        { element: '.btn-desactivar', popover: { title: 'Cambiar estatus', description: 'Este botón te permite desactivar o activar un producto', side: "left", align: 'start' }},
+        { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un producto en la tabla', side: "right", align: 'start' }},
+        { popover: { title: 'Eso es todo', description: 'Este es el fin de la guia espero hayas entendido'} }
+      ]
+    });
+    
+    // Iniciar el tour
+    driverObj.drive();
+  });

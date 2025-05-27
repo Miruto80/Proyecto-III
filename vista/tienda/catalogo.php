@@ -113,8 +113,8 @@
         <div class="row g-md-5">
             <!-- CATEGORÍAS -->
           <div class="col-md-3">
-    <h5>Categoría</h5>
-    <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex flex-column">
+    <h5>Categorías</h5>
+    <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex flex-column categorias">
         <?php foreach ($categorias as $cat): ?>
             <li class="nav-item">
                 <label for="cat-<?php echo $cat['id_categoria']; ?>" class="nav-link d-flex align-items-center gap-3 p-2">

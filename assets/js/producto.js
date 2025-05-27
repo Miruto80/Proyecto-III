@@ -503,6 +503,8 @@ $('#btnExtra').on("click", function () {
   const driver = window.driver.js.driver;
   
   const driverObj = new driver({
+    nextBtnText: 'Siguiente',
+        prevBtnText: 'Anterior',
     popoverClass: 'driverjs-theme',
     closeBtn:false,
     steps: [
