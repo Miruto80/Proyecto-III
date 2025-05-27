@@ -129,9 +129,9 @@
                 <table class="table">
     <thead>
         <tr>
-            <th style="color:#d67888;"><b>Producto</b></th>
-            <th style="color:#d67888;"><b>Cantidad</b></th>
-            <th style="color:#d67888;"><b>Total</b></th>
+            <th style="color:#d67888;" class="text-center"><b>Producto</b></th>
+            <th style="color:#d67888;" class="text-center"><b>Cantidad</b></th>
+            <th style="color:#d67888;" class="text-center"><b>Total</b></th>
         </tr>
     </thead>
     <tbody>
@@ -139,9 +139,9 @@
         if (!empty($registro)) {
             foreach ($registro as $fila) {
                 echo "<tr>";
-                echo "<td>" . htmlspecialchars($fila['nombre_producto']) . "</td>";
-                echo "<td>" . htmlspecialchars($fila['cantidad_vendida']) . "</td>";
-                echo "<td>$" . htmlspecialchars(number_format($fila['total_vendido'], 2)) . "</td>";
+                echo "<td class='text-center'>" . htmlspecialchars($fila['nombre_producto']) . "</td>";
+                echo "<td class='text-center'>" . htmlspecialchars($fila['cantidad_vendida']) . "</td>";
+                echo "<td class='text-center'> $" . htmlspecialchars(number_format($fila['total_vendido'], 2)) . "</td>";
                 echo "</tr>";
             }
         } else {
