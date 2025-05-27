@@ -125,7 +125,6 @@ class Cliente extends Conexion
     }
 
 
-     
     public function existeCorreo() {
         $consulta = "SELECT correo FROM personas WHERE correo = :correo";
         $strExec = $this->conex->prepare($consulta);
