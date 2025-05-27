@@ -122,7 +122,6 @@
   </h4>
 
   <div>
-    <!-- Botón para abrir modal Registrar -->
     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro" id="btnAbrirRegistrar">
       <span class="icon text-white">
         <i class="fas fa-file-medical"></i>
@@ -130,7 +129,6 @@
       <span class="text-white">Registrar</span>
     </button>
 
-    <!-- Nuevo botón adicional -->
     <button type="button" class="btn btn-primary" id="btnExtra">
       <span class="icon text-white">
         <i class="fas fa-info-circle"></i>
