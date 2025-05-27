@@ -49,9 +49,7 @@
                     </h5>
                         <span class="text-sm"  style="color:black;"><b>Venta</b></span>
                     </div>
-                    <div class="col-4">
-                        <p class="text-sm text-end font-weight-bolder mt-auto mb-0" style="color:black;">+55%</p>
-                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -72,9 +70,7 @@
                     </h5>
                         <span class="text-white text-sm"><b>Venta Por Web</b></span>
                     </div>
-                    <div class="col-4">
-                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0">+124%</p>
-                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -95,9 +91,7 @@
                     </h5>
                         <span class="text-white text-sm"><b>Pedidos por Web</b></span>
                     </div>
-                    <div class="col-4">
-                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0">+30%</p>
-                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -116,9 +110,7 @@
                         <h5 class="text-white font-weight-bolder mb-0 mt-3">120</h5>
                         <span class="text-white text-sm"><b>Pago Pendientes</b></span>
                     </div>
-                    <div class="col-4">
-                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0">+15%</p>
-                    </div>
+                   
                 </div>
             </div>
         </div>
