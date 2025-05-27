@@ -354,6 +354,8 @@ function enviaAjax(datos) {
                 }, 2200);
             } else {
                 muestraMensaje("error", 1000, lee.text, "");
+                 $('#validar').prop('disabled', false);
+                 $('#validar').html('Validar');
              }
             } else if (lee.accion == 'validarcodigo') {
             if (lee.respuesta == 1) {
