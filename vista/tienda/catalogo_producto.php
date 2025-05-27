@@ -29,7 +29,7 @@
             <!-- CATEGORÍAS -->
           <div class="col-md-3">
     <h5>Categoría</h5>
-    <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex flex-column">
+    <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex flex-column  categorias">
         <?php foreach ($categorias as $cat): ?>
             <li class="nav-item">
                 <label for="cat-<?php echo $cat['id_categoria']; ?>" class="nav-link d-flex align-items-center gap-3 p-2">
@@ -54,7 +54,7 @@
                               <?php if ($sesion_activa): ?>
                                  <?php if($_SESSION["nivel_rol"] == 1) { ?>
                             <div class="d-flex align-items-center">
-                                <a href="?pagina=vercarrito" class="btn btn-dark rounded-1"><i class="fa fa-cart-plus me-2"></i> Ver Carrito</a>
+                                <a href="?pagina=vercarrito" id="Botonlado" class="btn btn-dark rounded-1"><i class="fa fa-cart-plus me-2"></i> Ver Carrito</a>
                             </div>
                               <?php } ?>
                                <?php endif; ?>

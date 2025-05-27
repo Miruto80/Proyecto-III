@@ -82,7 +82,7 @@ nav {
             <?php if ($sesion_activa): ?>
               <?php if($_SESSION["nivel_rol"] == 1) { ?>
                 
-                <button type="button" class="btn btn-primary" id="btnExtra">
+                <button type="button" class="btn btn-primary d-none d-md-block" id="btnAyuda">
         <span class="icon text-white">
             <i class="fas fa-info-circle"></i>
         </span>

@@ -211,27 +211,49 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 )});
 
-$('#btnExtra').on("click", function () {
-  
+$('#btnAyuda').on("click", function () {
+    const currentURL = window.location.href;
     const driver = window.driver.js.driver;
-    
+
+    let steps = [
+        { element: '#search-form', popover: { title: 'Buscador', description: 'Aquí puedes buscar cualquier producto de nuestro catálogo', side: "left" }},
+        { element: '[aria-controls="offcanvasCart"]', popover: { title: 'Carrito de compras', description: 'Haz clic aquí para ver los productos que has agregado al carrito.', side: "left", align: 'start' }},
+        { element: '[data-bs-target="#cerrar"]', popover: { title: 'Cerrar sesión', description: 'Este botón te permite cerrar sesión en tu cuenta.', side: "left", align: 'start' }},
+        { element: '.section-title', popover: { title:'Productos más vendidos', description: 'Un listado de nuestros 10 productos más vendidos.', side: "top", align: 'start' }},
+        { element: '.product-item', popover: { title: 'Productos', description: 'Estas son las cartas de nuestros productos. Puedes dar clic para ver más detalles del producto.', side: "left", align: 'start' }},
+        { element: '.categorias', popover: { title: 'Filtrado por categoría', description: 'Aquí podrás seleccionar las categorías y te saldrán los productos asociados', side: "left", align: 'start' }},
+        { element: '#Botonlado', popover: { title: 'Ver todos los productos', description: 'Aquí puedes ver el listado de todos los productos', side: "left", align: 'start' }},
+        { popover: { title: 'Eso es todo', description: 'Este es el fin de la guía, espero que hayas entendido' }}
+    ];
+
+    // Si la URL contiene "catalogo_producto", cambiar el título y la descripción de "section-title"
+    if (currentURL.includes("catalogo_producto")) {
+        steps = steps.map(step => {
+            if (step.element === '.section-title') {
+                step.popover.title = 'Lista de productos';
+                step.popover.description = 'Nuestra selección completa de productos';
+            }
+            return step;
+        });
+        steps = steps.map(step => {
+            if (step.element === '#Botonlado') {
+                step.popover.title = 'Ir hacia el carrito';
+                step.popover.description = 'Este botón te llevará a tu carrito de compras.';
+            }
+            return step;
+        });
+    }
+
     const driverObj = new driver({
         nextBtnText: 'Siguiente',
         prevBtnText: 'Anterior',
-      popoverClass: 'driverjs-theme',
-      closeBtn:false,
-      steps: [
-        { element: '#search-form', popover: { title: 'Buscador', description: 'Aqui puedes buscar cualquier producto de nuestro catalogo', side: "left", }},
-        { element: '.section-title', popover: { title: 'Productos mas vendidos', description: 'Nuestra seleccion de los 10 productos mas vendidos', side: "bottom", align: 'start' }},
-        { element: '.product-item', popover: { title: 'Productos', description: 'Estas son las cartas de nuestros productos puedes darle click para ver mas detalles del producto', side: "left", align: 'start' }},
-        { element: '.categorias', popover: { title: 'Filtrado por categoria', description: 'Aqui podras seleccionar las categorias y te saldran los productos asociados', side: "left", align: 'start' }},
-        { element: '.ver-detalles', popover: { title: 'Ver detalles', description: 'Haz clic aquí para ver más información sobre un producto específico.', side: "left", align: 'start' }},
-        { element: '.btn-desactivar', popover: { title: 'Cambiar estatus', description: 'Este botón te permite desactivar o activar un producto', side: "left", align: 'start' }},
-        { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un producto en la tabla', side: "right", align: 'start' }},
-        { popover: { title: 'Eso es todo', description: 'Este es el fin de la guia espero hayas entendido'} }
-      ]
+        popoverClass: 'driverjs-theme',
+        modal: true,
+        closeBtn: false,
+        steps: steps
     });
-    
-    // Iniciar el tour
+
+    // Iniciar el tour con los pasos actualizados
     driverObj.drive();
-  });
+});
+

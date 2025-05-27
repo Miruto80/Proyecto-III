@@ -137,7 +137,7 @@
                         <div class="section-header d-flex flex-wrap justify-content-between pb-2 mt-5 mt-lg-0">
                             <h2 class="section-title">Productos más vendidos</h2>
                             <div class="d-flex align-items-center">
-                                <a href="?pagina=catalogo_producto" class="btn btn-dark rounded-1">Ver todo</a>
+                                <a href="?pagina=catalogo_producto" id="Botonlado" class="btn btn-dark rounded-1">Ver todo</a>
                             </div>
                         </div>
                     </div>
