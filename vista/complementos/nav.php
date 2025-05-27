@@ -1,7 +1,7 @@
 
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+          <h4 class="text-center text-white" id="bcv"></h3>
         <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-
          <!-- Cuadro de notificaciones -->
          <a href="?pagina=notificacion" class="notification-icon me-2" style="background-color: white; padding: 8px; border-radius: 12px; text-decoration: none;">
             <i class="fa-solid fa-bell" style="color: black;"></i>
@@ -52,3 +52,4 @@
       </div>
     </nav>
     <!--|||||||||||||||||||||||||||||||||| End Navbar||||||||||||||||||||||||||||||||| -->
+    <script src="assets/js/Tasa.js"></script>
