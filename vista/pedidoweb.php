@@ -56,7 +56,7 @@
       </div>
           
 
-      <div class="table-responsive"> <!-- comienzo div table-->
+      <div class="table-responsive m-3"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
           <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
@@ -64,7 +64,7 @@
                   <th class="text-white" style="display: none;">ID</th>
                   <th class="text-white" style="display: none;">Tipo</th>
                   <th class="text-white">Fecha</th>
-                  <th class="text-white"style="display: none;">Estado</th>
+                  <th class="text-white"style="">Estado</th>
                   <th class="text-white">Total</th>
                   <th class="text-white">Referencia</th>
                   <th class="text-white">usuario</th>
@@ -74,26 +74,49 @@
                  <th class="text-white">Acción</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="pedidowebTableBody">
     
               <?php foreach ($pedidos as $pedido): 
     // Define clases y deshabilitar botones si estado es 0 o 2
     if ($pedido['estado'] == 2) {
-        $claseFila = "pedido-confirmado";
+      $claseFila = "pedido-confirmado";
         $botonesDeshabilitados = "disabled";
     } elseif ($pedido['estado'] == 0) {
-        $claseFila = "pedido-pendiente";
         $botonesDeshabilitados = "disabled";
     } else {
         $claseFila = "";
         $botonesDeshabilitados = "enabled";
     }
+
+    $estatus_texto = array(
+      0 => "Rechazado",
+      1 => "Pendiente",
+      2 => "Validado",
+
+    );
+
+    $badgeClass = '';
+    switch (strtolower($pedido['estado'])) {
+        case '2':
+            $badgeClass = 'bg-primary';
+            break;
+        case '1':
+            $badgeClass = 'bg-warning';
+            break;
+        case '0':
+            $badgeClass = 'bg-danger';
+            break;
+        default:
+            $badgeClass = 'bg-secondary';
+    }
+
+  
 ?>
-<tr class="<?= $claseFila ?>" style="text-align: center;">
+    <tr style="text-align:center;">
     <td style="display: none;"><?= $pedido['id_pedido'] ?></td>
     <td style="display: none;"><?= $pedido['tipo'] ?></td>
     <td><?= $pedido['fecha'] ?></td>
-    <td style="display: none;"><?= $pedido['estado'] ?></td>
+    <td class=" m-3 text-white badge <?php echo $badgeClass; ?>"><?php echo $estatus_texto[$pedido['estado']] ?></td>
     <td><?= $pedido['precio_total'] ?>$</td>
     <td><?= $pedido['referencia_bancaria'] ?></td>
     <td><?= $_SESSION['nombre'] ?></td>
@@ -169,7 +192,7 @@
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
 <script src="assets/js/pedidoweb.js"></script>
-
+<script src="assets/js/demo/datatables-demo.js"></script>
 </body>
 
 </html>
