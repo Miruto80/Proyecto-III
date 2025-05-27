@@ -5,6 +5,10 @@
          <a href="?pagina=notificacion" class="notification-icon me-2" style="background-color: white; padding: 8px; border-radius: 12px; text-decoration: none;">
             <i class="fa-solid fa-bell" style="color: black;"></i>
         </a>
+        <button class="btn btn-info" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarAyuda" aria-controls="sidebarAyuda">
+    <i class="fa-solid fa-circle-question"></i>
+</button>
+
         
         <div class="input-group">
           <span class="input-group-text text-body dropdown-toggle" id="dropdownIcon" aria-expanded="false" style="cursor: pointer;">
@@ -50,4 +54,61 @@
         </div>
       </div>
     </nav>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarAyuda" aria-labelledby="sidebarAyudaLabel">
+    <div class="offcanvas-header">
+        <h5 id="sidebarAyudaLabel">Ayuda Lovemakeup</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <!-- Buscador -->
+        <div class="mb-3">
+        <input type="text" class="form-control" id="searchInput" placeholder="Buscar en ayuda...">
+        </div>
+
+        <!-- Acordeón con preguntas frecuentes -->
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                        ¿Cómo restablecer mi contraseña?
+                    </button>
+                </h2>
+                <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Ve a la sección de configuración y selecciona "Restablecer contraseña".
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                        ¿Cómo contactar soporte?
+                    </button>
+                </h2>
+                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Puedes enviarnos un mensaje desde la página de contacto.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let items = document.querySelectorAll('.accordion-item');
+
+    items.forEach(function(item) {
+        let buttonText = item.querySelector('.accordion-button').textContent.toLowerCase();
+        if (buttonText.includes(filter)) {
+            item.style.display = 'block'; // Mostrar si coincide
+        } else {
+            item.style.display = 'none'; // Ocultar si no coincide
+        }
+    });
+});
+</script>
+
+
     <!--|||||||||||||||||||||||||||||||||| End Navbar||||||||||||||||||||||||||||||||| -->
