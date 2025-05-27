@@ -127,41 +127,30 @@
             <div class="card-body">
                 <h5>Los 5 Producto más vendidos</h5>
                 <table class="table">
-                    <thead>
-                        <tr>
-                            <th style="color:#d67888;"><b>Producto</b></th>
-                            <th style="color:#d67888;"><b>Cantidad</b></th>
-                            <th style="color:#d67888;"><b>Total</b></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Producto A</td>
-                            <td>50</td>
-                            <td>$500</td>
-                        </tr>
-                        <tr>
-                            <td>Producto B</td>
-                            <td>30</td>
-                            <td>$300</td>
-                        </tr>
-                        <tr>
-                            <td>Producto C</td>
-                            <td>20</td>
-                            <td>$200</td>
-                        </tr>
-                        <tr>
-                            <td>Producto D</td>
-                            <td>20</td>
-                            <td>$200</td>
-                        </tr>
-                        <tr>
-                            <td>Producto E</td>
-                            <td>20</td>
-                            <td>$200</td>
-                        </tr>
-                    </tbody>
-                </table>
+    <thead>
+        <tr>
+            <th style="color:#d67888;"><b>Producto</b></th>
+            <th style="color:#d67888;"><b>Cantidad</b></th>
+            <th style="color:#d67888;"><b>Total</b></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        if (!empty($registro)) {
+            foreach ($registro as $fila) {
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($fila['nombre_producto']) . "</td>";
+                echo "<td>" . htmlspecialchars($fila['cantidad_vendida']) . "</td>";
+                echo "<td>$" . htmlspecialchars(number_format($fila['total_vendido'], 2)) . "</td>";
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='3'>No hay datos disponibles</td></tr>";
+        }
+        ?>
+    </tbody>
+</table>
+
             </div>
         </div>
     </div>
