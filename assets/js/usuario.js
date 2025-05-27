@@ -222,7 +222,7 @@ function enviaAjax(datos) {
                      location = '?pagina=usuario';
                   }, 1000);
                 } else {
-                  muestraMensaje("error", 2000, "ERROR", lee.text);
+                  muestraMensaje("error", 2000, lee.text,"" );
                 }
               }
   

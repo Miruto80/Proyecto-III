@@ -66,7 +66,10 @@ if (isset($_POST['registrar'])) {
      if ($id_usuario == 1) {
         $res = array('respuesta' => 0, 'accion' => 'eliminar', 'text' => 'No se puedes Eliminar a este Usuario');
              echo json_encode($res);
-    } else {
+     } else if ($id_usuario == $_SESSION['id']) {
+        $res = array('respuesta' => 0, 'accion' => 'eliminar', 'text' => 'No puedes eliminarte tu mismo');
+             echo json_encode($res);
+     } else {
 
       $objusuario->set_Id_Usuario($id_usuario); 
       $result = $objusuario->eliminar();
