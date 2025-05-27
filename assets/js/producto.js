@@ -498,7 +498,7 @@ function validarenvio() {
 }
   
 // Inicializar Driver.js
-$('#btnExtra').on("click", function () {
+$('#btnAyuda').on("click", function () {
   
   const driver = window.driver.js.driver;
   

@@ -129,7 +129,7 @@
       <span class="text-white">Registrar</span>
     </button>
 
-    <button type="button" class="btn btn-primary" id="btnExtra">
+    <button type="button" class="btn btn-primary" id="btnAyuda">
       <span class="icon text-white">
         <i class="fas fa-info-circle"></i>
       </span>
