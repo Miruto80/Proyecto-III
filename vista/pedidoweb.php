@@ -10,17 +10,7 @@
 
 <body class="g-sidenav-show bg-gray-100">
 
-<style>
-  .pedido-confirmado {
-    background-color: #75d1a6ff;
-    color: #fff;
-}
 
-.pedido-pendiente {
-    background-color: #c76b76ff;
-    color: #fff;
-}
-</style>
   
 <!-- php barra de navegacion-->
 <?php include 'complementos/sidebar.php' ?>
