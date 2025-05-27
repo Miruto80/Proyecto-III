@@ -12,7 +12,7 @@ class Catalogopedido{
 
     }
     
-    public function consultarPedidosCompletos() {
+    public function consultarPedidosCompletos($id_persona) {
         $sql = "SELECT 
         p.id_pedido,
         p.tipo,
@@ -28,11 +28,11 @@ class Catalogopedido{
     FROM pedido p
     LEFT JOIN metodo_entrega me ON p.id_entrega = me.id_entrega
     LEFT JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago
-    WHERE p.tipo = 2
+    WHERE p.tipo = 2 AND p.id_persona = ?
     ORDER BY p.fecha DESC";
     
         $stmt = $this->conex->prepare($sql);  
-        $stmt->execute();
+        $stmt->execute([$id_persona]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
         
