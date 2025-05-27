@@ -503,14 +503,15 @@ $('#btnExtra').on("click", function () {
   const driver = window.driver.js.driver;
   
   const driverObj = new driver({
-    showProgress: true,
+    popoverClass: 'driverjs-theme',
+    closeBtn:false,
     steps: [
       { element: '.table-color', popover: { title: 'Tabla de productos', description: 'Aqui es donde se guardaran los registros de productos', side: "left", }},
       { element: '#btnAbrirRegistrar', popover: { title: 'Boton de registrar', description: 'Darle click aqui te llevara a un modal para poder registrar', side: "bottom", align: 'start' }},
-      { element: '.modificar', popover: { title: 'Modificar producto', description: 'Este botón te permite editar la información de un producto registrado.', side: "bottom", align: 'start' }},
+      { element: '.modificar', popover: { title: 'Modificar producto', description: 'Este botón te permite editar la información de un producto registrado.', side: "left", align: 'start' }},
       { element: '.eliminar', popover: { title: 'Eliminar producto', description: 'Usa este botón para eliminar un producto de la lista.', side: "left", align: 'start' }},
       { element: '.ver-detalles', popover: { title: 'Ver detalles', description: 'Haz clic aquí para ver más información sobre un producto específico.', side: "left", align: 'start' }},
-      { element: '.btn-desactivar', popover: { title: 'Cambiar estatus', description: 'Este botón te permite desactivar o activar un producto', side: "right", align: 'start' }},
+      { element: '.btn-desactivar', popover: { title: 'Cambiar estatus', description: 'Este botón te permite desactivar o activar un producto', side: "left", align: 'start' }},
       { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un producto en la tabla', side: "right", align: 'start' }},
       { popover: { title: 'Eso es todo', description: 'Este es el fin de la guia espero hayas entendido'} }
     ]
