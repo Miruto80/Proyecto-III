@@ -258,7 +258,7 @@
                   <div class="mb-3">
                     <label for="estado_pedido" class="form-label">Estado</label>
                     <select class="form-select" name="estado_pedido" required>
-                      <option value="Pendiente" <?php echo ($venta['estado'] == 'Pendiente') ? 'selected' : ''; ?>>Pendiente</option>
+                      <option value="Pendien" <?php echo ($venta['estado'] == 'Pendiente') ? 'selected' : ''; ?>>Pendiente</option>
                       <option value="Aprobado" <?php echo ($venta['estado'] == 'Aprobado') ? 'selected' : ''; ?>>Aprobado</option>
                       <option value="Rechazado" <?php echo ($venta['estado'] == 'Rechazado') ? 'selected' : ''; ?>>Rechazado</option>
                       <option value="Enviado" <?php echo ($venta['estado'] == 'Enviado') ? 'selected' : ''; ?>>Enviado</option>
