@@ -1,8 +1,9 @@
 <?php
 require_once 'conexion.php';
 
-class PedidoWeb extends Conexion {
+class pedidoWeb extends Conexion {
     private $conex;
+    private $id_pedido;
 
     public function __construct() {
         $this->conex = new Conexion(); 
@@ -17,9 +18,7 @@ class PedidoWeb extends Conexion {
         p.estado,
         p.precio_total,
         p.referencia_bancaria,
-        p.banco_destino,
         p.telefono_emisor,
-        p.direccion,
         me.nombre AS metodo_entrega,
         mp.nombre AS metodo_pago
     FROM pedido p
@@ -47,6 +46,20 @@ class PedidoWeb extends Conexion {
         $stmt->execute([$id_pedido]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function eliminarPedido($id_pedido) {
+        $sql = "UPDATE pedido SET estado = 0 WHERE id_pedido = ?";
+        $stmt = $this->conex->prepare($sql);
+        return $stmt->execute([$id_pedido]);
+    }
+    
+    // Confirmar un pedido (estado = 2)
+    public function confirmarPedido($id_pedido) {
+        $sql = "UPDATE pedido SET estado = 2 WHERE id_pedido = ?";
+        $stmt = $this->conex->prepare($sql);
+        return $stmt->execute([$id_pedido]);
+    }
+
 }
 
 
