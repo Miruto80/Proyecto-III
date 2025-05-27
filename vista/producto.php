@@ -49,18 +49,29 @@
       <div class="card mb-4">
         <div class="card-header pb-0">
 
-          <div class="d-sm-flex align-items-center justify-content-between mb-5">
-            <h4 class="mb-0"><i class="fa-solid fa-pump-soap mr-2" style="color: #f6c5b4;"></i>
-              Producto</h4>
+        <div class="d-sm-flex align-items-center justify-content-between mb-5">
+  <h4 class="mb-0">
+    <i class="fa-solid fa-pump-soap mr-2" style="color: #f6c5b4;"></i> Producto
+  </h4>
 
-            <!-- Botón para abrir modal Registrar -->
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro" id="btnAbrirRegistrar">
-              <span class="icon text-white">
-                <i class="fas fa-file-medical"></i>
-              </span>
-              <span class="text-white">Registrar</span>
-            </button>
-          </div>
+  <div>
+    <!-- Botón para abrir modal Registrar -->
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro" id="btnAbrirRegistrar">
+      <span class="icon text-white">
+        <i class="fas fa-file-medical"></i>
+      </span>
+      <span class="text-white">Registrar</span>
+    </button>
+
+    <!-- Nuevo botón adicional -->
+    <button type="button" class="btn btn-primary" id="btnExtra">
+      <span class="icon text-white">
+        <i class="fas fa-info-circle"></i>
+      </span>
+      <span class="text-white">Ayuda</span>
+    </button>
+  </div>
+</div>
 
           <div class="table-responsive">
             <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">

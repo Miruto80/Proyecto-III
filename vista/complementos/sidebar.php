@@ -7,6 +7,9 @@
         <img src="assets/img/icono.png" width="26px" height="26px" class="navbar-brand-img h-100" alt="main_logo">
         <span class="ms-1 font-weight-bold">LoveMakeup</span>
       </a>
+      <p class="text-center text-black m-0" id="bcv" style="font-size: 14px;"></p>
+
+
     </div>
     
     <hr class="horizontal dark mt-0">
@@ -167,4 +170,5 @@
     </ul>
 
     </div> 
+    <script src="assets/js/Tasa.js"></script>
   </aside>
