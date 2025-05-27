@@ -3,7 +3,13 @@
     if (empty($_SESSION["id"])){
       header("location:?pagina=login");
     } /*  Validacion URL  */
-    
+    require_once 'modelo/home.php';
+
+$objhome = new home();
+
+$registro = $objhome->consultarMasVendidos();
+
+$totales = $objhome->consultarTotales();
    require_once 'vista/home.php';
 
 ?>
