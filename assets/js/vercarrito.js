@@ -106,6 +106,7 @@ function eliminarProducto(id) {
           if (data.total !== undefined) {
             document.getElementById("total-carrito").textContent = `${data.total}`;
            
+            setTimeout(() => location.reload(), 100);
         }   
         } 
     })
