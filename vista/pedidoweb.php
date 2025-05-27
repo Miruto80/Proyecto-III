@@ -168,7 +168,6 @@
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
-<script src="assets/js/tasa.js"></script>
 <script src="assets/js/pedidoweb.js"></script>
 
 </body>
