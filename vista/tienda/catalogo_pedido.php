@@ -9,6 +9,20 @@
 
 <body>
 
+
+  <style>
+  .pedido-confirmado {
+    background-color: #75d1a6ff;
+    color: #fff;
+}
+
+.pedido-pendiente {
+    background-color: #c76b76ff;
+    color: #fff;
+}
+</style>
+
+
 <!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
   <div class="preloader-wrapper">
     <div class="preloader">
@@ -65,8 +79,19 @@
                   ); 
                  ?>
     
-              <?php foreach ($pedidos as $pedido): ?>
-  <tr style="text-align: center;">
+              <?php foreach ($pedidos as $pedido): 
+                 if ($pedido['estado'] == 2) {
+                  $claseFila = "pedido-confirmado";
+                  $botonesDeshabilitados = "disabled";
+              } elseif ($pedido['estado'] == 0) {
+                  $claseFila = "pedido-pendiente";
+                  $botonesDeshabilitados = "disabled";
+              } 
+              
+          ?>
+        
+
+<tr class="<?= $claseFila ?>"style="text-align: center;">
     <td style="display: none;"><?= $pedido['id_pedido'] ?></td>
     <td style="display: none;"><?= $pedido['tipo'] ?></td>
     <td><?= $pedido['fecha'] ?></td>
