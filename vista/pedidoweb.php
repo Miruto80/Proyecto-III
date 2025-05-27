@@ -86,7 +86,7 @@
         $botonesDeshabilitados = "disabled";
     } else {
         $claseFila = "";
-        $botonesDeshabilitados = "";
+        $botonesDeshabilitados = "enabled";
     }
 ?>
 <tr class="<?= $claseFila ?>" style="text-align: center;">
@@ -105,7 +105,7 @@
             class="btn btn-primary ver-detalles"
             data-detalles='<?= json_encode($pedido["detalles"]) ?>'
             title="Ver productos del pedido"
-            <?= $botonesDeshabilitados ?>>
+            >
             <i class="fa fa-eye"></i> 
         </button>
 
