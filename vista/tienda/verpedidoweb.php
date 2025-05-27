@@ -132,14 +132,15 @@ input:focus::-webkit-input-placeholder
     line-height: 2;
 }
 .btns{
-    background-color: rgb(23, 4, 189);
-    border-color: rgb(23, 4, 189);
+  
     color: white;
     width: 100%;
     font-size: 0.7rem;
     margin: 4vh 0 1.5vh 0;
     padding: 1.5vh;
-    border-radius: 0;
+    border-radius: 8px;
+    background-color: #ff70d9ff;
+    border-color: #ffffff;
 }
 .btns:focus{
     box-shadow: none;
@@ -148,9 +149,14 @@ input:focus::-webkit-input-placeholder
     color: white;
     -webkit-box-shadow: none;
     transition: none; 
+    background-color: #ff70d9ff;
+    border-color: #ffffff;
 }
 .btns:hover{
     color: white;
+    background-color: #ff70d9ff;
+    border-color: #ffffff;
+   
 }
 a{
     color: black;
@@ -188,6 +194,24 @@ input[type=checkbox]{
       margin-right: 10px;
     }
 
+    .span{
+        color: #ffffff;
+        background-color: #ff70d9ff;
+        font-weight: bold;
+    }
+    .referer{
+        font-weight: bold;
+    }
+
+  
+
+    
+
+
+
+
+
+ 
 </style>
 
 <div class="cart-step">
@@ -207,10 +231,27 @@ input[type=checkbox]{
                     <div class="col-md-7">
                         <div class="left border">
                             <div class="row">
-                                <span class="header">Detalles de Pago</span>
-                                <div class="icons">
-                                   
-                                </div>
+<div class="text-center span mb-2">
+          <span class="header">Detalles de Pago</span>
+          
+</div>                                
+ 
+ 
+
+  <div class="col-5 text-center referer">
+    <h5>Banco: Venezuela</h5>
+    <p class="mb-1">C.I.: 30.352.937</p>
+    <p>TLF.: 0414-509.49.59</p>
+  </div>
+<div class="col-2 p-1 logo">
+ <img src="assets/img/logo.png" style="width: 100px; height:100px;">
+</div>
+  <div class="col-5 text-center referer">
+    <h5>Banco: Mercantil</h5>
+    <p class="mb-1">C.I.: 11.787.299</p>
+    <p>TLF.: 0426-554.13.64</p>
+  </div>
+
                             </div>
                         <form class="form row " id="formPedido" >
                             <input type="hidden"  name="id_pedido" id="id_pedido"> 
@@ -310,7 +351,7 @@ input[type=checkbox]{
                                
                         </form> <!-- fin del formulario -->
 
- <button class="btns btn-success" id="btn-guardar-pedido">Realizar Pedido</button>
+ <button class="btns btn-success btn-rp" id="btn-guardar-pedido">Realizar Pedido</button>
                              <p class="text-muted text-center">Compra con confianza, tu mejor elección te espera.
                         </div>                        
                     </div>
@@ -333,20 +374,20 @@ input[type=checkbox]{
         data-subtotal="<?= $subtotal ?>"
     >
         <div class="col-4 align-self-center">
-            <img class="img-fluid" src="<?= htmlspecialchars($item['imagen']) ?>" alt="<?= htmlspecialchars($item['nombre']) ?>">
+            <img class="img-fluid img" src="<?= htmlspecialchars($item['imagen']) ?>" alt="<?= htmlspecialchars($item['nombre']) ?>">
         </div>
         <div class="col-8">
-            <div class="row"><b>$<?= number_format($precioUnitario, 2) ?></b></div>
-            <div class="row text-muted"><?= htmlspecialchars($item['nombre']) ?></div>
-            <div class="row">Qty: <?= $cantidad ?></div>
-            <div class="col text-right">$<?= number_format($subtotal, 2) ?></div>
+            <div class="row"><b>precio: $<?= number_format($precioUnitario, 2) ?></b></div>
+            <div class="row text-muted"><b>nombre:<?= htmlspecialchars($item['nombre']) ?></b></div>
+            <div class="row"><b>Cantidad: <?= $cantidad ?></b></div>
+            <div class="col text-right"><b>sub total: $<?= number_format($subtotal, 2) ?></b></div>
         </div>
     </div>
 <?php endforeach; ?>
     </div>
      
        
-        <div class="row lower">
+        <div class="row lower" style="background-color:#ff70d9ff; color:#fff;">
             <div class="col text-left"><b>Total a Pagar</b></div>
             <div class="col text-right"><b>$<?= number_format($total, 2) ?></b></div>
            
