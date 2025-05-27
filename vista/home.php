@@ -63,7 +63,7 @@
                 <div class="row">
                     <div class="col-8 text-start">
                         <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
-                                <i class="fa-solid fa-credit-card" style="color:black;"></i>
+                                <i class="fa-solid fa-circle-dollar-to-slot" style="color:black;"></i>
                         </div>
                         <h5 class="text-white font-weight-bolder mb-0 mt-3">
                         $<?php echo number_format($totales['total_web'], 2); ?>
