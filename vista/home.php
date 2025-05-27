@@ -44,7 +44,9 @@
                         <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
                             <i class="fa-solid fa-comments-dollar" style="color:black;"> </i>
                         </div>
-                        <h5 class="font-weight-bolder mb-0 mt-3" style="color:black;">$ 1600</h5>
+                        <h5 class="font-weight-bolder mb-0 mt-3" style="color:black;">
+                        $<?php echo number_format($totales['total_ventas'], 2); ?>
+                    </h5>
                         <span class="text-sm"  style="color:black;"><b>Venta</b></span>
                     </div>
                     <div class="col-4">
@@ -65,7 +67,9 @@
                         <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
                                 <i class="fa-solid fa-credit-card" style="color:black;"></i>
                         </div>
-                        <h5 class="text-white font-weight-bolder mb-0 mt-3">$ 357</h5>
+                        <h5 class="text-white font-weight-bolder mb-0 mt-3">
+                        $<?php echo number_format($totales['total_web'], 2); ?>
+                    </h5>
                         <span class="text-white text-sm"><b>Venta Por Web</b></span>
                     </div>
                     <div class="col-4">
@@ -86,7 +90,9 @@
                         <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
                              <i class="fa-solid fa-laptop-file" style="color:black;"></i>
                         </div>
-                        <h5 class="text-white font-weight-bolder mb-0 mt-3">890</h5>
+                        <h5 class="text-white font-weight-bolder mb-0 mt-3">
+                        <?php echo $totales['cantidad_pedidos_web']; ?>
+                    </h5>
                         <span class="text-white text-sm"><b>Pedidos por Web</b></span>
                     </div>
                     <div class="col-4">

@@ -39,6 +39,28 @@ class home extends Conexion{
                 return 0;
             }
         }
+        public function consultarTotales() {
+            $registro = "
+                SELECT 
+                    SUM(precio_total) AS total_ventas, 
+                    SUM(CASE WHEN tipo = '2' THEN precio_total ELSE 0 END) AS total_web, 
+                    COUNT(CASE WHEN tipo = '2' THEN id_pedido ELSE NULL END) AS cantidad_pedidos_web
+                FROM 
+                    pedido
+            ";
+        
+            $consulta = $this->conex->prepare($registro);
+            $resul = $consulta->execute();
+        
+            $datos = $consulta->fetch(PDO::FETCH_ASSOC);
+        
+            if ($resul) {
+                return $datos;
+            } else {
+                return 0;
+            }
+        }
+        
 }
 
 

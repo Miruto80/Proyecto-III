@@ -8,6 +8,8 @@
 $objhome = new home();
 
 $registro = $objhome->consultarMasVendidos();
+
+$totales = $objhome->consultarTotales();
    require_once 'vista/home.php';
 
 ?>
