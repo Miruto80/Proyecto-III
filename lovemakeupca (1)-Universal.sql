@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-05-2025 a las 05:12:40
--- Versión del servidor: 10.4.18-MariaDB
--- Versión de PHP: 8.0.3
+-- Tiempo de generación: 27-05-2025 a las 00:54:56
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -33,7 +33,29 @@ CREATE TABLE `bitacora` (
   `fecha_hora` timestamp NOT NULL DEFAULT current_timestamp(),
   `descripcion` varchar(200) DEFAULT NULL,
   `id_persona` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `bitacora`
+--
+
+INSERT INTO `bitacora` (`id_bitacora`, `accion`, `fecha_hora`, `descripcion`, `id_persona`) VALUES
+(1, 'Inicio de sesión', '2025-05-26 21:26:57', 'El usuario ha iniciado sesión exitosamente.', 1),
+(2, 'Acceso a Módulo', '2025-05-26 21:27:33', 'módulo de Producto.', 1),
+(3, 'Registro de Producto', '2025-05-26 21:28:27', 'Se registró el producto: Polvo Avon', 1),
+(4, 'Acceso a Módulo', '2025-05-26 21:28:28', 'módulo de Producto.', 1),
+(5, 'Acceso a Módulo', '2025-05-26 21:28:42', 'módulo de Compra', 1),
+(6, 'Registro de compra', '2025-05-26 21:28:55', 'Se compra la compra: ', 1),
+(7, 'Acceso a Módulo', '2025-05-26 21:28:55', 'módulo de Compra', 1),
+(8, 'Acceso a Módulo', '2025-05-26 21:29:00', 'módulo de Producto.', 1),
+(9, 'Cierre de sesión', '2025-05-26 21:42:25', 'El usuario ha cerrado sesión.', 1),
+(10, 'Inicio de sesión', '2025-05-26 21:42:32', 'El usuario ha iniciado sesión exitosamente.', 1),
+(11, 'Acceso a Módulo', '2025-05-26 21:42:34', 'módulo de Cliente', 1),
+(12, 'Cierre de sesión', '2025-05-26 21:42:38', 'El usuario ha cerrado sesión.', 1),
+(13, 'Inicio de sesión', '2025-05-26 21:43:14', 'El usuario ha iniciado sesión exitosamente.', 2),
+(14, 'Inicio de sesión', '2025-05-26 21:50:47', 'El usuario ha iniciado sesión exitosamente.', 1),
+(15, 'Cierre de sesión', '2025-05-26 22:05:50', 'El usuario ha cerrado sesión.', 1),
+(16, 'Inicio de sesión', '2025-05-26 22:05:56', 'El usuario ha iniciado sesión exitosamente.', 2);
 
 -- --------------------------------------------------------
 
@@ -45,7 +67,7 @@ CREATE TABLE `categoria` (
   `id_categoria` int(11) NOT NULL,
   `nombre` varchar(100) DEFAULT NULL,
   `estatus` int(2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `categoria`
@@ -64,7 +86,14 @@ CREATE TABLE `compra` (
   `id_compra` int(11) NOT NULL,
   `fecha_entrada` date DEFAULT NULL,
   `id_proveedor` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `compra`
+--
+
+INSERT INTO `compra` (`id_compra`, `fecha_entrada`, `id_proveedor`) VALUES
+(1, '2025-05-26', 1);
 
 -- --------------------------------------------------------
 
@@ -79,7 +108,14 @@ CREATE TABLE `compra_detalles` (
   `precio_unitario` float DEFAULT NULL,
   `id_compra` int(11) DEFAULT NULL,
   `id_producto` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `compra_detalles`
+--
+
+INSERT INTO `compra_detalles` (`id_detalle_compra`, `cantidad`, `precio_total`, `precio_unitario`, `id_compra`, `id_producto`) VALUES
+(1, 20, 0.2, 0.01, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -91,8 +127,8 @@ CREATE TABLE `lista_deseo` (
   `id_lista` int(11) NOT NULL,
   `id_persona` int(11) NOT NULL,
   `id_producto` int(11) NOT NULL,
-  `nombre` varchar(150) COLLATE utf8mb4_spanish2_ci NOT NULL,
-  `detalle` varchar(150) COLLATE utf8mb4_spanish2_ci NOT NULL
+  `nombre` varchar(150) NOT NULL,
+  `detalle` varchar(150) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
 
 -- --------------------------------------------------------
@@ -106,7 +142,7 @@ CREATE TABLE `metodo_entrega` (
   `nombre` varchar(200) NOT NULL,
   `descripcion` varchar(200) DEFAULT NULL,
   `estatus` int(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `metodo_entrega`
@@ -126,7 +162,7 @@ CREATE TABLE `metodo_pago` (
   `nombre` varchar(200) NOT NULL,
   `descripcion` varchar(200) DEFAULT NULL,
   `estatus` int(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `metodo_pago`
@@ -148,7 +184,7 @@ CREATE TABLE `notificaciones` (
   `fecha` date DEFAULT NULL,
   `estado` varchar(50) DEFAULT NULL,
   `id_pedido` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -165,10 +201,21 @@ CREATE TABLE `pedido` (
   `referencia_bancaria` int(11) DEFAULT NULL,
   `telefono_emisor` varchar(20) DEFAULT NULL,
   `banco` varchar(100) DEFAULT NULL,
+  `banco_destino` varchar(100) DEFAULT NULL,
+  `direccion` varchar(200) DEFAULT NULL,
   `id_entrega` int(11) DEFAULT NULL,
   `id_metodopago` int(11) DEFAULT NULL,
   `id_persona` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `pedido`
+--
+
+INSERT INTO `pedido` (`id_pedido`, `tipo`, `fecha`, `estado`, `precio_total`, `referencia_bancaria`, `telefono_emisor`, `banco`, `banco_destino`, `direccion`, `id_entrega`, `id_metodopago`, `id_persona`) VALUES
+(1, '2', '2025-05-26 21:49:21', '1', 4, 3456, '04245797918', '0102-Banco De Venezuela', '0108-BBVA Provincial', 'blablabla', 1, 1, 2),
+(2, '2', '2025-05-26 22:16:28', '1', 4, 3456, '04245797918', '0102-Banco De Venezuela', '0102-Banco De Venezuela', 'dfgdfgfd', 1, 1, 2),
+(3, '2', '2025-05-26 22:17:48', '1', 4, 3456, '04245797918', '0102-Banco De Venezuela', '0102-Banco De Venezuela', 'dfgdfgfd', 1, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -182,7 +229,16 @@ CREATE TABLE `pedido_detalles` (
   `precio_unitario` float DEFAULT NULL,
   `id_pedido` int(11) DEFAULT NULL,
   `id_producto` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `pedido_detalles`
+--
+
+INSERT INTO `pedido_detalles` (`id_detalle`, `cantidad`, `precio_unitario`, `id_pedido`, `id_producto`) VALUES
+(1, 1, 4, 1, 1),
+(2, 1, 4, 2, 1),
+(3, 1, 4, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -200,14 +256,15 @@ CREATE TABLE `personas` (
   `clave` varchar(512) DEFAULT NULL,
   `estatus` int(2) DEFAULT NULL,
   `id_tipo` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `personas`
 --
 
 INSERT INTO `personas` (`id_persona`, `cedula`, `nombre`, `apellido`, `correo`, `telefono`, `clave`, `estatus`, `id_tipo`) VALUES
-(1, '10200300', 'Jefe', 'LoveMakeup', 'lovemakeupca@gmail.com', '04241002030', 'KBrKmaUtzcJkZ1FYynYZbW5yVExwaVFPNkF1RWM1KzJxbUR0QXc9PQ==', 1, 1);
+(1, '10200300', 'Jefe', 'LoveMakeup', 'lovemakeupca@gmail.com', '04241002030', 'KBrKmaUtzcJkZ1FYynYZbW5yVExwaVFPNkF1RWM1KzJxbUR0QXc9PQ==', 1, 1),
+(2, '30559878', 'Erick', 'Torrealba', 'erick@gmail.com', '0424-5196914', 'eXCUmnP/68g/9taXe8fUznZlN2dvUmtzVWZlMHNHMERnYmZnQVE9PQ==', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -220,7 +277,15 @@ CREATE TABLE `preliminar` (
   `condicion` varchar(100) DEFAULT NULL,
   `id_detalle` int(11) DEFAULT NULL,
   `id_detalle_reserva` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `preliminar`
+--
+
+INSERT INTO `preliminar` (`id_preliminar`, `condicion`, `id_detalle`, `id_detalle_reserva`) VALUES
+(1, 'pedido', 1, NULL),
+(2, 'pedido', 3, NULL);
 
 -- --------------------------------------------------------
 
@@ -242,7 +307,14 @@ CREATE TABLE `productos` (
   `imagen` varchar(255) DEFAULT NULL,
   `estatus` int(1) DEFAULT NULL,
   `id_categoria` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `productos`
+--
+
+INSERT INTO `productos` (`id_producto`, `nombre`, `descripcion`, `marca`, `cantidad_mayor`, `precio_mayor`, `precio_detal`, `stock_disponible`, `stock_maximo`, `stock_minimo`, `imagen`, `estatus`, `id_categoria`) VALUES
+(1, 'Polvo', 'polvo marron', 'Avon', 6, 3, 4, 17, 300, 1, 'assets/img/Imgproductos/Polvo sencillo salome.webp', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -259,7 +331,7 @@ CREATE TABLE `proveedor` (
   `telefono` varchar(15) DEFAULT NULL,
   `direccion` varchar(150) DEFAULT NULL,
   `estatus` int(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `proveedor`
@@ -278,7 +350,7 @@ CREATE TABLE `reserva` (
   `id_reserva` int(11) NOT NULL,
   `fecha_apartado` date DEFAULT NULL,
   `id_persona` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -292,7 +364,7 @@ CREATE TABLE `reserva_detalles` (
   `precio` float DEFAULT NULL,
   `id_reserva` int(11) DEFAULT NULL,
   `id_producto` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -305,7 +377,7 @@ CREATE TABLE `rol_usuario` (
   `nombre` varchar(100) DEFAULT NULL,
   `nivel` int(1) DEFAULT NULL,
   `estatus` int(2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `rol_usuario`
@@ -315,24 +387,6 @@ INSERT INTO `rol_usuario` (`id_tipo`, `nombre`, `nivel`, `estatus`) VALUES
 (1, 'Administrador', 3, 1),
 (2, 'Cliente', 1, 1),
 (3, 'Asesora de Venta', 2, 1);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `tasa`
---
-
-CREATE TABLE `tasa` (
-  `id_tasa` int(1) NOT NULL,
-  `precio` float NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
-
---
--- Volcado de datos para la tabla `tasa`
---
-
-INSERT INTO `tasa` (`id_tasa`, `precio`) VALUES
-(1, 10.25);
 
 --
 -- Índices para tablas volcadas
@@ -461,12 +515,6 @@ ALTER TABLE `rol_usuario`
   ADD PRIMARY KEY (`id_tipo`);
 
 --
--- Indices de la tabla `tasa`
---
-ALTER TABLE `tasa`
-  ADD PRIMARY KEY (`id_tasa`);
-
---
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
@@ -474,7 +522,7 @@ ALTER TABLE `tasa`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `categoria`
@@ -486,13 +534,13 @@ ALTER TABLE `categoria`
 -- AUTO_INCREMENT de la tabla `compra`
 --
 ALTER TABLE `compra`
-  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `compra_detalles`
 --
 ALTER TABLE `compra_detalles`
-  MODIFY `id_detalle_compra` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_detalle_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `metodo_entrega`
@@ -516,31 +564,31 @@ ALTER TABLE `notificaciones`
 -- AUTO_INCREMENT de la tabla `pedido`
 --
 ALTER TABLE `pedido`
-  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `pedido_detalles`
 --
 ALTER TABLE `pedido_detalles`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `personas`
 --
 ALTER TABLE `personas`
-  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `preliminar`
 --
 ALTER TABLE `preliminar`
-  MODIFY `id_preliminar` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_preliminar` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedor`
