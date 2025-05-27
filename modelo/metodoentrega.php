@@ -44,8 +44,9 @@ class metodoentrega extends Conexion {
         return $resul ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
     }
 
+
     public function eliminar() {
-        $registro = "DELETE FROM metodo_entrega WHERE id_entrega = :id_entrega";
+        $registro = "UPDATE metodo_entrega SET estatus = 0 WHERE id_entrega = :id_entrega";
         $strExec = $this->conex->prepare($registro);
         $strExec->bindParam(':id_entrega', $this->id_entrega);
         $resul = $strExec->execute();
@@ -53,7 +54,7 @@ class metodoentrega extends Conexion {
     }
 
     public function consultar() {
-        $registro = "SELECT * FROM metodo_entrega";
+        $registro = "SELECT * FROM metodo_entrega WHERE estatus = 1";
         $consulta = $this->conex->prepare($registro);
         $resul = $consulta->execute();
         return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
