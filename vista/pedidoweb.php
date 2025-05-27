@@ -51,9 +51,6 @@
      <div class="d-sm-flex align-items-center justify-content-between mb-5">
        <h4 class="mb-0"><i class="fa-solid fa-desktop mr-2" style="color: #f6c5b4;"></i>
         Pedido Web</h5>
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
-        <i class="fa-solid fa-dollar-sign"></i> Registrar Tasa
-                  </button>
       </div>
           
       </div>
@@ -166,37 +163,11 @@
     </div>
   </div>
 </div>
-     <!-- modal tasa -->
-
-     <div class="modal fade" id="registro" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header header-color">
-                <h1 class="modal-title fs-5" id="1">Registrar Tasa del Dia</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <form id="formRegistrar" autocomplete="off">
-                  <label>Cantidad</label>
-                  <input type="text" class="form-control" name="valor" id="valor" placeholder="Ejemplo: 94,32" required> <br>
-                  <div class="text-center">
-                    <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
-                    <button type="reset" class="btn btn-primary">Limpiar</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-
-
+    
 
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
-<script src="assets/js/tasa.js"></script>
 <script src="assets/js/pedidoweb.js"></script>
 
 </body>
