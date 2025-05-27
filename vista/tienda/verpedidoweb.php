@@ -4,7 +4,6 @@
 <head>
 <!-- php CSS, Meta y titulo--> 
 <?php include 'vista/complementos/head_catalogo.php' ?>
-<link rel="stylesheet" href="assets/css/estilo_pago.css"> <!-- El CSS del diseño de la tarjeta -->
 </head>
 
 <body>
