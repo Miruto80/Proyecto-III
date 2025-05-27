@@ -42,8 +42,9 @@ class MetodoPago extends Conexion {
         return $resul ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
     }
 
+
     public function eliminar() {
-        $registro = "DELETE FROM metodo_pago WHERE id_metodopago = :id_metodopago";
+        $registro = "UPDATE metodo_pago SET estatus = 0 WHERE id_metodopago = :id_metodopago";
         $strExec = $this->conex->prepare($registro);
         $strExec->bindParam(':id_metodopago', $this->id_metodopago);
         $resul = $strExec->execute();
@@ -51,7 +52,7 @@ class MetodoPago extends Conexion {
     }
 
     public function consultar() {
-        $registro = "SELECT * FROM metodo_pago";
+        $registro = "SELECT * FROM metodo_pago WHERE estatus = 1";
         $consulta = $this->conex->prepare($registro);
         $resul = $consulta->execute();
         return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
