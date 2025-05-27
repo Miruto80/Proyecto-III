@@ -14,7 +14,7 @@ document.getElementById('btn-guardar-pedido').addEventListener('click', async ()
         const formData = new FormData(form);
 
         // 1. Registrar el pedido
-        const resPedido = await fetch('controlador/registrar_pedido.php', {
+        const resPedido = await fetch('controlador/verpedidoweb.php', {
             method: 'POST',
             body: formData
         });
@@ -44,7 +44,7 @@ document.getElementById('btn-guardar-pedido').addEventListener('click', async ()
             detalleData.append('precio_unitario', item.dataset.precioUnitario);
             detalleData.append('subtotal', item.dataset.subtotal);
         
-            const resDetalle = await fetch('controlador/registrar_detalle.php', {
+            const resDetalle = await fetch('controlador/verpedidoweb.php', {
                 method: 'POST',
                 body: detalleData
             });
@@ -59,7 +59,7 @@ document.getElementById('btn-guardar-pedido').addEventListener('click', async ()
                 const idDetalleGenerado = dataDetalle.id_detalle;
         
                 // Llamar a registrar_preliminar con ese ID
-                const respuesta = await fetch('controlador/registrar_preliminar.php', {
+                const respuesta = await fetch('controlador/verpedidoweb.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({
@@ -76,7 +76,7 @@ document.getElementById('btn-guardar-pedido').addEventListener('click', async ()
                 }
         
             } catch (e) {
-                console.error('Error procesando detalle/preliminar:', e, textDetalle);
+             
             }
         }
 
@@ -84,7 +84,7 @@ document.getElementById('btn-guardar-pedido').addEventListener('click', async ()
         muestraMensaje("success", 2000, "Su Pedido se ha registrado con éxito");
 
         setTimeout(() => {
-            window.location.href="?pagina=catalogo_pedido";
+            location.reload();
         }, 1000);
 
     } catch (err) {

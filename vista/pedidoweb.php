@@ -9,6 +9,18 @@
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
+
+<style>
+  .pedido-confirmado {
+    background-color: #75d1a6ff;
+    color: #fff;
+}
+
+.pedido-pendiente {
+    background-color: #c76b76ff;
+    color: #fff;
+}
+</style>
   
 <!-- php barra de navegacion-->
 <?php include 'complementos/sidebar.php' ?>
@@ -58,41 +70,67 @@
                   <th class="text-white"style="display: none;">Estado</th>
                   <th class="text-white">Total</th>
                   <th class="text-white">Referencia</th>
-                  <th class="text-white">Banco Destino</th>
                   <th class="text-white">usuario</th>
                  <th class="text-white">Teléfono</th>
                   <th class="text-white">Método Entrega</th>
-                  <th class="text-white">Direccion</th>
                  <th class="text-white">Método Pago</th>
                  <th class="text-white">Acción</th>
                 </tr>
               </thead>
               <tbody>
     
-              <?php foreach ($pedidos as $pedido): ?>
-  <tr style="text-align: center;">
+              <?php foreach ($pedidos as $pedido): 
+    // Define clases y deshabilitar botones si estado es 0 o 2
+    if ($pedido['estado'] == 2) {
+        $claseFila = "pedido-confirmado";
+        $botonesDeshabilitados = "disabled";
+    } elseif ($pedido['estado'] == 0) {
+        $claseFila = "pedido-pendiente";
+        $botonesDeshabilitados = "disabled";
+    } else {
+        $claseFila = "";
+        $botonesDeshabilitados = "";
+    }
+?>
+<tr class="<?= $claseFila ?>" style="text-align: center;">
     <td style="display: none;"><?= $pedido['id_pedido'] ?></td>
     <td style="display: none;"><?= $pedido['tipo'] ?></td>
     <td><?= $pedido['fecha'] ?></td>
     <td style="display: none;"><?= $pedido['estado'] ?></td>
     <td><?= $pedido['precio_total'] ?>$</td>
     <td><?= $pedido['referencia_bancaria'] ?></td>
-    <td><?= $pedido['banco_destino'] ?></td>
-    <td><?=$_SESSION['nombre']?></td>
+    <td><?= $_SESSION['nombre'] ?></td>
     <td><?= $pedido['telefono_emisor'] ?></td>
     <td><?= $pedido['metodo_entrega'] ?></td>
-    <td><?= $pedido['direccion'] ?></td>
     <td><?= $pedido['metodo_pago'] ?></td>
     <td>
-    <button
-          class="btn btn-primary btn-sm ver-detalles"
-          data-detalles='<?= json_encode($pedido["detalles"]) ?>'
-          title="Ver productos del pedido">
-          <i class="fa fa-eye"></i> 
+        <button
+            class="btn btn-primary ver-detalles"
+            data-detalles='<?= json_encode($pedido["detalles"]) ?>'
+            title="Ver productos del pedido"
+            <?= $botonesDeshabilitados ?>>
+            <i class="fa fa-eye"></i> 
         </button>
-      </td>
-    </tr>
-  <?php endforeach; ?>
+
+        <button
+            class="btn btn-success btn-validar"
+            data-id="<?= $pedido['id_pedido'] ?>"
+            title="Validar pedido"
+            <?= $botonesDeshabilitados ?>>
+            <i class="fa-solid fa-check"></i>
+        </button>
+
+        <button
+            class="btn btn-danger btn-eliminar"
+            data-id="<?= $pedido['id_pedido'] ?>"
+            title="Eliminar pedido"
+            <?= $botonesDeshabilitados ?>>
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </td>
+</tr>
+<?php endforeach; ?>
+
 </tbody>
           </table>
         </div>

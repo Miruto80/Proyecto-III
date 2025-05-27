@@ -44,12 +44,12 @@
                         <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
                             <i class="fa-solid fa-comments-dollar" style="color:black;"> </i>
                         </div>
-                        <h5 class="font-weight-bolder mb-0 mt-3" style="color:black;">$ 1600</h5>
-                        <span class="text-sm"  style="color:black;"><b>Venta</b></span>
+                        <h5 class="text-white font-weight-bolder mb-0 mt-3">
+                        $<?php echo number_format($totales['total_ventas'], 2); ?>
+                    </h5>
+                        <span class="text-white text-sm"><b>Ventas totales</b></span>
                     </div>
-                    <div class="col-4">
-                        <p class="text-sm text-end font-weight-bolder mt-auto mb-0" style="color:black;">+55%</p>
-                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -63,14 +63,14 @@
                 <div class="row">
                     <div class="col-8 text-start">
                         <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
-                                <i class="fa-solid fa-credit-card" style="color:black;"></i>
+                                <i class="fa-solid fa-circle-dollar-to-slot" style="color:black;"></i>
                         </div>
-                        <h5 class="text-white font-weight-bolder mb-0 mt-3">$ 357</h5>
+                        <h5 class="text-white font-weight-bolder mb-0 mt-3">
+                        $<?php echo number_format($totales['total_web'], 2); ?>
+                    </h5>
                         <span class="text-white text-sm"><b>Venta Por Web</b></span>
                     </div>
-                    <div class="col-4">
-                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0">+124%</p>
-                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -86,12 +86,12 @@
                         <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
                              <i class="fa-solid fa-laptop-file" style="color:black;"></i>
                         </div>
-                        <h5 class="text-white font-weight-bolder mb-0 mt-3">890</h5>
+                        <h5 class="text-white font-weight-bolder mb-0 mt-3">
+                        <?php echo $totales['cantidad_pedidos_web']; ?>
+                    </h5>
                         <span class="text-white text-sm"><b>Pedidos por Web</b></span>
                     </div>
-                    <div class="col-4">
-                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0">+30%</p>
-                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -110,9 +110,7 @@
                         <h5 class="text-white font-weight-bolder mb-0 mt-3">120</h5>
                         <span class="text-white text-sm"><b>Pago Pendientes</b></span>
                     </div>
-                    <div class="col-4">
-                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0">+15%</p>
-                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -127,41 +125,30 @@
             <div class="card-body">
                 <h5>Los 5 Producto más vendidos</h5>
                 <table class="table">
-                    <thead>
-                        <tr>
-                            <th style="color:#d67888;"><b>Producto</b></th>
-                            <th style="color:#d67888;"><b>Cantidad</b></th>
-                            <th style="color:#d67888;"><b>Total</b></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Producto A</td>
-                            <td>50</td>
-                            <td>$500</td>
-                        </tr>
-                        <tr>
-                            <td>Producto B</td>
-                            <td>30</td>
-                            <td>$300</td>
-                        </tr>
-                        <tr>
-                            <td>Producto C</td>
-                            <td>20</td>
-                            <td>$200</td>
-                        </tr>
-                        <tr>
-                            <td>Producto D</td>
-                            <td>20</td>
-                            <td>$200</td>
-                        </tr>
-                        <tr>
-                            <td>Producto E</td>
-                            <td>20</td>
-                            <td>$200</td>
-                        </tr>
-                    </tbody>
-                </table>
+    <thead>
+        <tr>
+            <th style="color:#d67888;" class="text-center"><b>Producto</b></th>
+            <th style="color:#d67888;" class="text-center"><b>Cantidad</b></th>
+            <th style="color:#d67888;" class="text-center"><b>Total</b></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        if (!empty($registro)) {
+            foreach ($registro as $fila) {
+                echo "<tr>";
+                echo "<td class='text-center'>" . htmlspecialchars($fila['nombre_producto']) . "</td>";
+                echo "<td class='text-center'>" . htmlspecialchars($fila['cantidad_vendida']) . "</td>";
+                echo "<td class='text-center'> $" . htmlspecialchars(number_format($fila['total_vendido'], 2)) . "</td>";
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='3'>No hay datos disponibles</td></tr>";
+        }
+        ?>
+    </tbody>
+</table>
+
             </div>
         </div>
     </div>

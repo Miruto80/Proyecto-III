@@ -1,40 +1,24 @@
 <?php  
 session_start();
-$nombre = isset($_SESSION["nombre"]) && !empty($_SESSION["nombre"]) ? $_SESSION["nombre"] : "Estimado Cliente";
-$apellido = isset($_SESSION["apellido"]) && !empty($_SESSION["apellido"]) ? $_SESSION["apellido"] : ""; 
-
-$nombreCompleto = trim($nombre . " " . $apellido);
-
 $sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
 
+if (empty($_SESSION["id"])){
+    header("location:?pagina=login");
+    exit;
+  } else{
 
-require_once 'modelo/catalogo.php';
+    require_once 'modelo/catalogo_pedido.php';
 
-$catalogo = new Catalogo();
+    $pedido = new Catalogopedido();
+    $id_persona = $_SESSION["id"]; 
+    $pedidos = $pedido->consultarPedidosCompletos($id_persona);
 
-$categorias = $catalogo->obtenerCategorias();
-
-
-    if (isset($_GET['categoria'])) {
-        // Si se pasa una categoría, se filtra por esa categoría
-        $registro = $catalogo->obtenerPorCategoria($_GET['categoria']);
-    } else {
-        // Si no se pasa categoría, se obtienen los productos activos
-        $registro = $catalogo->obtenerProductosActivos();
+    foreach ($pedidos as &$p) {
+        $p['detalles'] = $pedido->consultarDetallesPedido($p['id_pedido']);
     }
 
-    // Verifica si la consulta está retornando productos
-   
-
-
-if ($sesion_activa) {
-     if($_SESSION["nivel_rol"] == 1) { 
-      require_once('vista/tienda/catalogo_pedido.php');
-    } else{
-        header('Location: ?pagina=catalogo');
-    }   
-} else {
-   header('Location: ?pagina=catalogo');
+    require_once 'vista/tienda/catalogo_pedido.php';
 }
+
 
 ?>

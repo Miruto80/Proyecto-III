@@ -1,16 +1,18 @@
-<?php
+<?php 
 require_once 'conexion.php';
 
-class pedidoWeb extends Conexion {
+class Catalogopedido{
     private $conex;
-    private $id_pedido;
+   
 
-    public function __construct() {
-        $this->conex = new Conexion(); 
+
+    public function __construct(){
+        $this->conex = new Conexion();
         $this->conex = $this->conex->conex();
-    }
 
-    public function consultarPedidosCompletos() {
+    }
+    
+    public function consultarPedidosCompletos($id_persona) {
         $sql = "SELECT 
         p.id_pedido,
         p.tipo,
@@ -18,20 +20,22 @@ class pedidoWeb extends Conexion {
         p.estado,
         p.precio_total,
         p.referencia_bancaria,
+        p.banco_destino,
         p.telefono_emisor,
+        p.direccion,
         me.nombre AS metodo_entrega,
         mp.nombre AS metodo_pago
     FROM pedido p
     LEFT JOIN metodo_entrega me ON p.id_entrega = me.id_entrega
     LEFT JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago
-    WHERE p.tipo = 2
+    WHERE p.tipo = 2 AND p.id_persona = ?
     ORDER BY p.fecha DESC";
     
         $stmt = $this->conex->prepare($sql);  
-        $stmt->execute();
+        $stmt->execute([$id_persona]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
+        
     public function consultarDetallesPedido($id_pedido) {
         $sql = "SELECT 
                     pd.id_producto,
@@ -46,21 +50,6 @@ class pedidoWeb extends Conexion {
         $stmt->execute([$id_pedido]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function eliminarPedido($id_pedido) {
-        $sql = "UPDATE pedido SET estado = 0 WHERE id_pedido = ?";
-        $stmt = $this->conex->prepare($sql);
-        return $stmt->execute([$id_pedido]);
-    }
-    
-    // Confirmar un pedido (estado = 2)
-    public function confirmarPedido($id_pedido) {
-        $sql = "UPDATE pedido SET estado = 2 WHERE id_pedido = ?";
-        $stmt = $this->conex->prepare($sql);
-        return $stmt->execute([$id_pedido]);
-    }
-
+ 
 }
-
-
-?> 
+?>

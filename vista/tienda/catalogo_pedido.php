@@ -36,46 +36,98 @@
           <h2 class="section-title">Pedidos</h2>
         </div>
       </div>
-      <div class="row">
-            <table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
+      <div class="table-responsive text-center"> <!-- comienzo div table-->
+           <!-- comienzo de tabla-->                      
+          <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+              <thead class="table-color">
+                <tr>
+                  <th class="" style="display: none;">ID</th>
+                  <th class="" style="display: none;">Tipo</th>
+                  <th class="">Fecha</th>
+                  <th class=""style="">Estado</th>
+                  <th class="">Total</th>
+                  <th class="">Referencia</th>
+                  <th class="">Banco Destino</th>
+                  <th class="" style="display: none;">usuario</th>
+                 <th class="">Teléfono</th>
+                  <th class="">Método Entrega</th>
+                  <th class="">Direccion</th>
+                 <th class="">Método Pago</th>
+                 <th class="">Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+              $estatus_texto = array(
+                    0 =>"Cancelado",               
+                    1 => "Verificando",
+                    2 => "Realizada"
+                  ); 
+                 ?>
+    
+              <?php foreach ($pedidos as $pedido): ?>
+  <tr style="text-align: center;">
+    <td style="display: none;"><?= $pedido['id_pedido'] ?></td>
+    <td style="display: none;"><?= $pedido['tipo'] ?></td>
+    <td><?= $pedido['fecha'] ?></td>
+    <td><?=$estatus_texto[$pedido['estado']]  ?></td>
+    <td><?= $pedido['precio_total'] ?>$</td>
+    <td><?= $pedido['referencia_bancaria'] ?></td>
+    <td><?= $pedido['banco_destino'] ?></td>
+    <td style="display: none;"><?=$_SESSION['nombre']?></td>
+    <td><?= $pedido['telefono_emisor'] ?></td>
+    <td><?= $pedido['metodo_entrega'] ?></td>
+    <td><?= $pedido['direccion'] ?></td>
+    <td><?= $pedido['metodo_pago'] ?></td>
+    <td>
+    <button
+          class="btn btn-primary btn-sm ver-detalles"
+          data-detalles='<?= json_encode($pedido["detalles"]) ?>'
+          title="Ver productos del pedido">
+          <i class="fa fa-eye"></i> 
+        </button>
+      </td>
     </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td colspan="2">Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  </tbody>
-</table>
+  <?php endforeach; ?>
+</tbody>
+          </table>
         </div>
+
       </div>
     </div>
   </section>
-
+  <div class="modal fade" id="modalDetallesProducto" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalLabel">Productos del Pedido</h5>
+        <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-detalles-producto">
+              <!-- Se llena desde JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 
 <!-- php Publicidad Insta, Publicidad calidad, footer y JS--> 
 <?php include 'vista/complementos/footer_catalogo.php' ?>
+<script src="assets/js/catalogo_pedido.js"></script>
   
 </body>
 
