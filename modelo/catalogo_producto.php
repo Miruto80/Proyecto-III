@@ -14,29 +14,12 @@ class Catalogo extends Conexion {
     }
     
 
-    public function obtenerProductosMasVendidos() {
-        $sql = "
-            SELECT 
-                productos.*
-            FROM 
-                productos
-            INNER JOIN 
-                pedido_detalles ON productos.id_producto = pedido_detalles.id_producto
-            INNER JOIN 
-                pedido ON pedido.id_pedido = pedido_detalles.id_pedido
-            WHERE 
-                productos.estatus = 1 AND pedido.estado = 2
-            GROUP BY 
-                productos.id_producto
-            ORDER BY 
-                SUM(pedido_detalles.cantidad) DESC
-            LIMIT 10
-        ";
+    public function obtenerProductosActivos() {
+        $sql = "SELECT * FROM productos WHERE estatus = 1";  // Filtra por productos activos (estatus = 1)
         $consulta = $this->conex->prepare($sql);
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_ASSOC);
     }
-    
     
 
     public function obtenerPorCategoria($categoriaId) {

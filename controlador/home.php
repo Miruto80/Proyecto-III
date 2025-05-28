@@ -10,6 +10,9 @@ $objhome = new home();
 $registro = $objhome->consultarMasVendidos();
 
 $totales = $objhome->consultarTotales();
+
+$pendientes=$objhome->consultarTotalesPendientes();
+
    require_once 'vista/home.php';
 
 ?>
