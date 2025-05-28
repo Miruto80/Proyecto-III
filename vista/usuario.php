@@ -103,7 +103,11 @@
                    data-cedula="<?php echo $dato['cedula']; ?>" 
                    data-correo="<?php echo $dato['correo']; ?>"
                    data-nombre_rol="<?php echo $dato['nombre_tipo']; ?>"
+<<<<<<< HEAD
+                   data-id_tipo="<?php echo $dato['id_rol']; ?>" >
+=======
                    data-id_rol="<?php echo $dato['id_rol']; ?>" >
+>>>>>>> a5fbe4e9a4d8e7b9e0976a11f8ebd43e36ee5a86
                    
                   <i class="fas fa-pencil-alt" title="Editar"></i> 
                 </button>
@@ -179,7 +183,7 @@
                     <select class="form-select" name="id_rol" required>
                       <option value="">Seleccione una Rol:</option>
                         <?php foreach($rol as $rol) {?>
-                      <option value="<?php echo $rol['id_tipo'];?>"> <?php echo $rol['nombre']." - Nivel ".$rol['nivel'];?> </option>
+                      <option value="<?php echo $rol['id_rol'];?>"> <?php echo $rol['nombre']." - Nivel ".$rol['nivel'];?> </option>
                         <?php } ?>
                     </select>
               </div>
