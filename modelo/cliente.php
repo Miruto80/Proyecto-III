@@ -5,7 +5,8 @@ require_once 'conexion.php';
 class Cliente extends Conexion
 {
 
-    private $conex;
+    private $conex1;
+    private $conex2;
     private $id_persona;
     private $nombre;
     private $apellido;
@@ -17,15 +18,18 @@ class Cliente extends Conexion
     private $estatus;
 
     function __construct() {
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->Conex();
+        parent::__construct(); // Llama al constructor de la clase padre
+
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
     }
 
    public function registrarBitacora($id_persona, $accion, $descripcion) {
     $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
                  VALUES (:accion, NOW(), :descripcion, :id_persona)";
     
-    $strExec = $this->conex->prepare($consulta);
+    $strExec = $this->conex2->prepare($consulta);
     $strExec->bindParam(':accion', $accion);
     $strExec->bindParam(':descripcion', $descripcion);
     $strExec->bindParam(':id_persona', $id_persona);
@@ -35,12 +39,9 @@ class Cliente extends Conexion
     
 
     public function consultar(){
-        $registro="SELECT p.*, ru.id_tipo, ru.nombre AS nombre_tipo, ru.nivel
-        FROM personas p 
-        INNER JOIN rol_usuario ru ON p.id_tipo = ru.id_tipo
-        WHERE ru.nivel = 1 AND p.estatus >=1"; // Filtra solo el nivel 1
+        $registro="SELECT * FROM cliente WHERE estatus >=1"; // Filtra solo el nivel 1
     
-        $consulta = $this->conex->prepare($registro);
+        $consulta = $this->conex1->prepare($registro);
         $resul = $consulta->execute();
     
         $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
@@ -53,9 +54,9 @@ class Cliente extends Conexion
     
 
      public function favorito(){
-        $registro = "UPDATE personas SET estatus = 2 WHERE id_persona = :id_persona";
+        $registro = "UPDATE cliente SET estatus = 2 WHERE id_persona = :id_persona";
 
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':id_persona', $this->id_persona);
 
         $resul = $strExec->execute();
@@ -68,9 +69,9 @@ class Cliente extends Conexion
     }
 
     public function malcliente(){ 
-        $registro = "UPDATE personas SET estatus = 3 WHERE id_persona = :id_persona";
+        $registro = "UPDATE cliente SET estatus = 3 WHERE id_persona = :id_persona";
 
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':id_persona', $this->id_persona);
 
         $resul = $strExec->execute();
@@ -84,9 +85,9 @@ class Cliente extends Conexion
 
 
   public function clienteactivo(){
-        $registro = "UPDATE personas SET estatus = 1 WHERE id_persona = :id_persona";
+        $registro = "UPDATE cliente SET estatus = 1 WHERE id_persona = :id_persona";
 
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':id_persona', $this->id_persona);
 
         $resul = $strExec->execute();
@@ -99,9 +100,9 @@ class Cliente extends Conexion
     }
   
     public function actualizar(){
-        $registro = "UPDATE personas SET cedula = :cedula, correo = :correo WHERE id_persona = :id_persona";
+        $registro = "UPDATE cliente SET cedula = :cedula, correo = :correo WHERE id_persona = :id_persona";
 
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':id_persona', $this->id_persona);
         $strExec->bindParam(':cedula', $this->cedula);
         $strExec->bindParam(':correo', $this->correo);
@@ -117,8 +118,8 @@ class Cliente extends Conexion
 
 
     public function existeCedula() {
-        $consulta = "SELECT cedula FROM personas WHERE cedula = :cedula";
-        $strExec = $this->conex->prepare($consulta);
+        $consulta = "SELECT cedula FROM cliente WHERE cedula = :cedula";
+        $strExec = $this->conex1->prepare($consulta);
         $strExec->bindParam(':cedula', $this->cedula);
         $strExec->execute();
         return $strExec->rowCount() > 0;
@@ -126,8 +127,8 @@ class Cliente extends Conexion
 
 
     public function existeCorreo() {
-        $consulta = "SELECT correo FROM personas WHERE correo = :correo";
-        $strExec = $this->conex->prepare($consulta);
+        $consulta = "SELECT correo FROM cliente WHERE correo = :correo";
+        $strExec = $this->conex1->prepare($consulta);
         $strExec->bindParam(':correo', $this->correo);
         $strExec->execute();
         return $strExec->rowCount() > 0;
@@ -187,7 +188,7 @@ class Cliente extends Conexion
     }
     public function set_Correo($correo)
     {
-        $this->correo = ucfirst(strtolower($correo));
+        $this->correo = strtolower($correo);
     }
 
     public function get_Id_rol()
