@@ -79,34 +79,35 @@ nav {
           <ul class="d-flex justify-content-end list-unstyled m-0">
          
             
-          <?php if ($sesion_activa): ?>
-  <?php if($_SESSION["nivel_rol"] == 1): ?>
-    
+          <?php if ($sesion_activa && $_SESSION["nivel_rol"] == 1): ?>
+  <?php 
+    $pagina = $_GET['pagina'] ?? '';
+    $paginasPermitidas = ['catalogo', 'catalogo_producto', 'vercarrito', 'verpedidoweb'];
+    $paginasOcultas = ['vercarrito', 'verpedidoweb'];
+  ?>
+
+  <?php if (in_array($pagina, $paginasPermitidas)): ?>
     <button type="button" class="btn btn-primary d-none d-md-block" id="btnAyuda">
       <span class="icon text-white">
           <i class="fas fa-info-circle"></i>
       </span>
     </button>
-
-    <?php
-      $pagina = $_GET['pagina'] ?? '';
-      $paginasOcultas = ['vercarrito', 'verpedidoweb'];
-    ?>
-
-    <?php if (!in_array($pagina, $paginasOcultas)): ?>
-      <li id="carrito">
-        <a href="#" class="p-0 m-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
-          aria-controls="offcanvasCart">
-          <span class="badge rounded-pill contador contadorL">
-            <?php echo count($carrito); ?>
-          </span>
-          <i class="fa-solid fa-cart-shopping" style="font-size: 25px;"></i>
-        </a>
-      </li>
-    <?php endif; ?>
-
   <?php endif; ?>
+
+  <?php if (!in_array($pagina, $paginasOcultas)): ?>
+    <li id="carrito">
+      <a href="#" class="p-0 m-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
+        aria-controls="offcanvasCart">
+        <span class="badge rounded-pill contador contadorL">
+          <?php echo count($carrito); ?>
+        </span>
+        <i class="fa-solid fa-cart-shopping" style="font-size: 25px;"></i>
+      </a>
+    </li>
+  <?php endif; ?>
+
 <?php endif; ?>
+
 
            <li class="d-md-none">
               <a href="#" class="p-2 mx-1" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSearch"
