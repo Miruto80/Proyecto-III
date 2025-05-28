@@ -1,22 +1,29 @@
 <?php
 require_once('modelo/conexion.php');
 class Catalogo extends Conexion {
-    private $conex;
+    private $conex1;
 
     public function __construct() {
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->conex();
+        parent::__construct(); // Llama al constructor de la clase padre
+
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
     
-        // Verifica si la conexión es exitosa
-        if (!$this->conex) {
-            die('Error al conectar con la base de datos');
+         // Verifica si las conexiones son exitosas
+        if (!$this->conex1) {
+            die('Error al conectar con la primera base de datos');
+        }
+
+        if (!$this->conex2) {
+            die('Error al conectar con la segunda base de datos');
         }
     }
     
 
     public function obtenerProductosActivos() {
         $sql = "SELECT * FROM productos WHERE estatus = 1";  // Filtra por productos activos (estatus = 1)
-        $consulta = $this->conex->prepare($sql);
+        $consulta = $this->conex1->prepare($sql);
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -34,7 +41,7 @@ class Catalogo extends Conexion {
             WHERE 
                 productos.estatus = 1 AND productos.id_categoria = :categoriaId
         ";  // Filtra por estatus y categoría
-        $consulta = $this->conex->prepare($sql);
+        $consulta = $this->conex1->prepare($sql);
         $consulta->bindParam(':categoriaId', $categoriaId);
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_ASSOC);
@@ -43,7 +50,7 @@ class Catalogo extends Conexion {
     
     public function obtenerCategorias() {
       $sql = "SELECT id_categoria, nombre FROM categoria WHERE estatus = 1"; // Solo lo necesario
-      $consulta = $this->conex->prepare($sql);
+      $consulta = $this->conex1->prepare($sql);
       $consulta->execute();
       return $consulta->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -55,7 +62,7 @@ class Catalogo extends Conexion {
             WHERE estatus = 1 
               AND (nombre LIKE :busqueda OR marca LIKE :busqueda)
         ";
-        $consulta = $this->conex->prepare($sql);
+        $consulta = $this->conex1->prepare($sql);
         $busqueda = '%' . $termino . '%';
         $consulta->bindParam(':busqueda', $busqueda, PDO::PARAM_STR);
         $consulta->execute();
