@@ -34,7 +34,8 @@
             <div class="card-header pb-0"> <!-- CARD N-1 -->
                 <!-- Nota -->
                 <div class="alert alert-light" role="alert">
-                    <i class="fa-solid fa-circle-info"></i> Nota: coloque la clave especial para ingresar a la bitácora
+                     <center><i class="fa-solid fa-shield-halved"></i><strong>Importante:</strong> Para acceder a la bitácora del sistema, es necesario ingresar una clave especial de seguridad.<br>
+                     Esta medida protege la información sensible del sistema. Esta area es solo para administradores.</center>
                 </div>
                 <br>
                 <!-- Campo de entrada para Clave Dinámica -->
@@ -43,7 +44,7 @@
                     <h5>Clave Especial</h5>
                     <div class="input-group" style="justify-content: center; width: 40%; max-width: 400px; margin: auto;">
                         <div class="password-input">  
-                            <input id="password"  type="password" class="form-control" name="clave" placeholder="Escriba su clave aquí">
+                            <input id="password" type="password" class="form-control" name="clave" placeholder="Escriba su clave aquí" required>
                             <span id="show-password" class="fa fa-eye"></span>
                         </div> 
                     </div>
@@ -53,10 +54,9 @@
                 <!-- Botones -->
                 <div class="d-flex justify-content-between">
                     <a href="?pagina=home" class="btn btn-danger">Regresar</a>
-                   
-                        <button class="btn btn-primary" name="entrar" id="entrar">Continuar</button>
-                    </form>
+                    <button class="btn btn-primary" name="entrar" id="entrar">Continuar</button>
                 </div>
+               </form>
             </div> <!-- FIN CARD N-1 -->
         </div>
     </div>
@@ -97,6 +97,6 @@ showPasswordButton.addEventListener('click', () => {
       </script>
       <?php unset($_SESSION['message']); ?>
     <?php endif; ?>
-</body>
 
+</body>
 </html>
