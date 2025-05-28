@@ -103,7 +103,7 @@
                    data-cedula="<?php echo $dato['cedula']; ?>" 
                    data-correo="<?php echo $dato['correo']; ?>"
                    data-nombre_rol="<?php echo $dato['nombre_tipo']; ?>"
-                   data-id_tipo="<?php echo $dato['id_tipo']; ?>" >
+                   data-id_rol="<?php echo $dato['id_rol']; ?>" >
                    
                   <i class="fas fa-pencil-alt" title="Editar"></i> 
                 </button>
@@ -270,7 +270,7 @@
                     <select class="form-select" name="id_rol">
                       <option id="modalrol"> </option>
                         <?php foreach($roll as $rol) {?>
-                          <option value="<?php echo $rol['id_tipo'];?>"> <?php echo $rol['nombre']." - Nivel ".$rol['nivel'];?> </option>
+                          <option value="<?php echo $rol['id_rol'];?>"> <?php echo $rol['nombre']." - Nivel ".$rol['nivel'];?> </option>
                         <?php } ?>
                     </select>
               </div>             
