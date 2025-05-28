@@ -35,7 +35,7 @@ class Salida extends Conexion {
             // Insertamos la cabecera del pedido
             $registro = "INSERT INTO pedido(tipo, fecha, estado, precio_total, referencia_bancaria, 
                         telefono_emisor, banco, banco_destino, direccion, id_entrega, id_metodopago, id_persona) 
-                        VALUES ('2', NOW(), '1', :precio_total, :referencia_bancaria, 
+                        VALUES ('1', NOW(), '1', :precio_total, :referencia_bancaria, 
                         :telefono_emisor, :banco, :banco_destino, :direccion, :id_entrega, :id_metodopago, :id_persona)";
             
             $strExec = $this->conex->prepare($registro);
@@ -218,7 +218,7 @@ class Salida extends Conexion {
                         JOIN personas per ON p.id_persona = per.id_persona 
                         JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago 
                         JOIN metodo_entrega me ON p.id_entrega = me.id_entrega 
-                        WHERE p.tipo = '2' 
+                        WHERE p.tipo = '1' 
                         ORDER BY p.id_pedido DESC";
             $consulta = $this->conex->prepare($registro);
             $resul = $consulta->execute();
