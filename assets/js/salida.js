@@ -351,7 +351,45 @@ document.addEventListener('DOMContentLoaded', function() {
             const subtotalStr = span.textContent.replace('$', '').trim();
             total += parseFloat(subtotalStr) || 0;
         });
+        
+        // Actualizar total en dólares
         document.getElementById('total-general-venta').textContent = `$${total.toFixed(2)}`;
+        
+        // Obtener la tasa del día y calcular el total en bolívares
+        fetch('https://ve.dolarapi.com/v1/dolares/oficial')
+            .then(response => response.json())
+            .then(data => {
+                const tasaBCV = data.promedio;
+                const totalBolivares = total * tasaBCV;
+                
+                // Crear o actualizar el elemento para mostrar el total en bolívares
+                let totalBsElement = document.getElementById('total-general-bs');
+                if (!totalBsElement) {
+                    totalBsElement = document.createElement('span');
+                    totalBsElement.id = 'total-general-bs';
+                    totalBsElement.className = 'text-success ms-2';
+                    document.getElementById('total-general-venta').parentNode.appendChild(totalBsElement);
+                }
+                totalBsElement.textContent = ` (${totalBolivares.toFixed(2)} Bs)`;
+            })
+            .catch(error => {
+                console.error('Error al obtener la tasa:', error);
+                // Si hay error, intentar usar la tasa mostrada en el slider
+                const bcvText = document.getElementById("bcv").textContent;
+                const tasaMatch = bcvText.match(/[\d.]+/);
+                if (tasaMatch) {
+                    const tasaBCV = parseFloat(tasaMatch[0]);
+                    const totalBolivares = total * tasaBCV;
+                    let totalBsElement = document.getElementById('total-general-bs');
+                    if (!totalBsElement) {
+                        totalBsElement = document.createElement('span');
+                        totalBsElement.id = 'total-general-bs';
+                        totalBsElement.className = 'text-success ms-2';
+                        document.getElementById('total-general-venta').parentNode.appendChild(totalBsElement);
+                    }
+                    totalBsElement.textContent = ` (${totalBolivares.toFixed(2)} Bs)`;
+                }
+            });
     }
 
     // Función para inicializar eventos en fila de producto
