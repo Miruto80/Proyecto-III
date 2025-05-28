@@ -115,6 +115,11 @@
           <div class="col-md-3">
     <h5>Categorías</h5>
     <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex flex-column categorias">
+    <?php if (empty($categorias)): ?>
+      <div class="col-12 text-center">
+                <p class="fs-4 text-muted">No se encontraron categorias.</p>
+            </div>
+<?php endif; ?>
         <?php foreach ($categorias as $cat): ?>
             <li class="nav-item">
                 <label for="cat-<?php echo $cat['id_categoria']; ?>" class="nav-link d-flex align-items-center gap-3 p-2">
