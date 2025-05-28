@@ -94,7 +94,7 @@ class Salida extends Conexion {
                 // Actualizamos el stock del producto
                 $actualizar_stock = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad 
                                    WHERE id_producto = :id_producto";
-                $strExecStock = $this->conex->prepare($actualizar_stock);
+                $strExecStock = $this->conex1->prepare($actualizar_stock);
                 $strExecStock->bindValue(':cantidad', $detalle['cantidad']);
                 $strExecStock->bindValue(':id_producto', $detalle['id_producto']);
                 
@@ -166,7 +166,7 @@ class Salida extends Conexion {
             foreach ($detalles as $detalle) {
                 $actualizar_stock = "UPDATE productos SET stock_disponible = stock_disponible + :cantidad 
                                    WHERE id_producto = :id_producto";
-                $strExecStock = $this->conex->prepare($actualizar_stock);
+                $strExecStock = $this->conex1->prepare($actualizar_stock);
                 $strExecStock->bindParam(':cantidad', $detalle['cantidad']);
                 $strExecStock->bindParam(':id_producto', $detalle['id_producto']);
                 $resulStock = $strExecStock->execute();
@@ -180,7 +180,7 @@ class Salida extends Conexion {
             
             // Eliminamos los detalles
             $eliminar_detalles = "DELETE FROM pedido_detalles WHERE id_pedido = :id_pedido";
-            $strExecEliminar = $this->conex->prepare($eliminar_detalles);
+            $strExecEliminar = $this->conex1->prepare($eliminar_detalles);
             $strExecEliminar->bindParam(':id_pedido', $this->id_pedido);
             $resulEliminar = $strExecEliminar->execute();
             
