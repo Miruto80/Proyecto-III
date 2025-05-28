@@ -2,6 +2,7 @@
 require_once('modelo/conexion.php');
 class Catalogo extends Conexion {
     private $conex1;
+    private $conex2;
 
     public function __construct() {
         parent::__construct(); // Llama al constructor de la clase padre

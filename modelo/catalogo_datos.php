@@ -5,6 +5,7 @@ require_once 'conexion.php';
 class Datos extends Conexion{
 
     private $conex1;
+    private $conex2;
     private $id_persona;
     private $nombre;
     private $apellido;
