@@ -144,9 +144,9 @@
                 </div>
 
                 <!-- GRIP DE PRODUCTO -->
-                <div class="row">
-    <div class="col-md-12">
-        <div class="product-grid row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 g-4">
+                <div class="col-md-12">
+    <div class="product-grid row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 g-4">
+        <?php if (!empty($registro)): ?>
             <?php foreach ($registro as $producto): ?>
                 <div class="col">
                     <div class="product-item" data-categoria="<?php echo $producto['id_categoria']; ?>" data-bs-toggle="modal"
@@ -191,11 +191,12 @@
                     </div>
                 </div>
             <?php endforeach; ?>
-        </div>
+        <?php else: ?>
+            <div class="col-12 text-center">
+                <p class="fs-4 text-muted">No se encontraron productos vendidos.</p>
+            </div>
+        <?php endif; ?>
     </div>
-</div>
-
-
                 <div class="text-center mt-4">
                     <a href="?pagina=catalogo_producto" class="btn btn-primary btn-lg px-5">Ver Todos los productos</a>
                 </div>
