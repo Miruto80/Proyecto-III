@@ -19,7 +19,7 @@ $categorias = $catalogo->obtenerCategorias();
     $registro = $catalogo->obtenerPorCategoria($_GET['categoria']);
 } else {
     // Si no hay ni búsqueda ni categoría, muestra todo
-    $registro = $catalogo->obtenerProductosActivos();
+    $registro = $catalogo->obtenerProductosMasVendidos();
 }
 
 

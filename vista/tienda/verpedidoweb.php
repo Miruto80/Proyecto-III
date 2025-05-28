@@ -11,6 +11,7 @@
 
 $usuario = $_SESSION;
 $carrito = $_SESSION['carrito'] ?? [];
+$carritoEmpty = empty($_SESSION['carrito']);
 $total = 0;
 
 ?>
@@ -349,8 +350,12 @@ input[type=checkbox]{
 
                                
                         </form> <!-- fin del formulario -->
-
- <button class="btns btn-success btn-rp" id="btn-guardar-pedido">Realizar Pedido</button>
+      <?php if ($carritoEmpty): ?>
+    <button class="btns btn-success btn-rp" style="color: #aaa; pointer-events: none; cursor: default; text-decoration: none;">Realizar Pedido</button>
+  <?php else: ?>
+   <button class="btns btn-success btn-rp" id="btn-guardar-pedido">Realizar Pedido</button>
+  <?php endif; ?>
+ 
                              <p class="text-muted text-center">Compra con confianza, tu mejor elección te espera.
                         </div>                        
                     </div>

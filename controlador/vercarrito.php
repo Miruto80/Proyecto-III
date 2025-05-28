@@ -10,6 +10,7 @@ $nombreCompleto = trim($nombre . " " . $apellido);
 $sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
 
 $carrito = $_SESSION['carrito'] ?? [];
+$carritoEmpty = empty($_SESSION['carrito']);
 $total = 0;
 
 $vercarrito = 1;
@@ -97,11 +98,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $accion) {
 
 // Si NO es AJAX, entonces mostramos la vista
 if ($sesion_activa) {
-     if($_SESSION["nivel_rol"] == 1) { 
-      require_once 'vista/tienda/vercarrito.php';
-    } else{
+    if ($_SESSION["nivel_rol"] == 1) {
+        if ($carritoEmpty) {
+            require_once 'vista/complementos/carritovacio.php';
+            exit;
+        } else {
+           
+            require_once 'vista/tienda/vercarrito.php';
+            exit;
+        }
+    } else {
         header('Location: ?pagina=catalogo');
-    } 
+        exit;
+    }
 } else {
     header('Location: ?pagina=catalogo');
     exit;
