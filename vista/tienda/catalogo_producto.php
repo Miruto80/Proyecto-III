@@ -31,7 +31,7 @@
     <h5>Categoría</h5>
     <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex flex-column  categorias">
     <?php if (empty($categorias)): ?>
-      <div class="col-12 text-center">
+      <div class="col-12">
                 <p class="fs-4 text-muted">No se encontraron categorias.</p>
             </div>
 <?php endif; ?>
