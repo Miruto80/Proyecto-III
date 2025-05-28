@@ -1,5 +1,5 @@
 <?php
-require_once('dompdf/vendor/autoload.php'); //archivo para cargar las funciones de la 
+require_once('assets/dompdf/vendor/autoload.php'); //archivo para cargar las funciones de la 
 //libreria DOMPDF
 // lo siguiente es hacer rerencia al espacio de trabajo
 use Dompdf\Dompdf;
@@ -23,12 +23,15 @@ class proveedor extends Conexion {
 
 
 private function imgToBase64($imgPath) {
-    if (file_exists($imgPath)) {
-        $imgData = file_get_contents($imgPath);
+    $fullPath = __DIR__ . '/../' . $imgPath; // Ahora busca en la carpeta correcta
+
+    if (file_exists($fullPath)) {
+        $imgData = file_get_contents($fullPath);
         return 'data:image/png;base64,' . base64_encode($imgData);
     }
     return ''; // Si la imagen no existe, devuelve cadena vacía
 }
+
 
 
     public function generarPDF() {
@@ -36,36 +39,47 @@ private function imgToBase64($imgPath) {
     $proveedores = $this->consultar();
     $fechaHoraActual = date('d/m/Y h:i A');
 
-    // Ruta de la imagen de la gráfica
-    $graficoBase64 = $this->imgToBase64('controlador/grafico_proveedores.png');
+    // Ruta de la imagen en la carpeta img
+    $graficoBase64 = $this->imgToBase64('assets/img/grafico_proveedores.png');
 
     $html = '
-    <html>
-    <head>
-        <style>
-            body { font-family: Arial, sans-serif; font-size: 10px; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid #000; padding: 4px; text-align: center; }
-            th { background-color: rgb(243, 108, 164); color: #000; }
-        </style>
-    </head>
-    <body>
-        <h1>LISTA DE PROVEEDORES</h1>
-        <p><strong>Fecha y Hora de Expedición: </strong>' . $fechaHoraActual . '</p>';
+<html>
+<head>
+    <title>Proveedores PDF</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        h1 { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 20px; }
+        p { text-align: left; font-size: 12px; }
+        h2 { font-size: 20px; font-weight: bold; margin-top: 20px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+        th { background-color: rgb(243, 108, 164); color: #000; font-size: 14px; }
+        td { font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>LISTADO DE PROVEEDORES</h1>
+    <p><strong>Fecha y Hora de Expedición: </strong>' . $fechaHoraActual . '</p>';
 
     // Agregar la imagen del gráfico si existe
-    if (!empty($graficoBase64)) {
-        $html .= '<div style="text-align:center;"><img src="' . $graficoBase64  . '" width="600"></div><br>';
-    }
+   if (!empty($graficoBase64)) {
+    $html .= '<h2 style="text-align:center;">Top 5 Proveedores con Más Compras</h2>
+              <div style="text-align: center;"><img src="' . $graficoBase64 . '" width="600"></div><br>';
+}
 
-    $html .= '<table><thead><tr>
-                <th>Nombre</th>
-                <th>Tipo Documento</th>
-                <th>N° Documento</th>
-                <th>Correo</th>
-                <th>Teléfono</th>
-                <th>Dirección</th>
-              </tr></thead><tbody>';
+
+    $html .= '<table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Tipo Documento</th>
+                        <th>N° Documento</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Dirección</th>
+                    </tr>
+                </thead>
+                <tbody>';
 
     foreach ($proveedores as $p) {
         $html .= '<tr>
@@ -87,6 +101,7 @@ private function imgToBase64($imgPath) {
     $dompdf->render();
     $dompdf->stream("Reporte_Proveedores.pdf", array("Attachment" => false));
 }
+
 
 
 
@@ -125,19 +140,21 @@ private function imgToBase64($imgPath) {
     }
     
     public function eliminar() {
-        $registro = "DELETE FROM proveedor WHERE id_proveedor = :id_proveedor";
-        $strExec = $this->conex->prepare($registro);
-        $strExec->bindParam(':id_proveedor', $this->id_proveedor);
-        $resul = $strExec->execute();
-        return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
-    }
+    $registro = "UPDATE proveedor SET estatus = 0 WHERE id_proveedor = :id_proveedor";
+    $strExec = $this->conex->prepare($registro);
+    $strExec->bindParam(':id_proveedor', $this->id_proveedor);
+    $resul = $strExec->execute();
+    return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
+}
+
     
     public function consultar() {
-        $registro = "SELECT * FROM proveedor";
-        $consulta = $this->conex->prepare($registro);
-        $resul = $consulta->execute();
-        return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
-    }
+    $registro = "SELECT * FROM proveedor WHERE estatus = 1";
+    $consulta = $this->conex->prepare($registro);
+    $resul = $consulta->execute();
+    return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
+}
+
     
     public function consultarPorId() {
         $registro = "SELECT * FROM proveedor WHERE id_proveedor = :id_proveedor";
