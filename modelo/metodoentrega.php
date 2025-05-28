@@ -3,21 +3,33 @@
 require_once 'conexion.php';
 
 class metodoentrega extends Conexion {
-    private $conex;
+    private $conex1;
+    private $conex2;
     private $id_entrega;
     private $nombre;
     private $descripcion;
 
     public function __construct() {
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->Conex();
-    }
+        parent::__construct(); // Llama al constructor de la clase padre
 
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
+    
+         // Verifica si las conexiones son exitosas
+        if (!$this->conex1) {
+            die('Error al conectar con la primera base de datos');
+        }
+
+        if (!$this->conex2) {
+            die('Error al conectar con la segunda base de datos');
+        }
+    }
     public function registrarBitacora($id_persona, $accion, $descripcion) {
     $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
                  VALUES (:accion, NOW(), :descripcion, :id_persona)";
     
-    $strExec = $this->conex->prepare($consulta);
+    $strExec = $this->conex2->prepare($consulta);
     $strExec->bindParam(':accion', $accion);
     $strExec->bindParam(':descripcion', $descripcion);
     $strExec->bindParam(':id_persona', $id_persona);
@@ -27,7 +39,7 @@ class metodoentrega extends Conexion {
 
     public function registrar() {
         $registro = "INSERT INTO metodo_entrega(nombre, descripcion, estatus) VALUES (:nombre, :descripcion, 1)";
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':nombre', $this->nombre);
         $strExec->bindParam(':descripcion', $this->descripcion);
         $resul = $strExec->execute();
@@ -36,7 +48,7 @@ class metodoentrega extends Conexion {
 
     public function modificar() {
         $registro = "UPDATE metodo_entrega SET nombre = :nombre, descripcion = :descripcion WHERE id_entrega = :id_entrega";
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':nombre', $this->nombre);
         $strExec->bindParam(':descripcion', $this->descripcion);
         $strExec->bindParam(':id_entrega', $this->id_entrega);
@@ -47,7 +59,7 @@ class metodoentrega extends Conexion {
 
     public function eliminar() {
         $registro = "UPDATE metodo_entrega SET estatus = 0 WHERE id_entrega = :id_entrega";
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':id_entrega', $this->id_entrega);
         $resul = $strExec->execute();
         return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
@@ -55,7 +67,7 @@ class metodoentrega extends Conexion {
 
     public function consultar() {
         $registro = "SELECT * FROM metodo_entrega WHERE estatus = 1";
-        $consulta = $this->conex->prepare($registro);
+        $consulta = $this->conex1->prepare($registro);
         $resul = $consulta->execute();
         return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
     }

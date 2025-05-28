@@ -1,15 +1,29 @@
 <?php
 require_once 'conexion.php';
 
-class VentaWeb {
-    private $conex;
+class VentaWeb extends Conexion {
+    private $conex1;
+    private $conex2;
     private $id_pedido;
     private $datos;
     private $detalles;
     private $estado;
 
     public function __construct() {
-        $this->conex = (new Conexion())->Conex();
+        parent::__construct(); // Llama al constructor de la clase padre
+
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
+    
+         // Verifica si las conexiones son exitosas
+        if (!$this->conex1) {
+            die('Error al conectar con la primera base de datos');
+        }
+
+        if (!$this->conex2) {
+            die('Error al conectar con la segunda base de datos');
+        }
     }
 
     // Setters
@@ -32,7 +46,7 @@ class VentaWeb {
     // Obtener todos los registros de metodo de pago y de entrega
     public function listar() {
         try {
-            $stmt = $this->conex->prepare("
+            $stmt = $this->conex1->prepare("
                 SELECT p.*, mp.nombre AS metodo_pago, me.nombre AS metodo_entrega 
                 FROM pedido p
                 LEFT JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago
@@ -47,13 +61,13 @@ class VentaWeb {
     }
 
     public function obtenerMetodosPago() {
-        $stmt = $this->conex->prepare("SELECT * FROM metodo_pago WHERE estatus = 1");
+        $stmt = $this->conex1->prepare("SELECT * FROM metodo_pago WHERE estatus = 1");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function obtenerMetodosEntrega() {
-        $stmt = $this->conex->prepare("SELECT * FROM metodo_entrega WHERE estatus = 1");
+        $stmt = $this->conex1->prepare("SELECT * FROM metodo_entrega WHERE estatus = 1");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -68,9 +82,9 @@ class VentaWeb {
     
             $sql = "INSERT INTO pedido (referencia_bancaria, telefono_emisor, banco,banco_destino,direccion, id_metodopago, id_entrega, id_persona, estado, precio_total, tipo)
                     VALUES (:referencia_bancaria, :telefono_emisor, :banco,:banco_destino,:direccion, :id_metodopago, :id_entrega, :id_persona, :estado, :precio_total, :tipo)";
-            $stmt = $this->conex->prepare($sql);
+            $stmt = $this->conex1->prepare($sql);
             $stmt->execute($this->datos);
-            return $this->conex->lastInsertId();
+            return $this->conex1->lastInsertId();
         } catch (PDOException $e) {
             throw new Exception("Error al insertar pedido: " . $e->getMessage());
         }
@@ -78,7 +92,7 @@ class VentaWeb {
 
     public function validarStockCarrito($carrito) {
         foreach ($carrito as $item) {
-            $stmt = $this->conex->prepare("SELECT stock_disponible FROM productos WHERE id_producto = :id_producto");
+            $stmt = $this->conex1->prepare("SELECT stock_disponible FROM productos WHERE id_producto = :id_producto");
             $stmt->bindParam(':id_producto', $item['id'], PDO::PARAM_INT);
             $stmt->execute();
             $stock = $stmt->fetchColumn();
@@ -99,15 +113,15 @@ class VentaWeb {
         try {
             $sql = "INSERT INTO pedido_detalles (id_pedido, id_producto, cantidad, precio_unitario)
                     VALUES (:id_pedido, :id_producto, :cantidad, :precio_unitario)";
-            $stmt = $this->conex->prepare($sql);
+            $stmt = $this->conex1->prepare($sql);
              $stmt->execute($this->detalles);
 
-             $idDetalle = $this->conex->lastInsertId();
+             $idDetalle = $this->conex1->lastInsertId();
 
                $sqlUpdateStock ="UPDATE productos
                                 SET stock_disponible = stock_disponible - :cantidad
                                 WHERE id_producto = :id_producto";
-                    $stmtUpdate = $this->conex->prepare($sqlUpdateStock);
+                    $stmtUpdate = $this->conex1->prepare($sqlUpdateStock);
                     $stmtUpdate->execute([
                         ':cantidad' => $this->detalles['cantidad'],
                         ':id_producto' => $this->detalles['id_producto']
@@ -132,7 +146,7 @@ class VentaWeb {
 
     public function registrarPreliminar() {
         try {
-            $stmt = $this->conex->prepare("
+            $stmt = $this->conex1->prepare("
                 INSERT INTO preliminar (id_detalle, condicion)
                 VALUES (:id_detalle, :condicion)
             ");
@@ -141,7 +155,7 @@ class VentaWeb {
             $stmt->bindParam(':condicion', $this->datos['condicion'], PDO::PARAM_STR);
             $stmt->execute();
     
-            return $this->conex->lastInsertId();
+            return $this->conex1->lastInsertId();
         } catch (PDOException $e) {
             throw new Exception("Error al insertar preliminar: " . $e->getMessage());
         }
