@@ -553,7 +553,6 @@
           <!-- Sección: Productos -->
           <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 >Productos</h6>
             </div>
             
             <div class="table-responsive">

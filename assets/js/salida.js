@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
-                timer: 3000,
+                timer: 5000,
                 timerProgressBar: true
             });
         }
@@ -334,87 +334,130 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Función para verificar si un producto ya está en la lista
-    function verificarProductoDuplicado(selectActual) {
-        const productoId = selectActual.value;
-        let filasDuplicadas = [];
-        let cantidadTotal = 0;
-
-        document.querySelectorAll('.producto-select-venta').forEach(select => {
-            if (select !== selectActual && select.value === productoId) {
-                filasDuplicadas.push(select.closest('.producto-fila'));
-                cantidadTotal += parseInt(select.closest('.producto-fila').querySelector('.cantidad-input-venta').value) || 0;
-            }
-        });
-
-        return { filasDuplicadas, cantidadTotal };
+    // Función para calcular subtotal
+    function calcularSubtotal(fila) {
+        const cantidad = parseInt(fila.querySelector('.cantidad-input-venta').value) || 0;
+        const precioStr = fila.querySelector('.precio-input-venta').value.replace('$', '').trim();
+        const precio = parseFloat(precioStr) || 0;
+        const subtotal = cantidad * precio;
+        fila.querySelector('.subtotal-venta').textContent = subtotal.toFixed(2);
+        actualizarTotal();
     }
 
-    // Función para inicializar eventos en una fila de producto
+    // Función para actualizar el total general
+    function actualizarTotal() {
+        let total = 0;
+        document.querySelectorAll('.subtotal-venta').forEach(span => {
+            const subtotalStr = span.textContent.replace('$', '').trim();
+            total += parseFloat(subtotalStr) || 0;
+        });
+        document.getElementById('total-general-venta').textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Función para inicializar eventos en fila de producto
     function inicializarEventosProducto(fila) {
         const selectProducto = fila.querySelector('.producto-select-venta');
         const inputCantidad = fila.querySelector('.cantidad-input-venta');
         const inputPrecio = fila.querySelector('.precio-input-venta');
-        const spanSubtotal = fila.querySelector('.subtotal-venta');
         const btnRemover = fila.querySelector('.remover-producto-venta');
+        const btnAgregar = fila.querySelector('.agregar-producto-venta');
         const stockInfo = fila.querySelector('.stock-info');
+
+        // Inicializar evento para agregar producto
+        if (btnAgregar) {
+            btnAgregar.addEventListener('click', function() {
+                const nuevaFila = fila.cloneNode(true);
+                
+                // Limpiar valores de la nueva fila
+                nuevaFila.querySelector('.producto-select-venta').value = '';
+                nuevaFila.querySelector('.precio-input-venta').value = '0.00';
+                nuevaFila.querySelector('.subtotal-venta').textContent = '0.00';
+                nuevaFila.querySelector('.cantidad-input-venta').value = '1';
+                nuevaFila.querySelector('.stock-info').textContent = '';
+                
+                // Insertar la nueva fila después de la fila actual
+                fila.parentNode.insertBefore(nuevaFila, fila.nextSibling);
+                
+                // Inicializar eventos en la nueva fila
+                inicializarEventosProducto(nuevaFila);
+                actualizarTotal();
+            });
+        }
 
         selectProducto.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.value === '') {
-                limpiarFila(fila);
+                inputPrecio.value = '0.00';
+                inputCantidad.value = '1';
+                inputCantidad.removeAttribute('max');
+                stockInfo.textContent = '';
                 calcularSubtotal(fila);
                 return;
             }
-
-            // Verificar si el producto ya está en otra fila
-            const { filasDuplicadas, cantidadTotal } = verificarProductoDuplicado(this);
             
-            if (filasDuplicadas.length > 0) {
+            // Verificar si el producto ya está seleccionado en otra fila
+            const productoId = selectedOption.value;
+            let filaExistente = null;
+            let cantidadExistente = 0;
+            
+            document.querySelectorAll('.producto-select-venta').forEach(select => {
+                if (select !== this && select.value === productoId) {
+                    filaExistente = select.closest('tr');
+                    cantidadExistente = parseInt(filaExistente.querySelector('.cantidad-input-venta').value) || 0;
+                }
+            });
+
+            if (filaExistente) {
+                // Restaurar el valor anterior del select
+                this.value = '';
+                inputPrecio.value = '0.00';
+                inputCantidad.value = '1';
+                stockInfo.textContent = '';
+                calcularSubtotal(fila);
+
                 Swal.fire({
-                    title: 'Producto duplicado',
-                    text: 'Este producto ya está en la lista. ¿Deseas sumar la cantidad a la fila existente?',
+                    title: 'Producto ya registrado',
+                    text: '¿Desea sumar la cantidad al producto existente?',
                     icon: 'warning',
                     showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
                     confirmButtonText: 'Sí, sumar',
                     cancelButtonText: 'No, cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const filaExistente = filasDuplicadas[0];
-                        const cantidadExistente = parseInt(filaExistente.querySelector('.cantidad-input-venta').value) || 0;
-                        const cantidadNueva = parseInt(inputCantidad.value) || 1;
                         const stock = parseInt(selectedOption.getAttribute('data-stock')) || 0;
+                        const cantidadNueva = cantidadExistente + 1;
                         
-                        if (cantidadExistente + cantidadNueva <= stock) {
-                            filaExistente.querySelector('.cantidad-input-venta').value = cantidadExistente + cantidadNueva;
-                            calcularSubtotal(filaExistente);
-                            limpiarFila(fila);
-                        } else {
+                        if (cantidadNueva > stock) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Stock insuficiente',
                                 text: `Solo hay ${stock} unidades disponibles de este producto`
                             });
-                            this.value = '';
-                            limpiarFila(fila);
+                            return;
                         }
-                    } else {
-                        this.value = '';
-                        limpiarFila(fila);
+
+                        // Actualizar cantidad en la fila existente
+                        const inputCantidadExistente = filaExistente.querySelector('.cantidad-input-venta');
+                        inputCantidadExistente.value = cantidadNueva;
+                        calcularSubtotal(filaExistente);
                     }
                 });
                 return;
             }
             
-            // Si no hay duplicados, continuar con el comportamiento normal
+            // Obtener precio y stock del option seleccionado
             const precio = selectedOption.getAttribute('data-precio');
             const stock = parseInt(selectedOption.getAttribute('data-stock')) || 0;
             
+            // Actualizar campos
             inputPrecio.value = precio || '0.00';
             inputCantidad.value = '1';
             inputCantidad.setAttribute('max', stock);
-            stockInfo.textContent = `Stock: ${stock}`;
             
+            // Mostrar stock disponible en el span
+            stockInfo.textContent = `Stock: ${stock}`;
             if (stock === 0) {
                 inputCantidad.classList.add('is-invalid');
                 Swal.fire({
@@ -429,74 +472,43 @@ document.addEventListener('DOMContentLoaded', function() {
             calcularSubtotal(fila);
         });
 
-        // Evento para cambio en cantidad
         inputCantidad.addEventListener('input', function() {
             const selectedOption = selectProducto.options[selectProducto.selectedIndex];
-            const stock = parseInt(selectedOption.getAttribute('data-stock')) || 0;
-            let cantidad = parseInt(this.value) || 0;
+            const stock = parseInt(selectedOption.dataset.stock) || 0;
+            const cantidad = parseInt(this.value) || 0;
 
             if (cantidad < 1) {
-                cantidad = this.value = 1;
+                this.value = 1;
             } else if (cantidad > stock) {
-                cantidad = this.value = stock;
+                this.value = stock;
+                this.classList.add('is-invalid');
                 Swal.fire({
                     icon: 'warning',
                     title: 'Stock insuficiente',
                     text: `Solo hay ${stock} unidades disponibles de este producto`
                 });
+            } else {
+                this.classList.remove('is-invalid');
             }
             
             calcularSubtotal(fila);
         });
 
-        // Evento para remover fila
-        if (btnRemover) {
-            btnRemover.addEventListener('click', function() {
-                const totalFilas = document.querySelectorAll('.producto-fila').length;
-                if (totalFilas > 1) {
-                    fila.remove();
-                    actualizarTotal();
-                } else {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'No se puede eliminar',
-                        text: 'Debe mantener al menos una fila de producto'
-                    });
-                }
-            });
-        }
-    }
-
-    // Función para limpiar una fila
-    function limpiarFila(fila) {
-        const inputPrecio = fila.querySelector('.precio-input-venta');
-        const inputCantidad = fila.querySelector('.cantidad-input-venta');
-        const stockInfo = fila.querySelector('.stock-info');
-        const spanSubtotal = fila.querySelector('.subtotal-venta');
-
-        inputPrecio.value = '0.00';
-        inputCantidad.value = '1';
-        inputCantidad.removeAttribute('max');
-        stockInfo.textContent = '';
-        spanSubtotal.textContent = '0.00';
-    }
-
-    // Función para calcular subtotal
-    function calcularSubtotal(fila) {
-        const cantidad = parseInt(fila.querySelector('.cantidad-input-venta').value) || 0;
-        const precio = parseFloat(fila.querySelector('.precio-input-venta').value) || 0;
-        const subtotal = cantidad * precio;
-        fila.querySelector('.subtotal-venta').textContent = subtotal.toFixed(2);
-        actualizarTotal();
-    }
-
-    // Función para actualizar el total general
-    function actualizarTotal() {
-        let total = 0;
-        document.querySelectorAll('.subtotal-venta').forEach(span => {
-            total += parseFloat(span.textContent) || 0;
+        btnRemover.addEventListener('click', function() {
+            const totalFilas = contenedorProductos.querySelectorAll('.producto-fila').length;
+            if (totalFilas > 1) {
+                fila.remove();
+                actualizarTotal();
+            } else {
+                Swal.fire({
+                    title: '¡Atención!',
+                    text: 'Debe mantener al menos un producto en la venta',
+                    icon: 'warning',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Entendido'
+                });
+            }
         });
-        document.getElementById('total-general-venta').textContent = total.toFixed(2);
     }
 
     // Inicializar eventos en todas las filas existentes
