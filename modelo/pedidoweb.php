@@ -2,14 +2,27 @@
 require_once 'conexion.php';
 
 class pedidoWeb extends Conexion {
-    private $conex;
+    private $conex1;
+    private $conex2;
     private $id_pedido;
 
     public function __construct() {
-        $this->conex = new Conexion(); 
-        $this->conex = $this->conex->conex();
-    }
+        parent::__construct(); // Llama al constructor de la clase padre
 
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
+    
+         // Verifica si las conexiones son exitosas
+        if (!$this->conex1) {
+            die('Error al conectar con la primera base de datos');
+        }
+
+        if (!$this->conex2) {
+            die('Error al conectar con la segunda base de datos');
+        }
+    }
+    
     public function consultarPedidosCompletos() {
         $sql = "SELECT 
         p.id_pedido,
@@ -27,7 +40,7 @@ class pedidoWeb extends Conexion {
     WHERE p.tipo = 2
     ORDER BY p.fecha DESC";
     
-        $stmt = $this->conex->prepare($sql);  
+        $stmt = $this->conex1->prepare($sql);  
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -42,37 +55,37 @@ class pedidoWeb extends Conexion {
                 JOIN productos pr ON pd.id_producto = pr.id_producto
                 WHERE pd.id_pedido = ?";
         
-        $stmt = $this->conex->prepare($sql);
+        $stmt = $this->conex1->prepare($sql);
         $stmt->execute([$id_pedido]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function eliminarPedido($id_pedido) {
         try {
-            $this->conex->beginTransaction();
+            $this->conex1->beginTransaction();
     
             // me traigo productos y cantidades de detalle
             $sqlDetalles = "SELECT id_producto, cantidad FROM pedido_detalles WHERE id_pedido = ?";
-            $stmtDetalles = $this->conex->prepare($sqlDetalles);
+            $stmtDetalles = $this->conex1->prepare($sqlDetalles);
             $stmtDetalles->execute([$id_pedido]);
             $detalles = $stmtDetalles->fetchAll(PDO::FETCH_ASSOC);
     
             // devuelvo la cantidad a stock disponible
             foreach ($detalles as $detalle) {
                 $sqlUpdateStock = "UPDATE productos SET stock_disponible = stock_disponible + ? WHERE id_producto = ?";
-                $stmtStock = $this->conex->prepare($sqlUpdateStock);
+                $stmtStock = $this->conex1->prepare($sqlUpdateStock);
                 $stmtStock->execute([$detalle['cantidad'], $detalle['id_producto']]);
             }
     
             // eliminado logico de pedido
             $sqlEliminar = "UPDATE pedido SET estado = 0 WHERE id_pedido = ?";
-            $stmtEliminar = $this->conex->prepare($sqlEliminar);
+            $stmtEliminar = $this->conex1->prepare($sqlEliminar);
             $stmtEliminar->execute([$id_pedido]);
     
-            $this->conex->commit();
+            $this->conex1->commit();
             return true;
         } catch (Exception $e) {
-            $this->conex->rollBack();
+            $this->conex1->rollBack();
             error_log("Error al eliminar pedido: " . $e->getMessage());
             return false;
         }
@@ -82,7 +95,7 @@ class pedidoWeb extends Conexion {
     // Confirmar un pedido (estado = 2)
     public function confirmarPedido($id_pedido) {
         $sql = "UPDATE pedido SET estado = 2 WHERE id_pedido = ?";
-        $stmt = $this->conex->prepare($sql);
+        $stmt = $this->conex1->prepare($sql);
         return $stmt->execute([$id_pedido]);
     }
 
