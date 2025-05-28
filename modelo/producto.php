@@ -4,7 +4,8 @@ require_once('modelo/conexion.php');
 require_once('modelo/categoria.php');
 
 class producto extends Conexion{
- private $conex;
+ private $conex1;
+ private $conex2;
  private $objcategoria;
  private $id_producto;
  private $nombre;
@@ -20,12 +21,12 @@ class producto extends Conexion{
  private $categoria;
  private $estatus;
 
-
-
-
 function __construct(){
-    $this->conex = new Conexion();
-    $this->conex = $this->conex->conex();
+    parent::__construct();
+
+    $this->conex1 = $this->getConex1();
+ 	$this->conex2 = $this->getConex2();
+	
 	$this->objcategoria = new categoria();
 }
 
@@ -33,7 +34,7 @@ public function registrarBitacora($id_persona, $accion, $descripcion) {
     $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
                  VALUES (:accion, NOW(), :descripcion, :id_persona)";
     
-    $strExec = $this->conex->prepare($consulta);
+    $strExec = $this->conex2->prepare($consulta);
     $strExec->bindParam(':accion', $accion);
     $strExec->bindParam(':descripcion', $descripcion);
     $strExec->bindParam(':id_persona', $id_persona);
@@ -43,7 +44,7 @@ public function registrarBitacora($id_persona, $accion, $descripcion) {
 
 public function verificarProductoExistente($nombre, $marca) {
     $consulta = "SELECT COUNT(*) FROM productos WHERE LOWER(nombre) = LOWER(:nombre) AND LOWER(marca) = LOWER(:marca) AND estatus = 1";
-    $strExec = $this->conex->prepare($consulta);
+    $strExec = $this->conex1->prepare($consulta);
     $strExec->bindParam(':nombre', $nombre);
     $strExec->bindParam(':marca', $marca);
     $strExec->execute();
@@ -59,7 +60,7 @@ public function registrar(){
     $registro ="INSERT INTO productos(nombre,descripcion,marca,cantidad_mayor,precio_mayor,precio_detal,stock_disponible,stock_maximo,stock_minimo,imagen,id_categoria,estatus)
     VALUES (:nombre,:descripcion,:marca,:cantidad_mayor,:precio_mayor,:precio_detal,0,:stock_maximo,:stock_minimo,:imagen,:id_categoria,1)";
 
-    $strExec = $this->conex->prepare($registro);
+    $strExec = $this->conex1->prepare($registro);
     $strExec->bindParam(':nombre',$this->nombre);
     $strExec->bindParam(':descripcion',$this->descripcion);
     $strExec->bindParam(':marca',$this->marca);
@@ -101,7 +102,7 @@ public function consultar() {
             productos.estatus IN (1,2)
     ";
 
-    $consulta = $this->conex->prepare($registro);
+    $consulta = $this->conex1->prepare($registro);
     $resul = $consulta->execute();
 
     $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
@@ -127,7 +128,7 @@ public function modificar() {
         id_categoria = :id_categoria
         WHERE id_producto = :id_producto";
 
-    $strExec = $this->conex->prepare($registro);
+    $strExec = $this->conex1->prepare($registro);
     $strExec->bindParam(':id_producto', $this->id_producto);
     $strExec->bindParam(':nombre', $this->nombre);
     $strExec->bindParam(':descripcion', $this->descripcion);
@@ -148,7 +149,7 @@ public function modificar() {
 
 public function eliminar() {
     $registro = "UPDATE productos SET estatus = 0 WHERE id_producto = :id_producto";
-    $strExec = $this->conex->prepare($registro);
+    $strExec = $this->conex1->prepare($registro);
     $strExec->bindParam(':id_producto', $this->id_producto);
     $resul = $strExec->execute();
     return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
@@ -158,7 +159,7 @@ public function cambiarEstatusProducto($id_producto, $estatus_actual) {
     $nuevo_estatus = ($estatus_actual == 2) ? 1 : 2; // Alternar estado
 
     $query = "UPDATE productos SET estatus = :nuevo_estatus WHERE id_producto = :id_producto";
-    $strExec = $this->conex->prepare($query);
+    $strExec = $this->conex1->prepare($query);
     $strExec->bindParam(':nuevo_estatus', $nuevo_estatus, PDO::PARAM_INT);
     $strExec->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
     $resul = $strExec->execute();

@@ -37,13 +37,18 @@ if(isset($_POST['generar'])){
 }
 
 // Generar gráfico antes de cargar la vista
+/*
 function generarGrafico() {
     require_once ('assets/js/jpgraph/src/jpgraph.php');
     require_once ('assets/js/jpgraph/src/jpgraph_pie.php');
     require_once ('assets/js/jpgraph/src/jpgraph_pie3d.php');
     
     $db = new Conexion();
-    $conex = $db->Conex();
+    $conex1 = $db->Conex();
+
+
+    ARREGLAR
+ 
 
 // Obtener la cantidad total de proveedores activos con compras
 $SQL = "SELECT COUNT(DISTINCT pr.id_proveedor) AS total_activos
@@ -123,7 +128,7 @@ $graph->Stroke($imagePath);
 generarGrafico();
 
 
-
+   */
 
 
 

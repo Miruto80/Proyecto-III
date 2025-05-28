@@ -4,7 +4,8 @@ require_once 'conexion.php';
 
 class Datos extends Conexion{
 
-    private $conex;
+    private $conex1;
+    private $conex2;
     private $id_persona;
     private $nombre;
     private $apellido;
@@ -16,9 +17,21 @@ class Datos extends Conexion{
     private $encryptionKey = "MotorLoveMakeup"; 
     private $cipherMethod = "AES-256-CBC";
     
-    function __construct() {
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->Conex();
+    public function __construct() {
+        parent::__construct(); // Llama al constructor de la clase padre
+
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
+    
+         // Verifica si las conexiones son exitosas
+        if (!$this->conex1) {
+            die('Error al conectar con la primera base de datos');
+        }
+
+        if (!$this->conex2) {
+            die('Error al conectar con la segunda base de datos');
+        }
     }
 
     private function encryptClave($clave) {
@@ -39,7 +52,7 @@ class Datos extends Conexion{
     public function actualizar(){
         $registro = "UPDATE personas SET nombre = :nombre, apellido = :apellido, cedula = :cedula, telefono = :telefono, correo = :correo WHERE id_persona = :id_persona";
 
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':id_persona', $this->id_persona);
         $strExec->bindParam(':nombre', $this->nombre);
         $strExec->bindParam(':apellido', $this->apellido);
@@ -59,7 +72,7 @@ class Datos extends Conexion{
      public function actualizarClave(){
         $registro = "UPDATE personas SET clave = :clave WHERE id_persona = :id_persona";
 
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':id_persona', $this->id_persona);
         // Encriptar la clave antes de almacenarla
         $claveEncriptada = $this->encryptClave($this->clave);
@@ -79,7 +92,7 @@ class Datos extends Conexion{
     public function eliminar(){
         try {
             $registro = "DELETE FROM personas WHERE id_persona = :id_persona";
-            $strExec = $this->conex->prepare($registro);
+            $strExec = $this->conex1->prepare($registro);
             $strExec->bindParam(':id_persona', $this->id_persona);
             $result = $strExec->execute();
                 if ($result){
@@ -96,7 +109,7 @@ class Datos extends Conexion{
 
      public function existeCedula() {
         $consulta = "SELECT cedula FROM personas WHERE cedula = :cedula";
-        $strExec = $this->conex->prepare($consulta);
+        $strExec = $this->conex1->prepare($consulta);
         $strExec->bindParam(':cedula', $this->cedula);
         $strExec->execute();
         return $strExec->rowCount() > 0;
@@ -106,7 +119,7 @@ class Datos extends Conexion{
      
     public function existeCorreo() {
         $consulta = "SELECT correo FROM personas WHERE correo = :correo";
-        $strExec = $this->conex->prepare($consulta);
+        $strExec = $this->conex1->prepare($consulta);
         $strExec->bindParam(':correo', $this->correo);
         $strExec->execute();
         return $strExec->rowCount() > 0;
@@ -114,7 +127,7 @@ class Datos extends Conexion{
 
    public function obtenerClave($id_persona) {
         $consulta = "SELECT clave FROM personas WHERE id_persona = :id_persona"; 
-        $strExec = $this->conex->prepare($consulta);
+        $strExec = $this->conex1->prepare($consulta);
         $strExec->bindParam(':id_persona', $id_persona);
         $strExec->execute();
     
