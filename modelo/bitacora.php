@@ -4,7 +4,8 @@ require_once 'conexion.php';
 
 class Bitacora extends Conexion {
 
-    private $conex;
+    private $conex1;
+    private $conex2;
     private $id_bitacora;
     private $accion;
     private $fecha_hora;
@@ -43,8 +44,11 @@ class Bitacora extends Conexion {
     ];
 
     function __construct(){ 
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->Conex();
+        parent::__construct(); // Llama al constructor de la clase padre
+
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
         $this->detectarAccion();
     } 
 
@@ -181,7 +185,7 @@ class Bitacora extends Conexion {
             $registro = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
                         VALUES (:accion, :fecha_hora, :descripcion, :id_persona)";
             
-            $stmt = $this->conex->prepare($registro);
+            $stmt = $this->conex2->prepare($registro);
             $stmt->bindParam(':accion', $accion);
             $stmt->bindParam(':fecha_hora', $fecha);
             $stmt->bindParam(':descripcion', $descripcion);
@@ -202,10 +206,10 @@ class Bitacora extends Conexion {
     public function consultar(){
         $registro = "SELECT b.*, p.nombre, p.apellido, ru.nombre AS nombre_usuario
                      FROM bitacora b
-                     INNER JOIN personas p ON b.id_persona = p.id_persona
-                     INNER JOIN rol_usuario ru ON p.id_tipo = ru.id_tipo
+                     INNER JOIN usuario p ON b.id_persona = p.id_persona
+                     INNER JOIN rol_usuario ru ON p.id_rol = ru.id_rol
                      ORDER BY b.fecha_hora DESC";
-        $consulta = $this->conex->prepare($registro);
+        $consulta = $this->conex2->prepare($registro);
         $resul = $consulta->execute();
 
         $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
@@ -225,7 +229,7 @@ class Bitacora extends Conexion {
                      INNER JOIN rol_usuario ru ON p.id_tipo = ru.id_tipo
                      WHERE b.id_bitacora = :id_bitacora";
             
-            $stmt = $this->conex->prepare($query);
+            $stmt = $this->conex2->prepare($query);
             $stmt->bindParam(':id_bitacora', $id_bitacora);
             $stmt->execute();
             
@@ -238,7 +242,7 @@ class Bitacora extends Conexion {
     public function eliminar(){
         try {
             $registro = "DELETE FROM bitacora WHERE id_bitacora = :id_bitacora";
-            $strExec = $this->conex->prepare($registro);
+            $strExec = $this->conex2->prepare($registro);
             $strExec->bindParam(':id_bitacora', $this->id_bitacora);
             $result = $strExec->execute();
             if ($result){
