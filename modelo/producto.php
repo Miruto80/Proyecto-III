@@ -41,7 +41,21 @@ public function registrarBitacora($id_persona, $accion, $descripcion) {
     return $strExec->execute(); // Devuelve true si la inserción fue exitosa
 }
 
+public function verificarProductoExistente($nombre, $marca) {
+    $consulta = "SELECT COUNT(*) FROM productos WHERE LOWER(nombre) = LOWER(:nombre) AND LOWER(marca) = LOWER(:marca) AND estatus = 1";
+    $strExec = $this->conex->prepare($consulta);
+    $strExec->bindParam(':nombre', $nombre);
+    $strExec->bindParam(':marca', $marca);
+    $strExec->execute();
+    return $strExec->fetchColumn() > 0;
+}
+
 public function registrar(){
+    // Verificar si el producto ya existe
+    if ($this->verificarProductoExistente($this->nombre, $this->marca)) {
+        return ['respuesta' => 0, 'accion' => 'incluir', 'error' => 'Ya existe un producto con el mismo nombre y marca'];
+    }
+
     $registro ="INSERT INTO productos(nombre,descripcion,marca,cantidad_mayor,precio_mayor,precio_detal,stock_disponible,stock_maximo,stock_minimo,imagen,id_categoria,estatus)
     VALUES (:nombre,:descripcion,:marca,:cantidad_mayor,:precio_mayor,:precio_detal,0,:stock_maximo,:stock_minimo,:imagen,:id_categoria,1)";
 

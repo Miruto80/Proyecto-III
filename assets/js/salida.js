@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
-                timer: 3000,
+                timer: 5000,
                 timerProgressBar: true
             });
         }
@@ -351,7 +351,45 @@ document.addEventListener('DOMContentLoaded', function() {
             const subtotalStr = span.textContent.replace('$', '').trim();
             total += parseFloat(subtotalStr) || 0;
         });
+        
+        // Actualizar total en dólares
         document.getElementById('total-general-venta').textContent = `$${total.toFixed(2)}`;
+        
+        // Obtener la tasa del día y calcular el total en bolívares
+        fetch('https://ve.dolarapi.com/v1/dolares/oficial')
+            .then(response => response.json())
+            .then(data => {
+                const tasaBCV = data.promedio;
+                const totalBolivares = total * tasaBCV;
+                
+                // Crear o actualizar el elemento para mostrar el total en bolívares
+                let totalBsElement = document.getElementById('total-general-bs');
+                if (!totalBsElement) {
+                    totalBsElement = document.createElement('span');
+                    totalBsElement.id = 'total-general-bs';
+                    totalBsElement.className = 'text-success ms-2';
+                    document.getElementById('total-general-venta').parentNode.appendChild(totalBsElement);
+                }
+                totalBsElement.textContent = ` (${totalBolivares.toFixed(2)} Bs)`;
+            })
+            .catch(error => {
+                console.error('Error al obtener la tasa:', error);
+                // Si hay error, intentar usar la tasa mostrada en el slider
+                const bcvText = document.getElementById("bcv").textContent;
+                const tasaMatch = bcvText.match(/[\d.]+/);
+                if (tasaMatch) {
+                    const tasaBCV = parseFloat(tasaMatch[0]);
+                    const totalBolivares = total * tasaBCV;
+                    let totalBsElement = document.getElementById('total-general-bs');
+                    if (!totalBsElement) {
+                        totalBsElement = document.createElement('span');
+                        totalBsElement.id = 'total-general-bs';
+                        totalBsElement.className = 'text-success ms-2';
+                        document.getElementById('total-general-venta').parentNode.appendChild(totalBsElement);
+                    }
+                    totalBsElement.textContent = ` (${totalBolivares.toFixed(2)} Bs)`;
+                }
+            });
     }
 
     // Función para inicializar eventos en fila de producto
@@ -392,6 +430,58 @@ document.addEventListener('DOMContentLoaded', function() {
                 inputCantidad.removeAttribute('max');
                 stockInfo.textContent = '';
                 calcularSubtotal(fila);
+                return;
+            }
+            
+            // Verificar si el producto ya está seleccionado en otra fila
+            const productoId = selectedOption.value;
+            let filaExistente = null;
+            let cantidadExistente = 0;
+            
+            document.querySelectorAll('.producto-select-venta').forEach(select => {
+                if (select !== this && select.value === productoId) {
+                    filaExistente = select.closest('tr');
+                    cantidadExistente = parseInt(filaExistente.querySelector('.cantidad-input-venta').value) || 0;
+                }
+            });
+
+            if (filaExistente) {
+                // Restaurar el valor anterior del select
+                this.value = '';
+                inputPrecio.value = '0.00';
+                inputCantidad.value = '1';
+                stockInfo.textContent = '';
+                calcularSubtotal(fila);
+
+                Swal.fire({
+                    title: 'Producto ya registrado',
+                    text: '¿Desea sumar la cantidad al producto existente?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, sumar',
+                    cancelButtonText: 'No, cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const stock = parseInt(selectedOption.getAttribute('data-stock')) || 0;
+                        const cantidadNueva = cantidadExistente + 1;
+                        
+                        if (cantidadNueva > stock) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Stock insuficiente',
+                                text: `Solo hay ${stock} unidades disponibles de este producto`
+                            });
+                            return;
+                        }
+
+                        // Actualizar cantidad en la fila existente
+                        const inputCantidadExistente = filaExistente.querySelector('.cantidad-input-venta');
+                        inputCantidadExistente.value = cantidadNueva;
+                        calcularSubtotal(filaExistente);
+                    }
+                });
                 return;
             }
             
@@ -1043,9 +1133,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Actualizar total general
+        // Actualizar total general y limpiar total en bolívares
         const totalGeneral = document.getElementById('total-general-venta');
+        const totalBs = document.getElementById('total-general-bs');
         if(totalGeneral) totalGeneral.textContent = '$0.00';
+        if(totalBs) totalBs.textContent = ' (0.00 Bs)';
         
         // Quitar required y clases de validación
         const campos = [nombreInput, apellidoInput, telefonoInput, correoInput, 
@@ -1068,4 +1160,13 @@ document.addEventListener('DOMContentLoaded', function() {
     btnCancelarRegistro.addEventListener('click', function() {
         mostrarModoBusqueda();
     });
+
+    // Evento para el botón reset del formulario
+    if (formVenta) {
+        formVenta.addEventListener('reset', function(e) {
+            setTimeout(() => {
+                mostrarModoBusqueda();
+            }, 0);
+        });
+    }
 }); 

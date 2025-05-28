@@ -87,11 +87,13 @@ nav {
   ?>
 
   <?php if (in_array($pagina, $paginasPermitidas)): ?>
-    <button type="button" class="btn btn-primary d-none d-md-block" id="btnAyuda">
-      <span class="icon text-white">
-          <i class="fas fa-info-circle"></i>
-      </span>
-    </button>
+    <button type="button" class="btn btn-primary btn-sm rounded shadow d-none d-md-block" id="btnAyuda">
+    <span class="icon text-white">
+        <i class="fas fa-info-circle"></i>
+    </span>
+</button>
+
+
   <?php endif; ?>
 
   <?php if (!in_array($pagina, $paginasOcultas)): ?>
