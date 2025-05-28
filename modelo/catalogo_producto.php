@@ -1,8 +1,11 @@
 <?php
 require_once('modelo/conexion.php');
+require_once('modelo/categoria.php');
 class Catalogo extends Conexion {
     private $conex1;
     private $conex2;
+
+    private $objcategoria;
 
     public function __construct() {
         parent::__construct(); // Llama al constructor de la clase padre
@@ -10,6 +13,8 @@ class Catalogo extends Conexion {
         // Obtener las conexiones de la clase padre
         $this->conex1 = $this->getConex1();
         $this->conex2 = $this->getConex2();
+        $this->objcategoria = new categoria();
+
     
          // Verifica si las conexiones son exitosas
         if (!$this->conex1) {
@@ -50,10 +55,7 @@ class Catalogo extends Conexion {
     
     
     public function obtenerCategorias() {
-      $sql = "SELECT id_categoria, nombre FROM categoria WHERE estatus = 1"; // Solo lo necesario
-      $consulta = $this->conex1->prepare($sql);
-      $consulta->execute();
-      return $consulta->fetchAll(PDO::FETCH_ASSOC);
+        return $this->objcategoria->consultar();
     }
    
     public function buscarProductos($termino) {
