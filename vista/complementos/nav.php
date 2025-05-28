@@ -91,6 +91,159 @@
                     </div>
                 </div>
             </div>
+            <div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+            ¿Cómo gestionar un pedido pendiente?
+        </button>
+    </h2>
+    <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            Accede al panel de administración, busca el pedido en "Órdenes pendientes" y sigue el proceso de confirmación o actualización del estado.
+        </div>
+    </div>
+</div>
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">
+            ¿Cómo actualizar el inventario?
+        </button>
+    </h2>
+    <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            En el sistema de inventario, selecciona el producto y actualiza la cantidad disponible según los últimos ingresos o ventas.
+        </div>
+    </div>
+</div>
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq12">
+            ¿Cómo manejar pedidos con problemas de pago?
+        </button>
+    </h2>
+    <div id="faq12" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            Verifica el estado del pago en la pasarela de pagos y contacta al cliente para resolver cualquier inconveniente.
+        </div>
+    </div>
+</div>
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq13">
+            ¿Cómo actualizar información de productos?
+        </button>
+    </h2>
+    <div id="faq13" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            Accede al módulo de gestión de productos y edita detalles como precio, descripción y disponibilidad.
+        </div>
+    </div>
+</div>
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq17">
+            ¿Cómo gestionar reportes de clientes?
+        </button>
+    </h2>
+    <div id="faq17" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            Registra los reportes en el sistema y escala los casos según su nivel de prioridad para una resolución rápida.
+        </div>
+    </div>
+</div>
+<!-- Nuevos acordeones para la ayuda -->
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq18">
+            ¿Cómo registrar una nueva compra?
+        </button>
+    </h2>
+    <div id="faq18" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            Ve al módulo "Compra", haz clic en "Nueva compra", ingresa los datos del proveedor y los productos adquiridos.
+        </div>
+    </div>
+</div>
+
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq19">
+            ¿Cómo agregar un nuevo producto?
+        </button>
+    </h2>
+    <div id="faq19" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            Ingresa al módulo "Producto", haz clic en "Agregar producto", completa los campos requeridos y guarda los cambios.
+        </div>
+    </div>
+</div>
+
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq20">
+            ¿Cómo registrar una venta?
+        </button>
+    </h2>
+    <div id="faq20" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            Accede al módulo "Venta", selecciona al cliente, los productos vendidos y guarda el registro de la transacción.
+        </div>
+    </div>
+</div>
+
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq21">
+            ¿Cómo hacer una reserva?
+        </button>
+    </h2>
+    <div id="faq21" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            Dirígete a "Reserva", selecciona al cliente y los productos a reservar, y confirma la reserva con fecha y duración.
+        </div>
+    </div>
+</div>
+
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq22">
+            ¿Cómo registrar un proveedor?
+        </button>
+    </h2>
+    <div id="faq22" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            En el módulo "Proveedor", haz clic en "Nuevo proveedor", completa los datos de contacto y guarda.
+        </div>
+    </div>
+</div>
+
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq23">
+            ¿Cómo asignar una categoría a un producto?
+        </button>
+    </h2>
+    <div id="faq23" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            Dentro de "Producto", selecciona uno y edita su información. En la sección de categoría, elige la más adecuada y guarda.
+        </div>
+    </div>
+</div>
+
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq24">
+            ¿Cómo se registran nuevos cliente?
+        </button>
+    </h2>
+    <div id="faq24" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            Los clientes se registran en la parte del iniciar sesion y registrase
+        </div>
+    </div>
+</div>
+
+
         </div>
     </div>
 </div>
