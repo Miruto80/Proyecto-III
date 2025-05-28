@@ -50,7 +50,6 @@
            <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
-                  <th class="text-white">#</th>
                    <th class="text-white">Cedula</th>
                   <th class="text-white">Nombre</th>
                   <th class="text-white">Apellido</th>
@@ -78,7 +77,6 @@
                   foreach ($registro as $dato){
                 ?>
                 <tr>
-                  <td><?php echo $dato['id_persona']?></td>
                    <td><?php echo $dato['cedula']?></td>
                   <td><?php echo $dato['nombre']?></td>
                   <td><?php echo $dato['apellido']?></td>
