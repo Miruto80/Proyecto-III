@@ -242,13 +242,13 @@ $("#tipo_documento").on("change", function () {
             break;
         case "J":
         case "G":
-            maxDigitos = 10; // RIF Jurídico y Gubernamental
+            maxDigitos = 9; // RIF Jurídico y Gubernamental
             break;
         case "E":
             maxDigitos = 9; // Cédula Extranjera
             break;
         default:
-            maxDigitos = 10; // Valor por defecto
+            maxDigitos = 9; // Valor por defecto
     }
 
     $("#numero_documento").attr("maxlength", maxDigitos); // Ajusta dinámicamente el límite
@@ -299,13 +299,13 @@ $("#tipo_documento_modificar").on("change", function () {
             break;
         case "J":
         case "G":
-            maxDigitos = 10;
+            maxDigitos = 9;
             break;
         case "E":
             maxDigitos = 9;
             break;
         default:
-            maxDigitos = 10;
+            maxDigitos = 9;
     }
 
     $("#numero_documento_modificar").attr("maxlength", maxDigitos);
@@ -354,16 +354,16 @@ $("#numero_documento, #numero_documento_modificar").on("keyup", function() {
             break;
         case "J":
         case "G":
-            maxDigitos = 10;
-            regex = /^[0-9]{10}$/; // Solo permite 10 números
+            maxDigitos = 9;
+            regex = /^[0-9]{9}$/; // Solo permite 9 números
             break;
         case "E":
             maxDigitos = 9;
             regex = /^[0-9]{9}$/; // Solo permite 9 números
             break;
         default:
-            maxDigitos = 10;
-            regex = /^[0-9]{7,10}$/; // Solo permite números dentro del rango
+            maxDigitos = 9;
+            regex = /^[0-9]{7,9}$/; // Solo permite números dentro del rango
     }
 
     validarkeyup(regex, $(this), $(this).siblings("span"), `Debe ingresar ${maxDigitos} dígitos numéricos`);
