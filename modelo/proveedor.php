@@ -44,7 +44,8 @@ private function imgToBase64($imgPath) {
     $fechaHoraActual = date('d/m/Y h:i A');
 
     // Ruta de la imagen en la carpeta img
-    $graficoBase64 = $this->imgToBase64('assets/img/grafico_proveedores.png');
+   $graficoBase64 = $this->imgToBase64('assets/img/grafica_reportes/grafico_proveedores.png');
+
 
     $html = '
 <html>

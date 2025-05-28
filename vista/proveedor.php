@@ -114,7 +114,7 @@
                 </div>
                 <div class="col-md-6">
                   <label>NÚMERO DE DOCUMENTO</label>
-                  <input type="text" class="form-control" name="numero_documento" id="numero_documento" placeholder="Ejemplo: 12345678" maxlength="10" required>
+                  <input type="text" class="form-control" name="numero_documento" id="numero_documento" placeholder="Ejemplo: 12345678" maxlength="9" required>
                   <span id="snumero_documento" class="text-danger"></span>              
                 </div>
               </div>
@@ -182,7 +182,7 @@
                 </div>
                 <div class="col-md-6">
                   <label>NÚMERO DE DOCUMENTO</label>
-                  <input type="text" class="form-control" name="numero_documento" id="numero_documento_modificar" placeholder="Ejemplo: 12345678" maxlength="10" required>
+                  <input type="text" class="form-control" name="numero_documento" id="numero_documento_modificar" placeholder="Ejemplo: 12345678" maxlength="9" required>
                   <span id="snumero_documento_modificar" class="text-danger"></span>
                 </div>
               </div>
@@ -225,44 +225,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Modal para generar reporte PDF de proveedores -->
-<div class="modal fade" id="modal3" tabindex="-1" aria-labelledby="modal3Label" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-warning">
-                <h5 class="modal-title" id="modal3Label">Reporte de Proveedor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <form method="post" id="f" autocomplete="off" target="_blank">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="nombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre">
-                            <span id="snombre" class="form-text text-muted"></span>
-                        </div>       
-                    </div>
-
-                    <div class="row my-4">
-                        <div class="col text-center">
-                            <button type="submit" class="btn btn-warning" id="generar" name="generar">
-                                GENERAR PDF
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer bg-dark">
-                <button type="button" class="btn btn-warning w-100" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
    
             <div style="text-align: center; margin-top: 20px;">
               <h3>Top 5 Proveedores con Más Compras</h3>
@@ -270,11 +232,12 @@
 
               <!-- Mostrar gráfica-->
             <div style="text-align:center; margin-top:20px;">
-              <?php if (file_exists("assets/img/img_reportes/grafico_proveedores.png")): ?>
-                <img src="assets/img/img_reportes/grafico_proveedores.png" alt="Gráfico de pastel de proveedores">
-              <?php else: ?>
-                <p>No hay datos suficientes para generar un gráfico.</p>
-              <?php endif; ?>
+<?php if (file_exists("assets/img/grafica_reportes/grafico_proveedores.png")): ?>
+    <img src="assets/img/grafica_reportes/grafico_proveedores.png" alt="Gráfico de pastel de proveedores">
+<?php else: ?>
+    <p>No hay datos suficientes para generar un gráfico.</p>
+<?php endif; ?>
+
             </div>
 
 
