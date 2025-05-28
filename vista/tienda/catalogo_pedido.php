@@ -71,46 +71,63 @@
                 </tr>
               </thead>
               <tbody>
-                <?php
-              $estatus_texto = array(
-                    0 =>"Cancelado",               
-                    1 => "Verificando",
-                    2 => "Realizada"
-                  ); 
-                 ?>
-    
-              <?php foreach ($pedidos as $pedido): 
-                 if ($pedido['estado'] == 2) {
-                  $claseFila = "pedido-confirmado";
+               
+            <?php foreach ($pedidos as $pedido): 
+              // Define clases y deshabilitar botones si estado es 0 o 2
+              if ($pedido['estado'] == 2) {
+                $claseFila = "pedido-confirmado";
                   $botonesDeshabilitados = "disabled";
               } elseif ($pedido['estado'] == 0) {
-                  $claseFila = "pedido-pendiente";
                   $botonesDeshabilitados = "disabled";
-              } 
-              
+              } else {
+                  $claseFila = "";
+                  $botonesDeshabilitados = "enabled";
+              }
+          
+              $estatus_texto = array(
+                0 => "Rechazado",
+                1 => "Pendiente",
+                2 => "Validado",
+          
+              );
+          
+              $badgeClass = '';
+              switch (strtolower($pedido['estado'])) {
+                  case '2':
+                      $badgeClass = 'bg-primary';
+                      break;
+                  case '1':
+                      $badgeClass = 'bg-warning';
+                      break;
+                  case '0':
+                      $badgeClass = 'bg-danger';
+                      break;
+                  default:
+                      $badgeClass = 'bg-secondary';
+              }
+          
+            
           ?>
-        
-
-<tr class="<?= $claseFila ?>"style="text-align: center;">
-    <td style="display: none;"><?= $pedido['id_pedido'] ?></td>
-    <td style="display: none;"><?= $pedido['tipo'] ?></td>
-    <td><?= $pedido['fecha'] ?></td>
-    <td><?=$estatus_texto[$pedido['estado']]  ?></td>
-    <td><?= $pedido['precio_total'] ?>$</td>
-    <td><?= $pedido['referencia_bancaria'] ?></td>
-    <td><?= $pedido['banco_destino'] ?></td>
-    <td style="display: none;"><?=$_SESSION['nombre']?></td>
-    <td><?= $pedido['telefono_emisor'] ?></td>
-    <td><?= $pedido['metodo_entrega'] ?></td>
-    <td><?= $pedido['direccion'] ?></td>
-    <td><?= $pedido['metodo_pago'] ?></td>
-    <td>
-    <button
-          class="btn btn-primary btn-sm ver-detalles"
-          data-detalles='<?= json_encode($pedido["detalles"]) ?>'
-          title="Ver productos del pedido">
-          <i class="fa fa-eye"></i> 
-        </button>
+              <tr style="text-align:center;">
+              <td style="display: none;"><?= $pedido['id_pedido'] ?></td>
+              <td style="display: none;"><?= $pedido['tipo'] ?></td>
+              <td><?= $pedido['fecha'] ?></td>
+              <td class=" m-3 text-white badge <?php echo $badgeClass; ?>"><?php echo $estatus_texto[$pedido['estado']] ?></td>
+              <td><?= $pedido['precio_total'] ?>$</td>
+              <td><?= $pedido['referencia_bancaria'] ?></td> 
+              <td><?= $pedido['banco_destino'] ?></td>
+              <td><?= $_SESSION['nombre'] ?></td>
+              <td><?= $pedido['telefono_emisor'] ?></td>
+              <td><?= $pedido['metodo_entrega'] ?></td>
+              <td><?= $pedido['metodo_pago'] ?></td>
+              <td>
+                  <button
+                      class="btn btn-primary ver-detalles"
+                      data-detalles='<?= json_encode($pedido["detalles"]) ?>'
+                      title="Ver productos del pedido"
+                      >
+                      <i class="fa fa-eye"></i> 
+                  </button>
       </td>
     </tr>
   <?php endforeach; ?>
