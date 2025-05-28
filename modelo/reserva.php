@@ -2,14 +2,18 @@
 require_once 'conexion.php';
 
 class Reserva {
-    private $conex;
+    private $conex1;
+    private $conex2;
     private $id_reserva;
     private $fecha_apartado;
     private $id_persona;
     
 function __construct() {
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->Conex();
+        parent::__construct(); // Llama al constructor de la clase padre
+
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2()
         $this->id_reserva = 0;
         $this->fecha_apartado = '';
         $this->id_persona = 0;
@@ -44,7 +48,7 @@ function __construct() {
     $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
                  VALUES (:accion, NOW(), :descripcion, :id_persona)";
     
-    $strExec = $this->conex->prepare($consulta);
+    $strExec = $this->conex2->prepare($consulta);
     $strExec->bindParam(':accion', $accion);
     $strExec->bindParam(':descripcion', $descripcion);
     $strExec->bindParam(':id_persona', $id_persona);
@@ -61,16 +65,16 @@ function __construct() {
             
             // Insertar encabezado de reserva
            $sql = "INSERT INTO reserva (fecha_apartado, id_persona) VALUES (?, ?)";
-            $stmt = $this->conex->prepare($sql);
+            $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->fecha_apartado);
             $stmt->bindParam(2, $this->id_persona);
             
             if (!$stmt->execute()) {
-                $this->conex->rollBack();
+                $this->conex1->rollBack();
                 return ['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Error al registrar la reserva'];
             }
             
-            $id_reserva = $this->conex->lastInsertId();
+            $id_reserva = $this->conex1->lastInsertId();
             $this->id_reserva = $id_reserva;
             
             // Insertar detalles de reserva
@@ -83,19 +87,19 @@ function __construct() {
 
                 // Verificar stock disponible antes de insertar
                 $sqlStock = "SELECT p.stock_disponible, p.nombre FROM productos p WHERE p.id_producto = ?";
-                $stmtStock = $this->conex->prepare($sqlStock);
+                $stmtStock = $this->conex1->prepare($sqlStock);
                 $stmtStock->bindParam(1, $id_producto);
                 $stmtStock->execute();
                 $producto = $stmtStock->fetch(PDO::FETCH_ASSOC);
                 
                 if (!$producto || $producto['stock_disponible'] < $cantidad) {
-                    $this->conex->rollBack();
+                    $this->conex1->rollBack();
                     return ['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Stock insuficiente para: ' . $producto['nombre']];
                 }
                 
                 // Insertar detalle de reserva
                 $sql = "INSERT INTO reserva_detalles (cantidad, precio, id_reserva, id_producto) VALUES (?, ?, ?, ?)";
-                $stmt = $this->conex->prepare($sql);
+                $stmt = $this->conex1->prepare($sql);
                 $stmt->bindParam(1, $cantidad);
                 $stmt->bindParam(2, $precio);
                 $stmt->bindParam(3, $id_reserva);
@@ -108,7 +112,7 @@ function __construct() {
                 
                 // Actualizar el stock del producto
                 $sqlUpdate = "UPDATE productos SET stock_disponible = stock_disponible - ? WHERE id_producto = ?";
-                $stmtUpdate = $this->conex->prepare($sqlUpdate);
+                $stmtUpdate = $this->conex1->prepare($sqlUpdate);
                 $stmtUpdate->bindParam(1, $cantidad);
                 $stmtUpdate->bindParam(2, $id_producto);
                 
@@ -118,12 +122,12 @@ function __construct() {
                 }
             }
             
-            $this->conex->commit();
+            $this->conex1->commit();
             return ['respuesta' => 1, 'accion' => 'incluir', 'mensaje' => 'Reserva registrada correctamente', 'id_reserva' => $id_reserva];
             
             
         } catch (Exception $e) {
-            $this->conex->rollBack();
+            $this->conex1->rollBack();
             return ['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Error: ' . $e->getMessage()];
         }
     }
@@ -132,7 +136,7 @@ function __construct() {
     public function modificar() {
         try {
             $sql = "UPDATE reserva SET fecha_apartado = ?, id_persona = ? WHERE id_reserva = ?";
-            $stmt = $this->conex->prepare($sql);
+            $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->fecha_apartado);
             $stmt->bindParam(2, $this->id_persona);
             $stmt->bindParam(3, $this->id_reserva);
@@ -155,7 +159,7 @@ function __construct() {
             
             // Primero eliminar los detalles asociados a la reserva
             $sql = "DELETE FROM reserva_detalles WHERE id_reserva = ?";
-            $stmt = $this->conex->prepare($sql);
+            $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->id_reserva);
             
             if (!$stmt->execute()) {
@@ -165,19 +169,19 @@ function __construct() {
             
             // Luego eliminar la reserva
             $sql = "DELETE FROM reserva WHERE id_reserva = ?";
-            $stmt = $this->conex->prepare($sql);
+            $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->id_reserva);
             
             if (!$stmt->execute()) {
-                $this->conex->rollBack();
+                $this->conex1->rollBack();
                 return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Error al eliminar la reserva'];
             }
             
-            $this->conex->commit();
+            $this->conex1->commit();
             return ['respuesta' => 1, 'accion' => 'eliminar', 'mensaje' => 'Reserva eliminada correctamente'];
             
         } catch (Exception $e) {
-            $this->conex->rollBack();
+            $this->conex1->rollBack();
             return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Error: ' . $e->getMessage()];
         }
     }
@@ -186,7 +190,7 @@ function __construct() {
     public function eliminarDetalle($id_detalle) {
         try {
             $sql = "DELETE FROM reserva_detalles WHERE id_detalle_reserva = ?";
-            $stmt = $this->conex->prepare($sql);
+            $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $id_detalle);
             
             if ($stmt->execute()) {
@@ -208,7 +212,7 @@ function __construct() {
                  FROM reserva r 
                 INNER JOIN personas p ON r.id_persona = p.id_persona 
                 ORDER BY r.id_reserva DESC";
-                $stmt = $this->conex->prepare($sql);
+                $stmt = $this->conex1->prepare($sql);
                 $stmt->execute();
             
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -221,7 +225,7 @@ function __construct() {
     public function consultarPorId() {
         try {
             $sql = "SELECT * FROM reserva WHERE id_reserva = ?";
-            $stmt = $this->conex->prepare($sql);
+            $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->id_reserva);
             $stmt->execute();
             
@@ -245,7 +249,7 @@ function __construct() {
                    FROM reserva_detalles rd 
                    INNER JOIN productos p ON rd.id_producto = p.id_producto 
                    WHERE rd.id_reserva = ?";
-            $stmt = $this->conex->prepare($sql);
+            $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->id_reserva);
             $stmt->execute();
             
@@ -259,7 +263,7 @@ function __construct() {
     public function obtenerDatosCliente() {
         try {
             $sql = "SELECT nombre, apellido, cedula, correo, telefono FROM personas WHERE id_persona = ?";
-            $stmt = $this->conex->prepare($sql);
+            $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->id_persona);
             $stmt->execute();
             
@@ -273,7 +277,7 @@ function __construct() {
     public function consultarPersonas() {
     try {
         $sql = "SELECT id_persona, nombre, apellido, cedula FROM personas ORDER BY nombre";
-        $stmt = $this->conex->prepare($sql);
+        $stmt = $this->conex1->prepare($sql);
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -287,7 +291,7 @@ function __construct() {
     try {
         $sql = "SELECT id_producto, nombre, descripcion, marca, precio_detal, stock_disponible 
                FROM productos WHERE stock_disponible > 0 ORDER BY nombre";
-        $stmt = $this->conex->prepare($sql);
+        $stmt = $this->conex1->prepare($sql);
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
