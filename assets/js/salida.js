@@ -190,6 +190,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 telefonoEmisor.setAttribute('required', true);
                 banco.setAttribute('required', true);
                 bancoDestino.setAttribute('required', true);
+
+                // Limpiar y configurar las opciones del banco destino
+                bancoDestino.innerHTML = `
+                    <option value="">Seleccione un banco</option>
+                    <option value="0102-Banco De Venezuela">Banco de Venezuela</option>
+                    <option value="0105-Banco Mercantil">Banco Mercantil</option>
+                `;
             } else {
                 camposPagoAdicionales.style.display = 'none';
                 referenciaBancaria.removeAttribute('required');

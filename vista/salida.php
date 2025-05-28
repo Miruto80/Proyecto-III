@@ -87,26 +87,27 @@
                 <?php if(isset($ventas) && !empty($ventas)): ?>
                   <?php foreach($ventas as $venta): ?>
                     <?php
+                    // Array para mapear estados numéricos a texto
+                    $estados_texto = array(
+                        '0' => 'Rechazado',
+                        '1' => 'Pendiente',
+                        '2' => 'Aprobado'
+                    );
+
                     // Determinar el color del badge según el estado
                     $badgeClass = '';
                     switch (strtolower($venta['estado'])) {
-                        case 'entregado':
-                            $badgeClass = 'bg-success';
-                            break;
-                        case 'enviado':
-                            $badgeClass = 'bg-info';
-                            break;
-                        case 'aprobado':
-                            $badgeClass = 'bg-primary';
-                            break;
-                        case 'pendiente':
-                            $badgeClass = 'bg-warning';
-                            break;
-                        case 'rechazado':
-                            $badgeClass = 'bg-danger';
-                            break;
-                        default:
-                            $badgeClass = 'bg-secondary';
+                      case '2':
+                          $badgeClass = 'bg-primary';
+                          break;
+                      case '1':
+                          $badgeClass = 'bg-warning';
+                          break;
+                      case '0':
+                          $badgeClass = 'bg-danger';
+                          break;
+                      default:
+                          $badgeClass = 'bg-secondary';
                     }
                     
                     // Formatear la fecha
@@ -118,7 +119,7 @@
                     <tr>
                       <td><?php echo htmlspecialchars($venta['cliente']); ?></td>
                       <td><?php echo $fecha_formateada; ?></td>
-                      <td><span class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($venta['estado']); ?></span></td>
+                      <td><span class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($estados_texto[$venta['estado']] ?? 'Desconocido'); ?></span></td>
                       <td><?php echo $precio_formateado; ?></td>
                       <td><?php echo htmlspecialchars($venta['metodo_pago'] ?? 'N/A'); ?></td>
                       <td><?php echo htmlspecialchars($venta['metodo_entrega'] ?? 'N/A'); ?></td>
@@ -166,15 +167,20 @@
                 <p><strong>Estado:</strong> <span class="badge <?php 
                   $badgeClass = '';
                   switch (strtolower($venta['estado'])) {
-                    case 'entregado': $badgeClass = 'bg-success'; break;
-                    case 'enviado': $badgeClass = 'bg-info'; break;
-                    case 'aprobado': $badgeClass = 'bg-primary'; break;
-                    case 'pendiente': $badgeClass = 'bg-warning'; break;
-                    case 'rechazado': $badgeClass = 'bg-danger'; break;
-                    default: $badgeClass = 'bg-secondary';
+                    case '2':
+                        $badgeClass = 'bg-primary';
+                        break;
+                    case '1':
+                        $badgeClass = 'bg-warning';
+                        break;
+                    case '0':
+                        $badgeClass = 'bg-danger';
+                        break;
+                    default:
+                        $badgeClass = 'bg-secondary';
                   }
                   echo $badgeClass; 
-                ?>"><?php echo htmlspecialchars($venta['estado']); ?></span></p>
+                ?>"><?php echo htmlspecialchars($estados_texto[$venta['estado']] ?? 'Desconocido'); ?></span></p>
               </div>
               <div class="col-md-6">
                 <h5><strong>Información del Pedido</strong></h5>
@@ -258,11 +264,9 @@
                   <div class="mb-3">
                     <label for="estado_pedido" class="form-label">Estado</label>
                     <select class="form-select" name="estado_pedido" required>
-                      <option value="Pendiente" <?php echo ($venta['estado'] == 'Pendiente') ? 'selected' : ''; ?>>Pendiente</option>
-                      <option value="Aprobado" <?php echo ($venta['estado'] == 'Aprobado') ? 'selected' : ''; ?>>Aprobado</option>
-                      <option value="Rechazado" <?php echo ($venta['estado'] == 'Rechazado') ? 'selected' : ''; ?>>Rechazado</option>
-                      <option value="Enviado" <?php echo ($venta['estado'] == 'Enviado') ? 'selected' : ''; ?>>Enviado</option>
-                      <option value="Entregado" <?php echo ($venta['estado'] == 'Entregado') ? 'selected' : ''; ?>>Entregado</option>
+                      <option value="1" <?php echo ($venta['estado'] == '1') ? 'selected' : ''; ?>>Pendiente</option>
+                      <option value="2" <?php echo ($venta['estado'] == '2') ? 'selected' : ''; ?>>Aprobado</option>
+                      <option value="0" <?php echo ($venta['estado'] == '0') ? 'selected' : ''; ?>>Rechazado</option>
                     </select>
                   </div>
                 </div>
@@ -511,7 +515,7 @@
                   <select class="form-select" name="banco" id="banco" placeholder="Seleccione banco emisor">
                     <option value="">Seleccione banco emisor</option>
                     <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
-                    <option value="0156-100% Banco">0156-100% Banco</option>
+                    <option value="0105-Banco Mercantil">0105-Banco Mercantil</option>
                     <option value="0172-Bancamiga Banco Universal,C.A">0172-Bancamiga Banco Universal,C.A</option>
                     <option value="0114-Bancaribe">0114-Bancaribe</option>
                     <option value="0171-Banco Activo">0171-Banco Activo</option>
@@ -528,14 +532,7 @@
                   <select class="form-select" name="banco_destino" id="banco_destino" placeholder="Seleccione banco receptor">
                     <option value="">Seleccione banco receptor</option>
                     <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
-                    <option value="0156-100% Banco">0156-100% Banco</option>
-                    <option value="0172-Bancamiga Banco Universal,C.A">0172-Bancamiga Banco Universal,C.A</option>
-                    <option value="0114-Bancaribe">0114-Bancaribe</option>
-                    <option value="0171-Banco Activo">0171-Banco Activo</option>
-                    <option value="0166-Banco Agricola De Venezuela">0166-Banco Agricola De Venezuela</option>
-                    <option value="0128-Bancon Caroni">0128-Bancon Caroni</option>
-                    <option value="0163-Banco Del Tesoro">0163-Banco Del Tesoro</option>
-                    <option value="0175-Banco Digital De Los Trabajadores, Banco Universal">0175-Banco Digital De Los Trabajadores, Banco Universal</option>
+                    <option value="0105-Banco Mercantil">0105-Banco Mercantil</option>
                   </select>
                 </div>
               </div>
