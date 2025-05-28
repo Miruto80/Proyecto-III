@@ -1133,9 +1133,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Actualizar total general
+        // Actualizar total general y limpiar total en bolívares
         const totalGeneral = document.getElementById('total-general-venta');
+        const totalBs = document.getElementById('total-general-bs');
         if(totalGeneral) totalGeneral.textContent = '$0.00';
+        if(totalBs) totalBs.textContent = ' (0.00 Bs)';
         
         // Quitar required y clases de validación
         const campos = [nombreInput, apellidoInput, telefonoInput, correoInput, 
@@ -1158,4 +1160,13 @@ document.addEventListener('DOMContentLoaded', function() {
     btnCancelarRegistro.addEventListener('click', function() {
         mostrarModoBusqueda();
     });
+
+    // Evento para el botón reset del formulario
+    if (formVenta) {
+        formVenta.addEventListener('reset', function(e) {
+            setTimeout(() => {
+                mostrarModoBusqueda();
+            }, 0);
+        });
+    }
 }); 
