@@ -182,8 +182,8 @@ nav {
               <?php } ?>
                <?php if($_SESSION["nivel_rol"] == 3) { ?>
               <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
-                <a href="?pagina=home" class="nav-link fw-bold px-4 py-3" style="color:#ff71d8;">
-                <i class="fa-solid fa-share"></i> Volver </a>
+                <a href="?pagina=home" class="nav-link fw-bold px-4 py-3" style="color:#ff0000; font-size: 20px;">
+                <i class="fa-solid fa-share"></i> Volver</a>
               </li>
                 <?php } ?>
              <?php endif; ?>
