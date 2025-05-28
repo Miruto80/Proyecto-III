@@ -39,11 +39,21 @@ if (isset($_POST['registrar'])) {
     }
 
 } else if(isset($_POST['actualizar'])){
+
+   
    $id_persona = $_POST['id_persona'];
    $cedula = $_POST['cedula'];
    $correo = $_POST['correo'];
    $id_rol = $_POST['id_rol'];
-  
+    
+   if($id_persona==1){ 
+        if($id_rol != 1){
+        $res = array('respuesta' => 0, 'accion' => 'actualizar', 'text' => 'No Puedes cambiar el Rol');
+        echo json_encode($res);
+        exit;
+    }      
+   } 
+
 
     $objusuario->set_Id_Usuario($id_persona);
     $objusuario->set_Cedula($cedula); 

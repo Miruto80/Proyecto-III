@@ -60,17 +60,17 @@
                   <tbody id="tipousuarioTableBody">
                     <?php foreach ($registro as $dato): ?>
                     <tr>
-                      <td><?php echo $dato['id_tipo']; ?></td>
+                      <td><?php echo $dato['id_rol']; ?></td>
                       <td><?php echo $dato['nombre']; ?></td>
                       <td><?php echo $dato['nivel']; ?></td>
                       <td><?php echo $dato['estatus']; ?></td>
                       <td>
                         <button type="button" class="btn btn-primary btn-sm modificar" 
-                                onclick="abrirModalModificar(<?php echo $dato['id_tipo']; ?>, '<?php echo $dato['nombre']; ?>', <?php echo $dato['nivel']; ?>, <?php echo $dato['estatus']; ?>)"> 
+                                onclick="abrirModalModificar(<?php echo $dato['id_rol']; ?>, '<?php echo $dato['nombre']; ?>', <?php echo $dato['nivel']; ?>, <?php echo $dato['estatus']; ?>)"> 
                           <i class="fas fa-pencil-alt" title="Editar"> </i> 
                         </button>
                         <button type="button" class="btn btn-danger btn-sm eliminar" 
-                                onclick="eliminarTipoUsuario(<?php echo $dato['id_tipo']; ?>)">
+                                onclick="eliminarTipoUsuario(<?php echo $dato['id_rol']; ?>)">
                           <i class="fas fa-trash-alt" title="Eliminar"> </i>
                         </button>
                       </td>
@@ -106,7 +106,7 @@
               <label>ESTATUS</label>
               <select class="form-control" name="estatus" id="estatus" required>
                 <option value="1">Activo</option>
-                <option value="0">Inactivo</option>
+                <option value="2">Inactivo</option>
               </select> <br>
 
               <div class="text-center">
@@ -144,7 +144,7 @@
               <label>ESTATUS</label>
               <select class="form-control" name="estatus" id="estatus_modificar" required>
                 <option value="1">Activo</option>
-                <option value="0">Inactivo</option>
+                <option value="2">Inactivo</option>
               </select> <br>
 
           </div>
