@@ -2,11 +2,19 @@
 session_start();
 require_once __DIR__ . '/../modelo/verpedidoweb.php';
 $sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
+$carritoEmpty = empty($_SESSION['carrito']);
+
 if (empty($_SESSION['id'])) {
     header("Location: ?pagina=login");
     exit;
+    
 }
 
+if ($carritoEmpty) {
+        require_once 'vista/complementos/carritovacio.php';
+        exit;
+    }
+    
 $venta = new VentaWeb();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

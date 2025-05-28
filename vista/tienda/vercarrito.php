@@ -64,12 +64,23 @@ $total = 0;
       margin-right: 10px;
     }
     </style>
+<?php
+$carritoVacio = empty($_SESSION['carrito']);
+?>
         <!-- Step Indicator -->
         <div class="cart-step">
     <div class="step-number">1</div>
     <div class="current-step"> Carrito de Compras</div>
     <div>→</div>
-    <div><a href="?pagina=verpedidoweb"> 2  Detalles de Compra</a></div>
+
+    <div>
+  <?php if ($carritoVacio): ?>
+    <span style="color: #aaa; pointer-events: none; cursor: default; text-decoration: none;">2 Detalles de Compra</span>
+  <?php else: ?>
+    <a href="?pagina=verpedidoweb">2 Detalles de Compra</a>
+  <?php endif; ?>
+</div>
+
    
     </div>
 
