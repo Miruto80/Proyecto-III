@@ -216,12 +216,12 @@ input[type=checkbox]{
 
 <div class="cart-step">
     <div class="">1</div>
-    <div class="current-step"><a  href="?pagina=vercarrito" class="">
+    <div class="Enlacecarrito"><a  href="?pagina=vercarrito" class="">
           Carrito de Compras
   </a></div>
     <div>→</div>
     <div class="step-number">2</div>
-    <div class=""><a  href="?pagina=verpedidoweb" class="">
+    <div class="current-step"><a  href="?pagina=verpedidoweb" class="">
            Procesar Pago
   </a></div>
     
@@ -362,7 +362,7 @@ input[type=checkbox]{
 
      <div class="col-md-5">
         <div class="right border">
-        <div class="header">Resumen del Pedido</div>
+        <div class="header2">Resumen del Pedido</div>
         <p><?= count($carrito) ?> producto<?= count($carrito) !== 1 ? 's' : '' ?></p>
 
       <?php foreach ($carrito as $item):
