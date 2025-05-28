@@ -98,13 +98,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $accion) {
 
 // Si NO es AJAX, entonces mostramos la vista
 if ($sesion_activa) {
-     if($_SESSION["nivel_rol"] == 1) {
+    if ($_SESSION["nivel_rol"] == 1) {
         if ($carritoEmpty) {
             require_once 'vista/complementos/carritovacio.php';
             exit;
+        } else {
+           
+            require_once 'vista/tienda/vercarrito.php';
+            exit;
         }
-    } else{
+    } else {
         header('Location: ?pagina=catalogo');
+        exit;
     }
 } else {
     header('Location: ?pagina=catalogo');
