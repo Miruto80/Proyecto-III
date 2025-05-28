@@ -226,7 +226,7 @@ $('#btnAyuda').on("click", function () {
         { popover: { title: 'Eso es todo', description: 'Este es el fin de la guía, espero que hayas entendido' }}
     ];
 
-    // Si la URL contiene "catalogo_producto", cambiar el título y la descripción de "section-title"
+    // Si la URL contiene "catalogo_producto", modificar ciertos pasos
     if (currentURL.includes("catalogo_producto")) {
         steps = steps.map(step => {
             if (step.element === '.section-title') {
@@ -242,6 +242,22 @@ $('#btnAyuda').on("click", function () {
             }
             return step;
         });
+    }
+
+    // Si la URL contiene "ver_carrito", mostrar solo los primeros 3 pasos y agregar uno con ".table-light"
+    if (currentURL.includes("vercarrito")) {
+        steps = [
+            { element: '#search-form', popover: { title: 'Buscador', description: 'Aquí puedes buscar cualquier producto de nuestro catálogo', side: "left" }},
+            { element: '[data-bs-target="#cerrar"]', popover: { title: 'Cerrar sesión', description: 'Este botón te permite cerrar sesión en tu cuenta.', side: "left", align: 'start' }},
+            { element: '.table-light', popover: { title: 'Lista del carrito', description: 'Aquí puedes ver los productos que has añadido al carrito.', side: "left", align: 'start' }}
+        ];
+    }
+    if (currentURL.includes("verpedidoweb")) {
+        steps = [
+            { element: '#search-form', popover: { title: 'Buscador', description: 'Aquí puedes buscar cualquier producto de nuestro catálogo', side: "left" }},
+            { element: '[data-bs-target="#cerrar"]', popover: { title: 'Cerrar sesión', description: 'Este botón te permite cerrar sesión en tu cuenta.', side: "left", align: 'start' }},
+            { element: '.col-md-7', popover: { title: 'Datos del pago', description: 'Aquí colocaras los datos del pago movil realizado y despues esperaras a la confirmacion', side: "left", align: 'start' }}
+        ];
     }
 
     const driverObj = new driver({
