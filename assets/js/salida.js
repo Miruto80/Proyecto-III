@@ -94,9 +94,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Variable para controlar si se ha buscado el cliente
+    let clienteBuscado = false;
+
     cedulaInput.addEventListener('input', function() {
         // Limpiar cualquier caracter que no sea número
         this.value = this.value.replace(/[^0-9]/g, '');
+        clienteBuscado = false;
         
         if (this.value.length > 0 && !regexSoloNumeros.test(this.value)) {
             this.setCustomValidity('Solo se permiten números');
@@ -108,6 +112,22 @@ document.addEventListener('DOMContentLoaded', function() {
             this.setCustomValidity('');
             this.classList.remove('is-invalid');
             this.classList.add('is-valid');
+        }
+    });
+
+    // Evento cuando el campo de cédula pierde el foco
+    cedulaInput.addEventListener('focusout', function() {
+        if (this.value.length >= 7 && this.value.length <= 8 && !clienteBuscado) {
+            Swal.fire({
+                icon: 'warning',
+                title: '¡Atención!',
+                text: 'Por favor, presione el botón de buscar para verificar el cliente',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
         }
     });
 
@@ -588,6 +608,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnBuscarCliente) {
         btnBuscarCliente.addEventListener('click', function() {
             const cedula = cedulaInput.value.trim();
+            clienteBuscado = true;
             
             if (cedula.length < 7 || cedula.length > 8) {
                 Swal.fire({
