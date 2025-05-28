@@ -247,16 +247,16 @@ $('#btnAyuda').on("click", function () {
     // Si la URL contiene "ver_carrito", mostrar solo los primeros 3 pasos y agregar uno con ".table-light"
     if (currentURL.includes("vercarrito")) {
         steps = [
-            { element: '#search-form', popover: { title: 'Buscador', description: 'Aquí puedes buscar cualquier producto de nuestro catálogo', side: "left" }},
-            { element: '[data-bs-target="#cerrar"]', popover: { title: 'Cerrar sesión', description: 'Este botón te permite cerrar sesión en tu cuenta.', side: "left", align: 'start' }},
-            { element: '.table-light', popover: { title: 'Lista del carrito', description: 'Aquí puedes ver los productos que has añadido al carrito.', side: "left", align: 'start' }}
+            { element: '.table-light', popover: { title: 'Lista del carrito', description: 'Aquí puedes ver los productos que has añadido al carrito.', side: "left", align: 'start' }},
+            { element: '.Enlacecompra', popover: { title: 'Datos del pago', description: 'Aquí colocaras los datos del pago movil realizado y despues esperaras a la confirmacion', side: "left", align: 'start' }},
         ];
     }
     if (currentURL.includes("verpedidoweb")) {
         steps = [
-            { element: '#search-form', popover: { title: 'Buscador', description: 'Aquí puedes buscar cualquier producto de nuestro catálogo', side: "left" }},
-            { element: '[data-bs-target="#cerrar"]', popover: { title: 'Cerrar sesión', description: 'Este botón te permite cerrar sesión en tu cuenta.', side: "left", align: 'start' }},
-            { element: '.col-md-7', popover: { title: 'Datos del pago', description: 'Aquí colocaras los datos del pago movil realizado y despues esperaras a la confirmacion', side: "left", align: 'start' }}
+            { element: '#formPedido', popover: { title: 'Datos del pago', description: 'Aquí colocaras los datos del pago movil realizado y despues esperaras a la confirmacion', side: "left", align: 'start' }},
+            { element: '.Enlacecarrito', popover: { title: 'Lista del carrito', description: 'Aquí puedes ver los productos que has añadido al carrito.', side: "top", align: 'start' }},
+            { element: '.header2', popover: { title: 'Tu resumen de pedido', description: 'Aqui ves el resumen de compra de los productos con su total y detalles', side: "top", align: 'start' }},
+            { element: '.btn-rp', popover: { title: 'Listo para comprar', description: 'Una vez completado el rellenado', side: "left", align: 'start' }}
         ];
     }
 

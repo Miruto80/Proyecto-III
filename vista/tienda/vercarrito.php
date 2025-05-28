@@ -77,7 +77,7 @@ $carritoVacio = empty($_SESSION['carrito']);
   <?php if ($carritoVacio): ?>
     <span style="color: #aaa; pointer-events: none; cursor: default; text-decoration: none;">2 Detalles de Compra</span>
   <?php else: ?>
-    <a href="?pagina=verpedidoweb">2 Detalles de Compra</a>
+    <a href="?pagina=verpedidoweb" class="Enlacecompra">2 Detalles de Compra</a>
   <?php endif; ?>
 </div>
 
