@@ -231,11 +231,29 @@ function enviaAjax(datos) {
 }
 
 // Eventos keypress y keyup para validar ingreso correcto de caracteres y mostrar mensajes debajo, para registro
-$("#numero_documento").on("keypress", function(e) {
-    validarkeypress(/^[0-9-\b]*$/, e);
-});
-$("#numero_documento").on("keyup", function() {
-    validarkeyup(/^[0-9]{7,9}$/, $(this), $("#snumero_documento"), "Ingrese su cedula");
+// Validar número de documento según el tipo seleccionado
+$("#tipo_documento").on("change", function () {
+    let tipo = $(this).val();
+    let maxDigitos;
+
+    switch (tipo) {
+        case "V":
+            maxDigitos = 8; // Cédula Venezolana
+            break;
+        case "J":
+        case "G":
+            maxDigitos = 10; // RIF Jurídico y Gubernamental
+            break;
+        case "E":
+            maxDigitos = 9; // Cédula Extranjera
+            break;
+        default:
+            maxDigitos = 10; // Valor por defecto
+    }
+
+    $("#numero_documento").attr("maxlength", maxDigitos); // Ajusta dinámicamente el límite
+    $("#numero_documento").val(""); // Limpia el campo para evitar valores erróneos
+    $("#snumero_documento").text(`Ingrese ${maxDigitos} dígitos`);
 });
 
 $("#nombre").on("keypress", function(e) {
@@ -259,6 +277,10 @@ $("#telefono").on("keyup", function() {
     validarkeyup(/^(04|02)[0-9]{9}$/, $(this), $("#stelefono"), "Debe comenzar en 04 o 02 y tener el formato 04xx-XXXXXXX");
 });
 
+$("#numero_documento, #numero_documento_modificar").on("keypress", function(e) {
+    validarkeypress(/^[0-9]*$/, e); // Solo permite números
+});
+
 $("#direccion").on("keypress", function(e) {
     validarkeypress(/^[a-zA-Z0-9\s\#\-\.,]*$/, e);
 });
@@ -267,11 +289,28 @@ $("#direccion").on("keyup", function() {
 });
 
 // Eventos keypress y keyup para modificar (mismos patrones que registro)
-$("#numero_documento_modificar").on("keypress", function(e) {
-    validarkeypress(/^[0-9-\b]*$/, e);
-});
-$("#numero_documento_modificar").on("keyup", function() {
-    validarkeyup(/^[0-9]{7,9}$/, $(this), $("#snumero_documento_modificar"), "Ingrese una cédula válida");
+$("#tipo_documento_modificar").on("change", function () {
+    let tipo = $(this).val();
+    let maxDigitos;
+
+    switch (tipo) {
+        case "V":
+            maxDigitos = 8;
+            break;
+        case "J":
+        case "G":
+            maxDigitos = 10;
+            break;
+        case "E":
+            maxDigitos = 9;
+            break;
+        default:
+            maxDigitos = 10;
+    }
+
+    $("#numero_documento_modificar").attr("maxlength", maxDigitos);
+    $("#numero_documento_modificar").val(""); // Vacía el campo cuando cambia el tipo
+    $("#snumero_documento_modificar").text(`Ingrese ${maxDigitos} dígitos`);
 });
 
 $("#nombre_modificar").on("keypress", function(e) {
@@ -301,6 +340,35 @@ $("#direccion_modificar").on("keypress", function(e) {
 $("#direccion_modificar").on("keyup", function() {
     validarkeyup(/^.{3,70}$/, $(this), $("#sdireccion_modificar"), "La dirección debe tener entre 3 y 70 caracteres");
 });
+
+// Evento para validar número de documento dinámicamente
+$("#numero_documento, #numero_documento_modificar").on("keyup", function() {
+    let tipo = $(this).closest("form").find("[name='tipo_documento']").val();
+    let maxDigitos;
+    let regex;
+
+    switch (tipo) {
+        case "V":
+            maxDigitos = 8;
+            regex = /^[0-9]{8}$/; // Solo permite 8 números
+            break;
+        case "J":
+        case "G":
+            maxDigitos = 10;
+            regex = /^[0-9]{10}$/; // Solo permite 10 números
+            break;
+        case "E":
+            maxDigitos = 9;
+            regex = /^[0-9]{9}$/; // Solo permite 9 números
+            break;
+        default:
+            maxDigitos = 10;
+            regex = /^[0-9]{7,10}$/; // Solo permite números dentro del rango
+    }
+
+    validarkeyup(regex, $(this), $(this).siblings("span"), `Debe ingresar ${maxDigitos} dígitos numéricos`);
+});
+
 
 // Función para validar por keypress - permite solo caracteres que pasen la regex
 function validarkeypress(er, e) {
