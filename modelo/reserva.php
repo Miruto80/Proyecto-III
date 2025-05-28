@@ -62,7 +62,7 @@ function __construct() {
     // Registrar reserva y sus detalles
     public function registrar($productos, $cantidades, $precios_unit) {
         try {
-            $this->conex->beginTransaction();
+            $this->conex1->beginTransaction();
             
             // Insertar encabezado de reserva
            $sql = "INSERT INTO reserva (fecha_apartado, id_persona) VALUES (?, ?)";
@@ -107,7 +107,7 @@ function __construct() {
                 $stmt->bindParam(4, $id_producto);
                 
                 if (!$stmt->execute()) {
-                    $this->conex->rollBack();
+                    $this->conex1->rollBack();
                     return ['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Error al registrar los detalles'];
                 }
                 
@@ -118,7 +118,7 @@ function __construct() {
                 $stmtUpdate->bindParam(2, $id_producto);
                 
                 if (!$stmtUpdate->execute()) {
-                    $this->conex->rollBack();
+                    $this->conex1->rollBack();
                     return ['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Error al actualizar el stock'];
                 }
             }
@@ -156,7 +156,7 @@ function __construct() {
     // Eliminar reserva y sus detalles
     public function eliminar() {
         try {
-            $this->conex->beginTransaction();
+            $this->conex1->beginTransaction();
             
             // Primero eliminar los detalles asociados a la reserva
             $sql = "DELETE FROM reserva_detalles WHERE id_reserva = ?";
@@ -164,7 +164,7 @@ function __construct() {
             $stmt->bindParam(1, $this->id_reserva);
             
             if (!$stmt->execute()) {
-                $this->conex->rollBack();
+                $this->conex1->rollBack();
                 return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Error al eliminar los detalles'];
             }
             
@@ -211,7 +211,7 @@ function __construct() {
             $sql = "SELECT r.id_reserva, r.fecha_apartado, 
                 p.nombre, p.apellido, p.id_persona 
                  FROM reserva r 
-                INNER JOIN personas p ON r.id_persona = p.id_persona 
+                INNER JOIN cliente p ON r.id_persona = p.id_persona 
                 ORDER BY r.id_reserva DESC";
                 $stmt = $this->conex1->prepare($sql);
                 $stmt->execute();
@@ -263,7 +263,7 @@ function __construct() {
     // Obtener datos del cliente asociado a la reserva
     public function obtenerDatosCliente() {
         try {
-            $sql = "SELECT nombre, apellido, cedula, correo, telefono FROM personas WHERE id_persona = ?";
+            $sql = "SELECT nombre, apellido, cedula, correo, telefono FROM cliente WHERE id_persona = ?";
             $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->id_persona);
             $stmt->execute();
@@ -277,7 +277,7 @@ function __construct() {
     // Consultar todas las personas disponibles para asociar a una reserva
     public function consultarPersonas() {
     try {
-        $sql = "SELECT id_persona, nombre, apellido, cedula FROM personas ORDER BY nombre";
+        $sql = "SELECT id_persona, nombre, apellido, cedula FROM cliente ORDER BY nombre";
         $stmt = $this->conex1->prepare($sql);
         $stmt->execute();
         
