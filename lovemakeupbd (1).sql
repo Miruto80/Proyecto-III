@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-05-2025 a las 17:14:00
+-- Tiempo de generación: 28-05-2025 a las 22:03:07
 -- Versión del servidor: 10.4.18-MariaDB
 -- Versión de PHP: 8.0.3
 
@@ -61,6 +61,13 @@ CREATE TABLE `cliente` (
   `rol` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Volcado de datos para la tabla `cliente`
+--
+
+INSERT INTO `cliente` (`id_persona`, `cedula`, `nombre`, `apellido`, `correo`, `telefono`, `clave`, `estatus`, `rol`) VALUES
+(1, '30665005', 'Dilmar', 'Vasquez', 'dilmar@gmail.com', '0412-1393064', 'PMnB24j7u8KxS3O3RLflx1NXZTZ2eld0WXkwZklhT3p5bm5VNlE9PQ==', 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -97,9 +104,7 @@ CREATE TABLE `compra_detalles` (
 CREATE TABLE `lista_deseo` (
   `id_lista` int(11) NOT NULL,
   `id_persona` int(11) NOT NULL,
-  `id_producto` int(11) NOT NULL,
-  `nombre` varchar(150) COLLATE utf8mb4_spanish2_ci NOT NULL,
-  `detalle` varchar(150) COLLATE utf8mb4_spanish2_ci NOT NULL
+  `id_producto` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
 
 -- --------------------------------------------------------
@@ -120,7 +125,9 @@ CREATE TABLE `metodo_entrega` (
 --
 
 INSERT INTO `metodo_entrega` (`id_entrega`, `nombre`, `descripcion`, `estatus`) VALUES
-(1, 'Delivery', 'Barquisimeto', 1);
+(1, 'Delivery', 'Barquisimeto', 1),
+(2, 'MRW', 'Envió nacionales', 1),
+(3, 'ZOOM', 'Envio nacionales', 1);
 
 -- --------------------------------------------------------
 
@@ -406,7 +413,7 @@ ALTER TABLE `categoria`
 -- AUTO_INCREMENT de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `compra`
@@ -421,10 +428,16 @@ ALTER TABLE `compra_detalles`
   MODIFY `id_detalle_compra` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `lista_deseo`
+--
+ALTER TABLE `lista_deseo`
+  MODIFY `id_lista` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `metodo_entrega`
 --
 ALTER TABLE `metodo_entrega`
-  MODIFY `id_entrega` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_entrega` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `metodo_pago`
