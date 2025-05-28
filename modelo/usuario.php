@@ -151,7 +151,7 @@ class Usuario extends Conexion
 
     public function get_Nombre()
     {
-        return $this->nombres;
+        return $this->nombre;
     }
 
     public function set_Nombre($nombre)
@@ -197,7 +197,7 @@ class Usuario extends Conexion
 
     public function get_Id_rol()
     {
-        return $this->tipo_usuario;
+        return $this->id_rol;
     }
     public function set_Id_rol($id_rol)
     {
