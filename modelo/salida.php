@@ -35,7 +35,7 @@ class Salida extends Conexion {
             // Insertamos la cabecera del pedido
             $registro = "INSERT INTO pedido(tipo, fecha, estado, precio_total, referencia_bancaria, 
                         telefono_emisor, banco, banco_destino, direccion, id_entrega, id_metodopago, id_persona) 
-                        VALUES ('2', NOW(), 'Pendiente', :precio_total, :referencia_bancaria, 
+                        VALUES ('2', NOW(), '1', :precio_total, :referencia_bancaria, 
                         :telefono_emisor, :banco, :banco_destino, :direccion, :id_entrega, :id_metodopago, :id_persona)";
             
             $strExec = $this->conex->prepare($registro);

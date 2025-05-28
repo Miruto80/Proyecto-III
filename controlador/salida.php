@@ -134,12 +134,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_venta'])) {
             if (!isset($_POST['referencia_bancaria']) || !isset($_POST['telefono_emisor']) || !isset($_POST['banco'])) {
                 throw new Exception('Faltan datos del pago móvil');
             }
+            
+            // Validar que el banco destino sea uno de los permitidos
+            if (!isset($_POST['banco_destino']) || 
+                !in_array($_POST['banco_destino'], ['0102-Banco De Venezuela', '0105-Banco Mercantil'])) {
+                throw new Exception('Banco receptor no válido');
+            }
+            
             $salida->set_Referencia_bancaria(sanitizar($_POST['referencia_bancaria']));
             $salida->set_Telefono_emisor(sanitizar($_POST['telefono_emisor']));
             $salida->set_Banco(sanitizar($_POST['banco']));
-            if (isset($_POST['banco_destino'])) {
-                $salida->set_Banco_destino(sanitizar($_POST['banco_destino']));
-            }
+            $salida->set_Banco_destino(sanitizar($_POST['banco_destino']));
         }
 
         // Configurar dirección si existe
