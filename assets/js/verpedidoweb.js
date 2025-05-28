@@ -84,7 +84,7 @@ document.getElementById('btn-guardar-pedido').addEventListener('click', async ()
         muestraMensaje("success", 2000, "Su Pedido se ha registrado con éxito");
 
         setTimeout(() => {
-            location.reload();
+            window.location.href = '?pagina=catalogo_pedido';
         }, 1000);
 
     } catch (err) {

@@ -76,6 +76,25 @@ class VentaWeb {
         }
     }
 
+    public function validarStockCarrito($carrito) {
+        foreach ($carrito as $item) {
+            $stmt = $this->conex->prepare("SELECT stock_disponible FROM productos WHERE id_producto = :id_producto");
+            $stmt->bindParam(':id_producto', $item['id'], PDO::PARAM_INT);
+            $stmt->execute();
+            $stock = $stmt->fetchColumn();
+    
+            if ($stock === false) {
+                throw new Exception("Producto con ID {$item['id']} no encontrado.");
+            }
+    
+            if ($item['cantidad'] > $stock) {
+                throw new Exception("No hay suficiente stock para el producto: {$item['nombre']} (Disponible: $stock, Solicitado: {$item['cantidad']})");
+            }
+        }
+    
+        return true; 
+    }
+
     public function registrarDetalle() {
         try {
             $sql = "INSERT INTO pedido_detalles (id_pedido, id_producto, cantidad, precio_unitario)

@@ -263,12 +263,19 @@
 
 
 
+   
+            <div style="text-align: center; margin-top: 20px;">
+              <h3>Top 5 Proveedores con Más Compras</h3>
+            </div>
 
-              <!-- Mostrar gráfica sin afectar los botones -->
-              <div style="text-align:center; margin-top:20px;">
-                <img src="controlador/grafico_proveedores.png" alt="Gráfico de pastel de proveedores">
-              </div>
-
+              <!-- Mostrar gráfica-->
+            <div style="text-align:center; margin-top:20px;">
+              <?php if (file_exists("assets/img/grafico_proveedores.png")): ?>
+                <img src="assets/img/grafico_proveedores.png" alt="Gráfico de pastel de proveedores">
+              <?php else: ?>
+                <p>No hay datos suficientes para generar un gráfico.</p>
+              <?php endif; ?>
+            </div>
 
 
 

@@ -36,13 +36,6 @@ if(isset($_POST['generar'])){
     exit; // Evitar que se cargue la vista después del PDF
 }
 
-
-
-
-
-
-
-
 // Generar gráfico antes de cargar la vista
 function generarGrafico() {
     require_once ('assets/js/jpgraph/src/jpgraph.php');
@@ -52,15 +45,30 @@ function generarGrafico() {
     $db = new Conexion();
     $conex = $db->Conex();
 
-    // Obtener los datos de proveedores
-    $SQL = "SELECT pr.nombre, COUNT(c.id_compra) AS total_compras
-            FROM compra c
-            JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
-            GROUP BY pr.nombre
-            ORDER BY total_compras DESC
-            LIMIT 5";
-    $stmt = $conex->prepare($SQL);
-    $stmt->execute();
+// Obtener la cantidad total de proveedores activos con compras
+$SQL = "SELECT COUNT(DISTINCT pr.id_proveedor) AS total_activos
+        FROM compra c
+        JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
+        WHERE pr.estatus = 1";
+
+$stmt = $conex->prepare($SQL);
+$stmt->execute();
+$totalActivos = $stmt->fetch(PDO::FETCH_ASSOC)['total_activos'];
+
+// Determinar el límite dinámico (máximo 5)
+$limite = ($totalActivos >= 5) ? 5 : $totalActivos;
+
+// Consulta ajustada para obtener el top dinámico
+$SQL = "SELECT pr.nombre, COUNT(c.id_compra) AS total_compras
+        FROM compra c
+        JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
+        WHERE pr.estatus = 1
+        GROUP BY pr.nombre
+        ORDER BY total_compras DESC
+        LIMIT $limite";
+
+$stmt = $conex->prepare($SQL);
+$stmt->execute();
 
     $data = [];
     $labels = [];
@@ -72,7 +80,6 @@ function generarGrafico() {
 
     // Crear el gráfico
     $graph = new PieGraph(900, 500);
-    $graph->title->Set("Top 5 Proveedores con Más Compras");
 
     $p1 = new PiePlot3D($data);
     $p1->SetLegends($labels);
@@ -83,14 +90,32 @@ function generarGrafico() {
 
     $graph->Add($p1);
 
-// Eliminar la imagen antes de crear una nueva
-$imagePath = __DIR__ . "/grafico_proveedores.png";
-if (file_exists($imagePath)) {
-    unlink($imagePath); // Borra la imagen anterior
+
+// Ruta de la nueva ubicación de la imagen
+$imagePath = __DIR__ . "/../assets/img/grafico_proveedores.png";
+
+
+// Verificar si la carpeta img existe, si no, crearla
+$imgDir = __DIR__ . "/../img/";
+if (!file_exists($imgDir)) {
+    mkdir($imgDir, 0777, true); // Crear la carpeta con permisos adecuados
 }
 
-// Generar el nuevo gráfico
+// Eliminar la imagen anterior antes de generar una nueva
+if (file_exists($imagePath)) {
+    unlink($imagePath);
+}
+
+// Verificar si hay datos antes de generar el gráfico
+if (empty($data) || array_sum($data) == 0) {
+    // No generar la imagen si no hay datos
+    return;
+}
+
+// Generar la nueva imagen en la carpeta img
 $graph->Stroke($imagePath);
+
+
 
 }
 
