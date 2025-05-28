@@ -50,7 +50,7 @@ class tipousuario extends Conexion {
     }
 
     public function eliminar() {
-        $registro = "DELETE FROM rol_usuario WHERE id_tipo = :id_tipo";
+        $registro = "UPDATE rol_usuario SET estatus = 0 WHERE id_rol = :id_tipo";
         $strExec = $this->conex2->prepare($registro);
         $strExec->bindParam(':id_tipo', $this->id_tipo);
         $resul = $strExec->execute();
@@ -58,7 +58,7 @@ class tipousuario extends Conexion {
     }
 
     public function consultar() {
-        $registro = "SELECT * FROM rol_usuario";
+        $registro = "SELECT * FROM rol_usuario WHERE estatus >=1";
         $consulta = $this->conex2->prepare($registro);
         $resul = $consulta->execute();
         return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];

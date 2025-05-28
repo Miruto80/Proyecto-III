@@ -50,6 +50,13 @@ if (isset($_POST['registrar'])) {
 } elseif (isset($_POST['eliminar'])) {
     // Si se presiona el botón para eliminar un tipo de usuario
     if (!empty($_POST['id_tipo'])) {
+
+        if($_POST['id_tipo'] == 1){
+             $res = array('respuesta' => 0, 'accion' => 'eliminar');
+             echo json_encode($res);
+             exit;
+        }
+
         $objtipousuario->set_Id_tipo($_POST['id_tipo']);
         $result = $objtipousuario->eliminar();
 
