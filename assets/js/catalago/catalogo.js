@@ -263,6 +263,7 @@ $('#btnAyuda').on("click", function () {
     const driverObj = new driver({
         nextBtnText: 'Siguiente',
         prevBtnText: 'Anterior',
+        doneBtnText: 'Listo',
         popoverClass: 'driverjs-theme',
         modal: true,
         closeBtn: false,
