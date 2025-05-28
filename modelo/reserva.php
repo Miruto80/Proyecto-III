@@ -13,7 +13,7 @@ function __construct() {
 
         // Obtener las conexiones de la clase padre
         $this->conex1 = $this->getConex1();
-        $this->conex2 = $this->getConex2()
+        $this->conex2 = $this->getConex2();
         $this->id_reserva = 0;
         $this->fecha_apartado = '';
         $this->id_persona = 0;
@@ -203,8 +203,8 @@ function __construct() {
             return ['respuesta' => 0, 'accion' => 'eliminar_detalle', 'mensaje' => 'Error: ' . $e->getMessage()];
         }
     }
-    
-    // Consultar todas las reservas
+    //sdifsd
+    // Consultar todas las reservas 
     public function consultarTodos() {
         try {
             $sql = "SELECT r.id_reserva, r.fecha_apartado, 

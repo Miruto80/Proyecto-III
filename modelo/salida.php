@@ -2,7 +2,8 @@
 require_once 'conexion.php';
 
 class Salida extends Conexion {
-    private $conex;
+    private $conex1;
+    private $conex2;
     private $id_pedido;
     private $tipo;
     private $fecha;
@@ -19,13 +20,16 @@ class Salida extends Conexion {
     private $detalles; // Para almacenar los detalles del pedido (productos)
 
     function __construct() {
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->Conex();
+         parent::__construct(); // Llama al constructor de la clase padre
+
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
     }
 
     public function registrar() {
         try {
-            $this->conex->beginTransaction();
+            $this->conex1->beginTransaction();
             
             // Validación de datos antes de insertar
             if (empty($this->id_persona) || empty($this->id_metodopago) || empty($this->id_entrega) || empty($this->detalles)) {
@@ -38,7 +42,7 @@ class Salida extends Conexion {
                         VALUES ('1', NOW(), '1', :precio_total, :referencia_bancaria, 
                         :telefono_emisor, :banco, :banco_destino, :direccion, :id_entrega, :id_metodopago, :id_persona)";
             
-            $strExec = $this->conex->prepare($registro);
+            $strExec = $this->conex1->prepare($registro);
             $strExec->bindValue(':precio_total', $this->precio_total);
             $strExec->bindValue(':referencia_bancaria', $this->referencia_bancaria);
             $strExec->bindValue(':telefono_emisor', $this->telefono_emisor);
@@ -76,7 +80,7 @@ class Salida extends Conexion {
                 
                 $registro_detalle = "INSERT INTO pedido_detalles(cantidad, precio_unitario, id_pedido, id_producto) 
                                    VALUES (:cantidad, :precio_unitario, :id_pedido, :id_producto)";
-                $strExecDetalle = $this->conex->prepare($registro_detalle);
+                $strExecDetalle = $this->conex1->prepare($registro_detalle);
                 $strExecDetalle->bindValue(':cantidad', $detalle['cantidad']);
                 $strExecDetalle->bindValue(':precio_unitario', $detalle['precio_unitario']);
                 $strExecDetalle->bindValue(':id_pedido', $id_pedido);
@@ -100,12 +104,12 @@ class Salida extends Conexion {
                 }
             }
             
-            $this->conex->commit();
+            $this->conex1->commit();
             return ['respuesta' => 1, 'accion' => 'incluir', 'id_pedido' => $id_pedido];
             
         } catch (Exception $e) {
-            if ($this->conex->inTransaction()) {
-                $this->conex->rollBack();
+            if ($this->conex1->inTransaction()) {
+                $this->conex1->rollBack();
             }
             return ['respuesta' => 0, 'accion' => 'incluir', 'error' => $e->getMessage()];
         }
@@ -113,7 +117,7 @@ class Salida extends Conexion {
 
     public function modificar() {
         try {
-            $this->conex->beginTransaction();
+            $this->conex1->beginTransaction();
             
             // Validar que exista el pedido
             $pedido_existe = $this->consultarPedido($this->id_pedido);
@@ -123,23 +127,23 @@ class Salida extends Conexion {
             
             // Actualizamos el estado del pedido
             $registro = "UPDATE pedido SET estado = :estado WHERE id_pedido = :id_pedido";
-            $strExec = $this->conex->prepare($registro);
+            $strExec = $this->conex1->prepare($registro);
             $strExec->bindParam(':estado', $this->estado);
             $strExec->bindParam(':id_pedido', $this->id_pedido);
             $resul = $strExec->execute();
             
             if (!$resul) {
-                $this->conex->rollBack();
+                $this->conex1->rollBack();
                 $error = $strExec->errorInfo();
                 return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $error[2]];
             }
             
-            $this->conex->commit();
+            $this->conex1->commit();
             return ['respuesta' => 1, 'accion' => 'actualizar'];
             
         } catch (Exception $e) {
-            if ($this->conex->inTransaction()) {
-                $this->conex->rollBack();
+            if ($this->conex1->inTransaction()) {
+                $this->conex1->rollBack();
             }
             return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $e->getMessage()];
         }
@@ -147,7 +151,7 @@ class Salida extends Conexion {
 
     public function eliminar() {
         try {
-            $this->conex->beginTransaction();
+            $this->conex1->beginTransaction();
             
             // Validar que exista el pedido
             $pedido_existe = $this->consultarPedido($this->id_pedido);
@@ -168,7 +172,7 @@ class Salida extends Conexion {
                 $resulStock = $strExecStock->execute();
                 
                 if (!$resulStock) {
-                    $this->conex->rollBack();
+                    $this->conex1->rollBack();
                     $error = $strExecStock->errorInfo();
                     return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $error[2]];
                 }
@@ -181,7 +185,7 @@ class Salida extends Conexion {
             $resulEliminar = $strExecEliminar->execute();
             
             if (!$resulEliminar) {
-                $this->conex->rollBack();
+                $this->conex1->rollBack();
                 $error = $strExecEliminar->errorInfo();
                 return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $error[2]];
             }
@@ -193,7 +197,7 @@ class Salida extends Conexion {
             $resulEliminarCab = $strExecEliminarCab->execute();
             
             if (!$resulEliminarCab) {
-                $this->conex->rollBack();
+                $this->conex1->rollBack();
                 $error = $strExecEliminarCab->errorInfo();
                 return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $error[2]];
             }
@@ -220,7 +224,7 @@ class Salida extends Conexion {
                         JOIN metodo_entrega me ON p.id_entrega = me.id_entrega 
                         WHERE p.tipo = '1' 
                         ORDER BY p.id_pedido DESC";
-            $consulta = $this->conex->prepare($registro);
+            $consulta = $this->conex1->prepare($registro);
             $resul = $consulta->execute();
             
             if (!$resul) {
@@ -241,7 +245,7 @@ class Salida extends Conexion {
                         FROM pedido_detalles pd 
                         JOIN productos p ON pd.id_producto = p.id_producto 
                         WHERE pd.id_pedido = :id_pedido";
-            $consulta = $this->conex->prepare($registro);
+            $consulta = $this->conex1->prepare($registro);
             $consulta->bindParam(':id_pedido', $id_pedido);
             $resul = $consulta->execute();
             
@@ -262,7 +266,7 @@ class Salida extends Conexion {
                         FROM pedido p 
                         JOIN personas per ON p.id_persona = per.id_persona 
                         WHERE p.id_pedido = :id_pedido";
-            $consulta = $this->conex->prepare($registro);
+            $consulta = $this->conex1->prepare($registro);
             $consulta->bindParam(':id_pedido', $id_pedido);
             $resul = $consulta->execute();
             
@@ -282,7 +286,7 @@ class Salida extends Conexion {
             $registro = "SELECT id_persona, cedula, nombre, apellido, correo, telefono 
                         FROM personas 
                         WHERE cedula = :cedula AND estatus = 1";
-            $consulta = $this->conex->prepare($registro);
+            $consulta = $this->conex1->prepare($registro);
             $consulta->bindParam(':cedula', $cedula);
             $resul = $consulta->execute();
             
@@ -300,7 +304,7 @@ class Salida extends Conexion {
     private function verificarStock($id_producto) {
         try {
             $query = "SELECT stock_disponible FROM productos WHERE id_producto = :id_producto AND estatus = 1";
-            $consulta = $this->conex->prepare($query);
+            $consulta = $this->conex1->prepare($query);
             $consulta->bindParam(':id_producto', $id_producto);
             $consulta->execute();
             
