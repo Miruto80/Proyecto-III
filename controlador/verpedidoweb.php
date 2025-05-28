@@ -35,6 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'precio_total' => $_POST['precio_total'] ?? '0',
             'tipo' => $_POST['tipo'] ?? '2',
         ];
+         $carrito = $_SESSION['carrito'] ?? [];
+         
+        $venta->validarStockCarrito($carrito);
 
         $venta->set_Datos($datosPedido);
         $id_pedido = $venta->registrarPedido();
@@ -44,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // 2. Registrar detalles y preliminar
-        $carrito = $_SESSION['carrito'] ?? [];
+       
 
         foreach ($carrito as $item) {
             $detalle = [
