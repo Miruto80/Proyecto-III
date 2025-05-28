@@ -15,28 +15,16 @@ $categorias = $catalogo->obtenerCategorias();
 
 
 if (isset($_GET['busqueda']) && !empty(trim($_GET['busqueda']))) {
-    // Si se realiza una búsqueda, ignora categoría
+    
     $registro = $catalogo->buscarProductos($_GET['busqueda']);
 } elseif (isset($_GET['categoria'])) {
-    // Si no hay búsqueda, pero sí categoría
+
     $registro = $catalogo->obtenerPorCategoria($_GET['categoria']);
 } else {
-    // Si no hay ni búsqueda ni categoría, muestra todo
+   
     $registro = $catalogo->obtenerProductosActivos();
 }
 
-    // Verifica si la consulta está retornando productos
-   
-
-
-
-    // Si todo es correcto, carga la vista de catálogo
      require_once('vista/tienda/catalogo_producto.php');
     exit;
-
-   
-
-
-// Aquí se puede cargar otras vistas si no es 'catalogo'
-
 ?>

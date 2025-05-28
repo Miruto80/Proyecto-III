@@ -28,7 +28,7 @@ class Catalogo extends Conexion {
     
 
     public function obtenerProductosActivos() {
-        $sql = "SELECT * FROM productos WHERE estatus = 1";  // Filtra por productos activos (estatus = 1)
+        $sql = "SELECT * FROM productos WHERE estatus = 1";
         $consulta = $this->conex1->prepare($sql);
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_ASSOC);
