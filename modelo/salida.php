@@ -416,7 +416,7 @@ class Salida extends Conexion {
     public function registrarCliente($datos) {
         try {
             $consulta = "INSERT INTO personas (cedula, nombre, apellido, telefono, correo, id_tipo, estatus) 
-                         VALUES (:cedula, :nombre, :apellido, :telefono, :correo, 1, 1)";
+                         VALUES (:cedula, :nombre, :apellido, :telefono, :correo, 2, 1)";
             
             $stmt = $this->conex->prepare($consulta);
             $stmt->bindParam(':cedula', $datos['cedula']);

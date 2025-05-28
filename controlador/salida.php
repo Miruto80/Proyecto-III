@@ -63,55 +63,53 @@ if (isset($_POST['buscar_cliente'])) {
 
 // Procesar el registro de nuevo cliente
 if (isset($_POST['registrar_cliente'])) {
-    if (esAjax()) {
-        header('Content-Type: application/json');
-        
-        try {
-            // Validar datos del cliente
-            $cedula = sanitizar($_POST['cedula']);
-            $nombre = sanitizar($_POST['nombre']);
-            $apellido = sanitizar($_POST['apellido']);
-            $telefono = sanitizar($_POST['telefono']);
-            $correo = sanitizar($_POST['correo']);
+    header('Content-Type: application/json; charset=utf-8');
+    
+    try {
+        // Validar datos del cliente
+        $cedula = sanitizar($_POST['cedula']);
+        $nombre = sanitizar($_POST['nombre']);
+        $apellido = sanitizar($_POST['apellido']);
+        $telefono = sanitizar($_POST['telefono']);
+        $correo = sanitizar($_POST['correo']);
 
-            // Verificar si la cédula ya existe
-            if ($salida->existeCedula($cedula)) {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'La cédula ya está registrada'
-                ]);
-                exit;
-            }
-
-            // Registrar el nuevo cliente
-            $id_cliente = $salida->registrarCliente([
-                'cedula' => $cedula,
-                'nombre' => $nombre,
-                'apellido' => $apellido,
-                'telefono' => $telefono,
-                'correo' => $correo
-            ]);
-
-            if ($id_cliente) {
-                echo json_encode([
-                    'success' => true,
-                    'id_cliente' => $id_cliente,
-                    'message' => 'Cliente registrado exitosamente'
-                ]);
-            } else {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Error al registrar el cliente'
-                ]);
-            }
-        } catch (Exception $e) {
+        // Verificar si la cédula ya existe
+        if ($salida->existeCedula($cedula)) {
             echo json_encode([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
+                'message' => 'La cédula ya está registrada'
+            ]);
+            exit;
+        }
+
+        // Registrar el nuevo cliente
+        $id_cliente = $salida->registrarCliente([
+            'cedula' => $cedula,
+            'nombre' => $nombre,
+            'apellido' => $apellido,
+            'telefono' => $telefono,
+            'correo' => $correo
+        ]);
+
+        if ($id_cliente) {
+            echo json_encode([
+                'success' => true,
+                'id_cliente' => $id_cliente,
+                'message' => 'Cliente registrado exitosamente'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error al registrar el cliente'
             ]);
         }
-        exit;
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ]);
     }
+    exit;
 }
 
 // Procesar el registro de una nueva venta

@@ -710,10 +710,22 @@ document.addEventListener('DOMContentLoaded', function() {
                         body: clienteData
                     });
 
-                    const clienteResult = await response.json();
+                    const responseText = await response.text();
                     
-                    if (!clienteResult.success) {
-                        throw new Error(clienteResult.message || 'Error al registrar el cliente');
+                    // Depuración
+                    console.log('Respuesta del servidor:', responseText);
+                    
+                    let clienteResult;
+                    try {
+                        clienteResult = JSON.parse(responseText);
+                    } catch (e) {
+                        console.error('Error al parsear JSON:', e);
+                        console.error('Respuesta recibida:', responseText);
+                        throw new Error('Error al procesar la respuesta del servidor');
+                    }
+
+                    if (!clienteResult || !clienteResult.success) {
+                        throw new Error(clienteResult?.message || 'Error al registrar el cliente');
                     }
 
                     // Asignar el ID del cliente nuevo
