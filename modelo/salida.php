@@ -368,7 +368,7 @@ class Salida extends Conexion {
             $query = "SELECT id_producto, nombre, descripcion, marca, precio_detal, stock_disponible 
                      FROM productos 
                      WHERE estatus = 1 AND stock_disponible > 0";
-            $consulta = $this->conex->prepare($query);
+            $consulta = $this->conex1->prepare($query);
             $consulta->execute();
             
             return $consulta->fetchAll(PDO::FETCH_ASSOC);
@@ -382,7 +382,7 @@ class Salida extends Conexion {
             $query = "SELECT id_metodopago, nombre, descripcion 
                      FROM metodo_pago 
                      WHERE estatus = 1";
-            $consulta = $this->conex->prepare($query);
+            $consulta = $this->conex1->prepare($query);
             $consulta->execute();
             
             return $consulta->fetchAll(PDO::FETCH_ASSOC);
@@ -396,7 +396,7 @@ class Salida extends Conexion {
             $query = "SELECT id_entrega, nombre, descripcion 
                      FROM metodo_entrega 
                      WHERE estatus = 1";
-            $consulta = $this->conex->prepare($query);
+            $consulta = $this->conex1->prepare($query);
             $consulta->execute();
             
             return $consulta->fetchAll(PDO::FETCH_ASSOC);
@@ -408,7 +408,7 @@ class Salida extends Conexion {
     public function existeCedula($cedula) {
         try {
             $consulta = "SELECT cedula FROM personas WHERE cedula = :cedula";
-            $stmt = $this->conex->prepare($consulta);
+            $stmt = $this->conex1->prepare($consulta);
             $stmt->bindParam(':cedula', $cedula);
             $stmt->execute();
             return $stmt->rowCount() > 0;
@@ -430,7 +430,7 @@ class Salida extends Conexion {
             $stmt->bindParam(':correo', $datos['correo']);
             
             if ($stmt->execute()) {
-                return $this->conex->lastInsertId();
+                return $this->conex1->lastInsertId();
             }
             return false;
         } catch (Exception $e) {
