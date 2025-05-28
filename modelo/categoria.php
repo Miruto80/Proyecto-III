@@ -2,6 +2,7 @@
 require_once 'conexion.php';
 class categoria extends Conexion {
     private $conex1;
+    private $conex2;
     private $nombre;
     private $id_categoria;
     public function __construct() {
