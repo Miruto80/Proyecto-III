@@ -6,59 +6,69 @@ require_once 'modelo/login.php';
 
 $objlogin = new Login();
 
-if (isset($_POST['ingresar'])) {
+ if (isset($_POST['ingresar'])) {
     if (!empty($_POST['usuario']) && !empty($_POST['clave'])) {
         $cedula = $_POST['usuario'];
         $clave = $_POST['clave'];
 
-        $objlogin->set_Cedula($cedula );
-        $objlogin->set_Clave( $clave);
-       
+        // Intentar con la base de datos de usuarios administrativos
+        $objlogin->set_Cedula($cedula);
+        $objlogin->set_Clave($clave);
         $resultado = $objlogin->verificarUsuario();
-        if ($resultado) {
-            if (in_array($resultado->estatus, [1, 2, 3])) { // Permitir estatus 1, 2 y 3
 
+        // Si no hay coincidencias, intentamos con la base de datos de clientes
+        if (!$resultado) {
+            $resultado = $objlogin->verificarCliente();
+        }
+
+        if ($resultado) {
+            if (in_array($resultado->estatus, [1, 2, 3])) {
+                
                 $_SESSION["id"] = $resultado->id_persona;
                 $_SESSION["nombre"] = $resultado->nombre;
                 $_SESSION["apellido"] = $resultado->apellido;
-             
-                $_SESSION['id_rol'] = $resultado->id_tipo;
-                $_SESSION["nivel_rol"] = $resultado->nivel;
-                $_SESSION['nombre_usuario'] = $resultado->nombre_usuario; 
                 
+                // Si el nivel de rol no está definido, asignar el valor por defecto (1)
+                $_SESSION["nivel_rol"] = isset($resultado->nivel) ? $resultado->nivel : 1;
+
+                $_SESSION['nombre_usuario'] = isset($resultado->nombre_usuario) ? $resultado->nombre_usuario :'Cliente';
                 $_SESSION["cedula"] = $resultado->cedula;
                 $_SESSION["telefono"] = $resultado->telefono;
                 $_SESSION["correo"] = $resultado->correo;
-                $_SESSION["estatus"] = $resultado->estatus;      
+                $_SESSION["estatus"] = $resultado->estatus;
 
                 // Registrar en la bitácora
                 $accion = 'Inicio de sesión';
                 $descripcion = 'El usuario ha iniciado sesión exitosamente.';
                 $objlogin->registrarBitacora($resultado->id_persona, $accion, $descripcion);  
 
-                 // Verificar el nivel de rol para redirigir a la vista adecuada
+                // Redirigir según el nivel de rol
                 if ($_SESSION["nivel_rol"] == 1) {
-                    header("Location: ?pagina=catalogo");
-                } elseif ($_SESSION["nivel_rol"] == 2 || $_SESSION["nivel_rol"] == 3) {
-                    header("Location: ?pagina=home");
-                } else {
-                    $_SESSION['message'] = array('title' => 'Acceso no permitido', 'text' => 'Su nivel de acceso no está definido.', 'icon' => 'error');
-                    header('Location: ?pagina=login');
-                    exit;
-                }
+                   
+                      $res = array('respuesta' => 1, 'accion' => 'ingresar');
+                      echo json_encode($res);
+                      exit;
 
+                } elseif ($_SESSION["nivel_rol"] == 2 || $_SESSION["nivel_rol"] == 3) {
+                      $res = array('respuesta' => 2, 'accion' => 'ingresar');
+                      echo json_encode($res);
+                      exit;
+                } else {
+                  
+                $res = array('respuesta' => 0, 'accion' => 'ingresar', 'text' => 'Su nivel de acceso no está definido.');
+                 echo json_encode($res);
+                }
             } else if (isset($resultado->noactiva)) {
-                $_SESSION['message'] = array('title' => 'Cuenta No Activa', 'text' => 'Lo sentimos, su cuenta está suspendida. Por favor, póngase en contacto con el administrador.', 'icon' => 'warning');
-                header('Location: ?pagina=login'); 
-                exit;
+            
+                $res = array('respuesta' => 0, 'accion' => 'ingresar', 'text' => 'Lo sentimos, su cuenta está suspendida. Por favor, póngase en contacto con el administrador.');
+                 echo json_encode($res);
             }
         } else {
-            $_SESSION['message'] = array('title' => 'Cedula y/o clave Invalida', 'text' => 'Por favor, verifica tus datos y vuelve a intentarlo', 'icon' => 'error');
-            header('Location: ?pagina=login'); 
-            exit;
-            
-        } 
-    } 
+        
+            $res = array('respuesta' => 0, 'accion' => 'ingresar', 'text' => 'Cédula y/o Clave inválida.');
+                 echo json_encode($res);
+        }
+    }
 } else if (isset($_POST['cerrar'])) {
     if (isset($_SESSION["id"])) {
         $id_persona = $_SESSION["id"];
@@ -73,7 +83,7 @@ if (isset($_POST['ingresar'])) {
 } else if (isset($_POST['registrar'])) {
 
     $nombre = $_POST['nombre'];
-    $apellido = $_POST['apellido'];
+    $apellido = $_POST['apellido']; 
     $cedula = $_POST['cedula'];
     $telefono = $_POST['telefono'];
     $correo = $_POST['correo'];
@@ -127,6 +137,20 @@ if (isset($_POST['ingresar'])) {
     session_destroy(); // Se cierra la sesión
     header('Location: ?pagina=login');
     exit;
-} else{
+
+} else if (!empty($_SESSION['id'])) {
+    
+    if (isset($_SESSION["id"])) {
+        $id_persona = $_SESSION["id"];
+        $accion = 'Cierre de sesión';
+        $descripcion = 'El usuario ha cerrado sesión por URL.';
+        $objlogin->registrarBitacora($id_persona, $accion, $descripcion);
+    }    
+    
+    session_destroy(); // Se cierra la sesión
+    header('Location: ?pagina=login');
+    exit;
+
+} else {    
     require_once 'vista/login.php';
 }

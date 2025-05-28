@@ -4,7 +4,8 @@ require_once 'conexion.php';
 
 class Login extends Conexion {
 
-    private $conex;
+    private $conex1;
+    private $conex2;
     private $id_usuario;
     private $cedula;
     private $clave;
@@ -17,8 +18,11 @@ class Login extends Conexion {
     private $cipherMethod = "AES-256-CBC";
 
     function __construct(){ // Metodo para BD
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->Conex();
+         parent::__construct(); // Llama al constructor de la clase padre
+
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
     } 
 
     private function encryptClave($clave) {
@@ -43,14 +47,42 @@ class Login extends Conexion {
     return $claveDesencriptada;
     }
 
-    
+
+
+
+
     public function verificarUsuario() {
     $consulta = "SELECT p.*, ru.nombre AS nombre_usuario, ru.nivel, p.clave
-                 FROM personas p
-                 INNER JOIN rol_usuario ru ON p.id_tipo = ru.id_tipo
+                 FROM usuario p
+                 INNER JOIN rol_usuario ru ON p.id_rol = ru.id_rol
                  WHERE p.cedula = :cedula";
                  
-    $strExec = $this->conex->prepare($consulta);
+    $strExec = $this->conex2->prepare($consulta);
+    $strExec->bindParam(':cedula', $this->cedula);
+    $strExec->execute();
+    $resultado = $strExec->fetchObject();
+
+    if ($resultado) {
+        // Desencriptar la clave almacenada
+        $claveDesencriptada = $this->decryptClave($resultado->clave);
+
+        // Comparar con la clave ingresada
+        if ($claveDesencriptada === $this->clave) {
+            if (!in_array($resultado->estatus, [1, 2, 3])) {
+                $resultado->noactiva = true;
+            }
+            return $resultado;
+        }
+    }
+
+    return null; // Retorna null si las credenciales no coinciden
+} 
+
+
+  public function verificarCliente() {
+    $consulta = "SELECT * FROM cliente WHERE cedula = :cedula";
+                 
+    $strExec = $this->conex1->prepare($consulta);
     $strExec->bindParam(':cedula', $this->cedula);
     $strExec->execute();
     $resultado = $strExec->fetchObject();
@@ -76,20 +108,20 @@ class Login extends Conexion {
     $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
                  VALUES (:accion, NOW(), :descripcion, :id_persona)";
     
-    $strExec = $this->conex->prepare($consulta);
+    $strExec = $this->conex2->prepare($consulta);
     $strExec->bindParam(':accion', $accion);
     $strExec->bindParam(':descripcion', $descripcion);
     $strExec->bindParam(':id_persona', $id_persona);
     
     return $strExec->execute(); // Devuelve true si la inserción fue exitosa
-}
+    }
 
 
     public function registrar() {
-    $registro = "INSERT INTO personas(cedula, nombre, apellido, correo, telefono, clave, estatus, id_tipo)
-        VALUES(:cedula,:nombre, :apellido, :correo, :telefono,:clave, 1,2)";
+    $registro = "INSERT INTO cliente(cedula, nombre, apellido, correo, telefono, clave, estatus, rol)
+        VALUES(:cedula,:nombre, :apellido, :correo, :telefono,:clave, 1,1)";
 
-    $strExec = $this->conex->prepare($registro);
+    $strExec = $this->conex1->prepare($registro);
     $strExec->bindParam(':cedula', $this->cedula);
     $strExec->bindParam(':nombre', $this->nombre);
     $strExec->bindParam(':apellido', $this->apellido);
@@ -113,16 +145,27 @@ class Login extends Conexion {
 }
 
      public function existeCedula() {
-        $consulta = "SELECT cedula FROM personas WHERE cedula = :cedula";
-        $strExec = $this->conex->prepare($consulta);
+    // Buscar en conex1
+    $consulta = "SELECT cedula FROM cliente WHERE cedula = :cedula";
+    $strExec = $this->conex1->prepare($consulta);
+    $strExec->bindParam(':cedula', $this->cedula);
+    $strExec->execute();
+
+    // Si no hay resultados, buscar en conex2
+    if ($strExec->rowCount() == 0) {
+        $consulta = "SELECT cedula FROM usuario WHERE cedula = :cedula";
+        $strExec = $this->conex2->prepare($consulta);
         $strExec->bindParam(':cedula', $this->cedula);
         $strExec->execute();
-        return $strExec->rowCount() > 0;
     }
 
-    public function obtenerPersonaPorCedula() {
-    $consulta = "SELECT * FROM personas WHERE cedula = :cedula";
-    $strExec = $this->conex->prepare($consulta);
+    return $strExec->rowCount() > 0;
+}
+
+public function obtenerPersonaPorCedula() {
+    // Buscar en conex1
+    $consulta = "SELECT * FROM cliente WHERE cedula = :cedula";
+    $strExec = $this->conex1->prepare($consulta);
     $strExec->bindParam(':cedula', $this->cedula);
     $strExec->execute();
     
@@ -130,19 +173,36 @@ class Login extends Conexion {
         return $strExec->fetchObject();
     }
 
-    return null; // Retorna null si no se encuentra la cédula
+    //buscar en conex2
+    $consulta = "SELECT * FROM usuario WHERE cedula = :cedula";
+    $strExec = $this->conex2->prepare($consulta);
+    $strExec->bindParam(':cedula', $this->cedula);
+    $strExec->execute();
+
+    if ($strExec->rowCount() > 0) {
+        return $strExec->fetchObject();
     }
 
+    return null; // Retorna null si no se encuentra la cédula en ninguna base de datos
+}
 
+public function existeCorreo() {
+    //conex1
+    $consulta = "SELECT correo FROM cliente WHERE correo = :correo";
+    $strExec = $this->conex1->prepare($consulta);
+    $strExec->bindParam(':correo', $this->correo);
+    $strExec->execute();
 
-     
-    public function existeCorreo() {
-        $consulta = "SELECT correo FROM personas WHERE correo = :correo";
-        $strExec = $this->conex->prepare($consulta);
+    //buscar en conex2
+    if ($strExec->rowCount() == 0) {
+        $consulta = "SELECT correo FROM usuario WHERE correo = :correo";
+        $strExec = $this->conex2->prepare($consulta);
         $strExec->bindParam(':correo', $this->correo);
         $strExec->execute();
-        return $strExec->rowCount() > 0;
     }
+
+    return $strExec->rowCount() > 0;
+}
 
    
     public function get_IdUsuario() {
@@ -167,7 +227,6 @@ class Login extends Conexion {
 
     public function set_Clave($clave) {
         $this->clave = $clave;
-         // $this->clave = password_hash($clave, PASSWORD_DEFAULT);  encriptar clave
     }
 
     public function get_Nombre() {
@@ -175,7 +234,7 @@ class Login extends Conexion {
     }
 
     public function set_Nombre($nombre) {
-        $this->nombre = $nombre;
+        $this->nombre = ucfirst(strtolower($nombre));
     }
 
     public function get_Apellido() {
@@ -183,7 +242,7 @@ class Login extends Conexion {
     }
 
     public function set_Apellido($apellido) {
-        $this->apellido = $apellido;
+         $this->apellido = ucfirst(strtolower($apellido));
     }
 
     public function get_TipoUsuario() {

@@ -4,7 +4,8 @@ require_once 'conexion.php';
 
 class Clave extends Conexion{
 
-    private $conex;
+    private $conex1;
+    private $conex2;
     private $id_persona;
     private $nombre;
     private $apellido;
@@ -17,8 +18,11 @@ class Clave extends Conexion{
     private $cipherMethod = "AES-256-CBC";
     
     function __construct() {
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->Conex();
+       parent::__construct(); // Llama al constructor de la clase padre
+
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
     }
 
     private function encryptClave($clave) {
@@ -38,9 +42,9 @@ class Clave extends Conexion{
 
 
      public function actualizarClave(){
-        $registro = "UPDATE personas SET clave = :clave WHERE id_persona = :id_persona";
+        $registro = "UPDATE usuario SET clave = :clave WHERE id_persona = :id_persona";
 
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex2->prepare($registro);
         $strExec->bindParam(':id_persona', $this->id_persona);
         // Encriptar la clave antes de almacenarla
         $claveEncriptada = $this->encryptClave($this->clave);

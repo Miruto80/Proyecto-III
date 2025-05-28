@@ -24,7 +24,7 @@
       <h2>Inicio de Sesión</h2>
       <span class="sub-heading1">Ingrese su usuario y clave para acceder al sistema</span>
     
-      <form action="?pagina=login" method="POST" autocomplete="off" class="form-login">
+      <form action="?pagina=login" method="POST" autocomplete="off" class="form-login" id="login">
         <label for="name"><i class="fa-solid fa-user"></i> Cédula</label>
         <input class="form-control1" type="text" name="usuario" id="usuario" placeholder="Cédula:" >
         <p id="textousuario"></p>
@@ -36,7 +36,7 @@
          <p id="textopassword"></p>
         </div>
 
-        <button type="submit" name="ingresar" class="btn-primary1 mt1">Iniciar Sesión</button>
+        <button type="button" name="ingresar" id="ingresar" class="btn-primary1 mt1">Iniciar Sesión</button>
       </form>
   
       <div class="button-group1">

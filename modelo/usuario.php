@@ -5,7 +5,8 @@ require_once 'conexion.php';
 class Usuario extends Conexion
 {
 
-    private $conex;
+    private $conex1;
+    private $conex2;
     private $id_usuario;
     private $nombre;
     private $apellido;
@@ -19,9 +20,12 @@ class Usuario extends Conexion
     private $cipherMethod = "AES-256-CBC";
     
     function __construct() {
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->Conex();
-    }
+        parent::__construct(); // Llama al constructor de la clase padre
+
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
+   }
 
     private function encryptClave($clave) {
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipherMethod)); 
@@ -33,7 +37,7 @@ class Usuario extends Conexion
     $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
                  VALUES (:accion, NOW(), :descripcion, :id_persona)";
     
-    $strExec = $this->conex->prepare($consulta);
+    $strExec = $this->conex2->prepare($consulta);
     $strExec->bindParam(':accion', $accion);
     $strExec->bindParam(':descripcion', $descripcion);
     $strExec->bindParam(':id_persona', $id_persona);
@@ -44,10 +48,10 @@ class Usuario extends Conexion
 
     public function registrar() {
 
-        $registro = "INSERT INTO personas(cedula, nombre, apellido, correo, telefono, clave, estatus, id_tipo)
+        $registro = "INSERT INTO usuario(cedula, nombre, apellido, correo, telefono, clave, estatus, id_rol)
             VALUES(:cedula,:nombre, :apellido, :correo, :telefono,:clave, 1,:id_rol)";
 
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex2->prepare($registro);
         $strExec->bindParam(':cedula', $this->cedula);
         $strExec->bindParam(':nombre', $this->nombre);
         $strExec->bindParam(':apellido', $this->apellido);
@@ -73,11 +77,11 @@ class Usuario extends Conexion
 
      public function consultar(){
 
-        $registro="SELECT p.*, ru.id_tipo, ru.nombre AS nombre_tipo, ru.nivel
-        FROM personas p 
-        INNER JOIN rol_usuario ru ON p.id_tipo = ru.id_tipo
+        $registro="SELECT p.*, ru.id_rol, ru.nombre AS nombre_tipo, ru.nivel
+        FROM usuario p 
+        INNER JOIN rol_usuario ru ON p.id_rol = ru.id_rol
         WHERE ru.nivel IN (2, 3)";
-        $consulta = $this->conex->prepare($registro);
+        $consulta = $this->conex2->prepare($registro);
         $resul = $consulta->execute();
 
         $datos=$consulta->fetchAll(PDO::FETCH_ASSOC);
@@ -92,8 +96,8 @@ class Usuario extends Conexion
 
     public function eliminar(){
         try {
-            $registro = "DELETE FROM personas WHERE id_persona = :id_usuario";
-            $strExec = $this->conex->prepare($registro);
+            $registro = "DELETE FROM usuario WHERE id_persona = :id_usuario";
+            $strExec = $this->conex2->prepare($registro);
             $strExec->bindParam(':id_usuario', $this->id_usuario);
             $result = $strExec->execute();
                 if ($result){
@@ -110,16 +114,16 @@ class Usuario extends Conexion
    
     public function obtenerRol()
     {
-        $query = "SELECT * FROM rol_usuario WHERE id_tipo >= 1";
-        $consulta = $this->conex->prepare($query);
+        $query = "SELECT * FROM rol_usuario WHERE id_rol >= 1";
+        $consulta = $this->conex2->prepare($query);
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_ASSOC);
     }
 
      public function actualizar(){
-        $registro = "UPDATE personas SET cedula = :cedula, correo = :correo, id_tipo = :id_rol WHERE id_persona = :id_usuario";
+        $registro = "UPDATE usuario SET cedula = :cedula, correo = :correo, id_rol = :id_rol WHERE id_persona = :id_usuario";
 
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex2->prepare($registro);
         $strExec->bindParam(':id_usuario', $this->id_usuario);
         $strExec->bindParam(':cedula', $this->cedula);
         $strExec->bindParam(':correo', $this->correo);
@@ -152,7 +156,7 @@ class Usuario extends Conexion
 
     public function set_Nombre($nombre)
     {
-        return $this->nombre = ucfirst(strtolower($nombre));
+        $this->nombre = ucfirst(strtolower($nombre));
     }
 
     public function get_Apellidos()
@@ -188,7 +192,7 @@ class Usuario extends Conexion
     }
     public function set_Correo($correo)
     {
-        $this->correo = ucfirst(strtolower($correo));
+        $this->correo = strtolower($correo);
     }
 
     public function get_Id_rol()
