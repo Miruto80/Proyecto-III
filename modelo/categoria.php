@@ -36,15 +36,17 @@ class categoria extends Conexion {
         $resul = $strExec->execute();
         return $resul ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
     }
+ 
     public function eliminar() {
-        $registro = "DELETE FROM categoria WHERE id_categoria = :id_categoria";
+        $registro = "UPDATE categoria SET estatus = 0 WHERE id_categoria = :id_categoria";
         $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':id_categoria', $this->id_categoria);
         $resul = $strExec->execute();
         return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
     }
+
     public function consultar() {
-        $registro = "SELECT * FROM categoria";
+        $registro = "SELECT * FROM categoria WHERE estatus = 1 ";
         $consulta = $this->conex1->prepare($registro);
         $resul = $consulta->execute();
         return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
