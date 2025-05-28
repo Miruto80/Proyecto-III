@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const regexCedula = /^[0-9]{7,8}$/;
     const regexSoloLetras = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/;
     const regexCorreo = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    const regexTelefono = /^[0-9]{10}$/;
+    const regexTelefono = /^0[0-9]{10}$/;
 
     // Expresiones regulares para validaciones de pago
     const regexReferencia = /^[0-9]{4,6}$/;
@@ -148,11 +148,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    telefonoInput.addEventListener('keyup', function() {
-        if (!regexTelefono.test(this.value)) {
-            mostrarError(this, 'El teléfono debe tener 10 dígitos');
-        } else {
-            limpiarError(this);
+    telefonoInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        
+        if (this.value.length > 0) {
+            if (!this.value.startsWith('0')) {
+                mostrarError(this, 'El número debe comenzar con 0');
+                this.classList.add('is-invalid');
+                this.classList.remove('is-valid');
+            } else if (this.value.length !== 11) {
+                mostrarError(this, 'El teléfono debe tener 11 dígitos');
+                this.classList.add('is-invalid');
+                this.classList.remove('is-valid');
+            } else if (!regexTelefono.test(this.value)) {
+                mostrarError(this, 'Formato de teléfono inválido');
+                this.classList.add('is-invalid');
+                this.classList.remove('is-valid');
+            } else {
+                limpiarError(this);
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
         }
     });
 
@@ -467,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'El teléfono debe tener 10 dígitos'
+                    text: 'El teléfono debe tener 11 dígitos y comenzar con 0'
                 });
                 return false;
             }
