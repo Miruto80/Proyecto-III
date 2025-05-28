@@ -2,13 +2,26 @@
 require_once('modelo/conexion.php');
 
 class home extends Conexion{
-    private $conex;
+    private $conex1;
+    private $conex2;
 
-    function __construct(){
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->conex();
+    public function __construct() {
+        parent::__construct(); // Llama al constructor de la clase padre
+
+        // Obtener las conexiones de la clase padre
+        $this->conex1 = $this->getConex1();
+        $this->conex2 = $this->getConex2();
+    
+         // Verifica si las conexiones son exitosas
+        if (!$this->conex1) {
+            die('Error al conectar con la primera base de datos');
+        }
+
+        if (!$this->conex2) {
+            die('Error al conectar con la segunda base de datos');
+        }
     }
-
+    
 
 
         public function consultarMasVendidos() {
@@ -32,7 +45,7 @@ class home extends Conexion{
     LIMIT 5
 ";
 
-            $consulta = $this->conex->prepare($registro);
+            $consulta = $this->conex1->prepare($registro);
             $resul = $consulta->execute();
         
             $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
@@ -55,7 +68,7 @@ class home extends Conexion{
                 estado = 2
         ";
         
-            $consulta = $this->conex->prepare($registro);
+            $consulta = $this->conex1->prepare($registro);
             $resul = $consulta->execute();
         
             $datos = $consulta->fetch(PDO::FETCH_ASSOC);
@@ -75,7 +88,7 @@ class home extends Conexion{
                 WHERE 
                     estado = 1
             ";
-            $consulta = $this->conex->prepare($registro);
+            $consulta = $this->conex1->prepare($registro);
             $resul = $consulta->execute();
         
             $datos = $consulta->fetch(PDO::FETCH_ASSOC);
