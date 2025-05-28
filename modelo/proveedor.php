@@ -6,7 +6,9 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 require_once 'conexion.php';
 class proveedor extends Conexion {
-    private $conex;
+
+    private $conex1;
+    private $conex2;
     private $id_proveedor;
     private $numero_documento;
     private $tipo_documento;
@@ -17,8 +19,10 @@ class proveedor extends Conexion {
     private $estatus;
     
     function __construct() {
-        $this->conex = new Conexion();
-        $this->conex = $this->conex->Conex();
+        parent::__construct();
+
+    $this->conex1 = $this->getConex1();
+ 	$this->conex2 = $this->getConex2();
     }
 
 
@@ -111,7 +115,7 @@ private function imgToBase64($imgPath) {
     public function registrar() {
         $registro = "INSERT INTO proveedor(numero_documento, tipo_documento, nombre, correo, telefono, direccion, estatus) 
                     VALUES (:numero_documento, :tipo_documento, :nombre, :correo, :telefono, :direccion, 1)";
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':numero_documento', $this->numero_documento);
         $strExec->bindParam(':tipo_documento', $this->tipo_documento);
         $strExec->bindParam(':nombre', $this->nombre);
@@ -127,7 +131,7 @@ private function imgToBase64($imgPath) {
                     tipo_documento = :tipo_documento, nombre = :nombre, correo = :correo, 
                     telefono = :telefono, direccion = :direccion 
                     WHERE id_proveedor = :id_proveedor";
-        $strExec = $this->conex->prepare($registro);
+        $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':numero_documento', $this->numero_documento);
         $strExec->bindParam(':tipo_documento', $this->tipo_documento);
         $strExec->bindParam(':nombre', $this->nombre);
@@ -141,7 +145,7 @@ private function imgToBase64($imgPath) {
     
     public function eliminar() {
     $registro = "UPDATE proveedor SET estatus = 0 WHERE id_proveedor = :id_proveedor";
-    $strExec = $this->conex->prepare($registro);
+    $strExec = $this->conex1->prepare($registro);
     $strExec->bindParam(':id_proveedor', $this->id_proveedor);
     $resul = $strExec->execute();
     return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
@@ -150,7 +154,7 @@ private function imgToBase64($imgPath) {
     
     public function consultar() {
     $registro = "SELECT * FROM proveedor WHERE estatus = 1";
-    $consulta = $this->conex->prepare($registro);
+    $consulta = $this->conex1->prepare($registro);
     $resul = $consulta->execute();
     return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
 }
@@ -158,7 +162,7 @@ private function imgToBase64($imgPath) {
     
     public function consultarPorId() {
         $registro = "SELECT * FROM proveedor WHERE id_proveedor = :id_proveedor";
-        $consulta = $this->conex->prepare($registro);
+        $consulta = $this->conex1->prepare($registro);
         $consulta->bindParam(':id_proveedor', $this->id_proveedor);
         $resul = $consulta->execute();
         return $resul ? $consulta->fetch(PDO::FETCH_ASSOC) : [];
