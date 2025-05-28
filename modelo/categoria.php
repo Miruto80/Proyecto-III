@@ -53,7 +53,7 @@ class categoria extends Conexion {
     $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
                  VALUES (:accion, NOW(), :descripcion, :id_persona)";
     
-    $strExec = $this->conex1->prepare($consulta);
+    $strExec = $this->conex2->prepare($consulta);
     $strExec->bindParam(':accion', $accion);
     $strExec->bindParam(':descripcion', $descripcion);
     $strExec->bindParam(':id_persona', $id_persona);
