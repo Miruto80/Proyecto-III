@@ -37,43 +37,40 @@ if(isset($_POST['generar'])){
 }
 
 // Generar gráfico antes de cargar la vista
-/*
+
 function generarGrafico() {
     require_once ('assets/js/jpgraph/src/jpgraph.php');
     require_once ('assets/js/jpgraph/src/jpgraph_pie.php');
     require_once ('assets/js/jpgraph/src/jpgraph_pie3d.php');
-    
-    $db = new Conexion();
-    $conex1 = $db->Conex();
+
+$db = new Conexion();
+$conex1 = $db->getConex1(); // Cambia al nombre correcto
 
 
-    ARREGLAR
- 
+    // Obtener la cantidad total de proveedores activos con compras
+    $SQL = "SELECT COUNT(DISTINCT pr.id_proveedor) AS total_activos
+            FROM compra c
+            JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
+            WHERE pr.estatus = 1";
 
-// Obtener la cantidad total de proveedores activos con compras
-$SQL = "SELECT COUNT(DISTINCT pr.id_proveedor) AS total_activos
-        FROM compra c
-        JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
-        WHERE pr.estatus = 1";
+    $stmt = $conex1->prepare($SQL);
+    $stmt->execute();
+    $totalActivos = $stmt->fetch(PDO::FETCH_ASSOC)['total_activos'];
 
-$stmt = $conex->prepare($SQL);
-$stmt->execute();
-$totalActivos = $stmt->fetch(PDO::FETCH_ASSOC)['total_activos'];
+    // Determinar el límite dinámico (máximo 5)
+    $limite = ($totalActivos >= 5) ? 5 : $totalActivos;
 
-// Determinar el límite dinámico (máximo 5)
-$limite = ($totalActivos >= 5) ? 5 : $totalActivos;
+    // Consulta ajustada para obtener el top dinámico
+    $SQL = "SELECT pr.nombre, COUNT(c.id_compra) AS total_compras
+            FROM compra c
+            JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
+            WHERE pr.estatus = 1
+            GROUP BY pr.nombre
+            ORDER BY total_compras DESC
+            LIMIT $limite";
 
-// Consulta ajustada para obtener el top dinámico
-$SQL = "SELECT pr.nombre, COUNT(c.id_compra) AS total_compras
-        FROM compra c
-        JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
-        WHERE pr.estatus = 1
-        GROUP BY pr.nombre
-        ORDER BY total_compras DESC
-        LIMIT $limite";
-
-$stmt = $conex->prepare($SQL);
-$stmt->execute();
+    $stmt = $conex1->prepare($SQL);
+    $stmt->execute();
 
     $data = [];
     $labels = [];
@@ -85,37 +82,35 @@ $stmt->execute();
 
     // Crear el gráfico
     $graph = new PieGraph(900, 500);
-
     $p1 = new PiePlot3D($data);
     $p1->SetLegends($labels);
     $p1->SetCenter(0.5, 0.5);
     $p1->ShowBorder();
     $p1->SetColor('black');
     $p1->ExplodeSlice(1);
-
     $graph->Add($p1);
 
+    // **Ruta correcta de almacenamiento**
+    $imgDir = __DIR__ . "/../assets/img/grafica_reportes/";
+    $imagePath = $imgDir . "grafico_proveedores.png";
 
-// Ruta de la nueva ubicación de la imagen
-$imagePath = __DIR__ . "/../assets/img/grafico_proveedores.png";
+    // **Crear carpeta si no existe**
+    if (!file_exists($imgDir)) {
+        mkdir($imgDir, 0777, true);
+    }
 
+    // **Eliminar imagen anterior**
+    if (file_exists($imagePath)) {
+        unlink($imagePath);
+    }
 
-// Verificar si la carpeta img existe, si no, crearla
-$imgDir = __DIR__ . "/../img/";
-if (!file_exists($imgDir)) {
-    mkdir($imgDir, 0777, true); // Crear la carpeta con permisos adecuados
-}
-
-// Eliminar la imagen anterior antes de generar una nueva
-if (file_exists($imagePath)) {
-    unlink($imagePath);
-}
-
-// Verificar si hay datos antes de generar el gráfico
+ // Verificar si hay datos antes de generar la imagen
 if (empty($data) || array_sum($data) == 0) {
-    // No generar la imagen si no hay datos
+    echo "No hay datos suficientes para generar un gráfico."; // Mensaje para depuración
     return;
 }
+
+
 
 // Generar la nueva imagen en la carpeta img
 $graph->Stroke($imagePath);
@@ -127,8 +122,6 @@ $graph->Stroke($imagePath);
 // Llamar la función para generar la gráfica ANTES de cargar la vista
 generarGrafico();
 
-
-   */
 
 
 

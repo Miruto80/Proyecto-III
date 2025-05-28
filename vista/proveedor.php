@@ -270,11 +270,12 @@
 
               <!-- Mostrar gráfica-->
             <div style="text-align:center; margin-top:20px;">
-              <?php if (file_exists("assets/img/img_reportes/grafico_proveedores.png")): ?>
-                <img src="assets/img/img_reportes/grafico_proveedores.png" alt="Gráfico de pastel de proveedores">
-              <?php else: ?>
-                <p>No hay datos suficientes para generar un gráfico.</p>
-              <?php endif; ?>
+<?php if (file_exists("assets/img/grafica_reportes/grafico_proveedores.png")): ?>
+    <img src="assets/img/grafica_reportes/grafico_proveedores.png" alt="Gráfico de pastel de proveedores">
+<?php else: ?>
+    <p>No hay datos suficientes para generar un gráfico.</p>
+<?php endif; ?>
+
             </div>
 
 
