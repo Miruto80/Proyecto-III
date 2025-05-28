@@ -7,6 +7,26 @@
 </head>
 
 <body>
+<script>
+async function obtenerTasaDolarApi() {
+    try {
+        const respuesta = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+        if (!respuesta.ok) {
+            throw new Error(`Error HTTP: ${respuesta.status}`);
+        }
+        const datos = await respuesta.json();
+        const tasaBCV = parseFloat(datos.promedio).toFixed(2); 
+        var totalBs = <?php echo $total; ?>;
+        var resultadoBs = (totalBs * tasaBCV).toFixed(2); 
+        document.getElementById("bs").textContent = "Resultado: " + resultadoBs + " Bs";    
+    } catch (error) {
+        document.getElementById("bs").textContent = "Error al cargar el total";
+        console.error("Error al obtener la tasa:", error);
+    }
+}
+document.addEventListener("DOMContentLoaded", obtenerTasaDolarApi);
+</script>
+
 <?php
 
 $usuario = $_SESSION;
@@ -394,6 +414,8 @@ input[type=checkbox]{
         <div class="row lower" style="background-color:#ff70d9ff; color:#fff;">
             <div class="col text-left"><b>Total a Pagar</b></div>
             <div class="col text-right"><b>$<?= number_format($total, 2) ?></b></div>
+            <h5 class="text-white" id="bs">0</h5>
+           
            
         </div>
 
