@@ -1,7 +1,7 @@
 <?php
 require_once 'conexion.php';
 
-class Reserva {
+class Reserva extends Conexion{
     private $conex1;
     private $conex2;
     private $id_reserva;
@@ -14,6 +14,7 @@ function __construct() {
         // Obtener las conexiones de la clase padre
         $this->conex1 = $this->getConex1();
         $this->conex2 = $this->getConex2();
+
         $this->id_reserva = 0;
         $this->fecha_apartado = '';
         $this->id_persona = 0;
