@@ -45,17 +45,30 @@ function generarGrafico() {
     $db = new Conexion();
     $conex = $db->Conex();
 
-    // Obtener los datos de proveedores
-    $SQL = "SELECT pr.nombre, COUNT(c.id_compra) AS total_compras
+// Obtener la cantidad total de proveedores activos con compras
+$SQL = "SELECT COUNT(DISTINCT pr.id_proveedor) AS total_activos
+        FROM compra c
+        JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
+        WHERE pr.estatus = 1";
+
+$stmt = $conex->prepare($SQL);
+$stmt->execute();
+$totalActivos = $stmt->fetch(PDO::FETCH_ASSOC)['total_activos'];
+
+// Determinar el límite dinámico (máximo 5)
+$limite = ($totalActivos >= 5) ? 5 : $totalActivos;
+
+// Consulta ajustada para obtener el top dinámico
+$SQL = "SELECT pr.nombre, COUNT(c.id_compra) AS total_compras
         FROM compra c
         JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
         WHERE pr.estatus = 1
         GROUP BY pr.nombre
         ORDER BY total_compras DESC
-        LIMIT 5";
+        LIMIT $limite";
 
-    $stmt = $conex->prepare($SQL);
-    $stmt->execute();
+$stmt = $conex->prepare($SQL);
+$stmt->execute();
 
     $data = [];
     $labels = [];
