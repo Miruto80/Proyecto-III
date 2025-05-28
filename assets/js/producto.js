@@ -240,7 +240,8 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
                 location.href = "?pagina=producto";
               }, 1000);
             } else {
-              muestraMensaje("error", 1000, "ERROR", "ERROR");
+              let mensajeError = lee.mensaje || "Error al registrar el producto";
+              muestraMensaje("error", 3000, "Error", mensajeError);
             }
           } else if (lee.accion == 'actualizar') {
             if (lee.respuesta == 1) {
@@ -524,3 +525,134 @@ $('#btnAyuda').on("click", function () {
 });
 
 // Ejecutar la guía interactiva cuando la página cargue
+
+function verificarProductoDuplicado(selectActual) {
+    const productoId = selectActual.value;
+    let filasDuplicadas = [];
+    let cantidadTotal = 0;
+
+    // Buscar todas las filas que tienen el mismo producto
+    document.querySelectorAll('.producto-select-venta').forEach(select => {
+        if (select !== selectActual && select.value === productoId) {
+            filasDuplicadas.push(select.closest('.producto-fila'));
+            cantidadTotal += parseInt(select.closest('.producto-fila').querySelector('.cantidad-input-venta').value) || 0;
+        }
+    });
+
+    return { filasDuplicadas, cantidadTotal };
+}
+
+function inicializarEventosProducto(fila) {
+    const selectProducto = fila.querySelector('.producto-select-venta');
+    const inputCantidad = fila.querySelector('.cantidad-input-venta');
+    const inputPrecio = fila.querySelector('.precio-input-venta');
+    const btnRemover = fila.querySelector('.remover-producto-venta');
+    const btnAgregar = fila.querySelector('.agregar-producto-venta');
+    const stockInfo = fila.querySelector('.stock-info');
+
+    // Inicializar evento para agregar producto
+    if (btnAgregar) {
+        btnAgregar.addEventListener('click', function() {
+            const nuevaFila = fila.cloneNode(true);
+            
+            // Limpiar valores de la nueva fila
+            nuevaFila.querySelector('.producto-select-venta').value = '';
+            nuevaFila.querySelector('.precio-input-venta').value = '0.00';
+            nuevaFila.querySelector('.subtotal-venta').textContent = '0.00';
+            nuevaFila.querySelector('.cantidad-input-venta').value = '1';
+            nuevaFila.querySelector('.stock-info').textContent = '';
+            
+            // Insertar la nueva fila después de la fila actual
+            fila.parentNode.insertBefore(nuevaFila, fila.nextSibling);
+            
+            // Inicializar eventos en la nueva fila
+            inicializarEventosProducto(nuevaFila);
+            actualizarTotal();
+        });
+    }
+
+    selectProducto.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value === '') {
+            inputPrecio.value = '0.00';
+            inputCantidad.value = '1';
+            inputCantidad.removeAttribute('max');
+            stockInfo.textContent = '';
+            calcularSubtotal(fila);
+            return;
+        }
+
+        // Verificar si el producto ya está en otra fila
+        const { filasDuplicadas, cantidadTotal } = verificarProductoDuplicado(this);
+        
+        if (filasDuplicadas.length > 0) {
+            Swal.fire({
+                title: 'Producto duplicado',
+                text: 'Este producto ya está en la lista. ¿Deseas sumar la cantidad a la fila existente?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, sumar',
+                cancelButtonText: 'No, cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Sumar la cantidad a la primera fila encontrada
+                    const filaExistente = filasDuplicadas[0];
+                    const cantidadExistente = parseInt(filaExistente.querySelector('.cantidad-input-venta').value) || 0;
+                    const cantidadNueva = parseInt(inputCantidad.value) || 1;
+                    const stock = parseInt(selectedOption.getAttribute('data-stock')) || 0;
+                    
+                    if (cantidadExistente + cantidadNueva <= stock) {
+                        filaExistente.querySelector('.cantidad-input-venta').value = cantidadExistente + cantidadNueva;
+                        calcularSubtotal(filaExistente);
+                        
+                        // Limpiar la fila actual
+                        this.value = '';
+                        inputPrecio.value = '0.00';
+                        inputCantidad.value = '1';
+                        stockInfo.textContent = '';
+                        calcularSubtotal(fila);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Stock insuficiente',
+                            text: `Solo hay ${stock} unidades disponibles de este producto`
+                        });
+                        this.value = '';
+                    }
+                } else {
+                    // Si el usuario cancela, limpiar la selección
+                    this.value = '';
+                    inputPrecio.value = '0.00';
+                    inputCantidad.value = '1';
+                    stockInfo.textContent = '';
+                    calcularSubtotal(fila);
+                }
+            });
+            return;
+        }
+        
+        // Si no hay duplicados, continuar con el comportamiento normal
+        const precio = selectedOption.getAttribute('data-precio');
+        const stock = parseInt(selectedOption.getAttribute('data-stock')) || 0;
+        
+        inputPrecio.value = precio || '0.00';
+        inputCantidad.value = '1';
+        inputCantidad.setAttribute('max', stock);
+        
+        stockInfo.textContent = `Stock: ${stock}`;
+        if (stock === 0) {
+            inputCantidad.classList.add('is-invalid');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sin stock',
+                text: 'Este producto no tiene unidades disponibles'
+            });
+        } else {
+            inputCantidad.classList.remove('is-invalid');
+        }
+        
+        calcularSubtotal(fila);
+    });
+
+    // ... resto del código de inicializarEventosProducto ...
+}

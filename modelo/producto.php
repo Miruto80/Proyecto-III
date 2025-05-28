@@ -41,33 +41,67 @@ public function registrarBitacora($id_persona, $accion, $descripcion) {
     return $strExec->execute(); // Devuelve true si la inserción fue exitosa
 }
 
-public function registrar(){
-    $registro ="INSERT INTO productos(nombre,descripcion,marca,cantidad_mayor,precio_mayor,precio_detal,stock_disponible,stock_maximo,stock_minimo,imagen,id_categoria,estatus)
-    VALUES (:nombre,:descripcion,:marca,:cantidad_mayor,:precio_mayor,:precio_detal,0,:stock_maximo,:stock_minimo,:imagen,:id_categoria,1)";
-
-    $strExec = $this->conex->prepare($registro);
-    $strExec->bindParam(':nombre',$this->nombre);
-    $strExec->bindParam(':descripcion',$this->descripcion);
-    $strExec->bindParam(':marca',$this->marca);
-    $strExec->bindParam(':cantidad_mayor',$this->cantidad_mayor);
-    $strExec->bindParam(':precio_mayor',$this->precio_mayor);
-    $strExec->bindParam(':precio_detal',$this->precio_detal);
-    $strExec->bindParam(':stock_maximo',$this->stock_maximo);
-    $strExec->bindParam(':stock_minimo',$this->stock_minimo);
-    $strExec->bindParam(':imagen',$this->imagen);
-    $strExec->bindParam(':id_categoria', $this->categoria);
-
-    $resul = $strExec->execute();
-
-    if ($resul) {
-        $res['respuesta'] = 1;
-        $res['accion'] = 'incluir';
-    } else {
-        $res['respuesta'] = 0;
-        $res['accion'] = 'incluir';
+public function verificarProductoDuplicado() {
+    try {
+        $consulta = "SELECT COUNT(*) FROM productos WHERE LOWER(nombre) = LOWER(:nombre) AND LOWER(marca) = LOWER(:marca) AND estatus IN (1,2)";
+        $strExec = $this->conex->prepare($consulta);
+        $strExec->bindParam(':nombre', $this->nombre);
+        $strExec->bindParam(':marca', $this->marca);
+        $strExec->execute();
+        return $strExec->fetchColumn() > 0;
+    } catch (PDOException $e) {
+        return false;
     }
+}
 
-    return $res;
+public function registrar(){
+    try {
+        // Verificar si el producto ya existe
+        if ($this->verificarProductoDuplicado()) {
+            return [
+                'respuesta' => 0,
+                'accion' => 'incluir',
+                'mensaje' => 'Ya existe un producto con el nombre "' . $this->nombre . '" y marca "' . $this->marca . '"'
+            ];
+        }
+
+        $registro ="INSERT INTO productos(nombre,descripcion,marca,cantidad_mayor,precio_mayor,precio_detal,stock_disponible,stock_maximo,stock_minimo,imagen,id_categoria,estatus)
+        VALUES (:nombre,:descripcion,:marca,:cantidad_mayor,:precio_mayor,:precio_detal,0,:stock_maximo,:stock_minimo,:imagen,:id_categoria,1)";
+
+        $strExec = $this->conex->prepare($registro);
+        $strExec->bindParam(':nombre',$this->nombre);
+        $strExec->bindParam(':descripcion',$this->descripcion);
+        $strExec->bindParam(':marca',$this->marca);
+        $strExec->bindParam(':cantidad_mayor',$this->cantidad_mayor);
+        $strExec->bindParam(':precio_mayor',$this->precio_mayor);
+        $strExec->bindParam(':precio_detal',$this->precio_detal);
+        $strExec->bindParam(':stock_maximo',$this->stock_maximo);
+        $strExec->bindParam(':stock_minimo',$this->stock_minimo);
+        $strExec->bindParam(':imagen',$this->imagen);
+        $strExec->bindParam(':id_categoria', $this->categoria);
+
+        $resul = $strExec->execute();
+
+        if ($resul) {
+            return [
+                'respuesta' => 1,
+                'accion' => 'incluir',
+                'mensaje' => 'Producto registrado exitosamente'
+            ];
+        } else {
+            return [
+                'respuesta' => 0,
+                'accion' => 'incluir',
+                'mensaje' => 'Error al registrar el producto'
+            ];
+        }
+    } catch (PDOException $e) {
+        return [
+            'respuesta' => 0,
+            'accion' => 'incluir',
+            'mensaje' => 'Error en la base de datos: ' . $e->getMessage()
+        ];
+    }
 }
 
 
