@@ -41,12 +41,12 @@ public function registrarBitacora($id_persona, $accion, $descripcion) {
     return $strExec->execute(); // Devuelve true si la inserción fue exitosa
 }
 
-public function verificarProductoDuplicado() {
+public function verificarProductoDuplicado($nombre, $marca) {
     try {
         $consulta = "SELECT COUNT(*) FROM productos WHERE LOWER(nombre) = LOWER(:nombre) AND LOWER(marca) = LOWER(:marca) AND estatus IN (1,2)";
         $strExec = $this->conex->prepare($consulta);
-        $strExec->bindParam(':nombre', $this->nombre);
-        $strExec->bindParam(':marca', $this->marca);
+        $strExec->bindParam(':nombre', $nombre);
+        $strExec->bindParam(':marca', $marca);
         $strExec->execute();
         return $strExec->fetchColumn() > 0;
     } catch (PDOException $e) {
@@ -57,7 +57,7 @@ public function verificarProductoDuplicado() {
 public function registrar(){
     try {
         // Verificar si el producto ya existe
-        if ($this->verificarProductoDuplicado()) {
+        if ($this->verificarProductoDuplicado($this->nombre, $this->marca)) {
             return [
                 'respuesta' => 0,
                 'accion' => 'incluir',
@@ -80,9 +80,7 @@ public function registrar(){
         $strExec->bindParam(':imagen',$this->imagen);
         $strExec->bindParam(':id_categoria', $this->categoria);
 
-        $resul = $strExec->execute();
-
-        if ($resul) {
+        if ($strExec->execute()) {
             return [
                 'respuesta' => 1,
                 'accion' => 'incluir',

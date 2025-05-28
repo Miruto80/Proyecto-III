@@ -227,21 +227,21 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
       timeout: 10000,
       success: function (respuesta) {
         console.log(respuesta);
-        var lee = JSON.parse(respuesta);
         try {
+          var lee = JSON.parse(respuesta);
           if (lee.accion == 'consultar') {
             crearConsulta(lee.datos);
           }
           else if (lee.accion == 'incluir') {
             if (lee.respuesta == 1) {
               $('#u')[0].reset();
-              muestraMensaje("success", 1000, "Se ha registrado con éxito", "Su registro se ha completado exitosamente");
+              muestraMensaje("success", 1000, "Éxito", lee.mensaje || "Producto registrado exitosamente");
               setTimeout(function () {
                 location.href = "?pagina=producto";
               }, 1000);
             } else {
-              let mensajeError = lee.mensaje || "Error al registrar el producto";
-              muestraMensaje("error", 3000, "Error", mensajeError);
+              muestraMensaje("error", 3000, "Error", lee.mensaje || "Error al registrar el producto");
+              // No redirigir en caso de error para que el usuario pueda ver el mensaje
             }
           } else if (lee.accion == 'actualizar') {
             if (lee.respuesta == 1) {
