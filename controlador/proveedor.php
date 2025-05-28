@@ -37,13 +37,18 @@ if(isset($_POST['generar'])){
 }
 
 // Generar gráfico antes de cargar la vista
+/*
 function generarGrafico() {
     require_once ('assets/js/jpgraph/src/jpgraph.php');
     require_once ('assets/js/jpgraph/src/jpgraph_pie.php');
     require_once ('assets/js/jpgraph/src/jpgraph_pie3d.php');
     
     $db = new Conexion();
-    $conex = $db->Conex();
+    $conex1 = $db->Conex();
+
+
+    ARREGLAR
+ 
 
 // Obtener la cantidad total de proveedores activos con compras
 $SQL = "SELECT COUNT(DISTINCT pr.id_proveedor) AS total_activos
@@ -91,14 +96,20 @@ $stmt->execute();
     $graph->Add($p1);
 
 
-// Definir la ruta de la imagen en img_reportes
-$imagePath = __DIR__ . "/../assets/img/img_reportes/grafico_proveedores.png";
+// Ruta de la nueva ubicación de la imagen
+$imagePath = __DIR__ . "/../assets/img/grafico_proveedores.png";
+
+
+// Verificar si la carpeta img existe, si no, crearla
+$imgDir = __DIR__ . "/../img/";
+if (!file_exists($imgDir)) {
+    mkdir($imgDir, 0777, true); // Crear la carpeta con permisos adecuados
+}
 
 // Eliminar la imagen anterior antes de generar una nueva
 if (file_exists($imagePath)) {
     unlink($imagePath);
 }
-
 
 // Verificar si hay datos antes de generar el gráfico
 if (empty($data) || array_sum($data) == 0) {
@@ -117,7 +128,7 @@ $graph->Stroke($imagePath);
 generarGrafico();
 
 
-
+   */
 
 
 
