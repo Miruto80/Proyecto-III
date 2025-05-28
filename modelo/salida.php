@@ -59,7 +59,7 @@ class Salida extends Conexion {
             }
             
             // Obtenemos el ID del pedido recién insertado
-            $id_pedido = $this->conex->lastInsertId();
+            $id_pedido = $this->conex1->lastInsertId();
             
             // Insertamos los detalles del pedido
             foreach ($this->detalles as $detalle) {
@@ -94,7 +94,7 @@ class Salida extends Conexion {
                 // Actualizamos el stock del producto
                 $actualizar_stock = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad 
                                    WHERE id_producto = :id_producto";
-                $strExecStock = $this->conex->prepare($actualizar_stock);
+                $strExecStock = $this->conex1->prepare($actualizar_stock);
                 $strExecStock->bindValue(':cantidad', $detalle['cantidad']);
                 $strExecStock->bindValue(':id_producto', $detalle['id_producto']);
                 
@@ -166,7 +166,7 @@ class Salida extends Conexion {
             foreach ($detalles as $detalle) {
                 $actualizar_stock = "UPDATE productos SET stock_disponible = stock_disponible + :cantidad 
                                    WHERE id_producto = :id_producto";
-                $strExecStock = $this->conex->prepare($actualizar_stock);
+                $strExecStock = $this->conex1->prepare($actualizar_stock);
                 $strExecStock->bindParam(':cantidad', $detalle['cantidad']);
                 $strExecStock->bindParam(':id_producto', $detalle['id_producto']);
                 $resulStock = $strExecStock->execute();
@@ -180,7 +180,7 @@ class Salida extends Conexion {
             
             // Eliminamos los detalles
             $eliminar_detalles = "DELETE FROM pedido_detalles WHERE id_pedido = :id_pedido";
-            $strExecEliminar = $this->conex->prepare($eliminar_detalles);
+            $strExecEliminar = $this->conex1->prepare($eliminar_detalles);
             $strExecEliminar->bindParam(':id_pedido', $this->id_pedido);
             $resulEliminar = $strExecEliminar->execute();
             
@@ -192,7 +192,7 @@ class Salida extends Conexion {
             
             // Eliminamos la cabecera
             $eliminar_cabecera = "DELETE FROM pedido WHERE id_pedido = :id_pedido";
-            $strExecEliminarCab = $this->conex->prepare($eliminar_cabecera);
+            $strExecEliminarCab = $this->conex1->prepare($eliminar_cabecera);
             $strExecEliminarCab->bindParam(':id_pedido', $this->id_pedido);
             $resulEliminarCab = $strExecEliminarCab->execute();
             
@@ -202,12 +202,12 @@ class Salida extends Conexion {
                 return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $error[2]];
             }
             
-            $this->conex->commit();
+            $this->conex1->commit();
             return ['respuesta' => 1, 'accion' => 'eliminar'];
             
         } catch (Exception $e) {
-            if ($this->conex->inTransaction()) {
-                $this->conex->rollBack();
+            if ($this->conex1->inTransaction()) {
+                $this->conex1->rollBack();
             }
             return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $e->getMessage()];
         }
@@ -219,7 +219,7 @@ class Salida extends Conexion {
                         p.estado, p.precio_total, mp.nombre as metodo_pago, me.nombre as metodo_entrega,
                         p.banco, p.banco_destino 
                         FROM pedido p 
-                        JOIN personas per ON p.id_persona = per.id_persona 
+                        JOIN cliente per ON p.id_persona = per.id_persona 
                         JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago 
                         JOIN metodo_entrega me ON p.id_entrega = me.id_entrega 
                         WHERE p.tipo = '1' 
@@ -264,7 +264,7 @@ class Salida extends Conexion {
         try {
             $registro = "SELECT p.*, CONCAT(per.nombre, ' ', per.apellido) as cliente 
                         FROM pedido p 
-                        JOIN personas per ON p.id_persona = per.id_persona 
+                        JOIN cliente per ON p.id_persona = per.id_persona 
                         WHERE p.id_pedido = :id_pedido";
             $consulta = $this->conex1->prepare($registro);
             $consulta->bindParam(':id_pedido', $id_pedido);
@@ -284,7 +284,7 @@ class Salida extends Conexion {
     public function consultarCliente($cedula) {
         try {
             $registro = "SELECT id_persona, cedula, nombre, apellido, correo, telefono 
-                        FROM personas 
+                        FROM cliente 
                         WHERE cedula = :cedula AND estatus = 1";
             $consulta = $this->conex1->prepare($registro);
             $consulta->bindParam(':cedula', $cedula);
@@ -407,7 +407,7 @@ class Salida extends Conexion {
 
     public function existeCedula($cedula) {
         try {
-            $consulta = "SELECT cedula FROM personas WHERE cedula = :cedula";
+            $consulta = "SELECT cedula FROM cliente WHERE cedula = :cedula";
             $stmt = $this->conex1->prepare($consulta);
             $stmt->bindParam(':cedula', $cedula);
             $stmt->execute();
@@ -419,10 +419,10 @@ class Salida extends Conexion {
 
     public function registrarCliente($datos) {
         try {
-            $consulta = "INSERT INTO personas (cedula, nombre, apellido, telefono, correo, id_tipo, estatus) 
+            $consulta = "INSERT INTO cliente (cedula, nombre, apellido, telefono, correo, id_tipo, estatus) 
                          VALUES (:cedula, :nombre, :apellido, :telefono, :correo, 2, 1)";
             
-            $stmt = $this->conex->prepare($consulta);
+            $stmt = $this->conex1->prepare($consulta);
             $stmt->bindParam(':cedula', $datos['cedula']);
             $stmt->bindParam(':nombre', $datos['nombre']);
             $stmt->bindParam(':apellido', $datos['apellido']);
