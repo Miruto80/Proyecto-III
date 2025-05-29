@@ -91,24 +91,24 @@ function enviaAjax(datos) {
             if (data.respuesta === 1) {
                 document.getElementById('formRegistrar').reset();
                 limpiarFormulario('formRegistrar');
-                muestraMensaje("success", 1000, "Registro exitoso", "El tipo de usuario se ha registrado exitosamente");
+                muestraMensaje("success", 1000, "Se ha registrado con éxito", "tipousuario se ha registrado exitosamente");
                 setTimeout(() => location.reload(), 1000);
             } else {
-                muestraMensaje("error", 2000, "Error", "Error al registrar tipo de usuario");
+                muestraMensaje("error", 2000, "Error", "Error al registrar tipousuario");
             }
         } else if (data.accion === 'actualizar') {
             if (data.respuesta === 1) {
-                muestraMensaje("success", 1000, "Modificación exitosa", "El tipo de usuario se ha actualizado correctamente");
+                muestraMensaje("success", 1000, "Se ha Modificado con éxito", "El proveedor se ha actualizado exitosamente");
                 setTimeout(() => location.reload(), 1000);
             } else {
-                muestraMensaje("error", 2000, "Error", "Error al modificar tipo de usuario");
+                muestraMensaje("error", 2000, "Error", "Error al modificar tipousuario");
             }
         } else if (data.accion === 'eliminar') {
             if (data.respuesta === 1) {
-                muestraMensaje("success", 1000, "Eliminado", "El tipo de usuario ha sido eliminado correctamente");
+                muestraMensaje("success", 1000, "Se ha eliminado con éxito", "tipousuario se ha eliminado correctamente");
                 setTimeout(() => location.reload(), 1000);
             } else {
-                muestraMensaje("error", 2000, "Error", "Error al eliminar tipo de usuario");
+                muestraMensaje("error", 2000, "Error", "Error al eliminar tipousuario");
             }
         }
     })
