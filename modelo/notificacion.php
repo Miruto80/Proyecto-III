@@ -122,11 +122,13 @@ public function cambiarestato() {
 
 
 public function eliminar() {
-    $registro = "UPDATE notificaciones SET estado = 0 WHERE estado = 2";
+    $registro = "DELETE FROM notificaciones WHERE id_notificaciones = :id_notificaciones";
     $strExec = $this->conex1->prepare($registro);
+    $strExec->bindParam(':id_notificaciones', $this->id_notificaciones);
     $resul = $strExec->execute();
     return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
 }
+
 
 
 
