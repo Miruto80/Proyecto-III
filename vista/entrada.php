@@ -184,7 +184,9 @@
                                         <select class="form-select producto-select" name="id_producto[]" required>
                                           <option value="">Seleccione un producto</option>
                                           <?php foreach($productos_lista as $producto): ?>
-                                            <option value="<?php echo $producto['id_producto']; ?>" data-stock="<?php echo $producto['stock_disponible']; ?>" <?php echo ($producto['id_producto'] == $detalle['id_producto']) ? 'selected' : ''; ?>>
+                                            <option value="<?php echo $producto['id_producto']; ?>" 
+                                                    data-stock-maximo="<?php echo $producto['stock_maximo']; ?>"
+                                                    data-stock-actual="<?php echo $producto['stock_disponible']; ?>">
                                               <?php echo $producto['nombre'] . ' - ' . $producto['marca']; ?>
                                             </option>
                                           <?php endforeach; ?>
@@ -279,7 +281,9 @@
                   <select class="form-select producto-select" name="id_producto[]" required>
                     <option value="">Seleccione un producto</option>
                     <?php foreach($productos_lista as $producto): ?>
-                      <option value="<?php echo $producto['id_producto']; ?>" data-stock="<?php echo $producto['stock_disponible']; ?>">
+                      <option value="<?php echo $producto['id_producto']; ?>" 
+                              data-stock-maximo="<?php echo $producto['stock_maximo']; ?>"
+                              data-stock-actual="<?php echo $producto['stock_disponible']; ?>">
                         <?php echo $producto['nombre'] . ' - ' . $producto['marca']; ?>
                       </option>
                     <?php endforeach; ?>

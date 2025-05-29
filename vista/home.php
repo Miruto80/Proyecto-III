@@ -44,10 +44,10 @@
                         <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
                             <i class="fa-solid fa-comments-dollar" style="color:black;"> </i>
                         </div>
-                        <h5 class="text-white font-weight-bolder mb-0 mt-3">
+                        <h5 class="font-weight-bolder mb-0 mt-3" style="color:black;">
                         $<?php echo number_format($totales['total_ventas'], 2); ?>
                     </h5>
-                        <span class="text-white text-sm"><b>Ventas totales</b></span>
+                        <span class="text-sm" style="color:black;"><b>Ventas totales</b></span>
                     </div>
                     
                 </div>

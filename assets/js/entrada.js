@@ -64,25 +64,29 @@ document.addEventListener('DOMContentLoaded', function() {
       const precio = fila.querySelector('.precio-input');
       
       if (productoSelect && productoSelect.value) {
+        // Obtener el stock máximo del option seleccionado
+        const selectedOption = productoSelect.options[productoSelect.selectedIndex];
+        const stockMaximo = selectedOption.getAttribute('data-stock-maximo');
+        const stockActual = selectedOption.getAttribute('data-stock-actual');
+        
         if (!cantidad || !cantidad.value || parseFloat(cantidad.value) <= 0) {
           muestraMensaje("warning", 3000, "Cantidad inválida", "La cantidad debe ser mayor a cero");
+          productosValidos = false;
+          return;
+        }
+
+        // Validar que no supere el stock máximo
+        const nuevaCantidad = parseFloat(cantidad.value);
+        const stockTotal = parseFloat(stockActual) + nuevaCantidad;
+        
+        if (stockMaximo && stockTotal > parseFloat(stockMaximo)) {
+          muestraMensaje("warning", 3000, "Stock excedido", `La cantidad ingresada superaría el stock máximo permitido (${stockMaximo})`);
           productosValidos = false;
           return;
         }
         
         if (!precio || !precio.value || parseFloat(precio.value) <= 0) {
           muestraMensaje("warning", 3000, "Precio inválido", "El precio unitario debe ser mayor a cero");
-          productosValidos = false;
-          return;
-        }
-
-        // Obtener el stock disponible del producto seleccionado
-        const selectedOption = productoSelect.options[productoSelect.selectedIndex];
-        const stockDisponible = parseInt(selectedOption.getAttribute('data-stock') || 0);
-        const cantidadActual = parseInt(cantidad.value || 0);
-
-        if (cantidadActual > stockDisponible) {
-          muestraMensaje("warning", 3000, "Stock insuficiente", `La cantidad (${cantidadActual}) supera el stock disponible (${stockDisponible})`);
           productosValidos = false;
           return;
         }
@@ -195,7 +199,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const cantidadInput = fila.querySelector('.cantidad-input');
     const precioInput = fila.querySelector('.precio-input');
     const precioTotalInput = fila.querySelector('.precio-total');
-    const productoSelect = fila.querySelector('.producto-select');
     const removerBtn = fila.querySelector('.remover-producto');
     
     // Calcular precio total cuando cambia la cantidad o el precio unitario
@@ -205,47 +208,16 @@ document.addEventListener('DOMContentLoaded', function() {
       const precioTotal = cantidad * precioUnitario;
       precioTotalInput.value = precioTotal.toFixed(2);
     }
-
-    // Validar stock al cambiar la cantidad
-    function validarStock() {
-      if (productoSelect && productoSelect.value && cantidadInput.value) {
-        const selectedOption = productoSelect.options[productoSelect.selectedIndex];
-        const stockDisponible = parseInt(selectedOption.getAttribute('data-stock') || 0);
-        const cantidadActual = parseInt(cantidadInput.value || 0);
-
-        if (cantidadActual > stockDisponible) {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Stock Insuficiente',
-            html: `La cantidad ingresada (${cantidadActual}) supera el stock disponible (${stockDisponible}).<br>Por favor, ingrese una cantidad menor o igual al stock disponible.`,
-            confirmButtonText: 'Entendido'
-          });
-          cantidadInput.value = stockDisponible; // Establecer al máximo disponible
-          calcularPrecioTotal(); // Recalcular el precio total
-        }
-      }
-    }
     
     // Evitar configurar el mismo evento múltiples veces
     if (!cantidadInput.dataset.configurado) {
       cantidadInput.dataset.configurado = "true";
       cantidadInput.addEventListener('input', calcularPrecioTotal);
-      cantidadInput.addEventListener('change', validarStock);
     }
     
     if (!precioInput.dataset.configurado) {
       precioInput.dataset.configurado = "true";
       precioInput.addEventListener('input', calcularPrecioTotal);
-    }
-
-    // Validar stock al cambiar el producto
-    if (!productoSelect.dataset.configurado) {
-      productoSelect.dataset.configurado = "true";
-      productoSelect.addEventListener('change', function() {
-        if (cantidadInput.value) {
-          validarStock();
-        }
-      });
     }
     
     // Calcular precio inicial

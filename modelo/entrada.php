@@ -47,14 +47,26 @@ class Entrada extends Conexion {
                 return ['respuesta' => 0, 'accion' => 'incluir', 'error' => 'Datos incompletos'];
             }
             
-            // Validar stock disponible para cada producto
+            // Validar stock máximo para cada producto
             foreach ($this->detalles as $detalle) {
-                if (!$this->verificarStock($detalle['id_producto'], $detalle['cantidad'])) {
-                    return [
-                        'respuesta' => 0, 
-                        'accion' => 'incluir', 
-                        'error' => 'Stock insuficiente para el producto ID: ' . $detalle['id_producto']
-                    ];
+                // Obtener información del producto
+                $query = "SELECT stock_disponible, stock_maximo FROM productos WHERE id_producto = :id_producto";
+                $stmt = $this->conex1->prepare($query);
+                $stmt->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
+                $stmt->execute();
+                $producto = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($producto) {
+                    $stockTotal = $producto['stock_disponible'] + $detalle['cantidad'];
+                    if ($stockTotal > $producto['stock_maximo']) {
+                        $this->conex1->rollBack();
+                        return [
+                            'respuesta' => 0, 
+                            'accion' => 'incluir', 
+                            'error' => 'La cantidad ingresada para el producto ID: ' . $detalle['id_producto'] . 
+                                     ' superaría el stock máximo permitido (' . $producto['stock_maximo'] . ')'
+                        ];
+                    }
                 }
             }
             
@@ -145,14 +157,31 @@ class Entrada extends Conexion {
                 return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'La compra no existe'];
             }
             
-            // Validar stock disponible para cada producto
+            // Validar stock máximo para cada producto
             foreach ($this->detalles as $detalle) {
-                if (!$this->verificarStock($detalle['id_producto'], $detalle['cantidad'])) {
-                    return [
-                        'respuesta' => 0, 
-                        'accion' => 'actualizar', 
-                        'error' => 'Stock insuficiente para el producto ID: ' . $detalle['id_producto']
-                    ];
+                // Obtener información del producto
+                $query = "SELECT p.stock_disponible, p.stock_maximo, COALESCE(cd.cantidad, 0) as cantidad_actual 
+                         FROM productos p 
+                         LEFT JOIN compra_detalles cd ON cd.id_producto = p.id_producto AND cd.id_compra = :id_compra 
+                         WHERE p.id_producto = :id_producto";
+                $stmt = $this->conex1->prepare($query);
+                $stmt->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
+                $stmt->bindParam(':id_compra', $this->id_compra, PDO::PARAM_INT);
+                $stmt->execute();
+                $producto = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($producto) {
+                    // Calcular el nuevo stock total considerando la cantidad actual
+                    $stockTotal = ($producto['stock_disponible'] - $producto['cantidad_actual']) + $detalle['cantidad'];
+                    if ($stockTotal > $producto['stock_maximo']) {
+                        $this->conex1->rollBack();
+                        return [
+                            'respuesta' => 0, 
+                            'accion' => 'actualizar', 
+                            'error' => 'La cantidad ingresada para el producto ID: ' . $detalle['id_producto'] . 
+                                     ' superaría el stock máximo permitido (' . $producto['stock_maximo'] . ')'
+                        ];
+                    }
                 }
             }
             
@@ -470,21 +499,6 @@ class Entrada extends Conexion {
             $consulta->execute();
             
             return $consulta->fetchColumn() > 0;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    // Método para verificar el stock disponible
-    private function verificarStock($id_producto, $cantidad_solicitada) {
-        try {
-            $query = "SELECT stock_disponible FROM productos WHERE id_producto = :id_producto AND estatus = 1";
-            $consulta = $this->conex1->prepare($query);
-            $consulta->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
-            $consulta->execute();
-            
-            $stock_disponible = $consulta->fetchColumn();
-            return $stock_disponible >= $cantidad_solicitada;
         } catch (Exception $e) {
             return false;
         }
