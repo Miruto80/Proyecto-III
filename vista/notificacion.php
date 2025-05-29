@@ -34,7 +34,11 @@
           <div class="card mb-4">
             <div class="card-header pb-0">  <!-- CARD N-1 -->  
               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button class="btn btn-primary" type="button"> <i class="fa-solid fa-trash-can mr-4"></i> Vaciar</button>
+               <button class="btn btn-primary btn-vaciar" type="button"> 
+               <i class="fa-solid fa-trash-can mr-4"></i> Vaciar
+              </button>
+
+              
               </div>
             <table class="table">
                    
@@ -44,13 +48,7 @@
       <tr id="notificacion-<?= $n['id_notificaciones'] ?>">
         <td><?= htmlspecialchars($n['titulo']) ?></td>
         <td><?= htmlspecialchars($n['mensaje']) ?></td>
-       <td class="estado">
-  <?php if ($n['estado'] == 0 && $n['id_pedido_estado'] == 0): ?>
-      Leída
-  <?php else: ?>
-      Eliminada
-  <?php endif; ?>
-</td>
+        <td class="estado"><?= $n['estado'] == 1 ? 'No leída' : 'Leída' ?></td>
         <td><?= date('d-m-Y h:i a', strtotime($n['fecha'])) ?></td>
         <td>
   <button class="btn btn-info btn-sm btn-leer" data-id="<?= $n['id_notificaciones'] ?>" title="Marcar como leída">
