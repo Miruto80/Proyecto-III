@@ -118,6 +118,7 @@ $objlogin = new Login();
     
   
      $persona = $objlogin->obtenerPersonaPorCedula();
+
     if ($persona) {
         $res = array('respuesta' => 1, 'accion' => 'validarclave');
         echo json_encode($res);
@@ -126,7 +127,8 @@ $objlogin = new Login();
         $_SESSION["apellidos"] = $persona->apellido;
         $_SESSION["correos"] = $persona->correo;
         $_SESSION["iduser"] = 1;
-        
+        $_SESSION["tabla_origen"] = ($persona->origen == 'usuario') ? 1 : 2;
+       
         exit;
     } else {
         $res = array('respuesta' => 0, 'accion' => 'validarclave', 'text' => 'Cédula incorrecta o no hay registro');

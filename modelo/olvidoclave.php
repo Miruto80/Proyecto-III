@@ -42,6 +42,24 @@ class Clave extends Conexion{
 
 
      public function actualizarClave(){
+        $registro = "UPDATE cliente SET clave = :clave WHERE id_persona = :id_persona";
+
+        $strExec = $this->conex1->prepare($registro);
+        $strExec->bindParam(':id_persona', $this->id_persona);
+        // Encriptar la clave antes de almacenarla
+        $claveEncriptada = $this->encryptClave($this->clave);
+        $strExec->bindParam(':clave', $claveEncriptada);
+
+        $resul = $strExec->execute();
+        if ($resul) {
+            $res=array('respuesta'=>1,'accion'=>'actualizar');
+        } else {
+            $res=array('respuesta'=>0,'accion'=>'actualizar');
+        }
+        return $res;
+    } // fin actulizar
+
+     public function actualizarClaveusuario(){
         $registro = "UPDATE usuario SET clave = :clave WHERE id_persona = :id_persona";
 
         $strExec = $this->conex2->prepare($registro);
@@ -52,7 +70,7 @@ class Clave extends Conexion{
 
         $resul = $strExec->execute();
         if ($resul) {
-            $res=array('respuesta'=>1,'accion'=>'actualizar');
+            $res=array('respuesta'=>2,'accion'=>'actualizar');
         } else {
             $res=array('respuesta'=>0,'accion'=>'actualizar');
         }
