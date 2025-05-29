@@ -77,10 +77,29 @@ if (isset($_POST['favorito'])) {
    $id_persona = $_POST['id_persona'];
    $cedula = $_POST['cedula'];
    $correo = $_POST['correo'];
+    $cedula_actual = $_POST['cedulaactual'];
+   $correo_actual = $_POST['correoactual'];
   
     $objcliente->set_Id_persona($id_persona);
     $objcliente->set_Cedula($cedula); 
-    $objcliente->set_Correo($correo);  
+    $objcliente->set_Correo($correo);
+    
+    if ($cedula_actual !== $cedula) {
+       if ($objcliente->existeCedula($cedula)) {
+           $res = array('respuesta' => 0, 'accion' => 'actualizar', 'text' => 'La cédula ya está registrada.');
+            echo json_encode($res);
+            exit; // Se detiene la ejecución si la cédula existe
+      } 
+   }
+
+   if ($correo_actual !== $correo) {
+       if ($objcliente->existeCorreo($correo)) {
+           $res = array('respuesta' => 0, 'accion' => 'actualizar', 'text' => 'El correo electrónico ya está registrado.');
+         echo json_encode($res);
+         exit; 
+      }
+   }
+
     $result = $objcliente->actualizar();
      /* BITACORA */
         if ($result['respuesta'] == 1) {

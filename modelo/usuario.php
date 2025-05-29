@@ -121,7 +121,7 @@ class Usuario extends Conexion
     }
 
      public function actualizar(){
-        $registro = "UPDATE usuario SET cedula = :cedula, correo = :correo, estatus = :estatus, id_rol = :id_rol  WHERE id_persona = :id_usuario";
+        $registro = "UPDATE usuario SET cedula = :cedula, correo = :correo, estatus = :estatus, id_rol = :id_rol,  WHERE id_persona = :id_usuario";
 
         $strExec = $this->conex2->prepare($registro);
         $strExec->bindParam(':id_usuario', $this->id_usuario);
