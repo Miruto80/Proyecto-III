@@ -119,7 +119,7 @@
   <h4 class="mb-0">
     <i class="fa-solid fa-pump-soap mr-2" style="color: #f6c5b4;"></i> Producto
   </h4>
-
+ 
   <div class="d-flex gap-2">
   <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro" id="btnAbrirRegistrar">
     <span class="icon text-white">
