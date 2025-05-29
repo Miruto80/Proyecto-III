@@ -1,6 +1,7 @@
 <?php
 require_once 'conexion.php';
-
+require_once 'metodoentrega.php';
+require_once 'metodopago.php';
 class VentaWeb extends Conexion {
     private $conex1;
     private $conex2;
@@ -8,6 +9,8 @@ class VentaWeb extends Conexion {
     private $datos;
     private $detalles;
     private $estado;
+    private $objmetodoentrega;
+    private $objmetodopago;
 
     public function __construct() {
         parent::__construct(); // Llama al constructor de la clase padre
@@ -16,14 +19,9 @@ class VentaWeb extends Conexion {
         $this->conex1 = $this->getConex1();
         $this->conex2 = $this->getConex2();
     
-         // Verifica si las conexiones son exitosas
-        if (!$this->conex1) {
-            die('Error al conectar con la primera base de datos');
-        }
-
-        if (!$this->conex2) {
-            die('Error al conectar con la segunda base de datos');
-        }
+        $this->objmetodoentrega = new metodoentrega();
+        $this->objmetodopago = new MetodoPago();
+    
     }
 
     // Setters
@@ -47,15 +45,11 @@ class VentaWeb extends Conexion {
  
 
     public function obtenerMetodosPago() {
-        $stmt = $this->conex1->prepare("SELECT * FROM metodo_pago WHERE estatus = 1 AND id_metodopago = 1");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+          return $this->objmetodopago->obtenerMetodos();
     }
 
     public function obtenerMetodosEntrega() {
-        $stmt = $this->conex1->prepare("SELECT * FROM metodo_entrega WHERE estatus = 1");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->objmetodoentrega->consultar();
     }
 
 
