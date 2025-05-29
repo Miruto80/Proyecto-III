@@ -85,7 +85,7 @@ nav {
     $paginasPermitidas = ['catalogo', 'catalogo_producto', 'vercarrito', 'verpedidoweb'];
     $paginasOcultas = ['vercarrito', 'verpedidoweb'];
   ?>
- <?php if ($sesion_activa): ?>
+ <?php if (in_array($pagina,$paginasPermitidas)): ?>
    <li>
     <a class="p-2 mx-1" id="btnAyuda">
       <span class="icon text-dark">
