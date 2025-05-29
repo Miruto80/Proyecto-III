@@ -142,12 +142,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }elseif ($accion === 'cambiarEstatus') {
         if (!empty($_POST['id_producto']) && isset($_POST['estatus_actual'])) {
             $id_producto = $_POST['id_producto'];
-            $estatus_actual = $_POST['estatus_actual']; // Recibido desde AJAX
+            $estatus_actual = $_POST['estatus_actual']; 
     
-            // Llamamos la función en el modelo PASANDO el estatus actual
+            
             $result = $objproducto->cambiarEstatusProducto($id_producto, $estatus_actual);
 
-              /* BITACORA */
+              
             if ($result['respuesta'] == 1) {
                 $id_persona = $_SESSION["id"]; 
             // Registrar en la bitácora
