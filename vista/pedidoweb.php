@@ -117,16 +117,19 @@
     <input type="hidden" name="nombre" value="Listado de proveedores">
     <button type="submit" name="generar" class="btn btn-info">
       Generar PDF
-    </button>
-  </form>
-
-
-            <button style="margin-left: 90%;" type="button" class="btn btn-primary" id="btnAyuda">
+    </button> 
+    
+    
+    <button style="margin-left: 90%;" type="button" class="btn btn-primary" id="btnAyuda">
     <span class="icon text-white">
       <i class="fas fa-info-circle"></i>
     </span>
     <span class="text-white">Ayuda</span>
   </button>
+  </form>
+
+
+          
           
       </div>
     
