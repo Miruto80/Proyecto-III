@@ -37,13 +37,14 @@ public function consultarPedidosPendientes() {
                 p.fecha,
                 p.estado
             FROM pedido p
-            WHERE estado = 0;
-            ORDER BY p.fecha DESC";
+            WHERE p.estado = 0
+            ORDER BY p.fecha DESC"; 
 
     $stmt = $this->conex1->prepare($sql);  
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 public function registrar() {
     try {
@@ -95,6 +96,12 @@ public function registrarNotificacionesDePedidos() {
     return ['registradas' => $registradas];
 }
 
+public function verificarConexion() {
+    var_dump($this->conex1); // Esto mostrará la información de la conexión
+    exit; // Detiene la ejecución para ver la salida en pantalla
+}
+
+
 public function obtenerNotificaciones() {
     $sql = "SELECT * FROM notificaciones ORDER BY fecha DESC";
     $stmt = $this->conex1->prepare($sql);
@@ -104,7 +111,7 @@ public function obtenerNotificaciones() {
 
 
 private function existeNotificacion($id_pedido) {
-    $sql = "SELECT COUNT(*) FROM notificaciones WHERE id_pedido = :id_pedido";
+    $sql = "SELECT COUNT(*) FROM notificaciones WHERE id_pedido = :id_pedido AND estado = 0";
     $stmt = $this->conex1->prepare($sql);
     $stmt->bindParam(':id_pedido', $id_pedido);
     $stmt->execute();
@@ -112,19 +119,38 @@ private function existeNotificacion($id_pedido) {
 }
 
 public function cambiarestato() {
-    $registro = "UPDATE notificaciones SET estatus = 0 WHERE id_notificaciones = :id_notificaciones";
+    $verificarPedido = "SELECT estado FROM pedido WHERE id_pedido = (SELECT id_pedido FROM notificaciones WHERE id_notificaciones = :id_notificaciones)";
+    $stmtPedido = $this->conex1->prepare($verificarPedido);
+    $stmtPedido->bindParam(':id_notificaciones', $this->id_notificaciones);
+    $stmtPedido->execute();
+    $estadoPedido = $stmtPedido->fetchColumn();
+
+    if ($estadoPedido == 1) {
+        return ['respuesta' => 0, 'accion' => 'leer', 'mensaje' => 'No puedes marcar como leído un pedido eliminado'];
+    }
+
+    $registro = "UPDATE notificaciones SET estado = CASE WHEN estado = 1 THEN 0 ELSE 1 END WHERE id_notificaciones = :id_notificaciones";
     $strExec = $this->conex1->prepare($registro);
     $strExec->bindParam(':id_notificaciones', $this->id_notificaciones);
     $resul = $strExec->execute();
-    return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
+
+    return $resul ? ['respuesta' => 1, 'accion' => 'leer'] : ['respuesta' => 0, 'accion' => 'leer'];
 }
 
+
 public function eliminar() {
-    $registro = "UPDATE notificaciones SET estatus = 1 WHERE id_notificaciones = :id_notificaciones";
-    $strExec = $this->conex1->prepare($registro);
-    $strExec->bindParam(':id_notificaciones', $this->id_notificaciones);
-    $resul = $strExec->execute();
-    return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
+    $registroNotificacion = "UPDATE notificaciones SET estado = 1 WHERE id_notificaciones = :id_notificaciones";
+    $registroPedido = "UPDATE pedido SET estado = 1 WHERE id_pedido = (SELECT id_pedido FROM notificaciones WHERE id_notificaciones = :id_notificaciones)";
+
+    $stmtNotificacion = $this->conex1->prepare($registroNotificacion);
+    $stmtNotificacion->bindParam(':id_notificaciones', $this->id_notificaciones);
+    $resul1 = $stmtNotificacion->execute();
+
+    $stmtPedido = $this->conex1->prepare($registroPedido);
+    $stmtPedido->bindParam(':id_notificaciones', $this->id_notificaciones);
+    $resul2 = $stmtPedido->execute();
+
+    return ($resul1 && $resul2) ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
 }
 
 

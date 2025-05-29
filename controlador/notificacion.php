@@ -39,6 +39,7 @@ require_once 'vista/notificacion.php';
 
 // Obtener todas las notificaciones existentes
 
+$notificacion->verificarConexion();
 
      
 

@@ -44,7 +44,13 @@
       <tr id="notificacion-<?= $n['id_notificaciones'] ?>">
         <td><?= htmlspecialchars($n['titulo']) ?></td>
         <td><?= htmlspecialchars($n['mensaje']) ?></td>
-        <td class="estado"><?= $n['estado'] == 1 ? 'No leída' : 'Leída' ?></td>
+       <td class="estado">
+  <?php if ($n['estado'] == 0 && $n['id_pedido_estado'] == 0): ?>
+      Leída
+  <?php else: ?>
+      Eliminada
+  <?php endif; ?>
+</td>
         <td><?= date('d-m-Y h:i a', strtotime($n['fecha'])) ?></td>
         <td>
   <button class="btn btn-info btn-sm btn-leer" data-id="<?= $n['id_notificaciones'] ?>" title="Marcar como leída">
