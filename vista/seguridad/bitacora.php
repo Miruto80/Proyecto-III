@@ -5,6 +5,8 @@
   <!-- php barra de navegacion-->
   <?php include 'vista/complementos/head.php' ?> 
   <title>Bitácora del Sistema | LoveMakeup</title>
+  <!-- Asegurarnos que jQuery esté cargado -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
@@ -42,7 +44,7 @@
               </div>
 
               <div class="table-responsive"> <!-- comienzo div table-->
-                <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover display responsive nowrap" id="tablaBitacora" width="100%" cellspacing="0">
                   <thead class="table-color">
                     <tr>
                       <th class="text-white">Acción</th>
@@ -172,55 +174,56 @@
 <!-- php barra de navegacion-->
 <?php include 'vista/complementos/footer.php' ?>
 <script src="assets/js/demo/datatables-demo.js"></script>
+
+<!-- Script para el manejo de detalles -->
 <script>
 function verDetalles(id) {
     $.ajax({
         url: '?pagina=bitacora',
         type: 'POST',
         data: {detalles: id},
+        dataType: 'json',
         success: function(response) {
-            try {
-                let datos = JSON.parse(response);
-                
-                // Información del Usuario
-                $('#detalle-usuario').text(datos.nombre + ' ' + datos.apellido);
-                $('#detalle-rol').text(datos.nombre_usuario);
-                
-                // Información del Evento
-                $('#detalle-fecha').text(datos.fecha_hora);
-                
-                // Tipo de Acción con badge
-                let badgeClass = '';
-                switch(datos.accion) {
-                    case 'CREAR': badgeClass = 'bg-success'; break;
-                    case 'MODIFICAR': badgeClass = 'bg-primary'; break;
-                    case 'ELIMINAR': badgeClass = 'bg-danger'; break;
-                    case 'ACCESO A MÓDULO': badgeClass = 'bg-info'; break;
-                    case 'CAMBIO_ESTADO': badgeClass = 'bg-warning'; break;
-                    default: badgeClass = 'bg-secondary';
-                }
-                $('#detalle-accion').html(`<span class="badge ${badgeClass}">${datos.accion}</span>`);
-                
-                // Descripción con formato
-                let desc = datos.descripcion;
-                if (desc.match(/\[(.*?)\]$/)) {
-                    let partes = desc.split(/\[(.*?)\]$/);
-                    $('#detalle-descripcion').html(`
-                        <p class="mb-2">${partes[0]}</p>
-                        <span class="badge bg-primary">[${partes[1]}]</span>
-                    `);
-                } else {
-                    $('#detalle-descripcion').text(desc);
-                }
-                
-                $('#detallesModal').modal('show');
-            } catch (e) {
-                Swal.fire(
-                    'Error',
-                    'No se pudieron cargar los detalles',
-                    'error'
-                );
+            if(response.error) {
+                Swal.fire('Error', response.error, 'error');
+                return;
             }
+            
+            // Información del Usuario
+            $('#detalle-usuario').text(response.nombre + ' ' + response.apellido);
+            $('#detalle-rol').text(response.nombre_usuario);
+            
+            // Información del Evento
+            $('#detalle-fecha').text(response.fecha_hora);
+            
+            // Tipo de Acción con badge
+            let badgeClass = '';
+            switch(response.accion) {
+                case 'CREAR': badgeClass = 'bg-success'; break;
+                case 'MODIFICAR': badgeClass = 'bg-primary'; break;
+                case 'ELIMINAR': badgeClass = 'bg-danger'; break;
+                case 'ACCESO A MÓDULO': badgeClass = 'bg-info'; break;
+                case 'CAMBIO_ESTADO': badgeClass = 'bg-warning'; break;
+                default: badgeClass = 'bg-secondary';
+            }
+            $('#detalle-accion').html(`<span class="badge ${badgeClass}">${response.accion}</span>`);
+            
+            // Descripción con formato
+            let desc = response.descripcion;
+            if (desc.match(/\[(.*?)\]$/)) {
+                let partes = desc.split(/\[(.*?)\]$/);
+                $('#detalle-descripcion').html(`
+                    <p class="mb-2">${partes[0]}</p>
+                    <span class="badge bg-primary">[${partes[1]}]</span>
+                `);
+            } else {
+                $('#detalle-descripcion').text(desc);
+            }
+            
+            $('#detallesModal').modal('show');
+        },
+        error: function() {
+            Swal.fire('Error', 'No se pudieron cargar los detalles', 'error');
         }
     });
 }

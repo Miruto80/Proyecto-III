@@ -21,25 +21,41 @@ class Bitacora extends Conexion {
 
     // Mapeo de acciones por módulo
     private $accionesModulos = [
-        'usuario' => [
+        'productos' => [
             'registrar' => self::CREAR,
             'actualizar' => self::MODIFICAR,
-            'eliminar' => self::ELIMINAR
-        ],
-        'producto' => [
-            'registrar' => self::CREAR,
-            'actualizar' => self::MODIFICAR,
-            'eliminar' => self::ELIMINAR
+            'eliminar' => self::ELIMINAR,
+            'cambiar_estado' => self::CAMBIO_ESTADO
         ],
         'categoria' => [
             'registrar' => self::CREAR,
             'actualizar' => self::MODIFICAR,
-            'eliminar' => self::ELIMINAR
+            'eliminar' => self::ELIMINAR,
+            'cambiar_estado' => self::CAMBIO_ESTADO
         ],
         'cliente' => [
             'registrar' => self::CREAR,
             'actualizar' => self::MODIFICAR,
-            'eliminar' => self::ELIMINAR
+            'eliminar' => self::ELIMINAR,
+            'cambiar_estado' => self::CAMBIO_ESTADO
+        ],
+        'proveedor' => [
+            'registrar' => self::CREAR,
+            'actualizar' => self::MODIFICAR,
+            'eliminar' => self::ELIMINAR,
+            'cambiar_estado' => self::CAMBIO_ESTADO
+        ],
+        'metodo_pago' => [
+            'registrar' => self::CREAR,
+            'actualizar' => self::MODIFICAR,
+            'eliminar' => self::ELIMINAR,
+            'cambiar_estado' => self::CAMBIO_ESTADO
+        ],
+        'metodo_entrega' => [
+            'registrar' => self::CREAR,
+            'actualizar' => self::MODIFICAR,
+            'eliminar' => self::ELIMINAR,
+            'cambiar_estado' => self::CAMBIO_ESTADO
         ]
     ];
 
@@ -84,103 +100,137 @@ class Bitacora extends Conexion {
 
     private function generarDetalle($modulo, $accion, $datos) {
         $detalle = '';
-        switch ($modulo) {
-            case 'usuario':
-                if (isset($datos['cedula'])) {
-                    $detalle = 'Usuario con Cédula: ' . $datos['cedula'];
-                    if (isset($datos['nombre']) && isset($datos['apellido'])) {
-                        $detalle .= ' - Nombre completo: ' . $datos['nombre'] . ' ' . $datos['apellido'];
+        
+        // Mapeo de campos por módulo con etiquetas personalizadas
+        $camposModulo = [
+            'productos' => [
+                'nombre' => 'Nombre del Producto',
+                'descripcion' => 'Descripción',
+                'marca' => 'Marca',
+                'cantidad_mayor' => 'Cantidad al Mayor',
+                'precio_mayor' => 'Precio al Mayor',
+                'precio_detal' => 'Precio al Detal',
+                'stock_disponible' => 'Stock Disponible',
+                'stock_maximo' => 'Stock Máximo',
+                'stock_minimo' => 'Stock Mínimo',
+                'id_categoria' => 'Categoría'
+            ],
+            'categoria' => [
+                'nombre' => 'Nombre de Categoría',
+                'estatus' => 'Estado'
+            ],
+            'cliente' => [
+                'cedula' => 'Cédula',
+                'nombre' => 'Nombre',
+                'apellido' => 'Apellido',
+                'correo' => 'Correo',
+                'telefono' => 'Teléfono'
+            ],
+            'proveedor' => [
+                'numero_documento' => 'RIF/Cédula',
+                'tipo_documento' => 'Tipo de Documento',
+                'nombre' => 'Nombre/Razón Social',
+                'correo' => 'Correo',
+                'telefono' => 'Teléfono',
+                'direccion' => 'Dirección'
+            ],
+            'metodo_pago' => [
+                'nombre' => 'Nombre del Método',
+                'descripcion' => 'Descripción'
+            ],
+            'metodo_entrega' => [
+                'nombre' => 'Nombre del Método',
+                'descripcion' => 'Descripción'
+            ]
+        ];
+
+        // Función para formatear valores específicos
+        $formatearValor = function($campo, $valor) {
+            switch($campo) {
+                case 'estatus':
+                    return $valor == 1 ? 'Activo' : 'Inactivo';
+                case 'precio_mayor':
+                case 'precio_detal':
+                    return number_format($valor, 2) . ' $';
+                default:
+                    return $valor;
+            }
+        };
+
+        // Generar detalle según la acción
+        switch ($accion) {
+            case self::CREAR:
+                if (isset($camposModulo[$modulo])) {
+                    $detalles = [];
+                    foreach ($camposModulo[$modulo] as $campo => $etiqueta) {
+                        if (isset($datos[$campo]) && !empty($datos[$campo])) {
+                            $valor = $formatearValor($campo, $datos[$campo]);
+                            $detalles[] = "{$etiqueta}: {$valor}";
+                        }
                     }
-                    if (isset($datos['correo'])) {
-                        $detalle .= ' - Correo: ' . $datos['correo'];
-                    }
-                } else if (isset($datos['eliminar'])) {
-                    $detalle = 'Usuario con ID: ' . $datos['eliminar'];
+                    $detalle = "Se ha registrado un nuevo {$modulo} con los siguientes datos: " . implode(' | ', $detalles);
                 }
                 break;
-            case 'producto':
-                if (isset($datos['codigo'])) {
-                    $detalle = 'Producto con Código: ' . $datos['codigo'];
-                    if (isset($datos['nombre'])) {
-                        $detalle .= ' - Nombre: ' . $datos['nombre'];
+
+            case self::MODIFICAR:
+                if (isset($camposModulo[$modulo])) {
+                    $detalles = [];
+                    foreach ($camposModulo[$modulo] as $campo => $etiqueta) {
+                        if (isset($datos[$campo]) && !empty($datos[$campo])) {
+                            $valor = $formatearValor($campo, $datos[$campo]);
+                            $detalles[] = "{$etiqueta}: {$valor}";
+                        }
                     }
-                    if (isset($datos['marca'])) {
-                        $detalle .= ' - Marca: ' . $datos['marca'];
-                    }
-                    if (isset($datos['precio'])) {
-                        $detalle .= ' - Precio: ' . $datos['precio'];
-                    }
+                    $detalle = "Se ha modificado el {$modulo} con los siguientes datos: " . implode(' | ', $detalles);
                 }
                 break;
-            case 'categoria':
+
+            case self::ELIMINAR:
+                $identificador = '';
+                if (isset($datos['id'])) {
+                    $identificador = "ID: " . $datos['id'];
+                } elseif (isset($datos['cedula'])) {
+                    $identificador = "Cédula: " . $datos['cedula'];
+                } elseif (isset($datos['numero_documento'])) {
+                    $identificador = "RIF/Cédula: " . $datos['numero_documento'];
+                }
+                $detalle = "Se ha eliminado el {$modulo} con " . $identificador;
+                break;
+
+            case self::CAMBIO_ESTADO:
+                $estado = isset($datos['estatus']) ? ($datos['estatus'] == 1 ? 'Activo' : 'Inactivo') : 'Desconocido';
+                $identificador = '';
+                
                 if (isset($datos['nombre'])) {
-                    $detalle = 'Categoría: ' . $datos['nombre'];
-                    if (isset($datos['descripcion'])) {
-                        $detalle .= ' - Descripción: ' . $datos['descripcion'];
-                    }
+                    $identificador = "Nombre: " . $datos['nombre'];
+                } elseif (isset($datos['cedula'])) {
+                    $identificador = "Cédula: " . $datos['cedula'];
+                } elseif (isset($datos['numero_documento'])) {
+                    $identificador = "RIF/Cédula: " . $datos['numero_documento'];
                 }
+                
+                $detalle = "Se ha cambiado el estado del {$modulo} a: {$estado} | {$identificador}";
                 break;
-            case 'cliente':
-                if (isset($datos['cedula'])) {
-                    $detalle = 'Cliente con Cédula: ' . $datos['cedula'];
-                    if (isset($datos['nombre']) && isset($datos['apellido'])) {
-                        $detalle .= ' - Nombre completo: ' . $datos['nombre'] . ' ' . $datos['apellido'];
-                    }
-                    if (isset($datos['correo'])) {
-                        $detalle .= ' - Correo: ' . $datos['correo'];
-                    }
-                    if (isset($datos['telefono'])) {
-                        $detalle .= ' - Teléfono: ' . $datos['telefono'];
-                    }
-                }
+
+            case self::ACCESO_MODULO:
+                $detalle = "El usuario ha accedido al módulo de " . ucfirst($modulo);
                 break;
         }
+
         return $detalle;
     }
 
-    public function registrarOperacion($accion, $modulo, $detalle = '') {
+    public function registrarOperacion($accion, $modulo, $datos = []) {
         if (!isset($_SESSION['id'])) {
             return false;
         }
 
         try {
             $fecha = date('Y-m-d H:i:s');
+            $detalle = $this->generarDetalle($modulo, $accion, $datos);
             
-            // Formatear la descripción
-            switch ($accion) {
-                case self::CREAR:
-                    $descripcion = "Se ha registrado exitosamente un nuevo registro en " . $modulo;
-                    if ($detalle) {
-                        $descripcion .= " con los siguientes datos: " . $detalle;
-                    }
-                    break;
-                case self::MODIFICAR:
-                    $descripcion = "Se ha modificado exitosamente un registro en " . $modulo;
-                    if ($detalle) {
-                        $descripcion .= " con los siguientes datos actualizados: " . $detalle;
-                    }
-                    break;
-                case self::ELIMINAR:
-                    $descripcion = "Se ha eliminado exitosamente un registro en " . $modulo;
-                    if ($detalle) {
-                        $descripcion .= " con los siguientes datos: " . $detalle;
-                    }
-                    break;
-                case self::ACCESO_MODULO:
-                    $descripcion = "El usuario ha accedido exitosamente al módulo " . $modulo;
-                    break;
-                case self::CAMBIO_ESTADO:
-                    $descripcion = "Se ha cambiado exitosamente el estado en " . $modulo;
-                    if ($detalle) {
-                        $descripcion .= " para: " . $detalle;
-                    }
-                    break;
-                default:
-                    $descripcion = $detalle;
-            }
-
             // Agregar el módulo al final de la descripción
-            $descripcion .= " [" . $modulo . "]";
+            $detalle .= " [" . ucfirst($modulo) . "]";
 
             $registro = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
                         VALUES (:accion, :fecha_hora, :descripcion, :id_persona)";
@@ -188,7 +238,7 @@ class Bitacora extends Conexion {
             $stmt = $this->conex2->prepare($registro);
             $stmt->bindParam(':accion', $accion);
             $stmt->bindParam(':fecha_hora', $fecha);
-            $stmt->bindParam(':descripcion', $descripcion);
+            $stmt->bindParam(':descripcion', $detalle);
             $stmt->bindParam(':id_persona', $_SESSION['id']);
             
             $result = $stmt->execute();
@@ -225,8 +275,8 @@ class Bitacora extends Conexion {
             $query = "SELECT b.*, p.nombre, p.apellido, ru.nombre AS nombre_usuario,
                             DATE_FORMAT(b.fecha_hora, '%d/%m/%Y %H:%i:%s') as fecha_hora
                      FROM bitacora b
-                     INNER JOIN personas p ON b.id_persona = p.id_persona
-                     INNER JOIN rol_usuario ru ON p.id_tipo = ru.id_tipo
+                     INNER JOIN usuario p ON b.id_persona = p.id_persona
+                     INNER JOIN rol_usuario ru ON p.id_rol = ru.id_rol
                      WHERE b.id_bitacora = :id_bitacora";
             
             $stmt = $this->conex2->prepare($query);
