@@ -52,8 +52,15 @@
     
     $objclave->set_Id_persona($id_persona);
     $objclave->set_Clave($clave_nueva);
+
+    if($_SESSION["tabla_origen"]==1){
     $result = $objclave->actualizarClave();
     echo json_encode($result);
+    } else{
+    $result = $objclave->actualizarClaveusuario();
+    echo json_encode($result);
+    }
+    
  
 } {
     require_once 'vista/seguridad/olvidoclave.php';
