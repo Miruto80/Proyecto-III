@@ -300,7 +300,7 @@
 </div>
 
 <!--FIN Modal -->
-
+ </div>
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
 <!-- para el datatable-->
