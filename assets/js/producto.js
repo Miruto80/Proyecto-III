@@ -240,8 +240,7 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
                 location.href = "?pagina=producto";
               }, 1000);
             } else {
-              muestraMensaje("error", 1000, "ERROR", "ERROR");
-            }
+              muestraMensaje("error", 1000, "Registro duplicado", "Ya existe un producto con el mismo nombre y marca. Por favor, verifique la información.");            }
           } else if (lee.accion == 'actualizar') {
             if (lee.respuesta == 1) {
               muestraMensaje("success", 1000, "Se ha Modificado con éxito", "Su registro se ha Actualizado exitosamente");
