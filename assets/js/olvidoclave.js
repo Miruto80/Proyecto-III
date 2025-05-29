@@ -374,7 +374,12 @@ function enviaAjax(datos) {
                   setTimeout(function () {
                      location = '?pagina=login';
                   }, 2500);
-                } else {
+                }else if (lee.respuesta == 2) {
+                  muestraMensaje("success", 2500, "Se ha Cambiado su Constraseña con exito ", "ya puede iniciar su seccion");
+                  setTimeout(function () {
+                     location = '?pagina=login';
+                  }, 2500);
+                }else {
                   muestraMensaje("error", 2000, "ERROR", lee.text);
                 }
               }

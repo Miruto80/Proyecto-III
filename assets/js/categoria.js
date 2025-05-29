@@ -83,21 +83,21 @@ function enviaAjax(datos) {
             if (data.respuesta === 1) {
                 document.getElementById('formRegistrar').reset();
                 limpiarFormulario('formRegistrar');
-                muestraMensaje("success", 1000, "Registro exitoso", "La categoría se ha registrado exitosamente");
+                muestraMensaje("success", 1000, "Se ha registrado con éxito", "La categoría se ha registrado exitosamente");
                 setTimeout(() => location.reload(), 1000);
             } else {
                 muestraMensaje("error", 2000, "Error", "Error al registrar categoría");
             }
         } else if (data.accion === 'actualizar') {
             if (data.respuesta === 1) {
-                muestraMensaje("success", 1000, "Modificación exitosa", "La categoría se ha actualizado correctamente");
+                muestraMensaje("success", 1000, "Se ha Modificado con éxito", "La categoría se ha actualizado exitosamente");
                 setTimeout(() => location.reload(), 1000);
             } else {
                 muestraMensaje("error", 2000, "Error", "Error al modificar categoría");
             }
         } else if (data.accion === 'eliminar') {
             if (data.respuesta === 1) {
-                muestraMensaje("success", 1000, "Eliminado", "La categoría ha sido eliminada correctamente");
+                muestraMensaje("success", 1000, "Se ha eliminado con éxito", "La categoría se ha eliminado correctamente");
                 setTimeout(() => location.reload(), 1000);
             } else {
                 muestraMensaje("error", 2000, "Error", "Error al eliminar categoría");

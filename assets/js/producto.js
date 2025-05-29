@@ -240,8 +240,14 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
                 location.href = "?pagina=producto";
               }, 1000);
             } else {
-              muestraMensaje("error", 1000, "ERROR", "ERROR");
-            }
+              let mensajeError = lee.error ? lee.error : "Ha ocurrido un error inesperado. Inténtelo nuevamente.";
+        
+              if (mensajeError.includes("Ya existe un producto con el mismo nombre y marca")) {
+                  muestraMensaje("error", 1000, "Registro duplicado", mensajeError);
+              } else {
+                  muestraMensaje("error", 1000, "Error en el registro", mensajeError);
+              }
+             }
           } else if (lee.accion == 'actualizar') {
             if (lee.respuesta == 1) {
               muestraMensaje("success", 1000, "Se ha Modificado con éxito", "Su registro se ha Actualizado exitosamente");
@@ -249,7 +255,7 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
                 location = '?pagina=producto';
               }, 1000);
             } else {
-              muestraMensaje("error", 2000, "ERROR", "ERROR");
+                muestraMensaje("error", 2000, "ERROR", lee.text);
             }
           } else if (lee.accion == 'eliminar') {
             if (lee.respuesta == 1) {
@@ -257,6 +263,14 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
               setTimeout(function () {
                 location.href = "?pagina=producto";
               }, 1000);
+            } else {
+              let mensajeError = lee.error ? lee.error : "Ha ocurrido un error inesperado. Inténtelo nuevamente.";
+              
+              if (mensajeError.includes("No se puede eliminar un producto con stock disponible")) {
+                  muestraMensaje("error", 1000, "Error al eliminar", mensajeError);
+              } else {
+                  muestraMensaje("error", 1000, "Error en la eliminación", mensajeError);
+              }
             }
           } else if (lee.accion == 'cambiarEstatus') {
             if (lee.respuesta == 1) {

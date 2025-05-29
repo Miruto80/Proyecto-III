@@ -11,7 +11,7 @@ $(document).ready(function () {
       confirmButtonColor: '#38b96f',
       cancelButtonColor: '#EF233C',
       confirmButtonText: ' SI ',
-      cancelButtonText: 'NO'
+      cancelButtonText: 'NO' 
     }).then((result) => {
       if (result.isConfirmed) {
         var form = $(this).closest('form');

@@ -163,8 +163,8 @@ class Login extends Conexion {
 }
 
 public function obtenerPersonaPorCedula() {
-    // Buscar en conex1
-    $consulta = "SELECT * FROM cliente WHERE cedula = :cedula";
+    // Buscar en cliente
+    $consulta = "SELECT *, 'cliente' AS origen FROM cliente WHERE cedula = :cedula";
     $strExec = $this->conex1->prepare($consulta);
     $strExec->bindParam(':cedula', $this->cedula);
     $strExec->execute();
@@ -173,8 +173,8 @@ public function obtenerPersonaPorCedula() {
         return $strExec->fetchObject();
     }
 
-    //buscar en conex2
-    $consulta = "SELECT * FROM usuario WHERE cedula = :cedula";
+    // Buscar en usuario
+    $consulta = "SELECT *, 'usuario' AS origen FROM usuario WHERE cedula = :cedula";
     $strExec = $this->conex2->prepare($consulta);
     $strExec->bindParam(':cedula', $this->cedula);
     $strExec->execute();
@@ -185,6 +185,7 @@ public function obtenerPersonaPorCedula() {
 
     return null; // Retorna null si no se encuentra la cédula en ninguna base de datos
 }
+
 
 public function existeCorreo() {
     //conex1

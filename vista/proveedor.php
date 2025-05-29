@@ -22,31 +22,30 @@
       </div>
     </nav>
 
-    <div class="container-fluid py-4">
-      <div class="row">  
-        <div class="col-12">
-          <div class="card mb-4">
-            <div class="card-header pb-0">  
-              <div class="d-sm-flex align-items-center justify-content-between mb-5">
-                <h4 class="mb-0">
-                  <i class="fa-solid fa-truck-moving mr-2" style="color: #f6c5b4;"></i> Proveedores
-                </h4>
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0">
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h4 class="mb-0">
+              <i class="fa-solid fa-truck-moving mr-2" style="color: #f6c5b4;"></i> Proveedores
+            </h4>
 
-<form id="formGenerarPDF" method="POST" target="_blank">
-  <input type="hidden" name="nombre" value="Listado de proveedores">
-  <button type="submit" name="generar" class="btn btn-danger">
-    Generar PDF
-  </button>
-</form>
-
-
-
-              <button id="btnAbrirRegistrar" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
-                <span class="icon text-white"><i class="fas fa-file-medical"></i></span>
-                <span class="text-white">Registrar</span>
+            <div class="d-flex align-items-center gap-2"> 
+              <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro" id="btnAbrirRegistrar">
+                <i class="fas fa-file-medical"></i> Registrar
               </button>
 
-              </div>
+              <form id="formGenerarPDF" method="POST" target="_blank">
+                <input type="hidden" name="nombre" value="Listado de proveedores">
+                <button type="submit" name="generar" class="btn btn-danger">
+                  <i class="fas fa-file-pdf"></i> Generar PDF
+                </button>
+              </form>
+            </div>
+          </div>
+    
 
               <div class="table-responsive">
                 <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">

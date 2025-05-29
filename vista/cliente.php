@@ -164,6 +164,8 @@
               <span id="textocorreomodal" class="text-danger"></span>
           </div>
           <input type="hidden" id="modalIdPersona" name="id_persona">
+            <input type="hidden" id="modalce" name="cedulaactual">
+              <input type="hidden" id="modalco" name="correoactual">
         </form>
       </div>
       <div class="modal-footer">

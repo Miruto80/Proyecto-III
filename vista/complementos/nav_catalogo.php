@@ -85,15 +85,15 @@ nav {
     $paginasPermitidas = ['catalogo', 'catalogo_producto', 'vercarrito', 'verpedidoweb'];
     $paginasOcultas = ['vercarrito', 'verpedidoweb'];
   ?>
-
-  <?php if (in_array($pagina, $paginasPermitidas)): ?>
-    <button type="button" class="btn btn-primary btn-sm rounded shadow d-none d-md-block" id="btnAyuda">
-    <span class="icon text-white">
-        <i class="fas fa-info-circle"></i>
-    </span>
-</button>
-
-
+ <?php if (in_array($pagina,$paginasPermitidas)): ?>
+   <li>
+    <a class="p-2 mx-1" id="btnAyuda">
+      <span class="icon text-dark">
+        <i class="fa-solid fa-circle-question" style="font-size: 25px; color:#004adf;"></i>
+        <i class="fa-solid fa-circle-question"  style="font-size: 25px; color:#004adf; cursor: pointer;"></i>
+      </span>
+    </a>
+  </li>
   <?php endif; ?>
 
   <?php if (!in_array($pagina, $paginasOcultas)): ?>
@@ -111,12 +111,8 @@ nav {
 <?php endif; ?>
 
 
-           <li class="d-md-none">
-              <a href="#" class="p-2 mx-1" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSearch"
-                aria-controls="offcanvasSearch">
-               <i class="fa-solid fa-magnifying-glass" style="font-size: 25px;"></i>
-              </a>
-            </li>
+           
+           
 
             <li>
              <?php if ($sesion_activa): ?>
