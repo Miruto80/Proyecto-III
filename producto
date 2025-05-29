@@ -1,0 +1,25 @@
+[1mdiff --git a/vista/complementos/nav.php b/vista/complementos/nav.php[m
+[1mindex 01a1743..e2220e7 100644[m
+[1m--- a/vista/complementos/nav.php[m
+[1m+++ b/vista/complementos/nav.php[m
+[36m@@ -1,13 +1,17 @@[m
+ [m
+         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">[m
+         <div class="ms-md-auto pe-md-3 d-flex align-items-center">[m
+[32m+[m
+[32m+[m[32m          <a class="notification me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarAyuda" aria-controls="sidebarAyuda" style="background-color: white; padding: 8px; border-radius: 12px; text-decoration: none;">[m
+[32m+[m[32m            <i class="fa-solid fa-circle-question"></i>[m
+[32m+[m[32m         </a>[m
+[32m+[m
+          <!-- Cuadro de notificaciones -->[m
+          <a href="?pagina=notificacion" class="notification-icon me-2" style="background-color: white; padding: 8px; border-radius: 12px; text-decoration: none;">[m
+             <i class="fa-solid fa-bell" style="color: black;"></i>[m
+[32m+[m[41m      [m
+         </a>[m
+[31m-        <button class="btn btn-info" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarAyuda" aria-controls="sidebarAyuda">[m
+[31m-    <i class="fa-solid fa-circle-question"></i>[m
+[31m-</button>[m
+[32m+[m[41m        [m
+ [m
+         [m
+         <div class="input-group">[m
