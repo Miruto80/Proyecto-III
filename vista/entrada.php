@@ -29,13 +29,17 @@
 
 <div class="container-fluid py-4"> <!-- DIV CONTENIDO -->
 
-    <!-- Mostrar mensajes de éxito o error -->
-    <?php if(isset($_SESSION['mensaje']) && isset($_SESSION['tipo_mensaje'])): ?>
-      <div class="alert alert-<?php echo $_SESSION['tipo_mensaje']; ?> alert-dismissible fade show" role="alert">
-        <?php echo $_SESSION['mensaje']; ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-      <?php unset($_SESSION['mensaje']); unset($_SESSION['tipo_mensaje']); ?>
+    <?php if(isset($_SESSION['message'])): ?>
+      <script>
+        Swal.fire({
+          title: '<?php echo $_SESSION['message']['title']; ?>',
+          text: '<?php echo $_SESSION['message']['text']; ?>',
+          icon: '<?php echo $_SESSION['message']['icon']; ?>',
+          confirmButtonColor: '#4899fa',
+          confirmButtonText: 'OK'
+        });
+      </script>
+      <?php unset($_SESSION['message']); ?>
     <?php endif; ?>
 
     <div class="row"> <!-- CARD PRINCIPAL-->  

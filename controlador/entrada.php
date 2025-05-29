@@ -66,11 +66,17 @@ if (isset($_POST['registrar_compra'])) {
             $descripcion = 'Se compra la compra: ';
             $entrada->registrarBitacora($id_persona, $accion, $descripcion);
 
-                $_SESSION['mensaje'] = "Compra registrada exitosamente";
-                $_SESSION['tipo_mensaje'] = "success";
+                $_SESSION['message'] = [
+                    'title' => '¡Éxito!',
+                    'text' => 'Compra registrada exitosamente',
+                    'icon' => 'success'
+                ];
             } else {
-                $_SESSION['mensaje'] = "Error al registrar la compra: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
-                $_SESSION['tipo_mensaje'] = "danger";
+                $_SESSION['message'] = [
+                    'title' => 'Error',
+                    'text' => 'Error al registrar la compra: ' . (isset($respuesta['error']) ? $respuesta['error'] : ''),
+                    'icon' => 'error'
+                ];
             }
             
             header("Location: ?pagina=entrada");
@@ -117,11 +123,17 @@ if (isset($_POST['modificar_compra'])) {
             // Respuesta normal para peticiones no-AJAX
             if ($respuesta['respuesta'] == 1) {
                 
-                $_SESSION['mensaje'] = "Compra actualizada exitosamente";
-                $_SESSION['tipo_mensaje'] = "success";
+                $_SESSION['message'] = [
+                    'title' => '¡Éxito!',
+                    'text' => 'Compra actualizada exitosamente',
+                    'icon' => 'success'
+                ];
             } else {
-                $_SESSION['mensaje'] = "Error al actualizar la compra: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
-                $_SESSION['tipo_mensaje'] = "danger";
+                $_SESSION['message'] = [
+                    'title' => 'Error',
+                    'text' => 'Error al actualizar la compra: ' . (isset($respuesta['error']) ? $respuesta['error'] : ''),
+                    'icon' => 'error'
+                ];
             }
             
             header("Location: ?pagina=entrada");
@@ -148,11 +160,17 @@ if (isset($_POST['eliminar_compra'])) {
             // Respuesta normal para peticiones no-AJAX
             if ($respuesta['respuesta'] == 1) {
 
-                $_SESSION['mensaje'] = "Compra eliminada exitosamente";
-                $_SESSION['tipo_mensaje'] = "success";
+                $_SESSION['message'] = [
+                    'title' => '¡Éxito!',
+                    'text' => 'Compra eliminada exitosamente',
+                    'icon' => 'success'
+                ];
             } else {
-                $_SESSION['mensaje'] = "Error al eliminar la compra: " . (isset($respuesta['error']) ? $respuesta['error'] : "");
-                $_SESSION['tipo_mensaje'] = "danger";
+                $_SESSION['message'] = [
+                    'title' => 'Error',
+                    'text' => 'Error al eliminar la compra: ' . (isset($respuesta['error']) ? $respuesta['error'] : ''),
+                    'icon' => 'error'
+                ];
             }
             
             header("Location: ?pagina=entrada");
