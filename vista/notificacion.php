@@ -38,7 +38,7 @@
                <i class="fa-solid fa-trash-can mr-4"></i> Vaciar
               </button>
 
-              
+
               </div>
             <table class="table">
                    
@@ -76,6 +76,8 @@
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="assets/js/notificacion.js"></script>
 <script src="assets/js/notificacion.js"></script>
 
 </body>

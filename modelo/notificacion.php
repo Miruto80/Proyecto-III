@@ -31,14 +31,14 @@ function __construct() {
 }
 
 public function consultarPedidosPendientes() {
-    $sql = "SELECT 
-                p.id_pedido,
-                p.tipo,
-                p.fecha,
-                p.estado
-            FROM pedido p
-            WHERE estado = 0;
-            ORDER BY p.fecha DESC";
+       $sql = "SELECT 
+                   p.id_pedido,
+                   p.tipo,
+                   p.fecha,
+                   p.estado
+               FROM pedido p
+               WHERE p.estado IN (1, 2) AND p.id_pedido > 0
+               ORDER BY p.fecha DESC"; 
 
     $stmt = $this->conex1->prepare($sql);  
     $stmt->execute();
@@ -71,16 +71,14 @@ public function registrarNotificacionesDePedidos() {
     $registradas = 0;
 
     foreach ($pedidos as $pedido) {
-        // Opcional: Evita notificaciones duplicadas
-        
+        // Evita duplicados antes de registrar una nueva notificación
         if ($this->existeNotificacion($pedido['id_pedido'])) {
-            continue;
+            continue; // Si ya existe, no la agrega de nuevo
         }
-    
 
-        $titulo = "Pedido pendientes";
-        $mensaje = "Hay un nuevo pedido pendiente: #" . $pedido['id_pedido'];
-        $estado = $pedido['estado'];
+        $titulo = "Pedido pendiente";
+        $mensaje = "Tienes un nuevo pedido: #" . $pedido['id_pedido'];
+        $estado = 1; // Estado inicial como pendiente
         $fecha = $pedido['fecha'];
         $id_pedido = $pedido['id_pedido'];
 
@@ -95,12 +93,14 @@ public function registrarNotificacionesDePedidos() {
     return ['registradas' => $registradas];
 }
 
+
 public function obtenerNotificaciones() {
-    $sql = "SELECT * FROM notificaciones WHERE estado IN (1, 2) ORDER BY fecha DESC";
+    $sql = "SELECT * FROM notificaciones WHERE estado IN (1, 2) ORDER BY fecha DESC, id_notificaciones DESC";
     $stmt = $this->conex1->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 
 
@@ -113,7 +113,7 @@ private function existeNotificacion($id_pedido) {
 }
 
 public function cambiarestato() {
-    $registro = "UPDATE notificaciones SET estado = 2 WHERE id_notificaciones = :id_notificaciones";
+    $registro = "UPDATE notificaciones SET estado = 2 WHERE id_notificaciones = :id_notificaciones AND estado = 1";
     $strExec = $this->conex1->prepare($registro);
     $strExec->bindParam(':id_notificaciones', $this->id_notificaciones);
     $resul = $strExec->execute();
