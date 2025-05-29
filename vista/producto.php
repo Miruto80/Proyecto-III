@@ -304,7 +304,7 @@
       </div>
     </div>
   </div>
-
+ </div>
   <?php include 'complementos/footer.php' ?>
   <script src="assets/js/demo/datatables-demo.js"></script>
 

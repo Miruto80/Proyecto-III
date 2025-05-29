@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-05-2025 a las 17:14:23
+-- Tiempo de generación: 29-05-2025 a las 09:18:04
 -- Versión del servidor: 10.4.18-MariaDB
 -- Versión de PHP: 8.0.3
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `lovemakeupbds`
+-- Base de datos: `2222`
 --
 
 -- --------------------------------------------------------
@@ -54,7 +54,7 @@ CREATE TABLE `rol_usuario` (
 
 INSERT INTO `rol_usuario` (`id_rol`, `nombre`, `nivel`, `estatus`) VALUES
 (1, 'Administrador', 3, 1),
-(2, 'Asesora de Venta', 2, 1);
+(2, 'Asesora de venta', 2, 1);
 
 -- --------------------------------------------------------
 
@@ -71,7 +71,7 @@ CREATE TABLE `usuario` (
   `telefono` varchar(15) COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
   `clave` varchar(512) COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
   `estatus` int(2) DEFAULT NULL,
-  `id_rol` int(11) DEFAULT NULL
+  `id_rol` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
 
 --
@@ -89,7 +89,8 @@ INSERT INTO `usuario` (`id_persona`, `cedula`, `nombre`, `apellido`, `correo`, `
 -- Indices de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  ADD PRIMARY KEY (`id_bitacora`);
+  ADD PRIMARY KEY (`id_bitacora`),
+  ADD KEY `id_persona` (`id_persona`);
 
 --
 -- Indices de la tabla `rol_usuario`
@@ -115,6 +116,12 @@ ALTER TABLE `bitacora`
   MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `rol_usuario`
+--
+ALTER TABLE `rol_usuario`
+  MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
@@ -125,10 +132,16 @@ ALTER TABLE `usuario`
 --
 
 --
+-- Filtros para la tabla `bitacora`
+--
+ALTER TABLE `bitacora`
+  ADD CONSTRAINT `bitacora_ibfk_1` FOREIGN KEY (`id_persona`) REFERENCES `usuario` (`id_persona`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `rol_usuario` (`id_rol`);
+  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `rol_usuario` (`id_rol`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

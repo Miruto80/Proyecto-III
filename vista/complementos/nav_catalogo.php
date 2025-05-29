@@ -89,7 +89,6 @@ nav {
    <li>
     <a class="p-2 mx-1" id="btnAyuda">
       <span class="icon text-dark">
-        <i class="fa-solid fa-circle-question" style="font-size: 25px; color:#004adf;"></i>
         <i class="fa-solid fa-circle-question"  style="font-size: 25px; color:#004adf; cursor: pointer;"></i>
       </span>
     </a>
@@ -159,7 +158,7 @@ nav {
              <?php if ($sesion_activa): ?>
               <?php if($_SESSION["nivel_rol"] == 1) { ?>
               <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
-                <a href="?pagina=catalogo_favorito" class="nav-link fw-bold px-4 py-3" style="color:#ff71d8;">
+                <a href="?pagina=listadeseo" class="nav-link fw-bold px-4 py-3" style="color:#ff71d8;">
                 <i class="fa-solid fa-heart"></i> Mi Lista de Deseos </a>
               </li>
 

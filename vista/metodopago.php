@@ -128,7 +128,7 @@
           </div>
         </div>
       </div>
-
+ </div>
 <?php include 'complementos/footer.php'; ?>
 <script src="assets/js/metodopago.js"></script>
 

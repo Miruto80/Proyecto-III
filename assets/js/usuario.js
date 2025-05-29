@@ -330,3 +330,26 @@ function enviaAjax(datos) {
     });
   }
   
+  $('#ayuda').on("click", function () {
+  
+  const driver = window.driver.js.driver;
+  
+  const driverObj = new driver({
+    nextBtnText: 'Siguiente',
+        prevBtnText: 'Anterior',
+        doneBtnText: 'Listo',
+    popoverClass: 'driverjs-theme',
+    closeBtn:false,
+    steps: [
+      { element: '.table-color', popover: { title: 'Tabla de usuario', description: 'Aqui es donde se guardaran los registros de usuario', side: "left", }},
+      { element: '.registrar', popover: { title: 'Boton de registrar', description: 'Darle click aqui te llevara a un modal para poder registrar', side: "bottom", align: 'start' }},
+      { element: '.modificar', popover: { title: 'Modificar Usuario', description: 'Este botón te permite editar la información de un usuario registrado.', side: "left", align: 'start' }},
+      { element: '.eliminar', popover: { title: 'Eliminar Usuario', description: 'Usa este botón para eliminar un usuario de la lista.', side: "left", align: 'start' }},
+      { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un usuario en la tabla', side: "right", align: 'start' }},
+      { popover: { title: 'Eso es todo', description: 'Este es el fin de la guia espero hayas entendido'} }
+    ]
+  });
+  
+  // Iniciar el tour
+  driverObj.drive();
+});

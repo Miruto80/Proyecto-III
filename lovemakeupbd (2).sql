@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-05-2025 a las 22:03:07
+-- Tiempo de generación: 29-05-2025 a las 09:00:16
 -- Versión del servidor: 10.4.18-MariaDB
 -- Versión de PHP: 8.0.3
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `lovemakeupbd`
+-- Base de datos: `s`
 --
 
 -- --------------------------------------------------------
@@ -105,7 +105,14 @@ CREATE TABLE `lista_deseo` (
   `id_lista` int(11) NOT NULL,
   `id_persona` int(11) NOT NULL,
   `id_producto` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `lista_deseo`
+--
+
+INSERT INTO `lista_deseo` (`id_lista`, `id_persona`, `id_producto`) VALUES
+(33, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -323,8 +330,9 @@ ALTER TABLE `compra_detalles`
 --
 ALTER TABLE `lista_deseo`
   ADD PRIMARY KEY (`id_lista`),
-  ADD UNIQUE KEY `id_persona` (`id_persona`),
-  ADD UNIQUE KEY `id_producto` (`id_producto`);
+  ADD UNIQUE KEY `uq_persona_producto` (`id_persona`,`id_producto`),
+  ADD KEY `idx_persona` (`id_persona`),
+  ADD KEY `idx_producto` (`id_producto`);
 
 --
 -- Indices de la tabla `metodo_entrega`
@@ -431,7 +439,7 @@ ALTER TABLE `compra_detalles`
 -- AUTO_INCREMENT de la tabla `lista_deseo`
 --
 ALTER TABLE `lista_deseo`
-  MODIFY `id_lista` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_lista` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT de la tabla `metodo_entrega`
@@ -509,13 +517,6 @@ ALTER TABLE `compra`
 ALTER TABLE `compra_detalles`
   ADD CONSTRAINT `compra_detalles_ibfk_1` FOREIGN KEY (`id_compra`) REFERENCES `compra` (`id_compra`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `compra_detalles_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `lista_deseo`
---
-ALTER TABLE `lista_deseo`
-  ADD CONSTRAINT `lista_deseo_ibfk_1` FOREIGN KEY (`id_persona`) REFERENCES `cliente` (`id_persona`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `lista_deseo_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `notificaciones`
