@@ -110,7 +110,7 @@
                         <h5 class="text-white font-weight-bolder mb-0 mt-3">
                         <?php echo $pendientes['cantidad_pedidos_pendientes']; ?>
                         </h5>
-                        <span class="text-white text-sm"><b>Pago Pendientes</b></span>
+                        <span class="text-white text-sm"><b>Pagos Pendientes</b></span>
                     </div>
                    
                 </div>
