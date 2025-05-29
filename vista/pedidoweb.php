@@ -8,6 +8,76 @@
   <title> Pedido Web | LoveMakeup  </title> 
 </head>
 
+
+<style>
+  .driver-popover.driverjs-theme {
+  color: #000;
+}
+
+.driver-popover.driverjs-theme .driver-popover-title {
+  font-size: 20px;
+}
+
+.driver-popover.driverjs-theme .driver-popover-title,
+.driver-popover.driverjs-theme .driver-popover-description,
+.driver-popover.driverjs-theme .driver-popover-progress-text {
+  color: #000;
+}
+
+.driver-popover.driverjs-theme button {
+  flex: 1;
+  text-align: center;
+  background-color: #000;
+  color: #ffffff;
+  border: 2px solid #000;
+  text-shadow: none;
+  font-size: 14px;
+  padding: 5px 8px;
+  border-radius: 6px;
+}
+
+.driver-popover.driverjs-theme button:hover {
+  background-color: #000;
+  color: #ffffff;
+}
+
+.driver-popover.driverjs-theme .driver-popover-navigation-btns {
+  justify-content: space-between;
+  gap: 3px;
+}
+
+.driver-popover.driverjs-theme .driver-popover-close-btn {
+  color: #fff;
+  width: 20px; /* Reducir el tamaño del botón */
+  height: 20px;
+  font-size: 16px;
+  transition: all 0.5 ease-in-out;
+}
+
+.driver-popover.driverjs-theme .driver-popover-close-btn:hover {
+ background-color: #fff;
+ color: #000;
+ border: #000;
+}
+
+.driver-popover.driverjs-theme .driver-popover-arrow-side-left.driver-popover-arrow {
+  border-left-color: #fde047;
+}
+
+.driver-popover.driverjs-theme .driver-popover-arrow-side-right.driver-popover-arrow {
+  border-right-color: #fde047;
+}
+
+.driver-popover.driverjs-theme .driver-popover-arrow-side-top.driver-popover-arrow {
+  border-top-color: #fde047;
+}
+
+.driver-popover.driverjs-theme .driver-popover-arrow-side-bottom.driver-popover-arrow {
+  border-bottom-color: #fde047;
+}
+
+</style>
+
 <body class="g-sidenav-show bg-gray-100">
 
 
@@ -42,14 +112,20 @@
        <h4 class="mb-0"><i class="fa-solid fa-desktop mr-2" style="color: #f6c5b4;"></i>
         Pedido Web</h5>
       </div>
+            <button style="margin-left: 90%;" type="button" class="btn btn-primary" id="btnAyuda">
+    <span class="icon text-white">
+      <i class="fas fa-info-circle"></i>
+    </span>
+    <span class="text-white">Ayuda</span>
+  </button>
           
       </div>
-          
+    
 
       <div class="table-responsive m-3"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
           <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
-              <thead class="table-color">
+              <thead  class="table-color">
                 <tr>
                   <th class="text-white" style="display: none;">ID</th>
                   <th class="text-white" style="display: none;">Tipo</th>
