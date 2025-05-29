@@ -63,23 +63,116 @@ $total = 0;
       line-height: 30px;
       margin-right: 10px;
     }
+
+  .tabla-carrito {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .tabla-carrito th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .tabla-carrito td {
+    vertical-align: middle;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .btn-eliminar {
+    background-color: #ffe6e6;
+    color: #dc3545;
+    border: none;
+  }
+
+  .btn-eliminar:hover {
+    background-color: #ffcccc;
+  }
+
+  .quantity-control .btn {
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .img-thumbnail {
+    border-radius: 8px;
+  }
+
+  .precio-unitario,
+  .subtotal {
+    font-weight: bold;
+    color: #6c757d;
+  }
+
+  .cantidad {
+    min-width: 32px;
+    display: inline-block;
+  }
+
+  .detalle-compra-container {
+    text-align: center;
+    margin-top: 24px;
+  }
+
+  .enlace-compra {
+    display: inline-block;
+    background-color: #f3f4f6; /* gris claro */
+    color: #374151; /* gris oscuro elegante */
+    padding: 10px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .enlace-compra:hover {
+    background-color: #e5e7eb;
+    color: #111827;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .enlace-compra:active {
+    transform: scale(0.98);
+  }
+
+  .enlace-compra-disabled {
+    display: inline-block;
+    background-color: #f9fafb;
+    color: #9ca3af;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 16px;
+    text-decoration: none;
+    cursor: not-allowed;
+    box-shadow: none;}
+
     </style>
 <?php
 $carritoVacio = empty($_SESSION['carrito']);
 ?>
         <!-- Step Indicator -->
-        <div class="cart-step">
-    <div class="step-number">1</div>
-    <div class="current-step"> Carrito de Compras</div>
-    <div>→</div>
+ 
 
-    <div>
+    <div class="detalle-compra-container">
   <?php if ($carritoVacio): ?>
-    <span style="color: #aaa; pointer-events: none; cursor: default; text-decoration: none;">2 Detalles de Compra</span>
+    <span class="enlace-compra-disabled">2 Detalles de Compra</span>
   <?php else: ?>
-    <a href="?pagina=verpedidoweb" class="Enlacecompra">2 Detalles de Compra</a>
+    <a href="?pagina=verpedidoweb" class="enlace-compra">Continuar con la Compra <i class="fa-solid fa-share"></i> </a>
   <?php endif; ?>
 </div>
+
 
    
     </div>
@@ -122,45 +215,45 @@ $carritoVacio = empty($_SESSION['carrito']);
 
     <?php else: ?>
         <div class="table-responsive">
-            <table class="table table-bordered align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th></th>
-                        <th>Imagen</th>
-                        <th>Producto</th>
-                        <th>Precio Unitario</th>
-                        <th>Cantidad</th>
-                        <th>Subtotal</th>
-                      
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($carrito as $item):
-                        $id = $item['id'];
-                        $cantidad = $item['cantidad'];
-                        $precioUnitario = $cantidad >= $item['cantidad_mayor'] ? $item['precio_mayor'] : $item['precio_detal'];
-                        $subtotal = $cantidad * $precioUnitario;
-                        
-                    ?>
-                    <tr data-id="<?= $id ?>">
-                    <td>
-                    <button class="btn-eliminar" data-id="<?php echo $id; ?>"><i class="fa-solid fa-x"></i></button>
-                            </td>
-                            <td><img src="<?= htmlspecialchars($item['imagen']) ?>" class="img-thumbnail" width="60"></td>
-                            <td><strong><?= htmlspecialchars($item['nombre']) ?></strong></td>
-                            <td class="precio-unitario">$<?= number_format($precioUnitario, 2) ?></td>
-                            <td class="quantity-control">
-                                <div class="d-flex align-items-center">
-                                    <button class="btn btn-outline-secondary btn-sm btn-menos" data-id="<?= $id ?>">−</button>
-                                    <span class="mx-2 cantidad"><?= $cantidad ?></span>
-                                    <button class="btn btn-outline-secondary btn-sm btn-mas" data-id="<?= $id ?>" data-stock="<?= $item['stockDisponible'] ?>">+</button>
-                                </div>
-                            </td>
-                            <td class="subtotal">$<?= number_format($subtotal, 2) ?></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+      
+
+<table class="table table-hover tabla-carrito">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Imagen</th>
+      <th>Producto</th>
+      <th>Precio</th>
+      <th>Cantidad</th>
+      <th>Subtotal</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php foreach ($carrito as $item):
+      $id = $item['id'];
+      $cantidad = $item['cantidad'];
+      $precioUnitario = $cantidad >= $item['cantidad_mayor'] ? $item['precio_mayor'] : $item['precio_detal'];
+      $subtotal = $cantidad * $precioUnitario;
+    ?>
+    <tr data-id="<?= $id ?>">
+      <td>
+        <button class="btn btn-eliminar" data-id="<?= $id ?>"><i class="fa-solid fa-x"></i></button>
+      </td>
+      <td><img src="<?= htmlspecialchars($item['imagen']) ?>" class="img-thumbnail" width="60"></td>
+      <td><strong><?= htmlspecialchars($item['nombre']) ?></strong></td>
+      <td class="precio-unitario">$<?= number_format($precioUnitario, 2) ?></td>
+      <td class="quantity-control">
+        <div class="d-flex justify-content-center align-items-center">
+          <button class="btn btn-outline-secondary btn-sm btn-menos" data-id="<?= $id ?>">−</button>
+          <span class="mx-2 cantidad"><?= $cantidad ?></span>
+          <button class="btn btn-outline-secondary btn-sm btn-mas" data-id="<?= $id ?>" data-stock="<?= $item['stockDisponible'] ?>">+</button>
+        </div>
+      </td>
+      <td class="subtotal">$<?= number_format($subtotal, 2) ?></td>
+    </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>
 
         </div>
 

@@ -96,11 +96,12 @@ public function registrarNotificacionesDePedidos() {
 }
 
 public function obtenerNotificaciones() {
-    $sql = "SELECT * FROM notificaciones ORDER BY fecha DESC";
+    $sql = "SELECT * FROM notificaciones WHERE estado IN (1, 2) ORDER BY fecha DESC";
     $stmt = $this->conex1->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 
 private function existeNotificacion($id_pedido) {
@@ -112,20 +113,21 @@ private function existeNotificacion($id_pedido) {
 }
 
 public function cambiarestato() {
-    $registro = "UPDATE notificaciones SET estatus = 0 WHERE id_notificaciones = :id_notificaciones";
+    $registro = "UPDATE notificaciones SET estado = 2 WHERE id_notificaciones = :id_notificaciones";
     $strExec = $this->conex1->prepare($registro);
     $strExec->bindParam(':id_notificaciones', $this->id_notificaciones);
+    $resul = $strExec->execute();
+    return $resul ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
+}
+
+
+public function eliminar() {
+    $registro = "UPDATE notificaciones SET estado = 0 WHERE estado = 2";
+    $strExec = $this->conex1->prepare($registro);
     $resul = $strExec->execute();
     return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
 }
 
-public function eliminar() {
-    $registro = "UPDATE notificaciones SET estatus = 1 WHERE id_notificaciones = :id_notificaciones";
-    $strExec = $this->conex1->prepare($registro);
-    $strExec->bindParam(':id_notificaciones', $this->id_notificaciones);
-    $resul = $strExec->execute();
-    return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
-}
 
 
 public function setIdNotificacion($id) {

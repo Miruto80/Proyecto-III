@@ -157,45 +157,76 @@ function __construct() {
     public function eliminar() {
         try {
             $this->conex1->beginTransaction();
-            
-            // Primero eliminar los detalles asociados a la reserva
+    
+            // Obtener los productos y cantidades antes de eliminar
+            $sql = "SELECT id_producto, cantidad FROM reserva_detalles WHERE id_reserva = ?";
+            $stmt = $this->conex1->prepare($sql);
+            $stmt->bindParam(1, $this->id_reserva);
+            $stmt->execute();
+            $detalles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Devolver al stock
+            foreach ($detalles as $detalle) {
+                $sqlStock = "UPDATE productos SET stock_disponible = stock_disponible + ? WHERE id_producto = ?";
+                $stmtStock = $this->conex1->prepare($sqlStock);
+                $stmtStock->execute([$detalle['cantidad'], $detalle['id_producto']]);
+            }
+    
+            // Eliminar los detalles
             $sql = "DELETE FROM reserva_detalles WHERE id_reserva = ?";
             $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->id_reserva);
-            
+    
             if (!$stmt->execute()) {
                 $this->conex1->rollBack();
                 return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Error al eliminar los detalles'];
             }
-            
-            // Luego eliminar la reserva
+    
+            // Eliminar la reserva
             $sql = "DELETE FROM reserva WHERE id_reserva = ?";
             $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->id_reserva);
-            
+    
             if (!$stmt->execute()) {
                 $this->conex1->rollBack();
                 return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Error al eliminar la reserva'];
             }
-            
+    
             $this->conex1->commit();
             return ['respuesta' => 1, 'accion' => 'eliminar', 'mensaje' => 'Reserva eliminada correctamente'];
-            
+    
         } catch (Exception $e) {
             $this->conex1->rollBack();
             return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Error: ' . $e->getMessage()];
         }
     }
     
+    
     // Eliminar un detalle específico de la reserva
     public function eliminarDetalle($id_detalle) {
         try {
+            // Obtener el detalle antes de eliminar
+            $sql = "SELECT id_producto, cantidad FROM reserva_detalles WHERE id_detalle_reserva = ?";
+            $stmt = $this->conex1->prepare($sql);
+            $stmt->bindParam(1, $id_detalle);
+            $stmt->execute();
+            $detalle = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if (!$detalle) {
+                return ['respuesta' => 0, 'accion' => 'eliminar_detalle', 'mensaje' => 'Detalle no encontrado'];
+            }
+    
+            // Devolver al stock
+            $sqlStock = "UPDATE productos SET stock_disponible = stock_disponible + ? WHERE id_producto = ?";
+            $stmtStock = $this->conex1->prepare($sqlStock);
+            $stmtStock->execute([$detalle['cantidad'], $detalle['id_producto']]);
+    
+            // Eliminar el detalle
             $sql = "DELETE FROM reserva_detalles WHERE id_detalle_reserva = ?";
             $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $id_detalle);
-            
+    
             if ($stmt->execute()) {
-                
                 return ['respuesta' => 1, 'accion' => 'eliminar_detalle', 'mensaje' => 'Detalle eliminado correctamente'];
             } else {
                 return ['respuesta' => 0, 'accion' => 'eliminar_detalle', 'mensaje' => 'Error al eliminar el detalle'];
@@ -204,6 +235,7 @@ function __construct() {
             return ['respuesta' => 0, 'accion' => 'eliminar_detalle', 'mensaje' => 'Error: ' . $e->getMessage()];
         }
     }
+    
     //sdifsd
     // Consultar todas las reservas 
     public function consultarTodos() {

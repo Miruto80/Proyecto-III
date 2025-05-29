@@ -16,14 +16,7 @@ class metodoentrega extends Conexion {
         $this->conex1 = $this->getConex1();
         $this->conex2 = $this->getConex2();
     
-         // Verifica si las conexiones son exitosas
-        if (!$this->conex1) {
-            die('Error al conectar con la primera base de datos');
-        }
-
-        if (!$this->conex2) {
-            die('Error al conectar con la segunda base de datos');
-        }
+         // Verifica si las conexiones son exitosas 
     }
     public function registrarBitacora($id_persona, $accion, $descripcion) {
     $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 

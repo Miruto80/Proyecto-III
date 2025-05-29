@@ -70,6 +70,12 @@ class MetodoPago extends Conexion {
         return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
+    public function obtenerMetodos() {
+        $stmt = $this->conex1->prepare("SELECT * FROM metodo_pago WHERE estatus = 1 AND id_metodopago = 1");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function set_Id_metodopago($id) {
         $this->id_metodopago = $id;
     }
