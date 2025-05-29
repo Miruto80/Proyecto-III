@@ -23,7 +23,6 @@
 }
 
 .driver-popover.driverjs-theme {
-  background-color: #fde047;
   color: #000;
 }
 
