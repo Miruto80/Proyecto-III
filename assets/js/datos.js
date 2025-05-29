@@ -44,6 +44,7 @@ $(document).ready(function() {
       }
     });
  });
+ 
   $("#cedula").on("keypress",function(e){
     validarkeypress(/^[0-9-\b]*$/,e);
   });

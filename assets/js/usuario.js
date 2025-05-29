@@ -33,13 +33,20 @@ document.addEventListener("DOMContentLoaded", function() {
     var correo = button.getAttribute("data-correo");
     var id_tipo = button.getAttribute("data-id_tipo");
     var nombre_rol = button.getAttribute("data-nombre_rol");
+    var estatus = button.getAttribute("data-estatus");
 
     // Asignar valores al modal
     document.getElementById("modalIdPersona").value = idPersona;
     document.getElementById("modalCedula").value = cedula;
+    document.getElementById("modalce").value = cedula;
     document.getElementById("modalCorreo").value = correo;
+    document.getElementById("modalco").value = correo;
     document.getElementById("modalrol").value = id_tipo;
     document.getElementById("modalrol").textContent = nombre_rol;
+
+    document.getElementById("modalestatus").value = estatus;
+    document.getElementById("modalestatus").textContent = estatus == "1" ? "Activo - Actual" : estatus == "5" ? "Inactivo - Actual" : "Desconocido";
+
   });
 });
 
@@ -70,13 +77,42 @@ mensaje){
 $(document).ready(function() {
 
 
-  $('#registrar').on("click", function () {
-         
-    var datos = new FormData($('#u')[0]);
-    datos.append('registrar', 'registrar');
-    enviaAjax(datos);
- 
-  });
+ function validarCampos() {
+    let cedulaValida = /^[0-9]{7,8}$/.test($("#cedula").val());
+    let telefonoValido = /^[0-9]{4}[-]{1}[0-9]{7}$/.test($("#telefono").val());
+    let correoValido = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/.test($("#correo").val());
+    let nombreValido = /^[a-zA-Z]{3,50}$/.test($("#nombre").val());
+    let apellidoValido = /^[a-zA-Z]{3,50}$/.test($("#apellido").val());
+    let claveValida = /^.{8,16}$/.test($("#clave").val());
+
+    function aplicarEstado(input, valido, feedback) {
+        if (valido) {
+            $(input).removeClass("is-invalid").addClass("is-valid");
+            $(feedback).hide();
+        } else {
+            $(input).removeClass("is-valid").addClass("is-invalid");
+            $(feedback).show();
+        }
+    }
+
+    aplicarEstado("#cedula", cedulaValida, "#textocedula");
+    aplicarEstado("#telefono", telefonoValido, "#textotelefono");
+    aplicarEstado("#correo", correoValido, "#textocorreo");
+    aplicarEstado("#nombre", nombreValido, "#textonombre");
+    aplicarEstado("#apellido", apellidoValido, "#textoapellido");
+    aplicarEstado("#clave", claveValida, "#textoclave");
+
+    return cedulaValida && telefonoValido && correoValido && nombreValido && apellidoValido && claveValida;
+}
+
+$('#registrar').on("click", function () {
+    if (validarCampos()) {
+        var datos = new FormData($('#u')[0]);
+        datos.append('registrar', 'registrar');
+        enviaAjax(datos);
+    }
+});
+
 
   
   $('#actualizar').on("click", function () {
@@ -92,10 +128,32 @@ $(document).ready(function() {
       cancelButtonText: 'NO'
     }).then((result) => {
       if (result.isConfirmed) {
-       
-        var datos = new FormData($('#formdatosactualizar')[0]);
-        datos.append('actualizar', 'actualizar');
-        enviaAjax(datos);
+        // Validación de los campos antes de enviar
+            let cedulaValida = /^[0-9]{7,8}$/.test($("#modalCedula").val());
+            let correoValido = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/.test($("#modalCorreo").val());
+
+            if (!cedulaValida) {
+                $("#modalCedula").addClass("is-invalid");
+                $("#textocedulamodal").show();
+            } else {
+                $("#modalCedula").removeClass("is-invalid").addClass("is-valid");
+                $("#textocedulamodal").hide();
+            }
+
+            if (!correoValido) {
+                $("#modalCorreo").addClass("is-invalid");
+                $("#textocorreomodal").show();
+            } else {
+                $("#modalCorreo").removeClass("is-invalid").addClass("is-valid");
+                $("#textocorreomodal").hide();
+            }
+
+            // Si todos los campos son válidos, enviar el formulario
+            if (cedulaValida && correoValido) {
+                var datos = new FormData($('#formdatosactualizar')[0]);
+                datos.append('actualizar', 'actualizar');
+                enviaAjax(datos);
+            }
       }
     });
  });
@@ -135,16 +193,16 @@ $(document).ready(function() {
     });
 
     $("#correo").on("keyup", function () {
-      validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $(this),
+        validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $(this),
           $("#textocorreo"), "El formato debe incluir @ y ser válido.");
     });
 
     $("#nombre").on("keypress", function (e) {
-    validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
+      validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
     });
 
     $("#nombre").on("keyup", function () {
-    validarkeyup(/^[a-zA-Z]{3,50}$/, $(this),
+      validarkeyup(/^[a-zA-Z]{3,50}$/, $(this),
       $("#textonombre"), "El formato debe ser solo letras");
     });
 
@@ -153,7 +211,7 @@ $(document).ready(function() {
     });
 
     $("#apellido").on("keyup", function () {
-    validarkeyup(/^[a-z-A-Z]{3,50}$/, $(this),
+       validarkeyup(/^[a-z-A-Z]{3,50}$/, $(this),
       $("#textoapellido"), "El formato debe ser solo letras");
     });
 
@@ -163,11 +221,40 @@ $(document).ready(function() {
     
     $("#clave").on("keyup", function() {
       validarkeyup(/^.{8,16}$/, $(this), $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
-    })
+    });
 
 
+  $("#modalCedula").on("keypress",function(e){
+    validarkeypress(/^[0-9\b]*$/,e);
+  });
 
+  $("#modalCedula").on("keyup", function () {
+    let isValid = /^[0-9]{7,8}$/.test($(this).val());
+    if (isValid) {
+        $(this).removeClass("is-invalid").addClass("is-valid");
+        $("#textocedulamodal").hide();
+    } else {
+        $(this).removeClass("is-valid").addClass("is-invalid");
+        $("#textocedulamodal").show();
+    }
 });
+  $("#modalCorreo").on("keypress", function (e) {
+        validarkeypress(/^[a-zA-Z0-9._%+-@\b]*$/, e);
+  });
+  
+  $("#modalCorreo").on("keyup", function () {
+        let isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/.test($(this).val());
+        if (isValid) {
+            $(this).removeClass("is-invalid").addClass("is-valid");
+            $("#textocorreomodal").hide();
+        } else {
+            $(this).removeClass("is-valid").addClass("is-invalid");
+            $("#textocorreomodal").show();
+        }
+    });
+});
+
+
 
 
 function muestraMensaje(icono, tiempo, titulo, mensaje) {
@@ -204,7 +291,7 @@ function enviaAjax(datos) {
                     location = '?pagina=usuario';
                   }, 1000);
                 } else {
-                  muestraMensaje("error", 1000, "ERROR", "ERROR");
+                  muestraMensaje("error", 1000, lee.text, "");
                 }
               } else if (lee.accion == 'actualizar') {
                 if (lee.respuesta == 1) {

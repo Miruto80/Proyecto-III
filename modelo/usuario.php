@@ -121,13 +121,14 @@ class Usuario extends Conexion
     }
 
      public function actualizar(){
-        $registro = "UPDATE usuario SET cedula = :cedula, correo = :correo, id_rol = :id_rol WHERE id_persona = :id_usuario";
+        $registro = "UPDATE usuario SET cedula = :cedula, correo = :correo, estatus = :estatus, id_rol = :id_rol  WHERE id_persona = :id_usuario";
 
         $strExec = $this->conex2->prepare($registro);
         $strExec->bindParam(':id_usuario', $this->id_usuario);
         $strExec->bindParam(':cedula', $this->cedula);
         $strExec->bindParam(':correo', $this->correo);
         $strExec->bindParam(':id_rol', $this->id_rol);
+        $strExec->bindParam(':estatus', $this->estatus);
 
         $resul = $strExec->execute();
         if ($resul) {
@@ -138,6 +139,41 @@ class Usuario extends Conexion
         return $res;
     }
 
+     public function existeCedula() {
+    // Buscar en conex1
+    $consulta = "SELECT cedula FROM cliente WHERE cedula = :cedula";
+    $strExec = $this->conex1->prepare($consulta);
+    $strExec->bindParam(':cedula', $this->cedula);
+    $strExec->execute();
+
+    // Si no hay resultados, buscar en conex2
+    if ($strExec->rowCount() == 0) {
+        $consulta = "SELECT cedula FROM usuario WHERE cedula = :cedula";
+        $strExec = $this->conex2->prepare($consulta);
+        $strExec->bindParam(':cedula', $this->cedula);
+        $strExec->execute();
+    }
+
+    return $strExec->rowCount() > 0;
+}
+
+public function existeCorreo() {
+    //conex1
+    $consulta = "SELECT correo FROM cliente WHERE correo = :correo";
+    $strExec = $this->conex1->prepare($consulta);
+    $strExec->bindParam(':correo', $this->correo);
+    $strExec->execute();
+
+    //buscar en conex2
+    if ($strExec->rowCount() == 0) {
+        $consulta = "SELECT correo FROM usuario WHERE correo = :correo";
+        $strExec = $this->conex2->prepare($consulta);
+        $strExec->bindParam(':correo', $this->correo);
+        $strExec->execute();
+    }
+
+    return $strExec->rowCount() > 0;
+}
 
     public function get_Id_Usuario()
     {

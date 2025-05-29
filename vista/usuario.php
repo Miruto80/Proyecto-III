@@ -69,14 +69,12 @@
               <?php
                 $estatus_texto = array(
                     1 => "Activo",
-                    2 => "Cliente Favorito",
-                    3 => "Inactivo"
+                    5 => "Inactivo"
                   );
               
                   $estatus_classes = array(
                     1 => 'activos',
-                    2 => 'favoritos',
-                    3 => 'malclientes' 
+                    5 => 'malclientes' 
                   );
 
                   foreach ($registro as $dato){
@@ -103,7 +101,9 @@
                    data-cedula="<?php echo $dato['cedula']; ?>" 
                    data-correo="<?php echo $dato['correo']; ?>"
                    data-nombre_rol="<?php echo $dato['nombre_tipo']; ?>"
-                   data-id_tipo="<?php echo $dato['id_rol']; ?>" >
+                   data-estatus="<?php echo $dato['estatus']; ?>"
+                   data-id_tipo="<?php echo $dato['id_rol'];
+                    ?>" >
                    
                   <i class="fas fa-pencil-alt" title="Editar"></i> 
                 </button>
@@ -261,7 +261,7 @@
                   <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-envelope"></i></span>
                   <input type="email" class="form-control" id="modalCorreo" name="correo">
               </div>  
-              <span id="textocorreomodal" class="text-danger"></span>
+              <span id="textocorreomodal" class="invalid-feedback"> El formato debe incluir @ y ser válido.</span>
           </div>
           <div class="mb-3">
              <label for="rol" class="form-label text-g">Rol</label>
@@ -273,9 +273,20 @@
                           <option value="<?php echo $rol['id_rol'];?>"> <?php echo $rol['nombre']." - Nivel ".$rol['nivel'];?> </option>
                         <?php } ?>
                     </select>
-              </div>             
+              </div> 
+              <div class="mb-3">
+             <label for="rol" class="form-label text-g">Estatus</label>
+                 <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user-tag"></i></span>
+                    <select class="form-select" name="estatus">
+                      <option id="modalestatus"> </option>
+                       <option value="1">Activo</option>
+                       <option value="5">Inactivo</option>
+                    </select>
+              </div>            
           </div>
-          
+          <input type="hidden" id="modalce" name="cedulaactual">
+          <input type="hidden" id="modalco" name="correoactual">
           
           <input type="hidden" id="modalIdPersona" name="id_persona">
         </form>

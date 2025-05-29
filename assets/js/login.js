@@ -165,17 +165,6 @@ function validarFormulario() {
     return valido;
 }
 
-$('#cedula').blur(function (e) {
-var cedula = $('#cedula').val();
-// va al controlador libro.php e instancia el metodo buscar
-$.post('?pagina=login', {cedula}, function(response){
-// si response es diferente de vacio lo encontro en la tabla 
-if (response != '') {
-    alert('El Proveedor ya se Encuentra Registrado');
-                }
-    },'json');
-});
-
 
 
 
@@ -257,10 +246,8 @@ $(document).ready(function() {
         var datos = new FormData($('#login')[0]);
         datos.append('ingresar', 'ingresar');
 
-        // Agregar loader al botón
         $('#ingresar').prop("disabled", true).html('<i class="fa fa-spinner fa-spin"></i> Iniciando...');
 
-        // Enviar los datos solo si todas las validaciones son correctas
         enviaAjax(datos).always(function() {
         
          // Restaurar botón después de completar el proceso
