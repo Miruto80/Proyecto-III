@@ -45,7 +45,7 @@ public function registrarBitacora($id_persona, $accion, $descripcion) {
     $strExec->bindParam(':descripcion', $descripcion);
     $strExec->bindParam(':id_persona', $id_persona);
     
-    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
+    return $strExec->execute();
 }
 
 public function verificarProductoExistente($nombre, $marca) {
@@ -121,6 +121,9 @@ public function consultar() {
 }
 
 public function modificar() {
+    if ($this->verificarProductoExistente($this->nombre, $this->marca)) {
+        return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'Ya existe un producto con el mismo nombre y marca'];
+    }
     $registro = "UPDATE productos SET 
         nombre = :nombre,
         descripcion = :descripcion,
@@ -154,10 +157,22 @@ public function modificar() {
 
 
 public function eliminar() {
+    
+    $consulta = "SELECT stock_disponible FROM productos WHERE id_producto = :id_producto";
+    $strExec = $this->conex1->prepare($consulta);
+    $strExec->bindParam(':id_producto', $this->id_producto);
+    $strExec->execute();
+    $stock = $strExec->fetchColumn();
+
+    if ($stock > 0) {
+        return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => 'No se puede eliminar un producto con stock disponible'];
+    }
+
     $registro = "UPDATE productos SET estatus = 0 WHERE id_producto = :id_producto";
     $strExec = $this->conex1->prepare($registro);
     $strExec->bindParam(':id_producto', $this->id_producto);
     $resul = $strExec->execute();
+
     return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
 }
 
