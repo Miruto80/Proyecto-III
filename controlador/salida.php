@@ -16,10 +16,28 @@ if (!isset($_SESSION['csrf_token'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $_SESSION['mensaje'] = "Error de validación del formulario";
-        $_SESSION['tipo_mensaje'] = "danger";
-        header("Location: ?pagina=salida");
-        exit;
+        if (esAjax()) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'error' => true,
+                'title' => '¡Error!',
+                'text' => 'Error de validación del formulario',
+                'icon' => 'error'
+            ]);
+            exit;
+        } else {
+            echo "<script>
+                Swal.fire({
+                    title: '¡Error!',
+                    text: 'Error de validación del formulario',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                }).then((result) => {
+                    window.location.href = '?pagina=salida';
+                });
+            </script>";
+            exit;
+        }
     }
 }
 
@@ -253,6 +271,108 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar_venta'])) {
         }
     }
 }
+
+if(isset($_POST['generar'])){
+    try {
+        // Generar el gráfico antes del PDF
+        generarGrafico();
+        
+        // Generar el PDF
+        $salida->generarPDF();
+        exit;
+    } catch (Exception $e) {
+        error_log("Error al generar el PDF: " . $e->getMessage());
+        echo "<script>
+            Swal.fire({
+                title: '¡Error!',
+                text: 'Error al generar el reporte PDF',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                window.location.href = '?pagina=salida';
+            });
+        </script>";
+        exit;
+    }
+}
+
+// Generar gráfico antes de cargar la vista
+function generarGrafico() {
+    try {
+        require_once('assets/js/jpgraph/src/jpgraph.php');
+        require_once('assets/js/jpgraph/src/jpgraph_pie.php');
+        require_once('assets/js/jpgraph/src/jpgraph_pie3d.php');
+
+        $db = new Conexion();
+        $conex1 = $db->getConex1();
+
+        // Consulta para obtener los 5 productos más vendidos
+        $SQL = "SELECT p.nombre as nombre_producto, 
+                       SUM(pd.cantidad) as total_vendido
+                FROM pedido_detalles pd
+                JOIN productos p ON pd.id_producto = p.id_producto
+                JOIN pedido pe ON pd.id_pedido = pe.id_pedido
+                WHERE pe.estado = 2 -- Solo pedidos aprobados
+                GROUP BY p.id_producto, p.nombre
+                ORDER BY total_vendido DESC
+                LIMIT 5";
+
+        $stmt = $conex1->prepare($SQL);
+        $stmt->execute();
+
+        $data = [];
+        $labels = [];
+
+        // Verificar si hay resultados
+        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (empty($resultados)) {
+            $data = [100];
+            $labels = ['No hay datos de ventas'];
+        } else {
+            foreach ($resultados as $resultado) {
+                $labels[] = $resultado['nombre_producto'];
+                $data[] = (int)$resultado['total_vendido'];
+            }
+        }
+
+        // Crear el gráfico
+        $graph = new PieGraph(900, 500);
+        $graph->SetShadow();
+        
+        $p1 = new PiePlot3D($data);
+        $p1->SetLegends($labels);
+        $p1->SetCenter(0.5, 0.45);
+        $p1->SetSize(0.3);
+        
+        $p1->ShowBorder();
+        $p1->SetSliceColors(['#FF9999','#66B2FF','#99FF99','#FFCC99','#FF99CC']);
+        
+        $p1->SetLabelType(PIE_VALUE_ABS);
+        $p1->value->SetFont(FF_ARIAL, FS_BOLD, 11);
+        $p1->value->SetColor("black");
+        
+        $graph->Add($p1);
+
+        // Guardar el gráfico
+        $imgDir = __DIR__ . "/../assets/img/grafica_reportes/";
+        if (!file_exists($imgDir)) {
+            mkdir($imgDir, 0777, true);
+        }
+
+        $imagePath = $imgDir . "grafico_ventas.png";
+        if (file_exists($imagePath)) {
+            unlink($imagePath);
+        }
+
+        $graph->Stroke($imagePath);
+        
+    } catch (Exception $e) {
+        error_log("Error al generar el gráfico de ventas: " . $e->getMessage());
+    }
+}
+
+// Llamar la función para generar la gráfica ANTES de cargar la vista
+generarGrafico();
 
 // Si es una solicitud GET normal, mostrar la vista
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {

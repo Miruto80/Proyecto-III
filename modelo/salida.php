@@ -1,5 +1,9 @@
 <?php
+require_once('assets/dompdf/vendor/autoload.php');
+use Dompdf\Dompdf;
+use Dompdf\Options;
 require_once 'conexion.php';
+
 
 class Salida extends Conexion {
     private $conex1;
@@ -436,6 +440,89 @@ class Salida extends Conexion {
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    private function imgToBase64($imgPath) {
+        $fullPath = __DIR__ . '/../' . $imgPath;
+    
+        if (file_exists($fullPath)) {
+            $imgData = file_get_contents($fullPath);
+            return 'data:image/png;base64,' . base64_encode($imgData);
+        }
+        return '';
+    }
+
+    public function generarPDF() {
+        $ventas = $this->consultar();
+        $fechaHoraActual = date('d/m/Y h:i A');
+    
+        // Ruta de la imagen en la carpeta img
+        $graficoBase64 = $this->imgToBase64('assets/img/grafica_reportes/grafico_ventas.png');
+    
+        $html = '
+        <html>
+        <head>
+            <title>Ventas PDF</title>
+            <style>
+                body { font-family: Arial, sans-serif; font-size: 12px; }
+                h1 { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 20px; }
+                p { text-align: left; font-size: 12px; }
+                h2 { font-size: 20px; font-weight: bold; margin-top: 20px; text-align: center; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+                th { background-color: rgb(243, 108, 164); color: #000; font-size: 14px; }
+                td { font-size: 12px; }
+            </style>
+        </head>
+        <body>
+            <h1>LISTADO DE VENTAS</h1>
+            <p><strong>Fecha y Hora de Expedición: </strong>' . $fechaHoraActual . '</p>';
+    
+        if (!empty($graficoBase64)) {
+            $html .= '<h2 style="text-align:center;">Top 5 Productos Más Vendidos</h2>
+                     <div style="text-align: center;"><img src="' . $graficoBase64 . '" width="600"></div><br>';
+        }
+    
+        $html .= '<table>
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Total</th>
+                            <th>Método Pago</th>
+                            <th>Método Entrega</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+    
+        foreach ($ventas as $venta) {
+            $estados_texto = array(
+                '0' => 'Rechazado',
+                '1' => 'Pendiente',
+                '2' => 'Aprobado'
+            );
+
+            $fecha_formateada = date('d/m/Y', strtotime($venta['fecha']));
+            $precio_formateado = '$' . number_format($venta['precio_total'], 2);
+            
+            $html .= '<tr>
+                        <td>' . htmlspecialchars($venta['cliente']) . '</td>
+                        <td>' . $fecha_formateada . '</td>
+                        <td>' . htmlspecialchars($estados_texto[$venta['estado']] ?? 'Desconocido') . '</td>
+                        <td>' . $precio_formateado . '</td>
+                        <td>' . htmlspecialchars($venta['metodo_pago'] ?? 'N/A') . '</td>
+                        <td>' . htmlspecialchars($venta['metodo_entrega'] ?? 'N/A') . '</td>
+                    </tr>';
+        }
+    
+        $html .= '</tbody></table></body></html>';
+    
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $dompdf->stream("Reporte_Ventas.pdf", array("Attachment" => false));
     }
 }
 ?>

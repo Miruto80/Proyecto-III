@@ -61,13 +61,30 @@
       </h4>
            
        <!-- Button que abre el Modal N1 Registro -->
+       <div class="d-flex gap-2"> 
           <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registroModal">
             <span class="icon text-white">
             <i class="fas fa-file-medical"></i>
             </span>
             <span class="text-white">Registrar Venta</span>
           </button>
-      </div>
+
+          <button type="button" class="btn btn-primary" id="btnAyuda">
+    <span class="icon text-white">
+      <i class="fas fa-info-circle"></i>
+    </span>
+    <span class="text-white">Ayuda</span>
+  </button>
+
+  <form id="formGenerarPDF" method="POST" action="?pagina=salida" target="_blank">
+    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+    <input type="hidden" name="nombre" value="Listado de ventas">
+    <button type="submit" name="generar" class="btn btn-info">
+      <i class="fas fa-file-pdf"></i> Generar PDF
+    </button>
+  </form>
+</div>
+</div>
           
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      

@@ -1,4 +1,7 @@
 <?php
+require_once('assets/dompdf/vendor/autoload.php');
+use Dompdf\Dompdf;
+use Dompdf\Options;
 require_once 'conexion.php';
 
 class Entrada extends Conexion {
@@ -24,6 +27,87 @@ class Entrada extends Conexion {
         if (!$this->conex2) {
             die('Error al conectar con la segunda base de datos');
         }
+    }
+
+    private function imgToBase64($imgPath) {
+        $fullPath = __DIR__ . '/../' . $imgPath;
+    
+        if (file_exists($fullPath)) {
+            $imgData = file_get_contents($fullPath);
+            return 'data:image/png;base64,' . base64_encode($imgData);
+        }
+        return '';
+    }
+
+    public function generarPDF() {
+        $compras = $this->consultar();
+        $fechaHoraActual = date('d/m/Y h:i A');
+    
+        // Ruta de la imagen en la carpeta img
+        $graficoBase64 = $this->imgToBase64('assets/img/grafica_reportes/grafico_entradas.png');
+    
+        $html = '
+    <html>
+    <head>
+        <title>Compras PDF</title>
+        <style>
+            body { font-family: Arial, sans-serif; font-size: 12px; }
+            h1 { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 20px; }
+            p { text-align: left; font-size: 12px; }
+            h2 { font-size: 20px; font-weight: bold; margin-top: 20px; text-align: center; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+            th { background-color: rgb(243, 108, 164); color: #000; font-size: 14px; }
+            td { font-size: 12px; }
+        </style>
+    </head>
+    <body>
+        <h1>LISTADO DE COMPRAS</h1>
+        <p><strong>Fecha y Hora de Expedición: </strong>' . $fechaHoraActual . '</p>';
+    
+        if (!empty($graficoBase64)) {
+            $html .= '<h2 style="text-align:center;">Productos más comprados</h2>
+                     <div style="text-align: center;"><img src="' . $graficoBase64 . '" width="600"></div><br>';
+        }
+    
+        $html .= '<table>
+                    <thead>
+                        <tr>
+                            <th>ID Compra</th>
+                            <th>Fecha Entrada</th>
+                            <th>Proveedor</th>
+                            <th>Productos</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+    
+        foreach ($compras as $compra) {
+            $detalles = $this->consultarDetalles($compra['id_compra']);
+            $productos = [];
+            $total = 0;
+    
+            foreach ($detalles as $detalle) {
+                $productos[] = $detalle['producto_nombre'] . ' (' . $detalle['cantidad'] . ' unidades)';
+                $total += $detalle['precio_total'];
+            }
+    
+            $html .= '<tr>
+                        <td>' . htmlspecialchars($compra['id_compra']) . '</td>
+                        <td>' . date('d/m/Y', strtotime($compra['fecha_entrada'])) . '</td>
+                        <td>' . htmlspecialchars($compra['proveedor_nombre']) . '</td>
+                        <td>' . htmlspecialchars(implode(", ", $productos)) . '</td>
+                        <td>$' . number_format($total, 2) . '</td>
+                      </tr>';
+        }
+    
+        $html .= '</tbody></table></body></html>';
+    
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $dompdf->stream("Reporte_Compras.pdf", array("Attachment" => false));
     }
 
     public function registrarBitacora($id_persona, $accion, $descripcion) {
