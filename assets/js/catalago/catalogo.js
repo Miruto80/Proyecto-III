@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function openModal(element) {
+    const id = element.dataset.id;
     const nombre = element.dataset.nombre;
     const precio = element.dataset.precio;
     const imagen = element.dataset.imagen;
@@ -59,6 +60,10 @@ function openModal(element) {
     document.getElementById('form-imagen').value = imagen;
     document.getElementById('form-stock-disponible').value = stockDisponible;
     
+    const btnFavorito = document.querySelector('.btn-favorito');
+    if (btnFavorito) {
+      btnFavorito.dataset.id = id;
+    }
 }
 
 function muestraMensaje(icono, tiempo, titulo, mensaje) {
@@ -274,3 +279,33 @@ $('#btnAyuda').on("click", function () {
     driverObj.drive();
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('click', e => {
+      const btn = e.target.closest('.btn-favorito');
+      if (!btn) return;
+  
+      const idProducto = btn.dataset.id;
+      if (!idProducto) {
+        Swal.fire('Error', 'ID de producto no válido', 'error');
+        return;
+      }
+  
+      fetch('?pagina=listadeseo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'accion=agregar&id_producto=' + encodeURIComponent(idProducto)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          Swal.fire('¡Agregado!', 'Producto añadido a tu lista de deseos.', 'success');
+        } else if (data.status === 'exists') {
+          Swal.fire('Aviso', 'Este producto ya está en tu lista.', 'info');
+        } else {
+          Swal.fire('Error', data.message || 'No se pudo agregar.', 'error');
+        }
+      })
+      .catch(() => Swal.fire('Error', 'Error al procesar la solicitud.', 'error'));
+    });
+  });
+  
