@@ -1,13 +1,17 @@
 
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
         <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+
+          <a class="notification me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarAyuda" aria-controls="sidebarAyuda" style="background-color: white; padding: 8px; border-radius: 12px; text-decoration: none;">
+            <i class="fa-solid fa-circle-question" style="color: #004adf;"></i>
+         </a>
+
          <!-- Cuadro de notificaciones -->
          <a href="?pagina=notificacion" class="notification-icon me-2" style="background-color: white; padding: 8px; border-radius: 12px; text-decoration: none;">
             <i class="fa-solid fa-bell" style="color: black;"></i>
+      
         </a>
-        <button class="btn btn-info" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarAyuda" aria-controls="sidebarAyuda">
-    <i class="fa-solid fa-circle-question"></i>
-</button>
+        
 
         
         <div class="input-group">
