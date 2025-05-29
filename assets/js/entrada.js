@@ -75,6 +75,17 @@ document.addEventListener('DOMContentLoaded', function() {
           productosValidos = false;
           return;
         }
+
+        // Obtener el stock disponible del producto seleccionado
+        const selectedOption = productoSelect.options[productoSelect.selectedIndex];
+        const stockDisponible = parseInt(selectedOption.getAttribute('data-stock') || 0);
+        const cantidadActual = parseInt(cantidad.value || 0);
+
+        if (cantidadActual > stockDisponible) {
+          muestraMensaje("warning", 3000, "Stock insuficiente", `La cantidad (${cantidadActual}) supera el stock disponible (${stockDisponible})`);
+          productosValidos = false;
+          return;
+        }
       }
     });
     
@@ -184,6 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cantidadInput = fila.querySelector('.cantidad-input');
     const precioInput = fila.querySelector('.precio-input');
     const precioTotalInput = fila.querySelector('.precio-total');
+    const productoSelect = fila.querySelector('.producto-select');
     const removerBtn = fila.querySelector('.remover-producto');
     
     // Calcular precio total cuando cambia la cantidad o el precio unitario
@@ -193,16 +205,47 @@ document.addEventListener('DOMContentLoaded', function() {
       const precioTotal = cantidad * precioUnitario;
       precioTotalInput.value = precioTotal.toFixed(2);
     }
+
+    // Validar stock al cambiar la cantidad
+    function validarStock() {
+      if (productoSelect && productoSelect.value && cantidadInput.value) {
+        const selectedOption = productoSelect.options[productoSelect.selectedIndex];
+        const stockDisponible = parseInt(selectedOption.getAttribute('data-stock') || 0);
+        const cantidadActual = parseInt(cantidadInput.value || 0);
+
+        if (cantidadActual > stockDisponible) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Stock Insuficiente',
+            html: `La cantidad ingresada (${cantidadActual}) supera el stock disponible (${stockDisponible}).<br>Por favor, ingrese una cantidad menor o igual al stock disponible.`,
+            confirmButtonText: 'Entendido'
+          });
+          cantidadInput.value = stockDisponible; // Establecer al máximo disponible
+          calcularPrecioTotal(); // Recalcular el precio total
+        }
+      }
+    }
     
     // Evitar configurar el mismo evento múltiples veces
     if (!cantidadInput.dataset.configurado) {
       cantidadInput.dataset.configurado = "true";
       cantidadInput.addEventListener('input', calcularPrecioTotal);
+      cantidadInput.addEventListener('change', validarStock);
     }
     
     if (!precioInput.dataset.configurado) {
       precioInput.dataset.configurado = "true";
       precioInput.addEventListener('input', calcularPrecioTotal);
+    }
+
+    // Validar stock al cambiar el producto
+    if (!productoSelect.dataset.configurado) {
+      productoSelect.dataset.configurado = "true";
+      productoSelect.addEventListener('change', function() {
+        if (cantidadInput.value) {
+          validarStock();
+        }
+      });
     }
     
     // Calcular precio inicial

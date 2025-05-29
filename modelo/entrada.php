@@ -47,6 +47,17 @@ class Entrada extends Conexion {
                 return ['respuesta' => 0, 'accion' => 'incluir', 'error' => 'Datos incompletos'];
             }
             
+            // Validar stock disponible para cada producto
+            foreach ($this->detalles as $detalle) {
+                if (!$this->verificarStock($detalle['id_producto'], $detalle['cantidad'])) {
+                    return [
+                        'respuesta' => 0, 
+                        'accion' => 'incluir', 
+                        'error' => 'Stock insuficiente para el producto ID: ' . $detalle['id_producto']
+                    ];
+                }
+            }
+            
             // Insertamos la cabecera de la compra
             $registro = "INSERT INTO compra(fecha_entrada, id_proveedor) VALUES (:fecha_entrada, :id_proveedor)";
             $strExec = $this->conex1->prepare($registro);
@@ -132,6 +143,17 @@ class Entrada extends Conexion {
             $compra_existe = $this->consultarCompra($this->id_compra);
             if (empty($compra_existe)) {
                 return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'La compra no existe'];
+            }
+            
+            // Validar stock disponible para cada producto
+            foreach ($this->detalles as $detalle) {
+                if (!$this->verificarStock($detalle['id_producto'], $detalle['cantidad'])) {
+                    return [
+                        'respuesta' => 0, 
+                        'accion' => 'actualizar', 
+                        'error' => 'Stock insuficiente para el producto ID: ' . $detalle['id_producto']
+                    ];
+                }
             }
             
             // Actualizamos la cabecera de la compra
@@ -448,6 +470,21 @@ class Entrada extends Conexion {
             $consulta->execute();
             
             return $consulta->fetchColumn() > 0;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    // Método para verificar el stock disponible
+    private function verificarStock($id_producto, $cantidad_solicitada) {
+        try {
+            $query = "SELECT stock_disponible FROM productos WHERE id_producto = :id_producto AND estatus = 1";
+            $consulta = $this->conex1->prepare($query);
+            $consulta->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $consulta->execute();
+            
+            $stock_disponible = $consulta->fetchColumn();
+            return $stock_disponible >= $cantidad_solicitada;
         } catch (Exception $e) {
             return false;
         }
