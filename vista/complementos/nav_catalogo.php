@@ -89,7 +89,11 @@ nav {
    <li>
     <a class="p-2 mx-1" id="btnAyuda">
       <span class="icon text-dark">
+<<<<<<< HEAD
         <i class="fa-solid fa-circle-question" style="font-size: 25px; color:#004adf;"></i>
+=======
+        <i class="fa-solid fa-circle-question"  style="font-size: 25px; color:#004adf; cursor: pointer;"></i>
+>>>>>>> f76b0306a187ca038e50162eb5dd32b0d58f34b5
       </span>
     </a>
   </li>
