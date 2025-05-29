@@ -95,14 +95,22 @@ function validarFormularioPedido() {
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById('formPedido');
     const ref = document.getElementById("referencia_bancaria");
-    ref.addEventListener("input", (e) => {
-        e.target.value = e.target.value.replace(/[^\d]/g, ''); // Solo dígitos
-    });
     const tel = document.getElementById("telefono_emisor");
-    tel.addEventListener("input", (e) => {
-        e.target.value = e.target.value.replace(/[^\d]/g, ''); // Solo dígitos
-    });
     const dir = document.getElementById("direccion");
+    // Solo números y máximo 6 dígitos para referencia bancaria
+    ref.addEventListener("input", (e) => {
+        let valor = e.target.value.replace(/[^\d]/g, ''); // limpia caracteres no numéricos
+        if (valor.length > 6) valor = valor.slice(0, 6);  // limita a 6 dígitos
+        e.target.value = valor;
+    });
+
+    // Solo números y máximo 11 dígitos para teléfono
+    tel.addEventListener("input", (e) => {
+        let valor = e.target.value.replace(/[^\d]/g, '');
+        if (valor.length > 11) valor = valor.slice(0, 11);
+        e.target.value = valor;
+    });
+   
 
     document.getElementById('btn-guardar-pedido').addEventListener('click', async (e) => {
         e.preventDefault();
