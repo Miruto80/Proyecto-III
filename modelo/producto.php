@@ -121,6 +121,9 @@ public function consultar() {
 }
 
 public function modificar() {
+    if ($this->verificarProductoExistente($this->nombre, $this->marca)) {
+        return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'Ya existe un producto con el mismo nombre y marca'];
+    }
     $registro = "UPDATE productos SET 
         nombre = :nombre,
         descripcion = :descripcion,
