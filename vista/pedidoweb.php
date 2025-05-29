@@ -110,9 +110,14 @@
     <!--Titulo de página -->
      <div class="d-sm-flex align-items-center justify-content-between mb-5">
      <div class="d-flex gap-2">
+     <h4 class="mb-0"><i class="fa-solid fa-desktop mr-2" style="color: #f6c5b4;"></i>
+        Pedido Web</h5>
+      </div>
  
- 
-  <button type="button" class="btn btn-primary" id="btnAyuda">
+
+ <div class="d-flex gap-2">
+
+          <button type="button" class="btn btn-primary" id="btnAyuda">
     <span class="icon text-white">
       <i class="fas fa-info-circle"></i>
     </span>
@@ -123,12 +128,11 @@
     <input type="hidden" name="nombre" value="Listado de proveedores">
     <button type="submit" name="generar" class="btn btn-info">
       Generar PDF
-    </button> 
+    </button>
+  </form>
 </div>
-     
- <h4 class="mb-0"><i class="fa-solid fa-desktop mr-2" style="color: #f6c5b4;"></i>
-        Pedido Web</h5>
       </div>
+ 
 
           
           
