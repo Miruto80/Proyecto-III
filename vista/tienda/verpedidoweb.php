@@ -157,6 +157,7 @@ input:focus::-webkit-input-placeholder
     width: 100%;
     font-size: 0.7rem;
     margin: 4vh 0 1.5vh 0;
+    font-size: 16px;
     padding: 1.5vh;
     border-radius: 8px;
     background-color: #ff70d9ff;
@@ -215,8 +216,7 @@ input[type=checkbox]{
     }
 
     .span{
-        color: #ffffff;
-        background-color: #ff70d9ff;
+      
         font-weight: bold;
     }
     .referer{
@@ -241,6 +241,64 @@ input[type=checkbox]{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.left, .right {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+}
+
+.header, .header2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #444;
+  border-bottom: 2px solid #e1e1e1;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.form-select, .form-control {
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+}
+
+.btns.btn-success.btn-rp {
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.6rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #ff70d9ff;
+  border: none;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.btns.btn-success.btn-rp:hover {
+  background-color: #ff70d9ff;
+}
+
+.item {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.6rem;
+  padding: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.img-fluid.img {
+  border-radius: 0.5rem;
+}
+
+.referer h5 {
+  font-weight: 600;
+  color: #333;
+}
+
+.lower {
+  font-size: 1.2rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 0 0 1rem 1rem;
+}
 
 
 
@@ -385,7 +443,7 @@ input[type=checkbox]{
                                
                         </form> <!-- fin del formulario -->
       <?php if ($carritoEmpty): ?>
-    <button class="btns btn-success btn-rp" style="color: #aaa; pointer-events: none; cursor: default; text-decoration: none;">Realizar Pedido</button>
+    <button  class="btns btn-success btn-rp" style=" color: #aaa; pointer-events: none; cursor: default; text-decoration: none;">Realizar Pedido</button>
   <?php else: ?>
    <button class="btns btn-success btn-rp" id="btn-guardar-pedido">Realizar Pedido</button>
   <?php endif; ?>
