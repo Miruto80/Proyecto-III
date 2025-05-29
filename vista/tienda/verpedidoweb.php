@@ -301,23 +301,62 @@ input[type=checkbox]{
 }
 
 
+.enlace-compra {
+  
+    display: inline-block;
+    background-color: #f3f4f6; /* gris claro */
+    color: #374151; /* gris oscuro elegante */
+    padding: 10px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
 
+  .enlace-compra:hover {
+    background-color: #e5e7eb;
+    color: #111827;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
 
+  .enlace-compra:active {
+    transform: scale(0.98);
+  }
+
+  .enlace-compra-disabled {
+    display: inline-block;
+    background-color: #f9fafb;
+    color: #9ca3af;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 16px;
+    text-decoration: none;
+    cursor: not-allowed;
+    box-shadow: none;}
+
+    .detalle-compra-container {
+    text-align: center;
+    margin-top: 24px;
+  }
  
 </style>
 
-<div class="cart-step">
-    <div class="">1</div>
-    <div class="Enlacecarrito"><a  href="?pagina=vercarrito" class="">
-          Carrito de Compras
-  </a></div>
-    <div>→</div>
-    <div class="step-number">2</div>
-    <div class="current-step"><a  href="?pagina=verpedidoweb" class="">
-           Procesar Pago
-  </a></div>
-    
+
+<?php
+$carritoVacio = empty($_SESSION['carrito']);
+?>
+    <div class="detalle-compra-container">
+  <?php if ($carritoVacio): ?>
+    <span class="enlace-compra-disabled">Volver atras</span>
+  <?php else: ?>
+    <a href="?pagina=vercarrito" class="enlace-compra">Volver atras<i class="fa-solid fa-reply"></i> </a>
+  <?php endif; ?>
 </div>
+
 
 <div class="row m-3">
                     <div class="col-md-7">

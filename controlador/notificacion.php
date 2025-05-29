@@ -24,17 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($_POST['accion'] === 'eliminar') {
-            echo json_encode($notificacion->eliminar());
+            $resultado = $notificacion->eliminar();
+            header('Content-Type: application/json'); // Asegura que el servidor envíe JSON
+            echo json_encode($resultado); // Devuelve JSON correctamente
             exit;
         }
     }
 
-    if ($_POST['accion'] === 'vaciar') {
-        echo json_encode($notificacion->eliminar());
-        exit;
-    }
-
-    echo json_encode(['respuesta' => 0, 'accion' => 'sin datos válidos']);
+    echo json_encode(['respuesta' => 0, 'accion' => 'error', 'mensaje' => 'Solicitud no válida']);
     exit;
 }
 

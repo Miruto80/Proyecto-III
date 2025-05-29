@@ -34,9 +34,7 @@
           <div class="card mb-4">
             <div class="card-header pb-0">  <!-- CARD N-1 -->  
               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-               <button class="btn btn-primary btn-vaciar" type="button"> 
-               <i class="fa-solid fa-trash-can mr-4"></i> Vaciar
-              </button>
+          
 
 
               </div>
