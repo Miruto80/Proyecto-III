@@ -85,6 +85,7 @@ showPasswordButton.addEventListener('click', () => {
 </script>
 <script src="assets/js/bitacora.js"></script>
 
+
 <?php if(isset($_SESSION['message'])): ?>
       <script>
         Swal.fire({

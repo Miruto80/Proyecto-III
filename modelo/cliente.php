@@ -117,22 +117,41 @@ class Cliente extends Conexion
     }
 
 
-    public function existeCedula() {
-        $consulta = "SELECT cedula FROM cliente WHERE cedula = :cedula";
-        $strExec = $this->conex1->prepare($consulta);
+         public function existeCedula() {
+    // Buscar en conex1
+    $consulta = "SELECT cedula FROM cliente WHERE cedula = :cedula";
+    $strExec = $this->conex1->prepare($consulta);
+    $strExec->bindParam(':cedula', $this->cedula);
+    $strExec->execute();
+
+    // Si no hay resultados, buscar en conex2
+    if ($strExec->rowCount() == 0) {
+        $consulta = "SELECT cedula FROM usuario WHERE cedula = :cedula";
+        $strExec = $this->conex2->prepare($consulta);
         $strExec->bindParam(':cedula', $this->cedula);
         $strExec->execute();
-        return $strExec->rowCount() > 0;
     }
 
+    return $strExec->rowCount() > 0;
+}
 
     public function existeCorreo() {
-        $consulta = "SELECT correo FROM cliente WHERE correo = :correo";
-        $strExec = $this->conex1->prepare($consulta);
+    //conex1
+    $consulta = "SELECT correo FROM cliente WHERE correo = :correo";
+    $strExec = $this->conex1->prepare($consulta);
+    $strExec->bindParam(':correo', $this->correo);
+    $strExec->execute();
+
+    //buscar en conex2
+    if ($strExec->rowCount() == 0) {
+        $consulta = "SELECT correo FROM usuario WHERE correo = :correo";
+        $strExec = $this->conex2->prepare($consulta);
         $strExec->bindParam(':correo', $this->correo);
         $strExec->execute();
-        return $strExec->rowCount() > 0;
     }
+
+    return $strExec->rowCount() > 0;
+}
     
     
     public function get_Id_Persona()

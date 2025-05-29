@@ -64,8 +64,23 @@ document.addEventListener('DOMContentLoaded', function() {
       const precio = fila.querySelector('.precio-input');
       
       if (productoSelect && productoSelect.value) {
+        // Obtener el stock máximo del option seleccionado
+        const selectedOption = productoSelect.options[productoSelect.selectedIndex];
+        const stockMaximo = selectedOption.getAttribute('data-stock-maximo');
+        const stockActual = selectedOption.getAttribute('data-stock-actual');
+        
         if (!cantidad || !cantidad.value || parseFloat(cantidad.value) <= 0) {
           muestraMensaje("warning", 3000, "Cantidad inválida", "La cantidad debe ser mayor a cero");
+          productosValidos = false;
+          return;
+        }
+
+        // Validar que no supere el stock máximo
+        const nuevaCantidad = parseFloat(cantidad.value);
+        const stockTotal = parseFloat(stockActual) + nuevaCantidad;
+        
+        if (stockMaximo && stockTotal > parseFloat(stockMaximo)) {
+          muestraMensaje("warning", 3000, "Stock excedido", `La cantidad ingresada superaría el stock máximo permitido (${stockMaximo})`);
           productosValidos = false;
           return;
         }

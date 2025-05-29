@@ -39,17 +39,28 @@
      <div class="d-sm-flex align-items-center justify-content-between mb-5">
        <h4 class="mb-0"><i class="fa-solid fa-user-gear mr-2" style="color: #f6c5b4;"></i>
         Usuario</h5>
-           
+         
+      <div class="d-flex gap-2">
+
+    
        <!-- Button que abre el Modal N1 Registro -->
-          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
+          <button type="button" class="btn btn-success registrar" data-bs-toggle="modal" data-bs-target="#registro">
             <span class="icon text-white">
             <i class="fas fa-file-medical"></i>
             </span>
-            <span class="text-white">Registrar</span>
+            <span class="text-white" id="btnAbrirRegistrar">Registrar</span>
           </button>
+
+          
+  <button type="button" class="btn btn-primary" id="ayuda">
+    <span class="icon text-white">
+      <i class="fas fa-info-circle"></i>
+    </span>
+    <span class="text-white">Ayuda</span>
+  </button>
       </div>
           
-
+  </div>  
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
           <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
@@ -94,7 +105,7 @@
                 
                   <td>
                     <form method="POST" action="?pagina=usuario">
-                      <button type="button" class="btn btn-primary btn-sm"
+                      <button type="button" class="btn btn-primary btn-sm modificar"
                    data-bs-toggle="modal"
                    data-bs-target="#editarModal"
                    data-id="<?php echo $dato['id_persona']; ?>"
@@ -300,7 +311,7 @@
 </div>
 
 <!--FIN Modal -->
-
+ </div>
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
 <!-- para el datatable-->

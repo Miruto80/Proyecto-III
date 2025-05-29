@@ -1,6 +1,7 @@
 <?php
 
 require_once 'conexion.php';
+require_once 'tipousuario.php';
 
 class Usuario extends Conexion
 {
@@ -16,6 +17,7 @@ class Usuario extends Conexion
     private $id_rol;
     private $clave;
     private $estatus;
+      private $objtipousuario;
     private $encryptionKey = "MotorLoveMakeup"; 
     private $cipherMethod = "AES-256-CBC";
     
@@ -25,6 +27,7 @@ class Usuario extends Conexion
         // Obtener las conexiones de la clase padre
         $this->conex1 = $this->getConex1();
         $this->conex2 = $this->getConex2();
+        $this->objtipousuario = new Tipousuario();
    }
 
     private function encryptClave($clave) {
@@ -112,16 +115,12 @@ class Usuario extends Conexion
             }
         }
    
-    public function obtenerRol()
-    {
-        $query = "SELECT * FROM rol_usuario WHERE id_rol >= 1";
-        $consulta = $this->conex2->prepare($query);
-        $consulta->execute();
-        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+    public function obtenerRol(){
+       	return $this->objtipousuario->consultar();
     }
 
      public function actualizar(){
-        $registro = "UPDATE usuario SET cedula = :cedula, correo = :correo, estatus = :estatus, id_rol = :id_rol  WHERE id_persona = :id_usuario";
+        $registro = "UPDATE usuario SET cedula = :cedula, correo = :correo, estatus = :estatus, id_rol = :id_rol,  WHERE id_persona = :id_usuario";
 
         $strExec = $this->conex2->prepare($registro);
         $strExec->bindParam(':id_usuario', $this->id_usuario);

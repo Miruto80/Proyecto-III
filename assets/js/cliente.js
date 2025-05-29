@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("modalIdPersona").value = idPersona;
     document.getElementById("modalCedula").value = cedula;
     document.getElementById("modalCorreo").value = correo;
+    document.getElementById("modalce").value = cedula;
+    document.getElementById("modalco").value = correo;
   });
 });
 

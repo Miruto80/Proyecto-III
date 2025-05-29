@@ -171,7 +171,7 @@
 
 <!-- php barra de navegacion-->
 <?php include 'vista/complementos/footer.php' ?>
-
+<script src="assets/js/demo/datatables-demo.js"></script>
 <script>
 function verDetalles(id) {
     $.ajax({
