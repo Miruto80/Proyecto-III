@@ -75,7 +75,13 @@
                 </h2>
                 <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
-                        Ve a la sección de configuración y selecciona "Restablecer contraseña".
+                        Dirijase al inicio de sesion y oprima en "Restablecer contraseña" y siga los pasos. 
+                        Ingrese su numero de cedula y oprima el boton de "Validar" luego
+                        coloque el correo con el que se ingreso y dele a "Continuar" a partir de alli
+                        espere a que le llegue un codigo a su correo ya ingresado,
+                        por ultimo ingrese el codigo de verificacion que se le envio al correo y dele a "Contiuar".
+                        
+                        Felicidades! Ha completado los pasos, ahora puede iniciar sesion con su nueva contraseña.
                     </div>
                 </div>
             </div>
@@ -87,7 +93,7 @@
                 </h2>
                 <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
-                        Puedes enviarnos un mensaje desde la página de contacto.
+                        Puedes enviarnos un mensaje al siguiente contacto: miguelfernando8012@gmail.com.
                     </div>
                 </div>
             </div>
@@ -99,22 +105,25 @@
     </h2>
     <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-            Accede al panel de administración, busca el pedido en "Órdenes pendientes" y sigue el proceso de confirmación o actualización del estado.
+            Accede al modulo de Pedido Web, busca el pedido que se encuentre en estado
+            "Pendiente" y oprima el boton de color verde para validar el pedido.
         </div>
     </div>
 </div>
 <div class="accordion-item">
     <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">
-            ¿Cómo actualizar el inventario?
+            ¿Cómo gestionar una venta pendiente?
         </button>
     </h2>
     <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-            En el sistema de inventario, selecciona el producto y actualiza la cantidad disponible según los últimos ingresos o ventas.
+            Accede al modulo de Venta, busque la compra que se encuentre en estado
+            "Pendiente". Oprima el boton de modificar y modifique el estado de la venta.
         </div>
     </div>
 </div>
+
 <div class="accordion-item">
     <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq12">
@@ -123,7 +132,8 @@
     </h2>
     <div id="faq12" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-            Verifica el estado del pago en la pasarela de pagos y contacta al cliente para resolver cualquier inconveniente.
+            Verifique el estado del pago y contacte al cliente para resolver cualquier inconveniente.
+            En caso de haber ocurrido un problema puede dirijirse al modulo de Clientes y actualizar su estatus en "Acccion" para mas precaucion. 
         </div>
     </div>
 </div>
@@ -135,19 +145,19 @@
     </h2>
     <div id="faq13" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-            Accede al módulo de gestión de productos y edita detalles como precio, descripción y disponibilidad.
+            Acceda al módulo de gestión de productos y edite detalles como precio, descripción y disponibilidad.
         </div>
     </div>
 </div>
 <div class="accordion-item">
     <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq17">
-            ¿Cómo gestionar reportes de clientes?
+            ¿Cómo gestionar un reporte?
         </button>
     </h2>
     <div id="faq17" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-            Registra los reportes en el sistema y escala los casos según su nivel de prioridad para una resolución rápida.
+            Oprima el boton de "Generar Reporte" del modulo en el que se encuentre y lo llevara a una nueva pestaña donde se generara un reporte estadistico que podra descargar como PDF.
         </div>
     </div>
 </div>
@@ -160,7 +170,7 @@
     </h2>
     <div id="faq18" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-            Ve al módulo "Compra", haz clic en "Nueva compra", ingresa los datos del proveedor y los productos adquiridos.
+            Ve al módulo "Compra", haz clic en "Registrar Compra", ingresa los datos del proveedor y los productos adquiridos.
         </div>
     </div>
 </div>
@@ -186,7 +196,9 @@
     </h2>
     <div id="faq20" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-            Accede al módulo "Venta", selecciona al cliente, los productos vendidos y guarda el registro de la transacción.
+            Acceda al módulo "Venta", seleccione al cliente y verifique su cedula, tambien puede registrarlo y 
+            cambiar el estatus a aprovado o rechazado para confirmar la venta, rellene los campos requeridos 
+            y luego guarde el registro.
         </div>
     </div>
 </div>
@@ -199,7 +211,7 @@
     </h2>
     <div id="faq21" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-            Dirígete a "Reserva", selecciona al cliente y los productos a reservar, y confirma la reserva con fecha y duración.
+            Dirígete a "Reserva", selecciona al cliente y los productos a reservar, y confirma la reserva con la decha del dia fecha.
         </div>
     </div>
 </div>
@@ -212,7 +224,7 @@
     </h2>
     <div id="faq22" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-            En el módulo "Proveedor", haz clic en "Nuevo proveedor", completa los datos de contacto y guarda.
+            Dirijase al módulo "Proveedor", haga clic en "Registrar" y complete los datos de contacto.
         </div>
     </div>
 </div>
@@ -225,7 +237,7 @@
     </h2>
     <div id="faq23" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-            Dentro de "Producto", selecciona uno y edita su información. En la sección de categoría, elige la más adecuada y guarda.
+            Dentro de "Producto", a la hora de registrar un producto tiene un campo para asignarle una categoria a dicho producto, tambien puede seleccionar alguno ya registrado y edita su informacion cambiandolo de categoria si es necesario.
         </div>
     </div>
 </div>
@@ -233,16 +245,30 @@
 <div class="accordion-item">
     <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq24">
-            ¿Cómo se registran nuevos cliente?
+            ¿Cómo se registran nuevos clientes?
         </button>
     </h2>
     <div id="faq24" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-            Los clientes se registran en la parte del iniciar sesion y registrase
+            Los clientes se registran en la parte del iniciar sesion en el boton de "Registrase".
+            Tambien se pueden registrar desde el modulo de Venta si se necesita.
         </div>
     </div>
 </div>
 
+
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq25">
+            ¿Cómo agregar un producto al catalogo?
+        </button>
+    </h2>
+    <div id="faq25" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+        <div class="accordion-body">
+            Al registrar un producto en el modulo "Producto" se muestra automaticamente en el catalogo y lo puede visualizar junto a los demas productos en el boton "Ver todos los Productos".
+        </div>
+    </div>
+</div>
 
         </div>
     </div>

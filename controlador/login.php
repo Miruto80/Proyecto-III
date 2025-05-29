@@ -118,7 +118,6 @@ $objlogin = new Login();
     
   
      $persona = $objlogin->obtenerPersonaPorCedula();
-
     if ($persona) {
         $res = array('respuesta' => 1, 'accion' => 'validarclave');
         echo json_encode($res);
