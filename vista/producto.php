@@ -121,21 +121,28 @@
     <i class="fa-solid fa-pump-soap mr-2" style="color: #f6c5b4;"></i> Producto
   </h4>
 
-  <div>
-    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro" id="btnAbrirRegistrar">
-      <span class="icon text-white">
-        <i class="fas fa-file-medical"></i>
-      </span>
-      <span class="text-white">Registrar</span>
-    </button>
+  <div class="d-flex gap-2">
+  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro" id="btnAbrirRegistrar">
+    <span class="icon text-white">
+      <i class="fas fa-file-medical"></i>
+    </span>
+    <span class="text-white">Registrar</span>
+  </button>
 
-    <button type="button" class="btn btn-primary" id="btnAyuda">
-      <span class="icon text-white">
-        <i class="fas fa-info-circle"></i>
-      </span>
-      <span class="text-white">Ayuda</span>
+  <button type="button" class="btn btn-primary" id="btnAyuda">
+    <span class="icon text-white">
+      <i class="fas fa-info-circle"></i>
+    </span>
+    <span class="text-white">Ayuda</span>
+  </button>
+
+  <form id="formGenerarPDF" method="POST" target="_blank">
+    <input type="hidden" name="nombre" value="Listado de proveedores">
+    <button type="submit" name="generar" class="btn btn-warning">
+      Generar PDF
     </button>
-  </div>
+  </form>
+</div>
 </div>
 
           <div class="table-responsive">

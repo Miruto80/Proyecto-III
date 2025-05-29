@@ -160,10 +160,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
     }
-    
-    
-    
 }
+
+if(isset($_POST['generar'])){
+    $objproducto->generarPDF();
+    exit; // Evitar que se cargue la vista después del PDF
+}
+
+// Generar gráfico antes de cargar la vista
+
+function generarGrafico() {
+    require_once('assets/js/jpgraph/src/jpgraph.php');
+    require_once('assets/js/jpgraph/src/jpgraph_pie.php');
+    require_once('assets/js/jpgraph/src/jpgraph_pie3d.php');
+
+    $db = new Conexion();
+    $conex1 = $db->getConex1(); // Cambia al nombre correcto
+
+    // Obtener los productos con mayor stock
+    $SQL = "SELECT nombre, stock_disponible 
+    FROM productos 
+    WHERE estatus IN (1, 2)
+    ORDER BY stock_disponible DESC 
+    LIMIT 10";
+
+    $stmt = $conex1->prepare($SQL);
+    $stmt->execute();
+
+    $data = [];
+    $labels = [];
+
+    while ($resultado = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $labels[] = $resultado['nombre'];
+        $data[] = $resultado['stock_disponible'];
+    }
+
+    // Crear el gráfico
+    $graph = new PieGraph(900, 500);
+    $p1 = new PiePlot3D($data);
+    $p1->SetLegends($labels);
+    $p1->SetCenter(0.5, 0.5);
+    $p1->ShowBorder();
+    $p1->SetColor('black');
+    $p1->ExplodeSlice(1);
+    $graph->Add($p1);
+
+    // Ruta de almacenamiento
+    $imgDir = __DIR__ . "/../assets/img/grafica_reportes/";
+    $imagePath = $imgDir . "grafico_productos.png";
+
+    // Crear carpeta si no existe
+    if (!file_exists($imgDir)) {
+        mkdir($imgDir, 0777, true);
+    }
+
+    // Eliminar imagen anterior
+    if (file_exists($imagePath)) {
+        unlink($imagePath);
+    }
+
+    // Verificar si hay datos antes de generar la imagen
+    if (empty($data) || array_sum($data) == 0) {
+        echo "No hay datos suficientes para generar un gráfico.";
+        return;
+    }
+
+    $graph->Stroke($imagePath);
+}
+
+
+// Llamar la función para generar la gráfica ANTES de cargar la vista
+generarGrafico();
+
 
 // Por defecto carga la vista (GET u otra petición)
 $id_persona = $_SESSION["id"];

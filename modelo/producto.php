@@ -1,5 +1,11 @@
 <?php 
 
+require_once('assets/dompdf/vendor/autoload.php'); //archivo para cargar las funciones de la 
+//libreria DOMPDF
+// lo siguiente es hacer rerencia al espacio de trabajo
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 require_once('modelo/conexion.php');
 require_once('modelo/categoria.php');
 
@@ -171,6 +177,85 @@ public function cambiarEstatusProducto($id_producto, $estatus_actual) {
 public function obtenerCategoria() {
 	return $this->objcategoria->consultar();
 } 
+
+private function imgToBase64($imgPath) {
+    $fullPath = __DIR__ . '/../' . $imgPath; // Ahora busca en la carpeta correcta
+
+    if (file_exists($fullPath)) {
+        $imgData = file_get_contents($fullPath);
+        return 'data:image/png;base64,' . base64_encode($imgData);
+    }
+    return ''; // Si la imagen no existe, devuelve cadena vacía
+}
+
+
+public function generarPDF() {
+
+    $proveedores = $this->consultar();
+    $fechaHoraActual = date('d/m/Y h:i A');
+
+    // Ruta de la imagen en la carpeta img
+   $graficoBase64 = $this->imgToBase64('assets/img/grafica_reportes/grafico_productos.png');
+
+
+    $html = '
+<html>
+<head>
+    <title>productos PDF</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        h1 { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 20px; }
+        p { text-align: left; font-size: 12px; }
+        h2 { font-size: 20px; font-weight: bold; margin-top: 20px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+        th { background-color: rgb(243, 108, 164); color: #000; font-size: 14px; }
+        td { font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>LISTADO DE PRODUCTOS</h1>
+    <p><strong>Fecha y Hora de Expedición: </strong>' . $fechaHoraActual . '</p>';
+
+    // Agregar la imagen del gráfico si existe
+   if (!empty($graficoBase64)) {
+    $html .= '<h2 style="text-align:center;">Top 10 productos con más stock</h2>
+              <div style="text-align: center;"><img src="' . $graficoBase64 . '" width="600"></div><br>';
+}
+
+
+    $html .= '<table>
+                <thead>
+                    <tr>
+				  <th>Nombre</th>
+                  <th>Descripcion</th>
+                  <th>Marca</th>
+                  <th>Precio</th>
+                  <th>Precio al mayor</th>
+                  <th>Stock</th>
+                </thead>
+                <tbody>';
+
+    foreach ($proveedores as $p) {
+        $html .= '<tr>
+                    <td>' . htmlspecialchars($p['nombre']) . '</td>
+                    <td>' . htmlspecialchars($p['descripcion']) . '</td>
+                    <td>' . htmlspecialchars($p['marca']) . '</td>
+                    <td>' . htmlspecialchars($p['precio_detal']) . '</td>
+                    <td>' . htmlspecialchars($p['precio_mayor']) . '</td>
+                    <td>' . htmlspecialchars($p['stock_disponible']) . '</td>
+                  </tr>';
+    }
+
+    $html .= '</tbody></table></body></html>';
+
+    // Generar el PDF con DOMPDF
+    $dompdf = new Dompdf();
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+    $dompdf->stream("Reporte_Productos.pdf", array("Attachment" => false));
+}
 
 
 
