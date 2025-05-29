@@ -37,11 +37,6 @@ $objlogin = new Login();
                 $_SESSION["correo"] = $resultado->correo;
                 $_SESSION["estatus"] = $resultado->estatus;
 
-                // Registrar en la bitácora
-                $accion = 'Inicio de sesión';
-                $descripcion = 'El usuario ha iniciado sesión exitosamente.';
-                $objlogin->registrarBitacora($resultado->id_persona, $accion, $descripcion);  
-
                 // Redirigir según el nivel de rol
                 if ($_SESSION["nivel_rol"] == 1) {
                    
@@ -50,6 +45,10 @@ $objlogin = new Login();
                       exit;
 
                 } elseif ($_SESSION["nivel_rol"] == 2 || $_SESSION["nivel_rol"] == 3) {
+                    // Registrar en la bitácora
+                $accion = 'Inicio de sesión';
+                $descripcion = 'El usuario ha iniciado sesión exitosamente.';
+                $objlogin->registrarBitacora($resultado->id_persona, $accion, $descripcion); 
                       $res = array('respuesta' => 2, 'accion' => 'ingresar');
                       echo json_encode($res);
                       exit;
