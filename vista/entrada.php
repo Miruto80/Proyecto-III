@@ -189,7 +189,7 @@
                                           <option value="">Seleccione un producto</option>
                                           <?php foreach($productos_lista as $producto): ?>
                                             <option value="<?php echo $producto['id_producto']; ?>" 
-                                                    data-stock-maximo="<?php echo $producto['stock_maximo']; ?>"
+                                                 
                                                     data-stock-actual="<?php echo $producto['stock_disponible']; ?>">
                                               <?php echo $producto['nombre'] . ' - ' . $producto['marca']; ?>
                                             </option>

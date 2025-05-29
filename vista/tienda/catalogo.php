@@ -245,7 +245,7 @@
         <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
     </button>
 
-    <button class="btn btn-primary w-100 mt-2 btn-favorito" 
+    <button type="button" class="btn btn-primary w-100 mt-2 btn-favorito" 
             data-id="<?php echo $producto['id_producto']; ?>">
         <i class="fa-solid fa-heart"></i> Añadir a deseos
     </button>

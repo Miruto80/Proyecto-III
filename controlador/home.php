@@ -1,8 +1,11 @@
 <?php  
     session_start();
     if (empty($_SESSION["id"])){
+      
       header("location:?pagina=login");
-    } /*  Validacion URL  */
+    } 
+
+
     require_once 'modelo/home.php';
 
 $objhome = new home();
@@ -13,6 +16,12 @@ $totales = $objhome->consultarTotales();
 
 $pendientes=$objhome->consultarTotalesPendientes();
 
-   require_once 'vista/home.php';
+
+if($_SESSION["nivel_rol"] == 1){
+  header("location:?pagina=catalogo");
+} else{
+  require_once 'vista/home.php';
+}
+  
 
 ?>

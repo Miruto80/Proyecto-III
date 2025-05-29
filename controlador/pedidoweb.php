@@ -50,7 +50,7 @@
     
         // Consulta para obtener los 5 productos más vendidos en pedidos web (tipo = 2)
         $sql = "
-            SELECT pr.nombre, SUM(pd.cantidad) AS total_vendidos
+            SELECT pr.nombre,(pd.cantidad) AS total_vendidos
             FROM pedido p
             JOIN pedido_detalles pd ON p.id_pedido = pd.id_pedido
             JOIN productos pr ON pd.id_producto = pr.id_producto
