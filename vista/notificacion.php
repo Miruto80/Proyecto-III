@@ -38,44 +38,28 @@
               </div>
             <table class="table">
                    
-                    <tbody>
-                        <tr>
-                            <td>Notificación de confirmapago</td>
-                            <td>compra #444564 </td>
-                            <td>17-04-2025	08:50 am</td>
-                            <td>
-                              <button class="btn btn-info btn-sm" type="button" ><i class="fa-solid fa-envelope-open"></i></button>
-                              <button class="btn btn-danger btn-sm" type="button" ><i class="fa-solid fa-trash-can"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Notificación de confirmapago</td>
-                            <td>compra #666664 </td>
-                            <td>20-04-2025	10:50 am</td>
-                            <td>
-                              <button class="btn btn-info btn-sm" type="button" ><i class="fa-solid fa-envelope-open"></i></button>
-                              <button class="btn btn-danger btn-sm" type="button" ><i class="fa-solid fa-trash-can"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Notificación de confirmapago</td>
-                            <td>compra #45554 </td>
-                            <td>19-04-2025	05:50 am</td>
-                            <td>
-                              <button class="btn btn-info btn-sm" type="button" ><i class="fa-solid fa-envelope-open"></i></button>
-                              <button class="btn btn-danger btn-sm" type="button" ><i class="fa-solid fa-trash-can"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Notificación de confirmapago</td>
-                            <td>compra #2222224564 </td>
-                            <td>18-04-2025	07:50 am</td>
-                            <td>
-                              <button class="btn btn-info btn-sm" type="button" ><i class="fa-solid fa-envelope-open"></i></button>
-                              <button class="btn btn-danger btn-sm" type="button" ><i class="fa-solid fa-trash-can"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
+            <tbody>
+  <?php if (!empty($notificaciones)): ?>
+    <?php foreach ($notificaciones as $n): ?>
+      <tr id="notificacion-<?= $n['id_notificaciones'] ?>">
+        <td><?= htmlspecialchars($n['titulo']) ?></td>
+        <td><?= htmlspecialchars($n['mensaje']) ?></td>
+        <td class="estado"><?= $n['estado'] == 1 ? 'No leída' : 'Leída' ?></td>
+        <td><?= date('d-m-Y h:i a', strtotime($n['fecha'])) ?></td>
+        <td>
+  <button class="btn btn-info btn-sm btn-leer" data-id="<?= $n['id_notificaciones'] ?>" title="Marcar como leída">
+    <i class="fa-solid fa-envelope-open"></i>
+  </button>
+  <button class="btn btn-danger btn-sm btn-eliminar" data-id="<?= $n['id_notificaciones'] ?>" title="Eliminar">
+    <i class="fa-solid fa-trash-can"></i>
+  </button>
+</td>
+      </tr>
+    <?php endforeach; ?>
+  <?php else: ?>
+    <tr><td colspan="5" class="text-center">No hay notificaciones registradas.</td></tr>
+  <?php endif; ?>
+</tbody>
                 </table>
             </div><!-- FIN CARD N-1 -->  
           
@@ -88,6 +72,7 @@
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
+<script src="assets/js/notificacion.js"></script>
 
 </body>
 
