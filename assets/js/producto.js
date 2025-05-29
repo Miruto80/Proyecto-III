@@ -255,13 +255,7 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
                 location = '?pagina=producto';
               }, 1000);
             } else {
-              let mensajeError = lee.error ? lee.error : "Ha ocurrido un error inesperado. Inténtelo nuevamente.";
-        
-              if (mensajeError.includes("Ya existe un producto con el mismo nombre y marca")) {
-                  muestraMensaje("error", 1000, "Registro duplicado", mensajeError);
-              } else {
-                  muestraMensaje("error", 1000, "Error en al actualizar", mensajeError);
-              }
+                muestraMensaje("error", 2000, "ERROR", lee.text);
             }
           } else if (lee.accion == 'eliminar') {
             if (lee.respuesta == 1) {
