@@ -225,7 +225,21 @@ input[type=checkbox]{
 
   
 
-    
+    .is-invalid {
+    border: 1.5px solid #dc3545 !important; /* rojo bootstrap */
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+}
+
+/* Mensajes de error debajo del input */
+.error-text {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 3px;
+    font-weight: 500;
+    display: block;
+    min-height: 18px; /* evitar que salte el contenido al aparecer o desaparecer */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
 
 
