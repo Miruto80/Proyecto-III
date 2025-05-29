@@ -43,25 +43,11 @@ class VentaWeb extends Conexion {
         $this->estado = $estado;
     }
 
-    // Obtener todos los registros de metodo de pago y de entrega
-    public function listar() {
-        try {
-            $stmt = $this->conex1->prepare("
-                SELECT p.*, mp.nombre AS metodo_pago, me.nombre AS metodo_entrega 
-                FROM pedido p
-                LEFT JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago
-                LEFT JOIN metodo_entrega me ON p.id_entrega = me.id_entrega
-                ORDER BY p.fecha DESC
-            ");
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
+    // Obtener  los registros de metodo de pago y de entrega
+ 
 
     public function obtenerMetodosPago() {
-        $stmt = $this->conex1->prepare("SELECT * FROM metodo_pago WHERE estatus = 1");
+        $stmt = $this->conex1->prepare("SELECT * FROM metodo_pago WHERE estatus = 1 AND id_metodopago = 1");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
