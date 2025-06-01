@@ -196,12 +196,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // Evento para cambio en método de pago
     if (metodoPagoSelect) {
         metodoPagoSelect.addEventListener('change', function() {
-            if (this.value === '1') {
+            // ID 1 = Pago Móvil, ID 2 = Transferencia Bancaria, ID 3 = Punto de Venta
+            if (this.value === '2') { // Transferencia Bancaria
                 camposPagoAdicionales.style.display = 'flex';
+                document.querySelector('label[for="referencia_bancaria"]').textContent = 'Referencia Bancaria';
                 referenciaBancaria.setAttribute('required', true);
-                telefonoEmisor.setAttribute('required', true);
                 banco.setAttribute('required', true);
                 bancoDestino.setAttribute('required', true);
+                
+                // Ocultar campo de teléfono y ajustar grid
+                document.getElementById('campo_telefono_emisor').style.display = 'none';
+                
+                // Ajustar el espacio de los campos visibles
+                const campos = document.querySelectorAll('#campos_pago_adicionales > div:not(#campo_telefono_emisor)');
+                campos.forEach(div => {
+                    div.className = 'col-md-4';
+                });
+                
+                telefonoEmisor.removeAttribute('required');
+                document.querySelector('[for="referencia_bancaria"]').nextElementSibling.placeholder = 'Número de referencia bancaria';
+
+                // Mostrar campos de banco
+                banco.parentElement.parentElement.style.display = 'block';
+                bancoDestino.parentElement.parentElement.style.display = 'block';
 
                 // Limpiar y configurar las opciones del banco destino
                 bancoDestino.innerHTML = `
@@ -209,6 +226,50 @@ document.addEventListener('DOMContentLoaded', function() {
                     <option value="0102-Banco De Venezuela">Banco de Venezuela</option>
                     <option value="0105-Banco Mercantil">Banco Mercantil</option>
                 `;
+            } else if (this.value === '1') { // Pago Móvil
+                camposPagoAdicionales.style.display = 'flex';
+                document.querySelector('label[for="referencia_bancaria"]').textContent = 'Referencia Bancaria';
+                referenciaBancaria.setAttribute('required', true);
+                telefonoEmisor.setAttribute('required', true);
+                banco.setAttribute('required', true);
+                bancoDestino.setAttribute('required', true);
+
+                // Mostrar campo de teléfono y restaurar grid original
+                document.getElementById('campo_telefono_emisor').style.display = 'block';
+                document.querySelectorAll('#campos_pago_adicionales > div').forEach(div => {
+                    div.className = 'col-md-3';
+                });
+
+                // Mostrar campos de banco
+                banco.parentElement.parentElement.style.display = 'block';
+                bancoDestino.parentElement.parentElement.style.display = 'block';
+                document.querySelector('[for="referencia_bancaria"]').nextElementSibling.placeholder = 'Número de referencia bancaria';
+
+                // Limpiar y configurar las opciones del banco destino
+                bancoDestino.innerHTML = `
+                    <option value="">Seleccione un banco</option>
+                    <option value="0102-Banco De Venezuela">Banco de Venezuela</option>
+                    <option value="0105-Banco Mercantil">Banco Mercantil</option>
+                `;
+            } else if (this.value === '3') { // Punto de Venta
+                camposPagoAdicionales.style.display = 'flex';
+                document.querySelector('label[for="referencia_bancaria"]').textContent = 'Referencia del Punto';
+                referenciaBancaria.setAttribute('required', true);
+                document.querySelector('[for="referencia_bancaria"]').nextElementSibling.placeholder = 'Número de referencia del punto';
+
+                // Ocultar campos innecesarios
+                document.getElementById('campo_telefono_emisor').style.display = 'none';
+                banco.parentElement.parentElement.style.display = 'none';
+                bancoDestino.parentElement.parentElement.style.display = 'none';
+
+                // Ajustar el espacio del campo de referencia
+                document.querySelector('#campos_pago_adicionales > div:first-child').className = 'col-md-12';
+                
+                // Remover required de campos ocultos
+                telefonoEmisor.removeAttribute('required');
+                banco.removeAttribute('required');
+                bancoDestino.removeAttribute('required');
+
             } else {
                 camposPagoAdicionales.style.display = 'none';
                 referenciaBancaria.removeAttribute('required');
@@ -231,12 +292,34 @@ document.addEventListener('DOMContentLoaded', function() {
     if (metodoEntregaSelect && campoDireccion && direccion) {
         metodoEntregaSelect.addEventListener('change', function() {
             console.log('Método de entrega seleccionado:', this.value);
-            if (this.value === '1') {
-                console.log('Mostrando campo de dirección');
+            if (this.value === '1') { // Delivery
                 campoDireccion.style.display = 'block';
+                document.querySelector('label[for="direccion"]').textContent = 'Dirección de Entrega';
                 direccion.setAttribute('required', true);
+                direccion.setAttribute('placeholder', 'Ingrese la dirección completa para la entrega');
+                
+                // Ajustar el espacio del campo de dirección
+                document.querySelector('#campo_direccion > div').className = 'col-md-12';
+                
+            } else if (this.value === '2') { // MRW
+                campoDireccion.style.display = 'block';
+                document.querySelector('label[for="direccion"]').textContent = 'Dirección de Oficina MRW';
+                direccion.setAttribute('required', true);
+                direccion.setAttribute('placeholder', 'Ingrese la dirección de la oficina MRW para el retiro');
+                
+                // Ajustar el espacio del campo de dirección
+                document.querySelector('#campo_direccion > div').className = 'col-md-12';
+                
+            } else if (this.value === '3') { // Zoom
+                campoDireccion.style.display = 'block';
+                document.querySelector('label[for="direccion"]').textContent = 'Dirección de Oficina Zoom';
+                direccion.setAttribute('required', true);
+                direccion.setAttribute('placeholder', 'Ingrese la dirección de la oficina Zoom para el retiro');
+                
+                // Ajustar el espacio del campo de dirección
+                document.querySelector('#campo_direccion > div').className = 'col-md-12';
+                
             } else {
-                console.log('Ocultando campo de dirección');
                 campoDireccion.style.display = 'none';
                 direccion.removeAttribute('required');
                 direccion.value = '';
@@ -700,119 +783,119 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función para buscar cliente
     function buscarCliente() {
-        const cedula = cedulaInput.value.trim();
-        clienteBuscado = true;
-        
-        if (cedula.length < 7 || cedula.length > 8) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'La cédula debe tener entre 7 y 8 dígitos'
-            });
-            return;
-        }
-
-        // Crear FormData y agregar los datos
-        const formData = new FormData();
-        formData.append('buscar_cliente', '1');
-        formData.append('cedula', cedula);
-        formData.append('csrf_token', document.querySelector('input[name="csrf_token"]').value);
-
-        // Realizar la petición AJAX
-        fetch('?pagina=salida', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+            const cedula = cedulaInput.value.trim();
+            clienteBuscado = true;
+            
+            if (cedula.length < 7 || cedula.length > 8) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'La cédula debe tener entre 7 y 8 dígitos'
+                });
+                return;
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.respuesta === 1 && data.cliente) {
-                // Cliente encontrado
-                camposCliente.style.display = 'block';
-                btnBuscarCliente.style.display = 'none';
-                btnCancelarRegistro.style.display = 'block';
-                btnRegistrarCliente.style.display = 'none';
+
+            // Crear FormData y agregar los datos
+            const formData = new FormData();
+            formData.append('buscar_cliente', '1');
+            formData.append('cedula', cedula);
+            formData.append('csrf_token', document.querySelector('input[name="csrf_token"]').value);
+
+            // Realizar la petición AJAX
+            fetch('?pagina=salida', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.respuesta === 1 && data.cliente) {
+                    // Cliente encontrado
+                    camposCliente.style.display = 'block';
+                    btnBuscarCliente.style.display = 'none';
+                    btnCancelarRegistro.style.display = 'block';
+                    btnRegistrarCliente.style.display = 'none';
 
                 // Mostrar secciones de venta y productos
                 mostrarSeccionesVenta();
 
-                // Llenar los campos con los datos del cliente
-                nombreInput.value = data.cliente.nombre || '';
-                apellidoInput.value = data.cliente.apellido || '';
-                telefonoInput.value = data.cliente.telefono || '';
-                correoInput.value = data.cliente.correo || '';
-                idClienteHidden.value = data.cliente.id_persona || '';
+                    // Llenar los campos con los datos del cliente
+                    nombreInput.value = data.cliente.nombre || '';
+                    apellidoInput.value = data.cliente.apellido || '';
+                    telefonoInput.value = data.cliente.telefono || '';
+                    correoInput.value = data.cliente.correo || '';
+                    idClienteHidden.value = data.cliente.id_persona || '';
 
-                // Hacer los campos de solo lectura
-                nombreInput.readOnly = true;
-                apellidoInput.readOnly = true;
-                telefonoInput.readOnly = true;
-                correoInput.readOnly = true;
+                    // Hacer los campos de solo lectura
+                    nombreInput.readOnly = true;
+                    apellidoInput.readOnly = true;
+                    telefonoInput.readOnly = true;
+                    correoInput.readOnly = true;
 
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Cliente encontrado!',
+                        text: 'Los datos del cliente han sido cargados'
+                    });
+                } else {
+                    // Cliente no encontrado - preguntar si desea registrarlo
+                    Swal.fire({
+                        title: 'Cliente no encontrado',
+                        text: '¿Desea registrar un nuevo cliente?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, registrar',
+                        cancelButtonText: 'No, cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Mostrar campos para registro
+                    camposCliente.style.display = 'block';
+                    btnBuscarCliente.style.display = 'none';
+                    btnCancelarRegistro.style.display = 'block';
+                    btnRegistrarCliente.style.display = 'block';
+
+                    // Limpiar y habilitar los campos para nuevo registro
+                    nombreInput.value = '';
+                    apellidoInput.value = '';
+                    telefonoInput.value = '';
+                    correoInput.value = '';
+                    idClienteHidden.value = '';
+
+                    // Hacer los campos editables
+                    nombreInput.readOnly = false;
+                    apellidoInput.readOnly = false;
+                    telefonoInput.readOnly = false;
+                    correoInput.readOnly = false;
+                        } else {
+                            // Si cancela, volver al estado inicial
+                            camposCliente.style.display = 'none';
+                            btnBuscarCliente.style.display = 'block';
+                            btnCancelarRegistro.style.display = 'none';
+                            btnRegistrarCliente.style.display = 'block';
+                            
+                            // Limpiar campos
+                            cedulaInput.value = '';
+                            nombreInput.value = '';
+                            apellidoInput.value = '';
+                            telefonoInput.value = '';
+                            correoInput.value = '';
+                            idClienteHidden.value = '';
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
                 Swal.fire({
-                    icon: 'success',
-                    title: '¡Cliente encontrado!',
-                    text: 'Los datos del cliente han sido cargados'
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un error al buscar el cliente'
                 });
-            } else {
-                // Cliente no encontrado - preguntar si desea registrarlo
-                Swal.fire({
-                    title: 'Cliente no encontrado',
-                    text: '¿Desea registrar un nuevo cliente?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, registrar',
-                    cancelButtonText: 'No, cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Mostrar campos para registro
-                        camposCliente.style.display = 'block';
-                        btnBuscarCliente.style.display = 'none';
-                        btnCancelarRegistro.style.display = 'block';
-                        btnRegistrarCliente.style.display = 'block';
-
-                        // Limpiar y habilitar los campos para nuevo registro
-                        nombreInput.value = '';
-                        apellidoInput.value = '';
-                        telefonoInput.value = '';
-                        correoInput.value = '';
-                        idClienteHidden.value = '';
-
-                        // Hacer los campos editables
-                        nombreInput.readOnly = false;
-                        apellidoInput.readOnly = false;
-                        telefonoInput.readOnly = false;
-                        correoInput.readOnly = false;
-                    } else {
-                        // Si cancela, volver al estado inicial
-                        camposCliente.style.display = 'none';
-                        btnBuscarCliente.style.display = 'block';
-                        btnCancelarRegistro.style.display = 'none';
-                        btnRegistrarCliente.style.display = 'block';
-                        
-                        // Limpiar campos
-                        cedulaInput.value = '';
-                        nombreInput.value = '';
-                        apellidoInput.value = '';
-                        telefonoInput.value = '';
-                        correoInput.value = '';
-                        idClienteHidden.value = '';
-                    }
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Ocurrió un error al buscar el cliente'
             });
-        });
     }
 
     // Evento para buscar con Enter en el campo de cédula
@@ -1025,51 +1108,6 @@ document.addEventListener('DOMContentLoaded', function() {
         new bootstrap.Modal(modal);
     });
 
-    // Manejo de confirmación de eliminación
-    document.querySelectorAll('button[name="eliminar_venta"]').forEach(function(button) {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: '¿Está seguro?',
-                text: "¿Desea eliminar esta venta? Esta acción no se puede deshacer",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    button.closest('form').submit();
-                }
-            });
-        });
-    });
-
-    // Manejo del formulario de edición
-    document.querySelectorAll('form').forEach(function(form) {
-        if (form.querySelector('button[name="modificar_venta"]')) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                Swal.fire({
-                    title: '¿Confirmar cambios?',
-                    text: "¿Está seguro de guardar los cambios en esta venta?",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, guardar cambios',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
-            });
-        }
-    });
-
     // Función para mostrar modo registro
     function mostrarModoRegistro() {
         camposCliente.style.display = 'block';
@@ -1193,4 +1231,165 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 0);
         });
     }
+
+    // Manejar el modal de delivery
+    document.querySelectorAll('[id^="deliveryModal"]').forEach(modal => {
+        const form = modal.querySelector('form');
+        const direccionInput = modal.querySelector('input[name="direccion"]');
+        const btnEditar = modal.querySelector('.btn-warning');
+        const estadoSelect = modal.querySelector('select[name="estado_delivery"]');
+        
+        // Guardar el valor original de la dirección
+        let direccionOriginal = direccionInput.value;
+        
+        if (btnEditar) {
+            btnEditar.addEventListener('click', function() {
+                if (direccionInput.readOnly) {
+                    // Habilitar edición
+                    direccionInput.readOnly = false;
+                    direccionInput.disabled = false;
+                    direccionInput.classList.remove('bg-light');
+                    direccionInput.focus();
+                    this.innerHTML = '<i class="fas fa-save"></i> Guardar';
+                    this.classList.replace('btn-warning', 'btn-success');
+                } else {
+                    // Validar la dirección antes de guardar
+                    if (direccionInput.value.trim().length < 10) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'La dirección debe tener al menos 10 caracteres'
+                        });
+                        return;
+                    }
+                    
+                    // Deshabilitar edición
+                    direccionInput.readOnly = true;
+                    direccionInput.disabled = false;
+                    direccionInput.classList.add('bg-light');
+                    this.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
+                    this.classList.replace('btn-success', 'btn-warning');
+                    
+                    // Actualizar el valor original
+                    direccionOriginal = direccionInput.value;
+                }
+            });
+        }
+        
+        // Validación del estado del delivery
+        if (estadoSelect) {
+            estadoSelect.addEventListener('change', function() {
+                const estadoActual = this.value;
+                const estadoAnterior = this.getAttribute('data-estado-anterior');
+                
+                // Validar cambios de estado no permitidos
+                if (estadoAnterior === '3' && estadoActual !== '3') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se puede cambiar el estado de un delivery ya entregado'
+                    });
+                    this.value = estadoAnterior;
+                    return;
+                }
+                
+                if (estadoAnterior === '0' && estadoActual !== '0') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se puede cambiar el estado de un delivery cancelado'
+                    });
+                    this.value = estadoAnterior;
+                    return;
+                }
+
+                // Validar secuencia lógica de estados
+                if (estadoAnterior === '1' && estadoActual === '3') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se puede marcar como entregado un pedido pendiente. Debe pasar por los estados intermedios.'
+                    });
+                    this.value = estadoAnterior;
+                    return;
+                }
+
+                if (estadoAnterior === '2' && estadoActual === '1') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se puede regresar a pendiente un pedido en camino'
+                    });
+                    this.value = estadoAnterior;
+                    return;
+                }
+
+                // Para estado Enviado (4), solo permitir cambio a Entregado (3) o Cancelado (0)
+                if (estadoAnterior === '4' && !['3', '0'].includes(estadoActual)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Un pedido enviado solo puede marcarse como Entregado o Cancelado'
+                    });
+                    this.value = estadoAnterior;
+                    return;
+                }
+            });
+        }
+        
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validar estado
+                if (!estadoSelect.value) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Debe seleccionar un estado para el delivery'
+                    });
+                    return;
+                }
+                
+                // Validar dirección si fue modificada
+                if (direccionInput.value !== direccionOriginal && direccionInput.value.trim().length < 10) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'La dirección debe tener al menos 10 caracteres'
+                    });
+                    return;
+                }
+                
+                Swal.fire({
+                    title: '¿Confirmar cambios?',
+                    text: "¿Está seguro de actualizar el estado del delivery?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, actualizar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Asegurarse de que la dirección esté habilitada para el envío
+                        direccionInput.disabled = false;
+                        // Enviar el formulario
+                        form.submit();
+                    }
+                });
+            });
+            
+            // Restaurar valores originales al cerrar el modal
+            modal.addEventListener('hidden.bs.modal', function() {
+                direccionInput.value = direccionOriginal;
+                direccionInput.readOnly = true;
+                direccionInput.disabled = true;
+                direccionInput.classList.add('bg-light');
+                btnEditar.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
+                btnEditar.classList.replace('btn-success', 'btn-warning');
+                estadoSelect.value = estadoSelect.getAttribute('data-estado-anterior');
+            });
+        }
+    });
 }); 

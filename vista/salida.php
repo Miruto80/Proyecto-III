@@ -7,6 +7,8 @@
   <title> Venta | LoveMakeup  </title> 
   <!-- SweetAlert2 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- SweetAlert2 JS -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -39,15 +41,6 @@
 <?php include 'complementos/nav.php' ?>
 
 <div class="container-fluid py-4"> <!-- DIV CONTENIDO -->
-
-    <!-- Mostrar mensajes de éxito o error -->
-    <?php if(isset($_SESSION['mensaje']) && isset($_SESSION['tipo_mensaje'])): ?>
-      <div class="alert alert-<?php echo $_SESSION['tipo_mensaje']; ?> alert-dismissible fade show" role="alert">
-        <?php echo $_SESSION['mensaje']; ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-      <?php unset($_SESSION['mensaje']); unset($_SESSION['tipo_mensaje']); ?>
-    <?php endif; ?>
 
     <div class="row"> <!-- CARD PRINCIPAL-->  
         <div class="col-12">
@@ -106,25 +99,31 @@
                     <?php
                     // Array para mapear estados numéricos a texto
                     $estados_texto = array(
-                        '0' => 'Rechazado',
+                        '0' => 'Cancelado',
                         '1' => 'Pendiente',
-                        '2' => 'Aprobado'
+                        '2' => 'En camino',
+                        '3' => 'Entregado',
+                        '4' => 'Enviado'
                     );
 
                     // Determinar el color del badge según el estado
                     $badgeClass = '';
-                    switch (strtolower($venta['estado'])) {
-                      case '2':
-                          $badgeClass = 'bg-primary';
-                          break;
-                      case '1':
-                          $badgeClass = 'bg-warning';
-                          break;
-                      case '0':
-                          $badgeClass = 'bg-danger';
-                          break;
-                      default:
-                          $badgeClass = 'bg-secondary';
+                    switch ($venta['estado']) {
+                        case '3':
+                            $badgeClass = 'bg-success';
+                            break;
+                        
+                        case '2':
+                            $badgeClass = 'bg-primary';
+                            break;
+                        case '1':
+                            $badgeClass = 'bg-warning';
+                            break;
+                        case '0':
+                            $badgeClass = 'bg-danger';
+                            break;
+                        default:
+                            $badgeClass = 'bg-secondary';
                     }
                     
                     // Formatear la fecha
@@ -141,12 +140,14 @@
                       <td><?php echo htmlspecialchars($venta['metodo_pago'] ?? 'N/A'); ?></td>
                       <td><?php echo htmlspecialchars($venta['metodo_entrega'] ?? 'N/A'); ?></td>
                       <td class="text-center">
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editarModal<?php echo $venta['id_pedido']; ?>">
-                          <i class="fas fa-pencil-alt" title="Editar"></i>
-                        </button>
                         <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#verDetallesModal<?php echo $venta['id_pedido']; ?>">
                           <i class="fas fa-eye" title="Ver Detalles"></i>
                         </button>
+                        <?php if(($venta['metodo_entrega'] == 'Delivery' || $venta['metodo_entrega'] == 'MRW' || $venta['metodo_entrega'] == 'Zoom') && ($venta['estado'] == '1' || $venta['estado'] == '2' || $venta['estado'] == '4')): ?>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deliveryModal<?php echo $venta['id_pedido']; ?>">
+                          <i class="bi bi-box2-fill" title="Gestionar Delivery"></i>
+                        </button>
+                        <?php endif; ?>
                       </td>
                     </tr>
                   <?php endforeach; ?>
@@ -164,7 +165,7 @@
     </div>  
     </div><!-- FIN CARD PRINCIPAL-->  
 
-<!-- Modal Detalles -->
+<!-- Modal de detalles -->
 <?php if(isset($ventas) && !empty($ventas)): ?>
   <?php foreach($ventas as $venta): ?>
     <!-- Modal para Ver Detalles -->
@@ -178,12 +179,34 @@
           <div class="modal-body">
             <div class="row mb-3">
               <div class="col-md-6">
+                <h5><strong>Información del Pedido</strong></h5>
+                <p><strong>Método de Pago:</strong> <?php echo htmlspecialchars($venta['metodo_pago'] ?? 'N/A'); ?></p>
+                <?php if(!empty($venta['banco']) || !empty($venta['banco_destino'])): ?>
+                  <p><strong>Banco Emisor:</strong> <?php echo htmlspecialchars($venta['banco'] ?? 'N/A'); ?></p>
+                  <p><strong>Banco Receptor:</strong> <?php echo htmlspecialchars($venta['banco_destino'] ?? 'N/A'); ?></p>
+                <?php endif; ?>
+                <?php if(!empty($venta['referencia_bancaria'])): ?>
+                  <p><strong>Referencia:</strong> <?php echo htmlspecialchars($venta['referencia_bancaria']); ?></p>
+                <?php endif; ?>
+                <p><strong>Método de Entrega:</strong> <?php echo htmlspecialchars($venta['metodo_entrega'] ?? 'N/A'); ?></p>
+                <?php if(!empty($venta['direccion'])): ?>
+                  <p><strong>Dirección:</strong> <?php echo nl2br(htmlspecialchars($venta['direccion'])); ?></p>
+                <?php endif; ?>
+                <p><strong>Total:</strong> $<?php echo number_format($venta['precio_total'], 2); ?></p>
+              </div>
+              <div class="col-md-6">
                 <h5><strong>Información del Cliente</strong></h5>
                 <p><strong>Nombre:</strong> <?php echo htmlspecialchars($venta['cliente']); ?></p>
                 <p><strong>Fecha:</strong> <?php echo date('d/m/Y', strtotime($venta['fecha'])); ?></p>
                 <p><strong>Estado:</strong> <span class="badge <?php 
                   $badgeClass = '';
-                  switch (strtolower($venta['estado'])) {
+                  switch ($venta['estado']) {
+                    case '4':
+                      $badgeClass = 'bg-info';
+                      break;
+                    case '3':
+                        $badgeClass = 'bg-success';
+                        break;
                     case '2':
                         $badgeClass = 'bg-primary';
                         break;
@@ -198,16 +221,6 @@
                   }
                   echo $badgeClass; 
                 ?>"><?php echo htmlspecialchars($estados_texto[$venta['estado']] ?? 'Desconocido'); ?></span></p>
-              </div>
-              <div class="col-md-6">
-                <h5><strong>Información del Pedido</strong></h5>
-                <p><strong>Método de Pago:</strong> <?php echo htmlspecialchars($venta['metodo_pago'] ?? 'N/A'); ?></p>
-                <?php if(!empty($venta['banco']) || !empty($venta['banco_destino'])): ?>
-                  <p><strong>Banco Emisor:</strong> <?php echo htmlspecialchars($venta['banco'] ?? 'N/A'); ?></p>
-                  <p><strong>Banco Receptor:</strong> <?php echo htmlspecialchars($venta['banco_destino'] ?? 'N/A'); ?></p>
-                <?php endif; ?>
-                <p><strong>Método de Entrega:</strong> <?php echo htmlspecialchars($venta['metodo_entrega'] ?? 'N/A'); ?></p>
-                <p><strong>Total:</strong> $<?php echo number_format($venta['precio_total'], 2); ?></p>
               </div>
             </div>
             
@@ -243,7 +256,7 @@
                 </tbody>
                 <tfoot>
                   <tr>
-                    <th colspan="3" class="text-end">Total:</th>
+                    <th colspan="3" class="text-end">Total USD:</th>
                     <th>$<?php echo number_format($total, 2); ?></th>
                   </tr>
                 </tfoot>
@@ -253,102 +266,83 @@
         </div>
       </div>
     </div>
+  <?php endforeach; ?>
+<?php endif; ?>
 
-    <!-- Modal para Editar -->
-    <div class="modal fade" id="editarModal<?php echo $venta['id_pedido']; ?>" tabindex="-1" aria-labelledby="editarModalLabel<?php echo $venta['id_pedido']; ?>" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
+<!-- Modal de delivery -->
+<?php if(isset($ventas) && !empty($ventas)): ?>
+  <?php foreach($ventas as $venta): ?>
+    <?php if($venta['metodo_entrega'] == 'Delivery' || $venta['metodo_entrega'] == 'MRW' || $venta['metodo_entrega'] == 'Zoom'): ?>
+    <div class="modal fade" id="deliveryModal<?php echo $venta['id_pedido']; ?>" tabindex="-1" aria-labelledby="deliveryModalLabel<?php echo $venta['id_pedido']; ?>" aria-hidden="true">
+      <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header header-color">
-            <h5 class="modal-title" id="editarModalLabel<?php echo $venta['id_pedido']; ?>">Editar venta</h5>
+            <h5 class="modal-title" id="deliveryModalLabel<?php echo $venta['id_pedido']; ?>">Gestionar <?php echo $venta['metodo_entrega']; ?></h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form method="POST" action="?pagina=salida" id="formEditarVenta<?php echo $venta['id_pedido']; ?>">
+            <?php if($venta['estado'] == '3'): ?>
+              <div class="alert alert-success">
+                Este delivery ya ha sido entregado y no puede ser modificado.
+              </div>
+            <?php elseif($venta['estado'] == '0'): ?>
+              <div class="alert alert-danger">
+                Este delivery ha sido cancelado y no puede ser modificado.
+              </div>
+            <?php else: ?>
+            <form method="POST" action="?pagina=salida" id="formGestionarDelivery<?php echo $venta['id_pedido']; ?>">
               <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
               <input type="hidden" name="id_pedido" value="<?php echo $venta['id_pedido']; ?>">
-              <input type="hidden" name="modificar_venta" value="1">
+              <input type="hidden" name="actualizar_delivery" value="1">
               
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <h5><strong>Información del Cliente</strong></h5>
-                  <div class="mb-3">
-                    <label for="cliente_nombre" class="form-label">Nombre del Cliente</label>
-                    <input type="text" class="form-control" id="cliente_nombre" value="<?php echo htmlspecialchars($venta['cliente']); ?>" readonly>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <h5><strong>Estado del Pedido</strong></h5>
-                  <div class="mb-3">
-                    <label for="estado_pedido" class="form-label">Estado</label>
-                    <select class="form-select" name="estado_pedido" required>
-                      <option value="1" <?php echo ($venta['estado'] == '1') ? 'selected' : ''; ?>>Pendiente</option>
-                      <option value="2" <?php echo ($venta['estado'] == '2') ? 'selected' : ''; ?>>Aprobado</option>
-                      <option value="0" <?php echo ($venta['estado'] == '0') ? 'selected' : ''; ?>>Rechazado</option>
-                    </select>
-                  </div>
+              <!-- Estado del Delivery -->
+              <div class="mb-3">
+                <label for="estado_delivery<?php echo $venta['id_pedido']; ?>" class="form-label">Estado del Delivery</label>
+                <select class="form-select" name="estado_delivery" id="estado_delivery<?php echo $venta['id_pedido']; ?>" data-estado-anterior="<?php echo $venta['estado']; ?>" required>
+                  <?php if($venta['estado'] == '4'): ?>
+                    <option value="4" selected>Enviado</option>
+                    <option value="3">Entregado</option>
+                    <option value="0">Cancelado</option>
+                  <?php else: ?>
+                    <option value="1" <?php echo $venta['estado'] == '1' ? 'selected' : ''; ?>>Pendiente</option>
+                    <option value="2" <?php echo $venta['estado'] == '2' ? 'selected' : ''; ?>>En camino</option>
+                    <option value="4" <?php echo $venta['estado'] == '4' ? 'selected' : ''; ?>>Enviado</option>
+                    <option value="3" <?php echo $venta['estado'] == '3' ? 'selected' : ''; ?>>Entregado</option>
+                    <option value="0" <?php echo $venta['estado'] == '0' ? 'selected' : ''; ?>>Cancelado</option>
+                  <?php endif; ?>
+                </select>
+              </div>
+
+              <!-- Dirección de Entrega -->
+              <div class="mb-3">
+                <label for="direccion<?php echo $venta['id_pedido']; ?>" class="form-label">Dirección de Entrega <span class="text-danger">*</span></label>
+                <div class="d-flex align-items-center gap-2">
+                  <input type="text" 
+                         class="form-control bg-light" 
+                         name="direccion" 
+                         id="direccion<?php echo $venta['id_pedido']; ?>" 
+                         value="<?php echo htmlspecialchars($venta['direccion']); ?>" 
+                         readonly 
+                         required
+                         maxlength="300"
+                         style="background-color: #e9ecef !important;">
+                  <button type="button" class="btn btn-warning btn-sm btnEditarDireccion" title="Editar dirección">
+                    <i class="fas fa-pencil-alt"></i> Editar
+                  </button>
                 </div>
               </div>
 
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <h5><strong>Información del Pedido</strong></h5>
-                  <label for="metodo_pago_edit" class="form-label">Método de Pago</label>
-                  <input type="text" class="form-control" value="<?php echo htmlspecialchars($venta['metodo_pago'] ?? 'N/A'); ?>" readonly>
-                </div>
-                <div class="col-md-6">
-                  <label for="metodo_entrega_edit" class="form-label">Método de Entrega</label>
-                  <input type="text" class="form-control" value="<?php echo htmlspecialchars($venta['metodo_entrega'] ?? 'N/A'); ?>" readonly>
-                </div>
-              </div>
-              
-              <div class="mb-3">
-                <h5><strong>Detalles de la Venta</strong></h5>
-                <div class="table-responsive">
-                  <table class="table table-sm">
-                    <thead>
-                      <tr class="table-color">
-                        <th class="text-white">Producto</th>
-                        <th class="text-white">Cantidad</th>
-                        <th class="text-white">Precio Unit.</th>
-                        <th class="text-white">Subtotal</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php 
-                      $detalles_venta = $salida->consultarDetallesPedido($venta['id_pedido']);
-                      $total = 0;
-                      foreach($detalles_venta as $detalle): 
-                        $subtotal = $detalle['cantidad'] * $detalle['precio_unitario'];
-                        $total += $subtotal;
-                      ?>
-                      <tr>
-                        <td><?php echo htmlspecialchars($detalle['nombre_producto']); ?></td>
-                        <td><?php echo $detalle['cantidad']; ?></td>
-                        <td>$<?php echo number_format($detalle['precio_unitario'], 2); ?></td>
-                        <td>$<?php echo number_format($subtotal, 2); ?></td>
-                      </tr>
-                      <?php endforeach; ?>
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th colspan="3" class="text-end">Total:</th>
-                        <th>$<?php echo number_format($total, 2); ?></th>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-                <small class="text-muted">Los productos son solo de lectura. Solo se puede modificar el estado del pedido.</small>
-              </div>
-              
-              <div class="text-center mt-4">
-                <button type="submit" name="modificar_venta" class="btn btn-primary">Guardar Cambios</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <div class="modal-footer">
+                <button type="submit" name="actualizar_delivery" class="btn btn-primary">Actualizar Estado</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
               </div>
             </form>
+            <?php endif; ?>
           </div>
         </div>
       </div>
     </div>
+    <?php endif; ?>
   <?php endforeach; ?>
 <?php endif; ?>
 
@@ -475,7 +469,7 @@
                       foreach($metodos_pago as $metodo): 
                     ?>
                       <option value="<?php echo $metodo['id_metodopago']; ?>">
-                        <?php echo htmlspecialchars($metodo['descripcion']); ?>
+                        <?php echo htmlspecialchars($metodo['nombre']); ?>
                       </option>
                     <?php 
                       endforeach; 
@@ -510,7 +504,7 @@
               </div>
             </div>
             
-            <!-- Campos adicionalessegún el método de pago seleccionado -->
+            <!-- Campos adicionales según el método de pago seleccionado -->
             <div class="row" id="campos_pago_adicionales" style="display: none;">
               <div class="col-md-3">
                 <div class="mb-3">
@@ -519,7 +513,7 @@
                         placeholder="Número de referencia">
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-3" id="campo_telefono_emisor">
                 <div class="mb-3">
                   <label for="telefono_emisor" class="form-label">Teléfono Emisor</label>
                   <input type="text" class="form-control" name="telefono_emisor" id="telefono_emisor" 
@@ -670,35 +664,103 @@
 
 <!-- Script para confirmar cambios -->
 <script>
-// Cuando el documento esté listo
 document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar SweetAlert si hay mensaje en la sesión
+    <?php if(isset($_SESSION['mensaje']) && isset($_SESSION['tipo_mensaje'])): ?>
+        Swal.fire({
+            title: '<?php echo $_SESSION['tipo_mensaje'] == "success" ? "¡Éxito!" : "¡Error!"; ?>',
+            text: '<?php echo $_SESSION['mensaje']; ?>',
+            icon: '<?php echo $_SESSION['tipo_mensaje'] == "success" ? "success" : "error"; ?>',
+            confirmButtonText: 'Aceptar'
+        });
+        <?php 
+        unset($_SESSION['mensaje']);
+        unset($_SESSION['tipo_mensaje']);
+        ?>
+    <?php endif; ?>
+
     // Para el formulario de edición
-    document.querySelectorAll('[id^="formEditarVenta"]').forEach(function(form) {
+    document.querySelectorAll('[id^="formGestionarDelivery"]').forEach(function(form) {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             Swal.fire({
                 title: '¿Confirmar cambios?',
-                text: "¿Está seguro de guardar los cambios en esta venta?",
+                text: "¿Está seguro de actualizar el estado del delivery?",
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, guardar cambios',
+                confirmButtonText: 'Sí, actualizar',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Asegurarse de que el formulario tenga todos los campos necesarios
-                    if (!form.querySelector('[name="id_pedido"]').value || 
-                        !form.querySelector('[name="estado_pedido"]').value) {
+                    form.submit();
+                }
+            });
+        });
+    });
+
+    // Para el formulario de delivery
+    document.querySelectorAll('.btnEditarDireccion').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const inputDireccion = this.previousElementSibling;
+            if (inputDireccion.readOnly) {
+                // Habilitar edición
+                inputDireccion.readOnly = false;
+                inputDireccion.disabled = false;
+                inputDireccion.classList.remove('bg-light');
+                inputDireccion.style.backgroundColor = '#ffffff !important';
+                this.innerHTML = '<i class="fas fa-save"></i> Guardar';
+                this.classList.replace('btn-warning', 'btn-success');
+            } else {
+                // Validar que no esté vacío
+                if (!inputDireccion.value.trim()) {
+                    Swal.fire({
+                        title: '¡Error!',
+                        text: 'La dirección de entrega no puede estar vacía',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
+                }
+                // Deshabilitar edición
+                inputDireccion.readOnly = true;
+                inputDireccion.disabled = true;
+                inputDireccion.classList.add('bg-light');
+                inputDireccion.style.backgroundColor = '#e9ecef !important';
+                this.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
+                this.classList.replace('btn-success', 'btn-warning');
+            }
+        });
+    });
+
+    // Validación del formulario antes de enviar
+    document.querySelectorAll('[id^="formGestionarDelivery"]').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            const direccionInput = this.querySelector('input[name="direccion"]');
+            if (!direccionInput.value.trim()) {
+                e.preventDefault();
                         Swal.fire({
-                            title: 'Error',
-                            text: 'Faltan datos requeridos',
+                    title: '¡Error!',
+                    text: 'La dirección de entrega no puede estar vacía',
                             icon: 'error',
                             confirmButtonText: 'Aceptar'
                         });
                         return;
                     }
-                    // Enviar el formulario
+
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Confirmar cambios?',
+                text: "¿Está seguro de actualizar el estado del delivery?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, actualizar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
                     form.submit();
                 }
             });
@@ -706,6 +768,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 </main>
 </body>
-</html>
+</html

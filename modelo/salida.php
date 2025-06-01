@@ -129,16 +129,30 @@ class Salida extends Conexion {
                 return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'El pedido no existe'];
             }
             
-            // Actualizamos el estado del pedido
-            $registro = "UPDATE pedido SET estado = :estado WHERE id_pedido = :id_pedido";
-            $strExec = $this->conex1->prepare($registro);
-            $strExec->bindParam(':estado', $this->estado);
-            $strExec->bindParam(':id_pedido', $this->id_pedido);
-            $resul = $strExec->execute();
+            // Actualizar el pedido en la base de datos
+            $sql = "UPDATE pedido SET estado = :estado";
+            $params = [':estado' => $this->estado];
             
-            if (!$resul) {
+            // Si hay dirección nueva, incluirla en la actualización
+            if (!empty($this->direccion)) {
+                $sql .= ", direccion = :direccion";
+                $params[':direccion'] = $this->direccion;
+            }
+            
+            $sql .= " WHERE id_pedido = :id_pedido";
+            $params[':id_pedido'] = $this->id_pedido;
+            
+            $stmt = $this->conex1->prepare($sql);
+            
+            // Vincular los parámetros
+            foreach ($params as $param => $value) {
+                $stmt->bindValue($param, $value);
+            }
+            
+            // Ejecutar la actualización
+            if (!$stmt->execute()) {
                 $this->conex1->rollBack();
-                $error = $strExec->errorInfo();
+                $error = $stmt->errorInfo();
                 return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $error[2]];
             }
             
@@ -221,7 +235,7 @@ class Salida extends Conexion {
         try {
             $registro = "SELECT p.id_pedido, CONCAT(per.nombre, ' ', per.apellido) as cliente, p.fecha, 
                         p.estado, p.precio_total, mp.nombre as metodo_pago, me.nombre as metodo_entrega,
-                        p.banco, p.banco_destino 
+                        p.banco, p.banco_destino, p.referencia_bancaria, p.direccion 
                         FROM pedido p 
                         JOIN cliente per ON p.id_persona = per.id_persona 
                         JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago 
@@ -498,9 +512,11 @@ class Salida extends Conexion {
     
         foreach ($ventas as $venta) {
             $estados_texto = array(
-                '0' => 'Rechazado',
+                '0' => 'Cancelado',
                 '1' => 'Pendiente',
-                '2' => 'Aprobado'
+                '2' => 'En camino',
+                '3' => 'Entregado',
+                '4' => 'Enviado'
             );
 
             $fecha_formateada = date('d/m/Y', strtotime($venta['fecha']));

@@ -272,6 +272,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar_venta'])) {
     }
 }
 
+//actualización del delivery
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_delivery'])) {
+    if (isset($_POST['id_pedido']) && isset($_POST['estado_delivery'])) {
+        try {
+            $salida->set_Id_pedido(intval($_POST['id_pedido']));
+            $salida->set_Estado(sanitizar($_POST['estado_delivery']));
+            
+            // Si hay dirección nueva, actualizarla
+            if (isset($_POST['direccion']) && !empty($_POST['direccion'])) {
+                $salida->set_Direccion(sanitizar($_POST['direccion']));
+            }
+            
+            // Modificar el estado del delivery
+            $respuesta = $salida->modificar();
+            
+            if ($respuesta['respuesta'] == 1) {
+                $_SESSION['mensaje'] = "Estado del delivery actualizado exitosamente";
+                $_SESSION['tipo_mensaje'] = "success";
+            } else {
+                $_SESSION['mensaje'] = "Error al actualizar el estado del delivery";
+                $_SESSION['tipo_mensaje'] = "error";
+            }
+        } catch (Exception $e) {
+            $_SESSION['mensaje'] = "Error: " . $e->getMessage();
+            $_SESSION['tipo_mensaje'] = "error";
+        }
+    } else {
+        $_SESSION['mensaje'] = "Faltan datos requeridos para actualizar el delivery";
+        $_SESSION['tipo_mensaje'] = "error";
+    }
+    
+    // Regenerar token CSRF y redirigir
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    header("Location: ?pagina=salida");
+    exit;
+}
+
 if(isset($_POST['generar'])){
     try {
         // Generar el gráfico antes del PDF
@@ -376,16 +413,14 @@ generarGrafico();
 
 // Si es una solicitud GET normal, mostrar la vista
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Consultar datos para la vista
+    // Consultar datos actualizados para la vista
     $ventas = $salida->consultar();
-
-    // Obtener la lista de productos y métodos de pago/entrega para los formularios
     $productos_lista = $salida->consultarProductos();
     $metodos_pago = $salida->consultarMetodosPago();
     $metodos_entrega = $salida->consultarMetodosEntrega();
 
-    // Cargamos la vista
-    if ($_SESSION["nivel_rol"] >= 2) { // Validación si es administrador o vendedor
+    // Cargar la vista
+    if ($_SESSION["nivel_rol"] >= 2) {
         require_once 'vista/salida.php';
     } else {
         require_once 'vista/seguridad/privilegio.php';
