@@ -85,7 +85,7 @@ function validarFormularioPedido() {
     const esValido = validaciones.every(v => v);
 
     if (!esValido) {
-        muestraMensaje("warning", 2000, "Campos requeridos", "Por favor corrija los errores antes de continuar.");
+       
     }
 
     return esValido;

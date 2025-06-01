@@ -50,7 +50,7 @@ class Datos extends Conexion{
     }
 
     public function actualizar(){
-        $registro = "UPDATE personas SET nombre = :nombre, apellido = :apellido, cedula = :cedula, telefono = :telefono, correo = :correo WHERE id_persona = :id_persona";
+        $registro = "UPDATE cliente SET nombre = :nombre, apellido = :apellido, cedula = :cedula, telefono = :telefono, correo = :correo WHERE id_persona = :id_persona";
 
         $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':id_persona', $this->id_persona);
@@ -70,7 +70,7 @@ class Datos extends Conexion{
     } // fin actulizar
 
      public function actualizarClave(){
-        $registro = "UPDATE personas SET clave = :clave WHERE id_persona = :id_persona";
+        $registro = "UPDATE cliente SET clave = :clave WHERE id_persona = :id_persona";
 
         $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':id_persona', $this->id_persona);
@@ -91,7 +91,7 @@ class Datos extends Conexion{
     
     public function eliminar(){
         try {
-            $registro = "DELETE FROM personas WHERE id_persona = :id_persona";
+            $registro = "DELETE FROM cliente WHERE id_persona = :id_persona";
             $strExec = $this->conex1->prepare($registro);
             $strExec->bindParam(':id_persona', $this->id_persona);
             $result = $strExec->execute();
@@ -108,7 +108,7 @@ class Datos extends Conexion{
         }
 
      public function existeCedula() {
-        $consulta = "SELECT cedula FROM personas WHERE cedula = :cedula";
+        $consulta = "SELECT cedula FROM cliente WHERE cedula = :cedula";
         $strExec = $this->conex1->prepare($consulta);
         $strExec->bindParam(':cedula', $this->cedula);
         $strExec->execute();
@@ -118,7 +118,7 @@ class Datos extends Conexion{
 
      
     public function existeCorreo() {
-        $consulta = "SELECT correo FROM personas WHERE correo = :correo";
+        $consulta = "SELECT correo FROM cliente WHERE correo = :correo";
         $strExec = $this->conex1->prepare($consulta);
         $strExec->bindParam(':correo', $this->correo);
         $strExec->execute();
@@ -126,7 +126,7 @@ class Datos extends Conexion{
     }
 
    public function obtenerClave($id_persona) {
-        $consulta = "SELECT clave FROM personas WHERE id_persona = :id_persona"; 
+        $consulta = "SELECT clave FROM cliente WHERE id_persona = :id_persona"; 
         $strExec = $this->conex1->prepare($consulta);
         $strExec->bindParam(':id_persona', $id_persona);
         $strExec->execute();

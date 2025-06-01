@@ -38,7 +38,7 @@ function __construct(){
 
 public function registrarBitacora($id_persona, $accion, $descripcion) {
     $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
+                 VALUES (:accion, NOW(), :descripcion, :id_persona)                 ";
     
     $strExec = $this->conex2->prepare($consulta);
     $strExec->bindParam(':accion', $accion);
