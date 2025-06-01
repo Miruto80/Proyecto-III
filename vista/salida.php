@@ -372,31 +372,31 @@
             <h6>Datos del Cliente</h6>
             
             <!-- Buscar por Cédula -->
-          <div class="mb-3">
-            <label class="form-label fw-bold">Buscar por Cédula</label>
-            <div class="row">
-              <div class="col-md-6">
-                <input type="text" class="form-control" name="cedula_cliente" id="cedula_cliente" 
-                         placeholder="Ingrese la cédula" minlength="7" maxlength="8" pattern="[0-9]{7,8}" required>
-                  <div class="invalid-feedback">
-                    La cédula debe tener entre 7 y 8 dígitos
-                  </div>
-              </div>
-              <div class="col-md-3">
-                  <button type="button" class="btn btn-outline-primary w-100" id="btnBuscarCliente">
-                    <i class="fas fa-search"></i> Buscar
+            <div class="mb-3">
+              <label class="form-label fw-bold">Buscar por Cédula</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <input type="text" class="form-control" name="cedula_cliente" id="cedula_cliente" 
+                           placeholder="Ingrese la cédula" minlength="7" maxlength="8" pattern="[0-9]{7,8}" required>
+                    <div class="invalid-feedback">
+                      La cédula debe tener entre 7 y 8 dígitos
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-outline-primary w-100" id="btnBuscarCliente">
+                      <i class="fas fa-search"></i> Buscar
+                    </button>
+                    <button type="button" class="btn btn-outline-danger w-100" id="cancelarRegistro" style="display: none;">
+                      <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+                <div class="col-md-3">
+                  <button type="button" class="btn btn-outline-success w-100" id="registrarCliente">
+                    <i class="fas fa-user-plus"></i> Registrar cliente
                   </button>
-                  <button type="button" class="btn btn-outline-danger w-100" id="cancelarRegistro" style="display: none;">
-                    <i class="fas fa-times"></i> Cancelar
-                  </button>
-              </div>
-              <div class="col-md-3">
-                <button type="button" class="btn btn-outline-success w-100" id="registrarCliente">
-                  <i class="fas fa-user-plus"></i> Registrar cliente
-                </button>
+                </div>
               </div>
             </div>
-          </div>
 
             <!-- Campos del cliente -->
             <div id="campos-cliente" style="display: none;">
@@ -461,7 +461,7 @@
           </div>
 
           <!-- Sección: Datos de la Venta -->
-          <div class="mb-4">
+          <div class="mb-4 seccion-venta" style="display: none;">
             <h6>Datos de venta</h6>
             <div class="row">
               <div class="col-md-6">
@@ -568,7 +568,7 @@
           </div>
 
           <!-- Sección: Productos -->
-          <div class="mb-4">
+          <div class="mb-4 seccion-productos" style="display: none;">
             <div class="d-flex justify-content-between align-items-center mb-3">
             </div>
             

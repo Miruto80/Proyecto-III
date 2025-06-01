@@ -26,6 +26,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnAgregarProducto = document.getElementById('agregar-producto-venta');
     const idClienteHidden = document.getElementById('id_cliente_hidden');
 
+    // Referencias a las secciones de venta y productos
+    const seccionVenta = document.querySelector('.seccion-venta');
+    const seccionProductos = document.querySelector('.seccion-productos');
+
     // Evento para cuando se abre el modal de registro
     const registroModal = document.getElementById('registroModal');
     if (registroModal) {
@@ -35,6 +39,10 @@ document.addEventListener('DOMContentLoaded', function() {
             btnBuscarCliente.style.display = 'block';
             btnCancelarRegistro.style.display = 'none';
             btnRegistrarCliente.style.display = 'block';
+            
+            // Ocultar secciones de venta y productos
+            seccionVenta.style.display = 'none';
+            seccionProductos.style.display = 'none';
             
             // Limpiar todos los campos
             cedulaInput.value = '';
@@ -112,22 +120,6 @@ document.addEventListener('DOMContentLoaded', function() {
             this.setCustomValidity('');
             this.classList.remove('is-invalid');
             this.classList.add('is-valid');
-        }
-    });
-
-    // Evento cuando el campo de cédula pierde el foco
-    cedulaInput.addEventListener('focusout', function() {
-        if (this.value.length >= 7 && this.value.length <= 8 && !clienteBuscado) {
-            Swal.fire({
-                icon: 'warning',
-                title: '¡Atención!',
-                text: 'Por favor, presione el botón de buscar para verificar el cliente',
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 5000,
-                timerProgressBar: true
-            });
         }
     });
 
@@ -694,120 +686,146 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
-    // Evento para buscar cliente
-    if (btnBuscarCliente) {
-        btnBuscarCliente.addEventListener('click', function() {
-            const cedula = cedulaInput.value.trim();
-            clienteBuscado = true;
-            
-            if (cedula.length < 7 || cedula.length > 8) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'La cédula debe tener entre 7 y 8 dígitos'
-                });
-                return;
+    // Evento para mostrar las secciones de venta y productos
+    function mostrarSeccionesVenta() {
+        seccionVenta.style.display = 'block';
+        seccionProductos.style.display = 'block';
+    }
+
+    // Función para ocultar las secciones de venta y productos
+    function ocultarSeccionesVenta() {
+        seccionVenta.style.display = 'none';
+        seccionProductos.style.display = 'none';
+    }
+
+    // Función para buscar cliente
+    function buscarCliente() {
+        const cedula = cedulaInput.value.trim();
+        clienteBuscado = true;
+        
+        if (cedula.length < 7 || cedula.length > 8) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'La cédula debe tener entre 7 y 8 dígitos'
+            });
+            return;
+        }
+
+        // Crear FormData y agregar los datos
+        const formData = new FormData();
+        formData.append('buscar_cliente', '1');
+        formData.append('cedula', cedula);
+        formData.append('csrf_token', document.querySelector('input[name="csrf_token"]').value);
+
+        // Realizar la petición AJAX
+        fetch('?pagina=salida', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
             }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.respuesta === 1 && data.cliente) {
+                // Cliente encontrado
+                camposCliente.style.display = 'block';
+                btnBuscarCliente.style.display = 'none';
+                btnCancelarRegistro.style.display = 'block';
+                btnRegistrarCliente.style.display = 'none';
 
-            // Crear FormData y agregar los datos
-            const formData = new FormData();
-            formData.append('buscar_cliente', '1');
-            formData.append('cedula', cedula);
-            formData.append('csrf_token', document.querySelector('input[name="csrf_token"]').value);
+                // Mostrar secciones de venta y productos
+                mostrarSeccionesVenta();
 
-            // Realizar la petición AJAX
-            fetch('?pagina=salida', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.respuesta === 1 && data.cliente) {
-                    // Cliente encontrado
-                    camposCliente.style.display = 'block';
-                    btnBuscarCliente.style.display = 'none';
-                    btnCancelarRegistro.style.display = 'block';
-                    btnRegistrarCliente.style.display = 'none';
+                // Llenar los campos con los datos del cliente
+                nombreInput.value = data.cliente.nombre || '';
+                apellidoInput.value = data.cliente.apellido || '';
+                telefonoInput.value = data.cliente.telefono || '';
+                correoInput.value = data.cliente.correo || '';
+                idClienteHidden.value = data.cliente.id_persona || '';
 
-                    // Llenar los campos con los datos del cliente
-                    nombreInput.value = data.cliente.nombre || '';
-                    apellidoInput.value = data.cliente.apellido || '';
-                    telefonoInput.value = data.cliente.telefono || '';
-                    correoInput.value = data.cliente.correo || '';
-                    idClienteHidden.value = data.cliente.id_persona || '';
+                // Hacer los campos de solo lectura
+                nombreInput.readOnly = true;
+                apellidoInput.readOnly = true;
+                telefonoInput.readOnly = true;
+                correoInput.readOnly = true;
 
-                    // Hacer los campos de solo lectura
-                    nombreInput.readOnly = true;
-                    apellidoInput.readOnly = true;
-                    telefonoInput.readOnly = true;
-                    correoInput.readOnly = true;
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Cliente encontrado!',
-                        text: 'Los datos del cliente han sido cargados'
-                    });
-                } else {
-                    // Cliente no encontrado - preguntar si desea registrarlo
-                    Swal.fire({
-                        title: 'Cliente no encontrado',
-                        text: '¿Desea registrar un nuevo cliente?',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Sí, registrar',
-                        cancelButtonText: 'No, cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Mostrar campos para registro
-                    camposCliente.style.display = 'block';
-                    btnBuscarCliente.style.display = 'none';
-                    btnCancelarRegistro.style.display = 'block';
-                    btnRegistrarCliente.style.display = 'block';
-
-                    // Limpiar y habilitar los campos para nuevo registro
-                    nombreInput.value = '';
-                    apellidoInput.value = '';
-                    telefonoInput.value = '';
-                    correoInput.value = '';
-                    idClienteHidden.value = '';
-
-                    // Hacer los campos editables
-                    nombreInput.readOnly = false;
-                    apellidoInput.readOnly = false;
-                    telefonoInput.readOnly = false;
-                    correoInput.readOnly = false;
-                        } else {
-                            // Si cancela, volver al estado inicial
-                            camposCliente.style.display = 'none';
-                            btnBuscarCliente.style.display = 'block';
-                            btnCancelarRegistro.style.display = 'none';
-                            btnRegistrarCliente.style.display = 'block';
-                            
-                            // Limpiar campos
-                            cedulaInput.value = '';
-                            nombreInput.value = '';
-                            apellidoInput.value = '';
-                            telefonoInput.value = '';
-                            correoInput.value = '';
-                            idClienteHidden.value = '';
-                        }
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ocurrió un error al buscar el cliente'
+                    icon: 'success',
+                    title: '¡Cliente encontrado!',
+                    text: 'Los datos del cliente han sido cargados'
                 });
+            } else {
+                // Cliente no encontrado - preguntar si desea registrarlo
+                Swal.fire({
+                    title: 'Cliente no encontrado',
+                    text: '¿Desea registrar un nuevo cliente?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, registrar',
+                    cancelButtonText: 'No, cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Mostrar campos para registro
+                        camposCliente.style.display = 'block';
+                        btnBuscarCliente.style.display = 'none';
+                        btnCancelarRegistro.style.display = 'block';
+                        btnRegistrarCliente.style.display = 'block';
+
+                        // Limpiar y habilitar los campos para nuevo registro
+                        nombreInput.value = '';
+                        apellidoInput.value = '';
+                        telefonoInput.value = '';
+                        correoInput.value = '';
+                        idClienteHidden.value = '';
+
+                        // Hacer los campos editables
+                        nombreInput.readOnly = false;
+                        apellidoInput.readOnly = false;
+                        telefonoInput.readOnly = false;
+                        correoInput.readOnly = false;
+                    } else {
+                        // Si cancela, volver al estado inicial
+                        camposCliente.style.display = 'none';
+                        btnBuscarCliente.style.display = 'block';
+                        btnCancelarRegistro.style.display = 'none';
+                        btnRegistrarCliente.style.display = 'block';
+                        
+                        // Limpiar campos
+                        cedulaInput.value = '';
+                        nombreInput.value = '';
+                        apellidoInput.value = '';
+                        telefonoInput.value = '';
+                        correoInput.value = '';
+                        idClienteHidden.value = '';
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ocurrió un error al buscar el cliente'
             });
         });
+    }
+
+    // Evento para buscar con Enter en el campo de cédula
+    cedulaInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevenir el envío del formulario
+            buscarCliente();
+        }
+    });
+
+    // Evento para el botón de búsqueda
+    if (btnBuscarCliente) {
+        btnBuscarCliente.addEventListener('click', buscarCliente);
     }
 
     // Botón cancelar registro
@@ -1059,6 +1077,9 @@ document.addEventListener('DOMContentLoaded', function() {
         btnBuscarCliente.style.display = 'none';
         btnRegistrarCliente.style.display = 'none';
         
+        // Mostrar secciones de venta y productos
+        mostrarSeccionesVenta();
+        
         // Limpiar y habilitar campos para edición
         nombreInput.value = '';
         apellidoInput.value = '';
@@ -1082,6 +1103,9 @@ document.addEventListener('DOMContentLoaded', function() {
         btnCancelarRegistro.style.display = 'none';
         btnBuscarCliente.style.display = 'block';
         btnRegistrarCliente.style.display = 'block';
+        
+        // Ocultar secciones de venta y productos
+        ocultarSeccionesVenta();
         
         // Limpiar campos del cliente
         cedulaInput.value = '';
