@@ -210,10 +210,10 @@
 
   <!-- Modal Universal para Registrar y Modificar -->
   <div class="modal fade" id="registro" tabindex="1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog  modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header header-color">
-          <h1 class="modal-title fs-5" id="modalTitle">Registrar Producto</h1>
+          <h5 class="modal-title" id="modalTitle">Registrar Producto</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
@@ -223,84 +223,102 @@
             <input type="hidden" id="imagenActual" name="imagenActual" value="" />
             <input type="hidden" id="accion" name="accion" value="registrar" />
 
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label for="nombre">Nombre del producto</label>
-                <input class="form-control" type="text" id="nombre" name="nombre" />
-                <span id="snombre" style="color: red;"></span>
+            <!-- Sección: Datos Básicos del Producto -->
+            <div class="mb-4">
+              <h6 class="mb-3">Datos Básicos</h6>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="nombre" class="form-label">Nombre del producto</label>
+                  <input class="form-control" type="text" id="nombre" name="nombre" />
+                  <span id="snombre" style="color: red;"></span>
+                </div>
+                <div class="col-md-6">
+                  <label for="marca" class="form-label">Marca del producto</label>
+                  <input class="form-control" type="text" id="marca" name="marca" />
+                  <span id="smarca" style="color: red;"></span>
+                </div>
               </div>
-              <div class="col-md-6">
-                <label for="marca">Marca del producto</label>
-                <input class="form-control" type="text" id="marca" name="marca" />
-                <span id="smarca" style="color: red;"></span>
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-12">
-                <label for="descripcion">Descripcion</label>
-                <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Escribe la descripción" required></textarea>
-                <span id="sdescripcion"></span>
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-4">
-                <label for="cantidad_mayor">Cantidad al mayor</label>
-                <input class="form-control" type="text" id="cantidad_mayor" name="cantidad_mayor" />
-                <span id="scantidad_mayor"  style="color: red;"></span>
-              </div>
-              <div class="col-md-4">
-                <label for="precio_detal">Precio al detal</label>
-                <input class="form-control" type="text" id="precio_detal" name="precio_detal" />
-                <span id="sprecio_detal"  style="color: red;"></span>
-              </div>
-              <div class="col-md-4">
-                <label for="precio_mayor">Precio al mayor</label>
-                <input class="form-control" type="text" id="precio_mayor" name="precio_mayor" />
-                <span id="sprecio_mayor"  style="color: red;"></span>
-              </div>
-            <div class="row mb-3">
-              <div class="col-md-4">
-                <label for="stock_maximo">Stock maximo</label>
-                <input class="form-control" type="text" id="stock_maximo" name="stock_maximo" />
-                <span id="sstock_maximo"  style="color: red;"></span>
-              </div>
-              <div class="col-md-4">
-                <label for="stock_minimo">Stock minimo</label>
-                <input class="form-control" type="text" id="stock_minimo" name="stock_minimo" />
-                <span id="sstock_minimo"  style="color: red;"></span>
-              </div>
-              <div class="col-md-4">
-                <label for="categoria">Categoria</label>
-                <select class="form-select text-gray-900 " name="categoria" id="categoria" required>
-                  <option disabled selected>Seleccione una Categoria</option>
-                  <?php foreach ($categoria as $cat) { ?>
-                    <option value="<?php echo htmlspecialchars($cat['id_categoria']); ?>"> <?php echo htmlspecialchars($cat['nombre']); ?> </option>
-                  <?php } ?>
-                </select>
+              <div class="row mb-3">
+                <div class="col-md-12">
+                  <label for="descripcion" class="form-label">Descripción</label>
+                  <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Escribe la descripción" required></textarea>
+                  <span id="sdescripcion"></span>
+                </div>
               </div>
             </div>
 
-            <div class="row">
-              <div class="col-md-12">
-                <center>
-                  <label for="archivo" style="cursor:pointer">
-                    Click aqui subir la foto del producto
-                    <br>
-                    <img src="assets/img/logo.PNG" id="imagen" class="img-fluid rounded-circle w-25 mt-3 centered" style="object-fit:scale-down">
-                  </label>
-                  <input id="archivo" type="file" style="display:none" accept=".png,.jpg,.jpeg,.webp" name="imagenarchivo" />
-                </center>
+            <!-- Sección: Precios y Cantidades -->
+            <div class="mb-4">
+              <h6 class="mb-3">Precios y Cantidades</h6>
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label for="cantidad_mayor" class="form-label">Cantidad al mayor</label>
+                  <input class="form-control" type="text" id="cantidad_mayor" name="cantidad_mayor" />
+                  <span id="scantidad_mayor" style="color: red;"></span>
+                </div>
+                <div class="col-md-4">
+                  <label for="precio_detal" class="form-label">Precio al detal</label>
+                  <input class="form-control" type="text" id="precio_detal" name="precio_detal" />
+                  <span id="sprecio_detal" style="color: red;"></span>
+                </div>
+                <div class="col-md-4">
+                  <label for="precio_mayor" class="form-label">Precio al mayor</label>
+                  <input class="form-control" type="text" id="precio_mayor" name="precio_mayor" />
+                  <span id="sprecio_mayor" style="color: red;"></span>
+                </div>
               </div>
             </div>
 
-            <br>
-            <div class="text-center">
+            <!-- Sección: Control de Stock -->
+            <div class="mb-4">
+              <h6 class="mb-3">Control de Stock</h6>
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label for="stock_maximo" class="form-label">Stock máximo</label>
+                  <input class="form-control" type="text" id="stock_maximo" name="stock_maximo" />
+                  <span id="sstock_maximo" style="color: red;"></span>
+                </div>
+                <div class="col-md-4">
+                  <label for="stock_minimo" class="form-label">Stock mínimo</label>
+                  <input class="form-control" type="text" id="stock_minimo" name="stock_minimo" />
+                  <span id="sstock_minimo" style="color: red;"></span>
+                </div>
+                <div class="col-md-4">
+                  <label for="categoria" class="form-label">Categoría</label>
+                  <select class="form-select text-gray-900" name="categoria" id="categoria" required>
+                    <option disabled selected>Seleccione una Categoría</option>
+                    <?php foreach ($categoria as $cat) { ?>
+                      <option value="<?php echo htmlspecialchars($cat['id_categoria']); ?>"> <?php echo htmlspecialchars($cat['nombre']); ?> </option>
+                    <?php } ?>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sección: Imagen del Producto -->
+            <div class="mb-4">
+              <h6 class="mb-3">Imagen del Producto</h6>
+              <div class="row">
+                <div class="col-md-12">
+                  <center>
+                    <label for="archivo" style="cursor:pointer">
+                      Click aquí para subir la foto del producto
+                      <br>
+                      <img src="assets/img/logo.PNG" id="imagen" class="img-fluid rounded-circle w-25 mt-3 centered" style="object-fit:scale-down">
+                    </label>
+                    <input id="archivo" type="file" style="display:none" accept=".png,.jpg,.jpeg,.webp" name="imagenarchivo" />
+                  </center>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="text-center mt-4">
               <button type="button" class="btn btn-primary" id="btnEnviar">Guardar</button>
-              <button type="reset" class="btn btn-primary" id="btnLimpiar">Limpiar</button>
+              <button type="reset" class="btn btn-secondary" id="btnLimpiar">Limpiar</button>
             </div>
           </form>
         </div>
-
       </div>
     </div>
   </div>
@@ -310,18 +328,65 @@
 
   <script src="assets/js/producto.js"></script>
 
+  <!-- Modal de Detalles del Producto -->
   <div class="modal fade" id="modalDetallesProducto" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="tituloModal">Detalles del Producto</h5>
+        <div class="modal-header table-color">
+          <h5 class="modal-title text-white" id="tituloModal">Detalles del Producto</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
-          <p><strong>Cantidad de venta al mayor:</strong> <span id="modal-cantidad-mayor"></span></p>
-          <p><strong>Precio al Mayor:</strong> <span id="modal-precio-mayor"></span></p>
-          <p><strong>Stock Máximo:</strong> <span id="modal-stock-maximo"></span></p>
-          <p><strong>Stock Mínimo:</strong> <span id="modal-stock-minimo"></span></p>
+          <!-- Sección: Información General -->
+          <div class="mb-4">
+            <h6 class="mb-3">Información General</h6>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label class="form-label fw-bold">Nombre del Producto:</label>
+                  <p class="form-control-static" id="modal-nombre-producto"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sección: Información de Ventas al Mayor -->
+          <div class="mb-4">
+            <h6 class="mb-3">Información de Ventas al Mayor</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label fw-bold">Cantidad mínima al mayor:</label>
+                  <p class="form-control-static" id="modal-cantidad-mayor"></p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label fw-bold">Precio al Mayor:</label>
+                  <p class="form-control-static" id="modal-precio-mayor"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sección: Control de Inventario -->
+          <div class="mb-4">
+            <h6 class="mb-3">Control de Inventario</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label fw-bold">Stock Máximo:</label>
+                  <p class="form-control-static" id="modal-stock-maximo"></p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label fw-bold">Stock Mínimo:</label>
+                  <p class="form-control-static" id="modal-stock-minimo"></p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

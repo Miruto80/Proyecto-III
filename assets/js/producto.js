@@ -43,6 +43,9 @@ $('#btnLimpiar').on("click", function () {
 $(document).on('click', '.ver-detalles', function () {
   const fila = $(this).closest('tr');
 
+  // Obtener el nombre del producto de la primera columna
+  const nombreProducto = fila.find('td').eq(0).text().trim();
+
   // Acceder a los datos almacenados en los atributos data-*
   const cantidadMayor = fila.data('cantidad-mayor');
   const precioMayor = fila.data('precio-mayor');
@@ -50,6 +53,7 @@ $(document).on('click', '.ver-detalles', function () {
   const stockMinimo = fila.data('stock-minimo');
 
   // Asignar los valores a los elementos del modal
+  $('#modal-nombre-producto').text(nombreProducto);
   $('#modal-cantidad-mayor').text(cantidadMayor);
   $('#modal-precio-mayor').text(precioMayor);
   $('#modal-stock-maximo').text(stockMaximo);
