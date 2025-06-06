@@ -853,23 +853,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     }).then((result) => {
                         if (result.isConfirmed) {
                             // Mostrar campos para registro
-                    camposCliente.style.display = 'block';
-                    btnBuscarCliente.style.display = 'none';
-                    btnCancelarRegistro.style.display = 'block';
-                    btnRegistrarCliente.style.display = 'block';
+                            camposCliente.style.display = 'block';
+                            btnBuscarCliente.style.display = 'none';
+                            btnCancelarRegistro.style.display = 'block';
+                            btnRegistrarCliente.style.display = 'block';
 
-                    // Limpiar y habilitar los campos para nuevo registro
-                    nombreInput.value = '';
-                    apellidoInput.value = '';
-                    telefonoInput.value = '';
-                    correoInput.value = '';
-                    idClienteHidden.value = '';
+                            // Mostrar secciones de venta y productos
+                            mostrarSeccionesVenta();
 
-                    // Hacer los campos editables
-                    nombreInput.readOnly = false;
-                    apellidoInput.readOnly = false;
-                    telefonoInput.readOnly = false;
-                    correoInput.readOnly = false;
+                            // Limpiar y habilitar los campos para nuevo registro
+                            nombreInput.value = '';
+                            apellidoInput.value = '';
+                            telefonoInput.value = '';
+                            correoInput.value = '';
+                            idClienteHidden.value = '';
+
+                            // Hacer los campos editables
+                            nombreInput.readOnly = false;
+                            apellidoInput.readOnly = false;
+                            telefonoInput.readOnly = false;
+                            correoInput.readOnly = false;
                         } else {
                             // Si cancela, volver al estado inicial
                             camposCliente.style.display = 'none';
@@ -1115,9 +1118,6 @@ document.addEventListener('DOMContentLoaded', function() {
         btnBuscarCliente.style.display = 'none';
         btnRegistrarCliente.style.display = 'none';
         
-        // Mostrar secciones de venta y productos
-        mostrarSeccionesVenta();
-        
         // Limpiar y habilitar campos para edición
         nombreInput.value = '';
         apellidoInput.value = '';
@@ -1216,6 +1216,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Evento para mostrar campos de registro de cliente
     btnRegistrarCliente.addEventListener('click', function() {
         mostrarModoRegistro();
+        // Mostrar secciones de venta y productos
+        mostrarSeccionesVenta();
     });
 
     // Evento para cancelar registro
@@ -1283,7 +1285,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const estadoAnterior = this.getAttribute('data-estado-anterior');
                 
                 // Validar cambios de estado no permitidos
-                if (estadoAnterior === '3' && estadoActual !== '3') {
+                if (estadoAnterior === '2' && estadoActual !== '2') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -1304,7 +1306,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 // Validar secuencia lógica de estados
-                if (estadoAnterior === '1' && estadoActual === '3') {
+                if (estadoAnterior === '1' && estadoActual === '2') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -1314,7 +1316,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                if (estadoAnterior === '2' && estadoActual === '1') {
+                if (estadoAnterior === '3' && estadoActual === '1') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -1324,8 +1326,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                // Para estado Enviado (4), solo permitir cambio a Entregado (3) o Cancelado (0)
-                if (estadoAnterior === '4' && !['3', '0'].includes(estadoActual)) {
+                // Para estado Enviado (4), solo permitir cambio a Entregado (2) o Cancelado (0)
+                if (estadoAnterior === '4' && !['2', '0'].includes(estadoActual)) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
