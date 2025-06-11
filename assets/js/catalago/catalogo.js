@@ -28,6 +28,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
   
+  const checkboxes = document.querySelectorAll('.filtro-checkbox');
+
+checkboxes.forEach(checkbox => {
+  checkbox.addEventListener('change', () => {
+    const label = checkbox.closest('label');
+    if (checkbox.checked) {
+      label.style.backgroundColor = 'pink';
+    } else {
+      label.style.backgroundColor = '';
+    }
+  });
+});
+
 
 
 function openModal(element) {
