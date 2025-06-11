@@ -3,269 +3,245 @@
 require_once 'conexion.php';
 
 class Login extends Conexion {
-
-    private $conex1;
-    private $conex2;
-    private $id_usuario;
-    private $cedula;
-    private $clave;
-    private $nombres;
-    private $apellidos;
-    private $id_rol;
-    private $telefono;
-    private $correo; 
-    private $encryptionKey = "MotorLoveMakeup"; // Usa una clave segura
-    private $cipherMethod = "AES-256-CBC";
-
-    function __construct(){ // Metodo para BD
-         parent::__construct(); // Llama al constructor de la clase padre
-
-        // Obtener las conexiones de la clase padre
-        $this->conex1 = $this->getConex1();
-        $this->conex2 = $this->getConex2();
-    } 
-
-    private function encryptClave($clave) {
-    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipherMethod));
-     // Se genera un IV aleatorio
-    $encrypted = openssl_encrypt($clave, $this->cipherMethod, $this->encryptionKey, 0, $iv);
-     //Se encripta la clave con AES-256-CBC
-    return base64_encode($iv . $encrypted); // Guarda IV junto con el cifrado
+    function __construct() {
+        parent::__construct();
     }
 
-    private function decryptClave($claveEncriptada) {
-    $data = base64_decode($claveEncriptada);
-    //Recuperamos el IV y los datos cifrados en binario.
-    $ivLength = openssl_cipher_iv_length($this->cipherMethod);
-    //Obtener la longitud del IV, Para saber cuántos bytes tomar.
-    $iv = substr($data, 0, $ivLength);
-    //Extraer el IV → Separamos el IV del texto cifrado.
-    $encryptedData = substr($data, $ivLength);
-    //Extraer los datos cifrados, Ahora tenemos solo el texto cifrado.
-    $claveDesencriptada = openssl_decrypt($encryptedData, $this->cipherMethod, $this->encryptionKey, 0, $iv);
-    // Desencriptar con OpenSSL, Convertimos el texto cifrado en la clave original.
-    return $claveDesencriptada;
+    private function encryptClave($datos) {
+        $config = [
+            'key' => "MotorLoveMakeup",
+            'method' => "AES-256-CBC"
+        ];
+        
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($config['method']));
+        $encrypted = openssl_encrypt($datos['clave'], $config['method'], $config['key'], 0, $iv);
+        return base64_encode($iv . $encrypted);
     }
 
+    private function decryptClave($datos) {
+        $config = [
+            'key' => "MotorLoveMakeup",
+            'method' => "AES-256-CBC"
+        ];
+        
+        $data = base64_decode($datos['clave_encriptada']);
+        $ivLength = openssl_cipher_iv_length($config['method']);
+        $iv = substr($data, 0, $ivLength);
+        $encrypted = substr($data, $ivLength);
+        return openssl_decrypt($encrypted, $config['method'], $config['key'], 0, $iv);
+    }
 
-
-
-
-    public function verificarUsuario() {
-    $consulta = "SELECT p.*, ru.nombre AS nombre_usuario, ru.nivel, p.clave
-                 FROM usuario p
-                 INNER JOIN rol_usuario ru ON p.id_rol = ru.id_rol
-                 WHERE p.cedula = :cedula";
-                 
-    $strExec = $this->conex2->prepare($consulta);
-    $strExec->bindParam(':cedula', $this->cedula);
-    $strExec->execute();
-    $resultado = $strExec->fetchObject();
-
-    if ($resultado) {
-        // Desencriptar la clave almacenada
-        $claveDesencriptada = $this->decryptClave($resultado->clave);
-
-        // Comparar con la clave ingresada
-        if ($claveDesencriptada === $this->clave) {
-            if (!in_array($resultado->estatus, [1, 2, 3])) {
-                $resultado->noactiva = true;
+    public function procesarLogin($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
+        $operacion = $datos['operacion'];
+        $datosProcesar = $datos['datos'];
+        
+        try {
+            switch ($operacion) {
+                case 'verificar':
+                    return $this->verificarCredenciales($datosProcesar);
+                case 'registrar':
+                    if ($this->verificarExistencia(['campo' => 'cedula', 'valor' => $datosProcesar['cedula']])) {
+                        return ['respuesta' => 0, 'accion' => 'incluir', 'text' => 'La cédula ya está registrada'];
+                    }
+                    if ($this->verificarExistencia(['campo' => 'correo', 'valor' => $datosProcesar['correo']])) {
+                        return ['respuesta' => 0, 'accion' => 'incluir', 'text' => 'El correo electrónico ya está registrado'];
+                    }
+                    return $this->registrarCliente($datosProcesar);
+                case 'validar':
+                    return $this->obtenerPersonaPorCedula(['cedula' => $datosProcesar['cedula']]);
+                default:
+                    return ['respuesta' => 0, 'mensaje' => 'Operación no válida'];
             }
-            return $resultado;
+        } catch (Exception $e) {
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
         }
     }
 
-    return null; // Retorna null si las credenciales no coinciden
-} 
+    private function verificarCredenciales($datos) {
+        $conex1 = $this->getConex1();
+        $conex2 = $this->getConex2();
+        try {
+            // Verificar en usuarios
+            $sql = "SELECT p.*, ru.nombre AS nombre_usuario, ru.nivel, p.clave
+                    FROM usuario p
+                    INNER JOIN rol_usuario ru ON p.id_rol = ru.id_rol
+                    WHERE p.cedula = :cedula";
+                    
+            $stmt = $conex2->prepare($sql);
+            $stmt->execute(['cedula' => $datos['cedula']]);
+            $resultado = $stmt->fetchObject();
 
-
-  public function verificarCliente() {
-    $consulta = "SELECT * FROM cliente WHERE cedula = :cedula";
-                 
-    $strExec = $this->conex1->prepare($consulta);
-    $strExec->bindParam(':cedula', $this->cedula);
-    $strExec->execute();
-    $resultado = $strExec->fetchObject();
-
-    if ($resultado) {
-        // Desencriptar la clave almacenada
-        $claveDesencriptada = $this->decryptClave($resultado->clave);
-
-        // Comparar con la clave ingresada
-        if ($claveDesencriptada === $this->clave) {
-            if (!in_array($resultado->estatus, [1, 2, 3])) {
-                $resultado->noactiva = true;
+            if ($resultado) {
+                $claveDesencriptada = $this->decryptClave(['clave_encriptada' => $resultado->clave]);
+                if ($claveDesencriptada === $datos['clave']) {
+                    if (!in_array($resultado->estatus, [1, 2, 3])) {
+                        $resultado->noactiva = true;
+                    }
+                    $conex1 = null;
+                    $conex2 = null;
+                    return $resultado;
+                }
             }
-            return $resultado;
+
+            // Si no está en usuarios, verificar en clientes
+            $sql = "SELECT * FROM cliente WHERE cedula = :cedula";
+            $stmt = $conex1->prepare($sql);
+            $stmt->execute(['cedula' => $datos['cedula']]);
+            $resultado = $stmt->fetchObject();
+
+            if ($resultado) {
+                $claveDesencriptada = $this->decryptClave(['clave_encriptada' => $resultado->clave]);
+                if ($claveDesencriptada === $datos['clave']) {
+                    if (!in_array($resultado->estatus, [1, 2, 3])) {
+                        $resultado->noactiva = true;
+                    }
+                    $conex1 = null;
+                    $conex2 = null;
+                    return $resultado;
+                }
+            }
+
+            $conex1 = null;
+            $conex2 = null;
+            return null;
+        } catch (PDOException $e) {
+            if ($conex1) $conex1 = null;
+            if ($conex2) $conex2 = null;
+            throw $e;
         }
     }
 
-    return null; // Retorna null si las credenciales no coinciden
-}
-
-   
-    public function registrarBitacora($id_persona, $accion, $descripcion) {
-    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
-    
-    $strExec = $this->conex2->prepare($consulta);
-    $strExec->bindParam(':accion', $accion);
-    $strExec->bindParam(':descripcion', $descripcion);
-    $strExec->bindParam(':id_persona', $id_persona);
-    
-    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
+    private function registrarCliente($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "INSERT INTO cliente(cedula, nombre, apellido, correo, telefono, clave, estatus, rol)
+                    VALUES(:cedula, :nombre, :apellido, :correo, :telefono, :clave, 1, 1)";
+            
+            $datosInsertar = [
+                'cedula' => $datos['cedula'],
+                'nombre' => ucfirst(strtolower($datos['nombre'])),
+                'apellido' => ucfirst(strtolower($datos['apellido'])),
+                'correo' => strtolower($datos['correo']),
+                'telefono' => $datos['telefono'],
+                'clave' => $this->encryptClave(['clave' => $datos['clave']])
+            ];
+            
+            $stmt = $conex->prepare($sql);
+            $resultado = $stmt->execute($datosInsertar);
+            
+            if ($resultado) {
+                $conex->commit();
+                $conex = null;
+                return ['respuesta' => 1, 'accion' => 'incluir'];
+            }
+            
+            $conex->rollBack();
+            $conex = null;
+            return ['respuesta' => 0, 'accion' => 'incluir'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
     }
 
-
-    public function registrar() {
-    $registro = "INSERT INTO cliente(cedula, nombre, apellido, correo, telefono, clave, estatus, rol)
-        VALUES(:cedula,:nombre, :apellido, :correo, :telefono,:clave, 1,1)";
-
-    $strExec = $this->conex1->prepare($registro);
-    $strExec->bindParam(':cedula', $this->cedula);
-    $strExec->bindParam(':nombre', $this->nombre);
-    $strExec->bindParam(':apellido', $this->apellido);
-    $strExec->bindParam(':correo', $this->correo);
-    $strExec->bindParam(':telefono', $this->telefono);
-    
-    // Encriptar la clave antes de almacenarla
-    $claveEncriptada = $this->encryptClave($this->clave);
-    $strExec->bindParam(':clave', $claveEncriptada);
-
-    $resul = $strExec->execute();
-    if ($resul) {
-        $res['respuesta'] = 1;
-        $res['accion'] = 'incluir';
-    } else {
-        $res['respuesta'] = 0;
-        $res['accion'] = 'incluir';
+    private function verificarExistencia($datos) {
+        $conex1 = $this->getConex1();
+        $conex2 = $this->getConex2();
+        try {
+            // Verificar en clientes
+            $sql = "SELECT COUNT(*) FROM cliente WHERE {$datos['campo']} = :valor";
+            $stmt = $conex1->prepare($sql);
+            $stmt->execute(['valor' => $datos['valor']]);
+            $existe = $stmt->fetchColumn() > 0;
+            
+            if (!$existe) {
+                // Si no existe en clientes, verificar en usuarios
+                $sql = "SELECT COUNT(*) FROM usuario WHERE {$datos['campo']} = :valor";
+                $stmt = $conex2->prepare($sql);
+                $stmt->execute(['valor' => $datos['valor']]);
+                $existe = $stmt->fetchColumn() > 0;
+            }
+            
+            $conex1 = null;
+            $conex2 = null;
+            return $existe;
+        } catch (PDOException $e) {
+            if ($conex1) $conex1 = null;
+            if ($conex2) $conex2 = null;
+            throw $e;
+        }
     }
 
-    return $res;
-}
+    private function obtenerPersonaPorCedula($datos) {
+        $conex1 = $this->getConex1();
+        $conex2 = $this->getConex2();
+        try {
+            // Buscar en cliente
+            $sql = "SELECT *, 'cliente' AS origen FROM cliente WHERE cedula = :cedula";
+            $stmt = $conex1->prepare($sql);
+            $stmt->execute(['cedula' => $datos['cedula']]);
+            
+            if ($stmt->rowCount() > 0) {
+                $resultado = $stmt->fetchObject();
+                $conex1 = null;
+                $conex2 = null;
+                return $resultado;
+            }
 
-     public function existeCedula() {
-    // Buscar en conex1
-    $consulta = "SELECT cedula FROM cliente WHERE cedula = :cedula";
-    $strExec = $this->conex1->prepare($consulta);
-    $strExec->bindParam(':cedula', $this->cedula);
-    $strExec->execute();
-
-    // Si no hay resultados, buscar en conex2
-    if ($strExec->rowCount() == 0) {
-        $consulta = "SELECT cedula FROM usuario WHERE cedula = :cedula";
-        $strExec = $this->conex2->prepare($consulta);
-        $strExec->bindParam(':cedula', $this->cedula);
-        $strExec->execute();
+            // Buscar en usuario
+            $sql = "SELECT *, 'usuario' AS origen FROM usuario WHERE cedula = :cedula";
+            $stmt = $conex2->prepare($sql);
+            $stmt->execute(['cedula' => $datos['cedula']]);
+            
+            if ($stmt->rowCount() > 0) {
+                $resultado = $stmt->fetchObject();
+                $conex1 = null;
+                $conex2 = null;
+                return $resultado;
+            }
+            
+            $conex1 = null;
+            $conex2 = null;
+            return null;
+        } catch (PDOException $e) {
+            if ($conex1) $conex1 = null;
+            if ($conex2) $conex2 = null;
+            throw $e;
+        }
     }
 
-    return $strExec->rowCount() > 0;
-}
-
-public function obtenerPersonaPorCedula() {
-    // Buscar en cliente
-    $consulta = "SELECT *, 'cliente' AS origen FROM cliente WHERE cedula = :cedula";
-    $strExec = $this->conex1->prepare($consulta);
-    $strExec->bindParam(':cedula', $this->cedula);
-    $strExec->execute();
-    
-    if ($strExec->rowCount() > 0) {
-        return $strExec->fetchObject();
+    public function registrarBitacora($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
+        return $this->ejecutarSentenciaBitacora($datos);
     }
 
-    // Buscar en usuario
-    $consulta = "SELECT *, 'usuario' AS origen FROM usuario WHERE cedula = :cedula";
-    $strExec = $this->conex2->prepare($consulta);
-    $strExec->bindParam(':cedula', $this->cedula);
-    $strExec->execute();
-
-    if ($strExec->rowCount() > 0) {
-        return $strExec->fetchObject();
+    private function ejecutarSentenciaBitacora($datos) {
+        $conex = $this->getConex2();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
+                    VALUES (:accion, NOW(), :descripcion, :id_persona)";
+            
+            $stmt = $conex->prepare($sql);
+            $stmt->execute($datos);
+            
+            $conex->commit();
+            $conex = null;
+            return true;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
     }
-
-    return null; // Retorna null si no se encuentra la cédula en ninguna base de datos
-}
-
-
-public function existeCorreo() {
-    //conex1
-    $consulta = "SELECT correo FROM cliente WHERE correo = :correo";
-    $strExec = $this->conex1->prepare($consulta);
-    $strExec->bindParam(':correo', $this->correo);
-    $strExec->execute();
-
-    //buscar en conex2
-    if ($strExec->rowCount() == 0) {
-        $consulta = "SELECT correo FROM usuario WHERE correo = :correo";
-        $strExec = $this->conex2->prepare($consulta);
-        $strExec->bindParam(':correo', $this->correo);
-        $strExec->execute();
-    }
-
-    return $strExec->rowCount() > 0;
-}
-
-   
-    public function get_IdUsuario() {
-        return $this->id_usuario;
-    }
-
-    public function set_IdUsuario($id_usuario) {
-        $this->id_usuario = $id_usuario;
-    }
-
-    public function get_Cedula() {
-        return $this->cedula;
-    }
-
-    public function set_Cedula($cedula) {
-        $this->cedula = $cedula;
-    }
-
-    public function get_Clave() {
-        return $this->clave;
-    }
-
-    public function set_Clave($clave) {
-        $this->clave = $clave;
-    }
-
-    public function get_Nombre() {
-        return $this->nombre;
-    }
-
-    public function set_Nombre($nombre) {
-        $this->nombre = ucfirst(strtolower($nombre));
-    }
-
-    public function get_Apellido() {
-        return $this->apellido;
-    }
-
-    public function set_Apellido($apellido) {
-         $this->apellido = ucfirst(strtolower($apellido));
-    }
-
-    public function get_TipoUsuario() {
-        return $this->id_rol;
-    }
-
-    public function set_Id_rol($id_rol) {
-        $this->id_rol = $id_rol;
-    }
-
-    public function set_Telefono($telefono)
-    {
-        $this->telefono = $telefono;
-    }
-
-    public function get_Correo()
-    {
-        return $this->correo;
-    }
-    public function set_Correo($correo)
-    {
-       $this->correo = strtolower($correo);
-    }
-   
 }
