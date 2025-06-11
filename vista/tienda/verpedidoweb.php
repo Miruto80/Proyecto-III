@@ -363,7 +363,7 @@ $carritoVacio = empty($_SESSION['carrito']);
                         <div class="left border">
                             <div class="row">
 <div class="text-center span mb-2">
-          <span class="header">Detalles de Pago</span>
+          <span class="header">Detalles de Pago.</span>
           
 </div>                                
  
