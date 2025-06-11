@@ -27,6 +27,7 @@
             <span class="nav-link-text ms-1">Inicio</span>
           </a>
         </li>
+        
           <?php if($_SESSION["nivel_rol"] == 3) { ?>
         <li class="nav-item">
           <a class="nav-link" href="?pagina=catalogo">
@@ -37,6 +38,15 @@
           </a>
         </li>
           <?php } ?>
+
+        <li class="nav-item">
+          <a class="nav-link" href="?pagina=reporte">
+            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="fa-solid fa-file-pdf text-sm text-dark "></i>
+            </div>
+            <span class="nav-link-text ms-1">Reporte</span>
+          </a>
+        </li> 
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Administrar</h6>
         </li>
