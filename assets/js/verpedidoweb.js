@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => window.location.href = "?pagina=catalogo_pedido", 2000);
 
         } catch (error) {
-            muestraMensaje("error", 3000, "Error", error.message || "Algo salió mal");
+            muestraMensaje("error", 3000, "Error", error.message || "Algo salió mal.");
         }
     });
 
