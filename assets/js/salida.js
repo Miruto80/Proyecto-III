@@ -1237,26 +1237,88 @@ document.addEventListener('DOMContentLoaded', function() {
     // Manejar el modal de delivery
     document.querySelectorAll('[id^="deliveryModal"]').forEach(modal => {
         const form = modal.querySelector('form');
-        const direccionInput = modal.querySelector('input[name="direccion"]');
+        const inputDireccion = modal.querySelector('input[name="direccion"]');
         const btnEditar = modal.querySelector('.btn-warning');
         const estadoSelect = modal.querySelector('select[name="estado_delivery"]');
-        
+        const metodoEntrega = modal.querySelector('.modal-title').textContent.toLowerCase();
         // Guardar el valor original de la dirección
-        let direccionOriginal = direccionInput.value;
+        let direccionOriginal = inputDireccion.value;
+        // --- NUEVO: Filtrar opciones válidas según método de entrega y estado actual ---
+        function filtrarOpcionesEstado() {
+            if (!estadoSelect) return;
+            const estadoActual = estadoSelect.getAttribute('data-estado-anterior');
+            let opcionesValidas = [];
+            if (estadoActual === '0') {
+                // Cancelado: solo mostrar cancelado
+                opcionesValidas = [{value: '0', text: 'Cancelado'}];
+            } else if (metodoEntrega.includes('delivery')) {
+                if (estadoActual === '1') {
+                    // Pendiente: puede ir a En camino, Entregado o Cancelado
+                    opcionesValidas = [
+                        {value: '1', text: 'Pendiente'},
+                        {value: '3', text: 'En camino'},
+                        {value: '2', text: 'Entregado'},
+                        {value: '0', text: 'Cancelado'}
+                    ];
+                } else if (estadoActual === '3') {
+                    // En camino: puede ir a Entregado o Cancelado
+                    opcionesValidas = [
+                        {value: '3', text: 'En camino'},
+                        {value: '2', text: 'Entregado'},
+                        {value: '0', text: 'Cancelado'}
+                    ];
+                } else if (estadoActual === '2') {
+                    // Entregado: solo mostrar entregado
+                    opcionesValidas = [
+                        {value: '2', text: 'Entregado'}
+                    ];
+                }
+            } else if (metodoEntrega.includes('mrw') || metodoEntrega.includes('zoom')) {
+                if (estadoActual === '1') {
+                    // Pendiente: puede ir a En camino, Enviado o Cancelado
+                    opcionesValidas = [
+                        {value: '1', text: 'Pendiente'},
+                        {value: '3', text: 'En camino'},
+                        {value: '4', text: 'Enviado'},
+                        {value: '0', text: 'Cancelado'}
+                    ];
+                } else if (estadoActual === '3') {
+                    // En camino: puede ir a Enviado o Cancelado
+                    opcionesValidas = [
+                        {value: '3', text: 'En camino'},
+                        {value: '4', text: 'Enviado'},
+                        {value: '0', text: 'Cancelado'}
+                    ];
+                } else if (estadoActual === '4') {
+                    // Enviado: solo mostrar enviado
+                    opcionesValidas = [
+                        {value: '4', text: 'Enviado'}
+                    ];
+                }
+            }
+            estadoSelect.innerHTML = '';
+            opcionesValidas.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.text;
+                if (estadoActual === opt.value) option.selected = true;
+                estadoSelect.appendChild(option);
+            });
+        }
+        filtrarOpcionesEstado();
+        // --- FIN NUEVO ---
         
         if (btnEditar) {
             btnEditar.addEventListener('click', function() {
-                if (direccionInput.readOnly) {
-                    // Habilitar edición
-                    direccionInput.readOnly = false;
-                    direccionInput.disabled = false;
-                    direccionInput.classList.remove('bg-light');
-                    direccionInput.focus();
+                if (inputDireccion.readOnly) {
+                    inputDireccion.readOnly = false;
+                    inputDireccion.disabled = false;
+                    inputDireccion.classList.remove('bg-light');
+                    inputDireccion.focus();
                     this.innerHTML = '<i class="fas fa-save"></i> Guardar';
                     this.classList.replace('btn-warning', 'btn-success');
                 } else {
-                    // Validar la dirección antes de guardar
-                    if (direccionInput.value.trim().length < 10) {
+                    if (inputDireccion.value.trim().length < 10) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
@@ -1264,86 +1326,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                         return;
                     }
-                    
-                    // Deshabilitar edición
-                    direccionInput.readOnly = true;
-                    direccionInput.disabled = false;
-                    direccionInput.classList.add('bg-light');
+                    inputDireccion.readOnly = true;
+                    inputDireccion.disabled = false;
+                    inputDireccion.classList.add('bg-light');
                     this.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
                     this.classList.replace('btn-success', 'btn-warning');
-                    
-                    // Actualizar el valor original
-                    direccionOriginal = direccionInput.value;
+                    direccionOriginal = inputDireccion.value;
                 }
             });
         }
-        
-        // Validación del estado del delivery
-        if (estadoSelect) {
-            estadoSelect.addEventListener('change', function() {
-                const estadoActual = this.value;
-                const estadoAnterior = this.getAttribute('data-estado-anterior');
-                
-                // Validar cambios de estado no permitidos
-                if (estadoAnterior === '2' && estadoActual !== '2') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se puede cambiar el estado de un delivery ya entregado'
-                    });
-                    this.value = estadoAnterior;
-                    return;
-                }
-                
-                if (estadoAnterior === '0' && estadoActual !== '0') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se puede cambiar el estado de un delivery cancelado'
-                    });
-                    this.value = estadoAnterior;
-                    return;
-                }
-
-                // Validar secuencia lógica de estados
-                if (estadoAnterior === '1' && estadoActual === '2') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se puede marcar como entregado un pedido pendiente. Debe pasar por los estados intermedios.'
-                    });
-                    this.value = estadoAnterior;
-                    return;
-                }
-
-                if (estadoAnterior === '3' && estadoActual === '1') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se puede regresar a pendiente un pedido en camino'
-                    });
-                    this.value = estadoAnterior;
-                    return;
-                }
-
-                // Para estado Enviado (4), solo permitir cambio a Entregado (2) o Cancelado (0)
-                if (estadoAnterior === '4' && !['2', '0'].includes(estadoActual)) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Un pedido enviado solo puede marcarse como Entregado o Cancelado'
-                    });
-                    this.value = estadoAnterior;
-                    return;
-                }
-            });
-        }
-        
         if (form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
-                // Validar estado
                 if (!estadoSelect.value) {
                     Swal.fire({
                         icon: 'error',
@@ -1352,9 +1346,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     return;
                 }
-                
-                // Validar dirección si fue modificada
-                if (direccionInput.value !== direccionOriginal && direccionInput.value.trim().length < 10) {
+                if (inputDireccion.value !== direccionOriginal && inputDireccion.value.trim().length < 10) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -1362,7 +1354,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     return;
                 }
-                
                 Swal.fire({
                     title: '¿Confirmar cambios?',
                     text: "¿Está seguro de actualizar el estado del delivery?",
@@ -1375,23 +1366,233 @@ document.addEventListener('DOMContentLoaded', function() {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         // Asegurarse de que la dirección esté habilitada para el envío
-                        direccionInput.disabled = false;
-                        // Enviar el formulario
-                        form.submit();
+                        inputDireccion.disabled = false;
+                        // Enviar el formulario por AJAX para poder mostrar el SweetAlert y ocultar el botón
+                        const formData = new FormData(form);
+                        fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.text())
+                        .then(text => {
+                            // Detectar si el estado fue actualizado a final
+                            let estadoNuevo = estadoSelect.value;
+                            let mostrarSweet = false;
+                            let mensaje = '';
+                            if (metodoEntrega.includes('delivery') && estadoNuevo === '2') {
+                                mostrarSweet = true;
+                                mensaje = 'El delivery ya ha sido entregado.';
+                            } else if ((metodoEntrega.includes('mrw') || metodoEntrega.includes('zoom')) && estadoNuevo === '4') {
+                                mostrarSweet = true;
+                                mensaje = 'El delivery ya ha sido enviado.';
+                            } else if (estadoNuevo === '0') {
+                                mostrarSweet = true;
+                                mensaje = 'El delivery ha sido cancelado.';
+                            }
+                            if (mostrarSweet) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Actualizado!',
+                                    text: mensaje
+                                });
+                                // Ocultar el botón de delivery en la tabla
+                                const idPedido = form.querySelector('input[name="id_pedido"]').value;
+                                const botonTabla = document.querySelector(`button[data-bs-target='#deliveryModal${idPedido}']`);
+                                if (botonTabla) {
+                                    botonTabla.style.display = 'none';
+                                }
+                                // Cerrar el modal
+                                const modalInstance = bootstrap.Modal.getInstance(modal);
+                                if (modalInstance) {
+                                    modalInstance.hide();
+                                }
+                            } else {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Actualizado!',
+                                    text: 'La dirección ha sido actualizada correctamente.'
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            }
+                        });
                     }
                 });
             });
-            
-            // Restaurar valores originales al cerrar el modal
             modal.addEventListener('hidden.bs.modal', function() {
-                direccionInput.value = direccionOriginal;
-                direccionInput.readOnly = true;
-                direccionInput.disabled = true;
-                direccionInput.classList.add('bg-light');
+                inputDireccion.value = direccionOriginal;
+                inputDireccion.readOnly = true;
+                inputDireccion.disabled = true;
+                inputDireccion.classList.add('bg-light');
                 btnEditar.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
                 btnEditar.classList.replace('btn-success', 'btn-warning');
-                estadoSelect.value = estadoSelect.getAttribute('data-estado-anterior');
+                filtrarOpcionesEstado();
             });
         }
+    });
+
+    // Para el formulario de edición
+    document.querySelectorAll('[id^="formGestionarDelivery"]').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Confirmar cambios?',
+                text: "¿Está seguro de actualizar el estado del delivery?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, actualizar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+
+    // Para el formulario de delivery
+    document.querySelectorAll('.btnEditarDireccion').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const inputDireccion = this.previousElementSibling;
+            if (inputDireccion.readOnly) {
+                // Habilitar edición
+                inputDireccion.readOnly = false;
+                inputDireccion.disabled = false;
+                inputDireccion.classList.remove('bg-light');
+                inputDireccion.style.backgroundColor = '#ffffff !important';
+                this.innerHTML = '<i class="fas fa-save"></i> Guardar';
+                this.classList.replace('btn-warning', 'btn-success');
+            } else {
+                // Validar que no esté vacío
+                if (!inputDireccion.value.trim()) {
+                    Swal.fire({
+                        title: '¡Error!',
+                        text: 'La dirección de entrega no puede estar vacía',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
+                }
+                // Deshabilitar edición
+                inputDireccion.readOnly = true;
+                inputDireccion.disabled = true;
+                inputDireccion.classList.add('bg-light');
+                inputDireccion.style.backgroundColor = '#e9ecef !important';
+                this.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
+                this.classList.replace('btn-success', 'btn-warning');
+            }
+        });
+    });
+
+    // Validación del formulario antes de enviar
+    document.querySelectorAll('[id^="formGestionarDelivery"]').forEach(function(form) {
+        const estadoSelect = form.querySelector('select[name="estado_delivery"]');
+        const direccionInput = form.querySelector('input[name="direccion"]');
+
+        if (estadoSelect) {
+            estadoSelect.addEventListener('change', function() {
+                const estadoActual = this.value;
+                const estadoAnterior = this.getAttribute('data-estado-anterior');
+                
+                // Validar cambios de estado no permitidos
+                if (estadoAnterior === '2' && estadoActual !== '2') { // Si ya está entregado (2), no se puede cambiar
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se puede cambiar el estado de un delivery ya entregado'
+                    });
+                    this.value = estadoAnterior;
+                    return;
+                }
+                
+                if (estadoAnterior === '0' && estadoActual !== '0') { // Si ya está cancelado (0), no se puede cambiar
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se puede cambiar el estado de un delivery cancelado'
+                    });
+                    this.value = estadoAnterior;
+                    return;
+                }
+
+                // Validar secuencia lógica de estados
+                // Si está Pendiente (1) y quiere pasar a Entregado (2) sin pasar por En camino (3) o Enviado (4)
+                if (estadoAnterior === '1' && estadoActual === '2') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se puede marcar como entregado un pedido pendiente. Debe pasar por los estados intermedios (En camino o Enviado).'
+                    });
+                    this.value = estadoAnterior;
+                    return;
+                }
+
+                // Si está En camino (3) y quiere regresar a Pendiente (1)
+                if (estadoAnterior === '3' && estadoActual === '1') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se puede regresar a pendiente un pedido en camino'
+                    });
+                    this.value = estadoAnterior;
+                    return;
+                }
+
+                // Si está Enviado (4), solo permitir cambio a Entregado (2) o Cancelado (0)
+                if (estadoAnterior === '4' && !['2', '0'].includes(estadoActual)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Un pedido enviado solo puede marcarse como Entregado o Cancelado'
+                    });
+                    this.value = estadoAnterior;
+                    return;
+                }
+            });
+        }
+
+        form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+            // Validar estado
+            if (!estadoSelect.value) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Debe seleccionar un estado para el delivery'
+                });
+                return;
+            }
+            
+            // Validar dirección si fue modificada
+            if (direccionInput.value !== direccionOriginal && direccionInput.value.trim().length < 10) {
+                        Swal.fire({
+                            icon: 'error',
+                    title: 'Error',
+                    text: 'La dirección debe tener al menos 10 caracteres'
+                        });
+                        return;
+                    }
+
+            Swal.fire({
+                title: '¿Confirmar cambios?',
+                text: "¿Está seguro de actualizar el estado del delivery?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, actualizar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Asegurarse de que la dirección esté habilitada para el envío
+                    direccionInput.disabled = false;
+                    // Enviar el formulario
+                    form.submit();
+                }
+            });
+        });
     });
 }); 

@@ -99,28 +99,35 @@
                     <?php
                     // Array para mapear estados numéricos a texto
                     $estados_texto = array(
-                        '0' => 'Cancelado',
-                        '1' => 'Pendiente',
-                        '3' => 'En camino',
+                        '0' => 'Anulado',
+                        '1' => 'Verificar pago',
                         '2' => 'Entregado',
-                        '4' => 'Enviado'
+                        '3' => 'Pendiente envío',
+                        '4' => 'En camino',
+                        '5' => 'Enviado',
+                        
                     );
 
                     // Determinar el color del badge según el estado
                     $badgeClass = '';
                     switch ($venta['estado']) {
-                        case '3':
-                            $badgeClass = 'bg-success';
-                            break;
-                        
-                        case '2':
-                            $badgeClass = 'bg-primary';
+                        case '0':
+                            $badgeClass = 'bg-danger'; // Cancelado
                             break;
                         case '1':
-                            $badgeClass = 'bg-warning';
+                            $badgeClass = 'bg-warning'; // Pendiente
                             break;
-                        case '0':
-                            $badgeClass = 'bg-danger';
+                        case '2':
+                            $badgeClass = 'bg-primary'; // Entregado
+                            break;
+                        case '3':
+                            $badgeClass = 'bg-success'; // En camino
+                            break;
+                        case '4':
+                            $badgeClass = 'bg-info'; // Enviado
+                            break;
+                        case '5':
+                            $badgeClass = 'bg-info'; // Pendiente envío
                             break;
                         default:
                             $badgeClass = 'bg-secondary';
@@ -143,7 +150,19 @@
                         <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#verDetallesModal<?php echo $venta['id_pedido']; ?>">
                           <i class="fas fa-eye" title="Ver Detalles"></i>
                         </button>
-                        <?php if(($venta['metodo_entrega'] == 'Delivery' || $venta['metodo_entrega'] == 'MRW' || $venta['metodo_entrega'] == 'Zoom') && ($venta['estado'] == '1' || $venta['estado'] == '2' || $venta['estado'] == '4')): ?>
+                        <?php
+                        $esFinal = false;
+                        if ($venta['metodo_entrega'] == 'Delivery' && $venta['estado'] == '2') {
+                            $esFinal = true; // Entregado
+                        }
+                        if (($venta['metodo_entrega'] == 'MRW' || $venta['metodo_entrega'] == 'Zoom') && $venta['estado'] == '4') {
+                            $esFinal = true; // Enviado
+                        }
+                        if ($venta['estado'] == '0') {
+                            $esFinal = true; // Cancelado
+                        }
+                        ?>
+                        <?php if(!$esFinal): ?>
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deliveryModal<?php echo $venta['id_pedido']; ?>">
                           <i class="bi bi-box2-fill" title="Gestionar Delivery"></i>
                         </button>
@@ -201,20 +220,20 @@
                 <p><strong>Estado:</strong> <span class="badge <?php 
                   $badgeClass = '';
                   switch ($venta['estado']) {
-                    case '4':
-                      $badgeClass = 'bg-info';
+                    case '0':
+                        $badgeClass = 'bg-danger';
                       break;
-                    case '3':
-                        $badgeClass = 'bg-success';
+                    case '1':
+                        $badgeClass = 'bg-warning';
                         break;
                     case '2':
                         $badgeClass = 'bg-primary';
                         break;
-                    case '1':
-                        $badgeClass = 'bg-warning';
+                    case '3':
+                        $badgeClass = 'bg-success';
                         break;
-                    case '0':
-                        $badgeClass = 'bg-danger';
+                    case '4':
+                      $badgeClass = 'bg-info';
                         break;
                     default:
                         $badgeClass = 'bg-secondary';
@@ -273,6 +292,19 @@
 <?php if(isset($ventas) && !empty($ventas)): ?>
   <?php foreach($ventas as $venta): ?>
     <?php if($venta['metodo_entrega'] == 'Delivery' || $venta['metodo_entrega'] == 'MRW' || $venta['metodo_entrega'] == 'Zoom'): ?>
+    <?php
+    $esFinal = false;
+    if ($venta['metodo_entrega'] == 'Delivery' && $venta['estado'] == '2') {
+        $esFinal = true; // Entregado
+    }
+    if (($venta['metodo_entrega'] == 'MRW' || $venta['metodo_entrega'] == 'Zoom') && $venta['estado'] == '4') {
+        $esFinal = true; // Enviado
+    }
+    if ($venta['estado'] == '0') {
+        $esFinal = true; // Cancelado
+    }
+    ?>
+    <?php if(!$esFinal): ?>
     <div class="modal fade" id="deliveryModal<?php echo $venta['id_pedido']; ?>" tabindex="-1" aria-labelledby="deliveryModalLabel<?php echo $venta['id_pedido']; ?>" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -281,15 +313,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <?php if($venta['estado'] == '3'): ?>
-              <div class="alert alert-success">
-                Este delivery ya ha sido entregado y no puede ser modificado.
-              </div>
-            <?php elseif($venta['estado'] == '0'): ?>
-              <div class="alert alert-danger">
-                Este delivery ha sido cancelado y no puede ser modificado.
-              </div>
-            <?php else: ?>
             <form method="POST" action="?pagina=salida" id="formGestionarDelivery<?php echo $venta['id_pedido']; ?>">
               <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
               <input type="hidden" name="id_pedido" value="<?php echo $venta['id_pedido']; ?>">
@@ -301,14 +324,16 @@
                 <select class="form-select" name="estado_delivery" id="estado_delivery<?php echo $venta['id_pedido']; ?>" data-estado-anterior="<?php echo $venta['estado']; ?>" required>
                   <?php if($venta['estado'] == '4'): ?>
                     <option value="4" selected>Enviado</option>
-                    <option value="3">Entregado</option>
+                    <option value="2">Entregado</option>
                     <option value="0">Cancelado</option>
                   <?php else: ?>
-                    <option value="1" <?php echo $venta['estado'] == '1' ? 'selected' : ''; ?>>Pendiente</option>
-                    <option value="2" <?php echo $venta['estado'] == '2' ? 'selected' : ''; ?>>En camino</option>
-                    <option value="4" <?php echo $venta['estado'] == '4' ? 'selected' : ''; ?>>Enviado</option>
-                    <option value="3" <?php echo $venta['estado'] == '3' ? 'selected' : ''; ?>>Entregado</option>
-                    <option value="0" <?php echo $venta['estado'] == '0' ? 'selected' : ''; ?>>Cancelado</option>
+                    <option value="0" <?php echo $venta['estado'] == '0' ? 'selected' : ''; ?>>Anulado</option>
+                    <option value="1" <?php echo $venta['estado'] == '1' ? 'selected' : ''; ?>>Verificar pago</option>
+                    <option value="2" <?php echo $venta['estado'] == '2' ? 'selected' : ''; ?>>Entregado</option>
+                    <option value="3" <?php echo $venta['estado'] == '3' ? 'selected' : ''; ?>>Pendiente envío</option>
+                    <option value="4" <?php echo $venta['estado'] == '4' ? 'selected' : ''; ?>>En camino</option>
+                    <option value="5" <?php echo $venta['estado'] == '5' ? 'selected' : ''; ?>>Enviado</option>
+                    
                   <?php endif; ?>
                 </select>
               </div>
@@ -337,11 +362,11 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
               </div>
             </form>
-            <?php endif; ?>
           </div>
         </div>
       </div>
     </div>
+    <?php endif; ?>
     <?php endif; ?>
   <?php endforeach; ?>
 <?php endif; ?>
@@ -661,113 +686,6 @@
 
 <!-- Script para el cálculo de precios en ventas -->
 <script src="assets/js/salida.js"></script>
-
-<!-- Script para confirmar cambios -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Mostrar SweetAlert si hay mensaje en la sesión
-    <?php if(isset($_SESSION['mensaje']) && isset($_SESSION['tipo_mensaje'])): ?>
-        Swal.fire({
-            title: '<?php echo $_SESSION['tipo_mensaje'] == "success" ? "¡Éxito!" : "¡Error!"; ?>',
-            text: '<?php echo $_SESSION['mensaje']; ?>',
-            icon: '<?php echo $_SESSION['tipo_mensaje'] == "success" ? "success" : "error"; ?>',
-            confirmButtonText: 'Aceptar'
-        });
-        <?php 
-        unset($_SESSION['mensaje']);
-        unset($_SESSION['tipo_mensaje']);
-        ?>
-    <?php endif; ?>
-
-    // Para el formulario de edición
-    document.querySelectorAll('[id^="formGestionarDelivery"]').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: '¿Confirmar cambios?',
-                text: "¿Está seguro de actualizar el estado del delivery?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, actualizar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        });
-    });
-
-    // Para el formulario de delivery
-    document.querySelectorAll('.btnEditarDireccion').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const inputDireccion = this.previousElementSibling;
-            if (inputDireccion.readOnly) {
-                // Habilitar edición
-                inputDireccion.readOnly = false;
-                inputDireccion.disabled = false;
-                inputDireccion.classList.remove('bg-light');
-                inputDireccion.style.backgroundColor = '#ffffff !important';
-                this.innerHTML = '<i class="fas fa-save"></i> Guardar';
-                this.classList.replace('btn-warning', 'btn-success');
-            } else {
-                // Validar que no esté vacío
-                if (!inputDireccion.value.trim()) {
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'La dirección de entrega no puede estar vacía',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                    return;
-                }
-                // Deshabilitar edición
-                inputDireccion.readOnly = true;
-                inputDireccion.disabled = true;
-                inputDireccion.classList.add('bg-light');
-                inputDireccion.style.backgroundColor = '#e9ecef !important';
-                this.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
-                this.classList.replace('btn-success', 'btn-warning');
-            }
-        });
-    });
-
-    // Validación del formulario antes de enviar
-    document.querySelectorAll('[id^="formGestionarDelivery"]').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            const direccionInput = this.querySelector('input[name="direccion"]');
-            if (!direccionInput.value.trim()) {
-                e.preventDefault();
-                        Swal.fire({
-                    title: '¡Error!',
-                    text: 'La dirección de entrega no puede estar vacía',
-                            icon: 'error',
-                            confirmButtonText: 'Aceptar'
-                        });
-                        return;
-                    }
-
-            e.preventDefault();
-            Swal.fire({
-                title: '¿Confirmar cambios?',
-                text: "¿Está seguro de actualizar el estado del delivery?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, actualizar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        });
-    });
-});
-</script>
 
 </main>
 </body>
