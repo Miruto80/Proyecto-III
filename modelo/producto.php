@@ -1,400 +1,336 @@
 <?php 
 
-require_once('assets/dompdf/vendor/autoload.php'); //archivo para cargar las funciones de la 
-//libreria DOMPDF
-// lo siguiente es hacer rerencia al espacio de trabajo
+require_once('assets/dompdf/vendor/autoload.php');
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 require_once('modelo/conexion.php');
 require_once('modelo/categoria.php');
 
-class producto extends Conexion{
- private $conex1;
- private $conex2;
- private $objcategoria;
- private $id_producto;
- private $nombre;
- private $descripcion;
- private $marca;
- private $cantidad_mayor;
- private $precio_mayor;
- private $precio_detal;
- private $stock_disponible;
- private $stock_maximo;
- private $stock_minimo;
- private $imagen;
- private $categoria;
- private $estatus;
+class producto extends Conexion {
+    private $objcategoria;
 
-function __construct(){
-    parent::__construct();
+    function __construct() {
+        parent::__construct();
+        $this->objcategoria = new categoria();
+    }
 
-    $this->conex1 = $this->getConex1();
- 	$this->conex2 = $this->getConex2();
-	
-	$this->objcategoria = new categoria();
-}
+    public function registrarBitacora($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
+        return $this->ejecutarSentenciaBitacora($datos);
+    }
 
-public function registrarBitacora($id_persona, $accion, $descripcion) {
-    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)                 ";
+    private function ejecutarSentenciaBitacora($datos) {
+        $conex = $this->getConex2();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
+                    VALUES (:accion, NOW(), :descripcion, :id_persona)";
+            
+            $stmt = $conex->prepare($sql);
+            $stmt->execute($datos);
+            
+            $conex->commit();
+            $conex = null;
+            return true;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    public function procesarProducto($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
+        $operacion = $datos['operacion'];
+        $datosProcesar = $datos['datos'];
+        
+        try {
+            switch ($operacion) {
+                case 'registrar':
+                    if ($this->verificarProductoExistente($datosProcesar['nombre'], $datosProcesar['marca'])) {
+                        return ['respuesta' => 0, 'mensaje' => 'Ya existe un producto con el mismo nombre y marca'];
+                    }
+                    return $this->ejecutarRegistro($datosProcesar);
+                    
+                case 'actualizar':
+                    return $this->ejecutarActualizacion($datosProcesar);
+                    
+                case 'eliminar':
+                    return $this->ejecutarEliminacion($datosProcesar);
+                    
+                case 'cambiarEstatus':
+                    return $this->ejecutarCambioEstatus($datosProcesar);
+                    
+                default:
+                    return ['respuesta' => 0, 'mensaje' => 'Operación no válida'];
+            }
+        } catch (Exception $e) {
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
+        }
+    }
+
+    private function verificarProductoExistente($nombre, $marca) {
+        $conex = $this->getConex1();
+        try {
+            $sql = "SELECT COUNT(*) FROM productos WHERE LOWER(nombre) = LOWER(:nombre) AND LOWER(marca) = LOWER(:marca) AND estatus = 1";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['nombre' => $nombre, 'marca' => $marca]);
+            $resultado = $stmt->fetchColumn() > 0;
+            $conex = null;
+            return $resultado;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    private function ejecutarRegistro($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "INSERT INTO productos(nombre, descripcion, marca, cantidad_mayor, precio_mayor, precio_detal, 
+                    stock_disponible, stock_maximo, stock_minimo, imagen, id_categoria, estatus)
+                    VALUES (:nombre, :descripcion, :marca, :cantidad_mayor, :precio_mayor, :precio_detal, 
+                    0, :stock_maximo, :stock_minimo, :imagen, :id_categoria, 1)";
+            
+            $stmt = $conex->prepare($sql);
+            $resultado = $stmt->execute($datos);
+            
+            if ($resultado) {
+                $conex->commit();
+                $conex = null;
+                return ['respuesta' => 1, 'accion' => 'incluir', 'mensaje' => 'Producto registrado exitosamente'];
+            }
+            
+            $conex->rollBack();
+            $conex = null;
+            return ['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Error al registrar producto'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
     
-    $strExec = $this->conex2->prepare($consulta);
-    $strExec->bindParam(':accion', $accion);
-    $strExec->bindParam(':descripcion', $descripcion);
-    $strExec->bindParam(':id_persona', $id_persona);
+    private function ejecutarActualizacion($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "UPDATE productos SET 
+                    nombre = :nombre,
+                    descripcion = :descripcion,
+                    marca = :marca,
+                    cantidad_mayor = :cantidad_mayor,
+                    precio_mayor = :precio_mayor,
+                    precio_detal = :precio_detal,
+                    stock_maximo = :stock_maximo,
+                    stock_minimo = :stock_minimo,
+                    imagen = :imagen,
+                    id_categoria = :id_categoria
+                    WHERE id_producto = :id_producto";
+            
+            $stmt = $conex->prepare($sql);
+            $resultado = $stmt->execute($datos);
+            
+            if ($resultado) {
+                $conex->commit();
+                $conex = null;
+                return ['respuesta' => 1, 'accion' => 'actualizar', 'mensaje' => 'Producto actualizado exitosamente'];
+            }
+            
+            $conex->rollBack();
+            $conex = null;
+            return ['respuesta' => 0, 'accion' => 'actualizar', 'mensaje' => 'Error al actualizar producto'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
     
-    return $strExec->execute();
-}
-
-public function verificarProductoExistente($nombre, $marca) {
-    $consulta = "SELECT COUNT(*) FROM productos WHERE LOWER(nombre) = LOWER(:nombre) AND LOWER(marca) = LOWER(:marca) AND estatus = 1";
-    $strExec = $this->conex1->prepare($consulta);
-    $strExec->bindParam(':nombre', $nombre);
-    $strExec->bindParam(':marca', $marca);
-    $strExec->execute();
-    return $strExec->fetchColumn() > 0;
-}
-
-public function registrar(){
-    // Verificar si el producto ya existe
-    if ($this->verificarProductoExistente($this->nombre, $this->marca)) {
-        return ['respuesta' => 0, 'accion' => 'incluir', 'error' => 'Ya existe un producto con el mismo nombre y marca'];
-    }
-
-    $registro ="INSERT INTO productos(nombre,descripcion,marca,cantidad_mayor,precio_mayor,precio_detal,stock_disponible,stock_maximo,stock_minimo,imagen,id_categoria,estatus)
-    VALUES (:nombre,:descripcion,:marca,:cantidad_mayor,:precio_mayor,:precio_detal,0,:stock_maximo,:stock_minimo,:imagen,:id_categoria,1)";
-
-    $strExec = $this->conex1->prepare($registro);
-    $strExec->bindParam(':nombre',$this->nombre);
-    $strExec->bindParam(':descripcion',$this->descripcion);
-    $strExec->bindParam(':marca',$this->marca);
-    $strExec->bindParam(':cantidad_mayor',$this->cantidad_mayor);
-    $strExec->bindParam(':precio_mayor',$this->precio_mayor);
-    $strExec->bindParam(':precio_detal',$this->precio_detal);
-    $strExec->bindParam(':stock_maximo',$this->stock_maximo);
-    $strExec->bindParam(':stock_minimo',$this->stock_minimo);
-    $strExec->bindParam(':imagen',$this->imagen);
-    $strExec->bindParam(':id_categoria', $this->categoria);
-
-    $resul = $strExec->execute();
-
-    if ($resul) {
-        $res['respuesta'] = 1;
-        $res['accion'] = 'incluir';
-    } else {
-        $res['respuesta'] = 0;
-        $res['accion'] = 'incluir';
-    }
-
-    return $res;
-}
-
-
-
-
-
-public function consultar() {
-    $registro = "
-        SELECT 
-            productos.*, 
-            categoria.nombre AS nombre_categoria 
-        FROM 
-            productos
-        INNER JOIN 
-            categoria ON productos.id_categoria = categoria.id_categoria
-		WHERE 
-            productos.estatus IN (1,2)
-    ";
-
-    $consulta = $this->conex1->prepare($registro);
-    $resul = $consulta->execute();
-
-    $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
-
-    if ($resul) {
-        return $datos;
-    } else {
-        return 0;
-    }
-}
-
-public function modificar() {
-    $registro = "UPDATE productos SET 
-        nombre = :nombre,
-        descripcion = :descripcion,
-        marca = :marca,
-        cantidad_mayor = :cantidad_mayor,
-        precio_mayor = :precio_mayor,
-        precio_detal = :precio_detal,
-        stock_maximo = :stock_maximo,
-        stock_minimo = :stock_minimo,
-        imagen = :imagen,
-        id_categoria = :id_categoria
-        WHERE id_producto = :id_producto";
-
-    $strExec = $this->conex1->prepare($registro);
-    $strExec->bindParam(':id_producto', $this->id_producto);
-    $strExec->bindParam(':nombre', $this->nombre);
-    $strExec->bindParam(':descripcion', $this->descripcion);
-    $strExec->bindParam(':marca', $this->marca);
-    $strExec->bindParam(':cantidad_mayor', $this->cantidad_mayor);
-    $strExec->bindParam(':precio_mayor', $this->precio_mayor);
-    $strExec->bindParam(':precio_detal', $this->precio_detal);
-    $strExec->bindParam(':stock_maximo', $this->stock_maximo);
-    $strExec->bindParam(':stock_minimo', $this->stock_minimo);
-    $strExec->bindParam(':imagen', $this->imagen);
-    $strExec->bindParam(':id_categoria', $this->categoria);
-
-    $resul = $strExec->execute();
-
-    return $resul ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
-}
-
-
-public function eliminar() {
+    private function ejecutarEliminacion($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+            // Verificar stock antes de eliminar
+            $sql = "SELECT stock_disponible FROM productos WHERE id_producto = :id_producto";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_producto' => $datos['id_producto']]);
+            $stock = $stmt->fetchColumn();
     
-    $consulta = "SELECT stock_disponible FROM productos WHERE id_producto = :id_producto";
-    $strExec = $this->conex1->prepare($consulta);
-    $strExec->bindParam(':id_producto', $this->id_producto);
-    $strExec->execute();
-    $stock = $strExec->fetchColumn();
+            if ($stock > 0) {
+                $conex->rollBack();
+                $conex = null;
+                return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'No se puede eliminar un producto con stock disponible'];
+            }
+    
+            $sql = "UPDATE productos SET estatus = 0 WHERE id_producto = :id_producto";
+            $stmt = $conex->prepare($sql);
+            $resultado = $stmt->execute($datos);
+            
+            if ($resultado) {
+                $conex->commit();
+                $conex = null;
+                return ['respuesta' => 1, 'accion' => 'eliminar', 'mensaje' => 'Producto eliminado exitosamente'];
+            }
+            
+            $conex->rollBack();
+            $conex = null;
+            return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Error al eliminar producto'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+    
+    private function ejecutarCambioEstatus($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+            $nuevo_estatus = ($datos['estatus_actual'] == 2) ? 1 : 2;
+            
+            $sql = "UPDATE productos SET estatus = :nuevo_estatus WHERE id_producto = :id_producto";
+            $stmt = $conex->prepare($sql);
+            $resultado = $stmt->execute([
+                'nuevo_estatus' => $nuevo_estatus,
+                'id_producto' => $datos['id_producto']
+            ]);
+            
+            if ($resultado) {
+                $conex->commit();
+                $conex = null;
+                return ['respuesta' => 1, 'accion' => 'cambiarEstatus', 'nuevo_estatus' => $nuevo_estatus, 'mensaje' => 'Estatus cambiado exitosamente'];
+            }
+            
+            $conex->rollBack();
+            $conex = null;
+            return ['respuesta' => 0, 'accion' => 'cambiarEstatus', 'mensaje' => 'Error al cambiar estatus'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+    
 
-    if ($stock > 0) {
-        return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => 'No se puede eliminar un producto con stock disponible'];
+    public function consultar() {
+        $conex = $this->getConex1();
+        try {
+            $sql = "SELECT p.*, c.nombre AS nombre_categoria 
+                    FROM productos p 
+                    INNER JOIN categoria c ON p.id_categoria = c.id_categoria 
+                    WHERE p.estatus IN (1,2)";
+            
+            $stmt = $conex->prepare($sql);
+            $stmt->execute();
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return $resultado;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
     }
 
-    $registro = "UPDATE productos SET estatus = 0 WHERE id_producto = :id_producto";
-    $strExec = $this->conex1->prepare($registro);
-    $strExec->bindParam(':id_producto', $this->id_producto);
-    $resul = $strExec->execute();
-
-    return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
-}
-
-public function cambiarEstatusProducto($id_producto, $estatus_actual) {
-    $nuevo_estatus = ($estatus_actual == 2) ? 1 : 2; // Alternar estado
-
-    $query = "UPDATE productos SET estatus = :nuevo_estatus WHERE id_producto = :id_producto";
-    $strExec = $this->conex1->prepare($query);
-    $strExec->bindParam(':nuevo_estatus', $nuevo_estatus, PDO::PARAM_INT);
-    $strExec->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
-    $resul = $strExec->execute();
-
-    return $resul ? ['respuesta' => 1, 'accion' => 'cambiarEstatus', 'nuevo_estatus' => $nuevo_estatus] : ['respuesta' => 0, 'accion' => 'cambiarEstatus'];
-}
-
-	
-public function obtenerCategoria() {
-	return $this->objcategoria->consultar();
-} 
-
-private function imgToBase64($imgPath) {
-    $fullPath = __DIR__ . '/../' . $imgPath; // Ahora busca en la carpeta correcta
-
-    if (file_exists($fullPath)) {
-        $imgData = file_get_contents($fullPath);
-        return 'data:image/png;base64,' . base64_encode($imgData);
-    }
-    return ''; // Si la imagen no existe, devuelve cadena vacía
-}
-
-
-public function generarPDF() {
-
-    $proveedores = $this->consultar();
-    $fechaHoraActual = date('d/m/Y h:i A');
-
-    // Ruta de la imagen en la carpeta img
-   $graficoBase64 = $this->imgToBase64('assets/img/grafica_reportes/grafico_productos.png');
-
-
-    $html = '
-<html>
-<head>
-    <title>productos PDF</title>
-    <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; }
-        h1 { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 20px; }
-        p { text-align: left; font-size: 12px; }
-        h2 { font-size: 20px; font-weight: bold; margin-top: 20px; text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #000; padding: 8px; text-align: center; }
-        th { background-color: rgb(243, 108, 164); color: #000; font-size: 14px; }
-        td { font-size: 12px; }
-    </style>
-</head>
-<body>
-    <h1>LISTADO DE PRODUCTOS</h1>
-    <p><strong>Fecha y Hora de Expedición: </strong>' . $fechaHoraActual . '</p>';
-
-    // Agregar la imagen del gráfico si existe
-   if (!empty($graficoBase64)) {
-    $html .= '<h2 style="text-align:center;">Top 10 productos con más stock</h2>
-              <div style="text-align: center;"><img src="' . $graficoBase64 . '" width="600"></div><br>';
-}
-
-
-    $html .= '<table>
-                <thead>
-                    <tr>
-				  <th>Nombre</th>
-                  <th>Descripcion</th>
-                  <th>Marca</th>
-                  <th>Precio</th>
-                  <th>Precio al mayor</th>
-                  <th>Stock</th>
-                </thead>
-                <tbody>';
-
-    foreach ($proveedores as $p) {
-        $html .= '<tr>
-                    <td>' . htmlspecialchars($p['nombre']) . '</td>
-                    <td>' . htmlspecialchars($p['descripcion']) . '</td>
-                    <td>' . htmlspecialchars($p['marca']) . '</td>
-                    <td>' . htmlspecialchars($p['precio_detal']) . '</td>
-                    <td>' . htmlspecialchars($p['precio_mayor']) . '</td>
-                    <td>' . htmlspecialchars($p['stock_disponible']) . '</td>
-                  </tr>';
+    public function obtenerCategoria() {
+        return $this->objcategoria->consultar();
     }
 
-    $html .= '</tbody></table></body></html>';
+    private function imgToBase64($imgPath) {
+        $fullPath = __DIR__ . '/../' . $imgPath;
+        if (file_exists($fullPath)) {
+            $imgData = file_get_contents($fullPath);
+            return 'data:image/png;base64,' . base64_encode($imgData);
+        }
+        return '';
+    }
 
-    // Generar el PDF con DOMPDF
-    $dompdf = new Dompdf();
-    $dompdf->loadHtml($html);
-    $dompdf->setPaper('A4', 'portrait');
-    $dompdf->render();
-    $dompdf->stream("Reporte_Productos.pdf", array("Attachment" => false));
+    public function generarPDF() {
+        $productos = $this->consultar();
+        $fechaHoraActual = date('d/m/Y h:i A');
+        $graficoBase64 = $this->imgToBase64('assets/img/grafica_reportes/grafico_productos.png');
+
+        $html = '
+        <html>
+        <head>
+            <title>Productos PDF</title>
+            <style>
+                body { font-family: Arial, sans-serif; font-size: 12px; }
+                h1 { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 20px; }
+                p { text-align: left; font-size: 12px; }
+                h2 { font-size: 20px; font-weight: bold; margin-top: 20px; text-align: center; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+                th { background-color: rgb(243, 108, 164); color: #000; font-size: 14px; }
+                td { font-size: 12px; }
+            </style>
+        </head>
+        <body>
+            <h1>LISTADO DE PRODUCTOS</h1>
+            <p><strong>Fecha y Hora de Expedición: </strong>' . $fechaHoraActual . '</p>';
+
+        if (!empty($graficoBase64)) {
+            $html .= '<h2 style="text-align:center;">Top 10 productos con más stock</h2>
+                      <div style="text-align: center;"><img src="' . $graficoBase64 . '" width="600"></div><br>';
+        }
+
+        $html .= '<table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripcion</th>
+                            <th>Marca</th>
+                            <th>Precio</th>
+                            <th>Precio al mayor</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+        foreach ($productos as $p) {
+            $html .= '<tr>
+                        <td>' . htmlspecialchars($p['nombre']) . '</td>
+                        <td>' . htmlspecialchars($p['descripcion']) . '</td>
+                        <td>' . htmlspecialchars($p['marca']) . '</td>
+                        <td>' . htmlspecialchars($p['precio_detal']) . '</td>
+                        <td>' . htmlspecialchars($p['precio_mayor']) . '</td>
+                        <td>' . htmlspecialchars($p['stock_disponible']) . '</td>
+                      </tr>';
+        }
+
+        $html .= '</tbody></table></body></html>';
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $dompdf->stream("Reporte_Productos.pdf", array("Attachment" => false));
+    }
 }
-
-
-
-function set_id_producto($valor)
-{
-	$this->id_producto = $valor;
-}
-	function set_nombre($valor)
-		{
-			$this->nombre = $valor;
-		}
-	function set_descripcion($valor)
-		{
-			$this->descripcion = $valor;
-		}
-	function set_marca($valor)
-		{
-			$this->marca = $valor;
-		}
-	function set_cantidad_mayor($valor)
-		{
-			$this->cantidad_mayor = $valor;
-		}
-	function set_precio_mayor($valor)
-		{
-			$this->precio_mayor = $valor;
-		}
-	function set_precio_detal($valor)
-		{
-			$this->precio_detal = $valor;
-		}
-	function set_stock_disponible($valor)
-		{
-			$this->stock_disponible = $valor;
-		}
-	function set_stock_maximo($valor)
-		{
-			$this->stock_maximo = $valor;
-		}
-	function set_stock_minimo($valor)
-		{
-			$this->stock_minimo = $valor;
-		}
-	function set_imagen($valor)
-		{
-			$this->imagen = $valor;
-		}
-
-	function set_estatus($valor)
-		{
-			$this->estatus = $valor;
-		}
-
-		
-		public function set_Categoria($categoria){
-			$this->categoria=$categoria;
-		}
-		
-
-
-		public function get_Categoria(){
-			return $this->categoria;
-		}
-		public function get_Id_producto(){
-			return $this->id_producto;
-		}
-	
-	
-	
-		public function get_nombre()
-		{
-			return $this->nombre;
-		}
-		
-		public function get_descripcion()
-		{
-			return $this->descripcion;
-		}
-		
-		public function get_marca()
-		{
-			return $this->marca;
-		}
-		
-		public function get_cantidad_mayor()
-		{
-			return $this->cantidad_mayor;
-		}
-		
-		public function get_precio_mayor()
-		{
-			return $this->precio_mayor;
-		}
-		
-		public function get_precio_detal()
-		{
-			return $this->precio_detal;
-		}
-		
-		public function get_stock_disponible()
-		{
-			return $this->stock_disponible;
-		}
-		
-		public function get_stock_maximo()
-		{
-			return $this->stock_maximo;
-		}
-		
-		public function get_stock_minimo()
-		{
-			return $this->stock_minimo;
-		}
-		
-		public function get_imagen()
-		{
-			return $this->imagen;
-		}
-		
-		public function get_estatus()
-		{
-			return $this->estatus;
-		}
-
-
-
-}
-
 
 ?>

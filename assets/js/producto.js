@@ -18,7 +18,7 @@ $(document).ready(function () {
     Swal.fire({
       icon: "warning",
       title: "¡Atención! Stock bajo",
-      html: `Estos productos están cerca o han alcanzado el stock mínimo: <strong>${productosStockBajo.join(', ')}</strong>.`,
+      html: `En los productos: <strong>${productosStockBajo.join(', ')}</strong>.`,
       toast: true,
       position: "top",
       showConfirmButton: false,
@@ -80,7 +80,7 @@ $(document).on('click', '.ver-detalles', function () {
       if ($('#accion').val() === 'registrar') {
         datos.append('registrar', 'registrar');
       } else if ($('#accion').val() === 'modificar') {
-        datos.append('modificar', 'modificar');
+        datos.append('actualizar', 'actualizar');
       } else {
         alert('Acción no definida');
         return;

@@ -514,8 +514,8 @@ class Salida extends Conexion {
             $estados_texto = array(
                 '0' => 'Cancelado',
                 '1' => 'Pendiente',
-                '3' => 'En camino',
                 '2' => 'Entregado',
+                '3' => 'En camino',
                 '4' => 'Enviado'
             );
 
