@@ -189,8 +189,8 @@
                   <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user-tag"></i></span>
                     <select class="form-select" name="id_rol" required>
                       <option value="">Seleccione una Rol:</option>
-                        <?php foreach($rol as $rol) {?>
-                      <option value="<?php echo $rol['id_rol'];?>"> <?php echo $rol['nombre']." - Nivel ".$rol['nivel'];?> </option>
+                        <?php foreach($rol as $item) {?>
+                      <option value="<?php echo $item['id_rol'];?>"> <?php echo $item['nombre']." - Nivel ".$item['nivel'];?> </option>
                         <?php } ?>
                     </select>
               </div>
@@ -280,8 +280,8 @@
                   <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user-tag"></i></span>
                     <select class="form-select" name="id_rol">
                       <option id="modalrol"> </option>
-                        <?php foreach($roll as $rol) {?>
-                          <option value="<?php echo $rol['id_rol'];?>"> <?php echo $rol['nombre']." - Nivel ".$rol['nivel'];?> </option>
+                        <?php foreach($roll as $item) {?>
+                          <option value="<?php echo $item['id_rol'];?>"> <?php echo $item['nombre']." - Nivel ".$item['nivel'];?> </option>
                         <?php } ?>
                     </select>
               </div> 
