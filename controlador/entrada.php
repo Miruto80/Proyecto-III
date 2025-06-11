@@ -22,63 +22,49 @@ function sanitizar($dato) {
 
 // Procesar el registro de una nueva compra
 if (isset($_POST['registrar_compra'])) {
-    // Recibimos los datos de la compra
-    if (isset($_POST['id_proveedor']) && isset($_POST['fecha_entrada'])) {
-        $entrada->set_Fecha_entrada(sanitizar($_POST['fecha_entrada']));
-        $entrada->set_Id_proveedor(intval($_POST['id_proveedor']));
-        
-        // Procesamos los detalles de los productos
-        $detalles = [];
-        if (isset($_POST['id_producto']) && is_array($_POST['id_producto'])) {
-            for ($i = 0; $i < count($_POST['id_producto']); $i++) {
-                if (!empty($_POST['id_producto'][$i]) && isset($_POST['cantidad'][$i]) && $_POST['cantidad'][$i] > 0) {
-                    $detalle = [
-                        'id_producto' => intval($_POST['id_producto'][$i]),
-                        'cantidad' => intval($_POST['cantidad'][$i]),
-                        'precio_unitario' => floatval($_POST['precio_unitario'][$i]),
-                        'precio_total' => floatval($_POST['precio_total'][$i])
-                    ];
-                    $detalles[] = $detalle;
-                }
+    if (!empty($_POST['fecha_entrada']) && !empty($_POST['id_proveedor']) && isset($_POST['id_producto']) && is_array($_POST['id_producto'])) {
+        $productos = [];
+        for ($i = 0; $i < count($_POST['id_producto']); $i++) {
+            if (!empty($_POST['id_producto'][$i]) && isset($_POST['cantidad'][$i]) && $_POST['cantidad'][$i] > 0) {
+                $productos[] = array(
+                    'id_producto' => intval($_POST['id_producto'][$i]),
+                    'cantidad' => intval($_POST['cantidad'][$i]),
+                    'precio_unitario' => floatval($_POST['precio_unitario'][$i]),
+                    'precio_total' => floatval($_POST['precio_total'][$i])
+                );
             }
         }
-        
-        $entrada->set_Detalles($detalles);
-        
-        // Registramos la compra
-        $respuesta = $entrada->registrar();
-        
-        
+
+        $datosCompra = [
+            'operacion' => 'registrar',
+            'datos' => [
+                'fecha_entrada' => $_POST['fecha_entrada'],
+                'id_proveedor' => intval($_POST['id_proveedor']),
+                'productos' => $productos
+            ]
+        ];
+
+        $resultadoRegistro = $entrada->procesarCompra(json_encode($datosCompra));
+
+        if ($resultadoRegistro['respuesta'] == 1) {
+            $bitacora = [
+                'id_persona' => $_SESSION["id"],
+                'accion' => 'Registro de compra',
+                'descripcion' => 'Se registró la compra ID: ' . $resultadoRegistro['id_compra']
+            ];
+            $entrada->registrarBitacora(json_encode($bitacora));
+        }
+
         if (esAjax()) {
-            // Devolver respuesta JSON para peticiones AJAX
             header('Content-Type: application/json');
-            echo json_encode($respuesta);
+            echo json_encode($resultadoRegistro);
             exit;
         } else {
-            // Respuesta normal para peticiones no-AJAX
-            if ($respuesta['respuesta'] == 1) {
-
-                /* BITACORA */
-           
-            $id_persona = $_SESSION["id"]; 
-            // Registrar en la bitácora
-            $accion = 'Registro de compra';
-            $descripcion = 'Se compra la compra: ';
-            $entrada->registrarBitacora($id_persona, $accion, $descripcion);
-
-                $_SESSION['message'] = [
-                    'title' => '¡Éxito!',
-                    'text' => 'Compra registrada exitosamente',
-                    'icon' => 'success'
-                ];
-            } else {
-                $_SESSION['message'] = [
-                    'title' => 'Error',
-                    'text' => 'Error al registrar la compra: ' . (isset($respuesta['error']) ? $respuesta['error'] : ''),
-                    'icon' => 'error'
-                ];
-            }
-            
+            $_SESSION['message'] = [
+                'title' => ($resultadoRegistro['respuesta'] == 1) ? '¡Éxito!' : 'Error',
+                'text' => $resultadoRegistro['mensaje'],
+                'icon' => ($resultadoRegistro['respuesta'] == 1) ? 'success' : 'error'
+            ];
             header("Location: ?pagina=entrada");
             exit;
         }
@@ -87,110 +73,109 @@ if (isset($_POST['registrar_compra'])) {
 
 // Procesar la modificación de una compra
 if (isset($_POST['modificar_compra'])) {
-    if (isset($_POST['id_compra']) && isset($_POST['id_proveedor']) && isset($_POST['fecha_entrada'])) {
-        $entrada->set_Id_compra(intval($_POST['id_compra']));
-        $entrada->set_Fecha_entrada(sanitizar($_POST['fecha_entrada']));
-        $entrada->set_Id_proveedor(intval($_POST['id_proveedor']));
-        
-        // Procesamos los detalles de los productos
-        $detalles = [];
-        if (isset($_POST['id_producto']) && is_array($_POST['id_producto'])) {
-            for ($i = 0; $i < count($_POST['id_producto']); $i++) {
-                if (!empty($_POST['id_producto'][$i]) && isset($_POST['cantidad'][$i]) && $_POST['cantidad'][$i] > 0) {
-                    $detalle = [
-                        'id_producto' => intval($_POST['id_producto'][$i]),
-                        'cantidad' => intval($_POST['cantidad'][$i]),
-                        'precio_unitario' => floatval($_POST['precio_unitario'][$i]),
-                        'precio_total' => floatval($_POST['precio_total'][$i])
-                    ];
-                    $detalles[] = $detalle;
-                }
-            }
+    $productos = [];
+    for ($i = 0; $i < count($_POST['id_producto']); $i++) {
+        if (!empty($_POST['id_producto'][$i]) && isset($_POST['cantidad'][$i]) && $_POST['cantidad'][$i] > 0) {
+            $productos[] = array(
+                'id_producto' => intval($_POST['id_producto'][$i]),
+                'cantidad' => intval($_POST['cantidad'][$i]),
+                'precio_unitario' => floatval($_POST['precio_unitario'][$i]),
+                'precio_total' => floatval($_POST['precio_total'][$i])
+            );
         }
-        
-        $entrada->set_Detalles($detalles);
-        
-        // Modificamos la compra
-        $respuesta = $entrada->modificar();
-        
-        
-        if (esAjax()) {
-            // Devolver respuesta JSON para peticiones AJAX
-            header('Content-Type: application/json');
-            echo json_encode($respuesta);
-            exit;
-        } else {
-            // Respuesta normal para peticiones no-AJAX
-            if ($respuesta['respuesta'] == 1) {
-                
-                $_SESSION['message'] = [
-                    'title' => '¡Éxito!',
-                    'text' => 'Compra actualizada exitosamente',
-                    'icon' => 'success'
-                ];
-            } else {
-                $_SESSION['message'] = [
-                    'title' => 'Error',
-                    'text' => 'Error al actualizar la compra: ' . (isset($respuesta['error']) ? $respuesta['error'] : ''),
-                    'icon' => 'error'
-                ];
-            }
-            
-            header("Location: ?pagina=entrada");
-            exit;
-        }
+    }
+
+    $datosCompra = [
+        'operacion' => 'actualizar',
+        'datos' => [
+            'id_compra' => intval($_POST['id_compra']),
+            'fecha_entrada' => $_POST['fecha_entrada'],
+            'id_proveedor' => intval($_POST['id_proveedor']),
+            'productos' => $productos
+        ]
+    ];
+
+    $resultado = $entrada->procesarCompra(json_encode($datosCompra));
+
+    if ($resultado['respuesta'] == 1) {
+        $bitacora = [
+            'id_persona' => $_SESSION["id"],
+            'accion' => 'Modificación de compra',
+            'descripcion' => 'Se modificó la compra ID: ' . $datosCompra['datos']['id_compra']
+        ];
+        $entrada->registrarBitacora(json_encode($bitacora));
+    }
+
+    if (esAjax()) {
+        header('Content-Type: application/json');
+        echo json_encode($resultado);
+        exit;
+    } else {
+        $_SESSION['message'] = [
+            'title' => ($resultado['respuesta'] == 1) ? '¡Éxito!' : 'Error',
+            'text' => $resultado['mensaje'],
+            'icon' => ($resultado['respuesta'] == 1) ? 'success' : 'error'
+        ];
+        header("Location: ?pagina=entrada");
+        exit;
     }
 }
 
 // Procesar la eliminación de una compra
 if (isset($_POST['eliminar_compra'])) {
-    if (isset($_POST['id_compra'])) {
-        $entrada->set_Id_compra(intval($_POST['id_compra']));
-        
-        // Eliminamos la compra
-        $respuesta = $entrada->eliminar();
-        
-        
-        if (esAjax()) {
-            // Devolver respuesta JSON para peticiones AJAX
-            header('Content-Type: application/json');
-            echo json_encode($respuesta);
-            exit;
-        } else {
-            // Respuesta normal para peticiones no-AJAX
-            if ($respuesta['respuesta'] == 1) {
+    $datosCompra = [
+        'operacion' => 'eliminar',
+        'datos' => [
+            'id_compra' => intval($_POST['id_compra'])
+        ]
+    ];
 
-                $_SESSION['message'] = [
-                    'title' => '¡Éxito!',
-                    'text' => 'Compra eliminada exitosamente',
-                    'icon' => 'success'
-                ];
-            } else {
-                $_SESSION['message'] = [
-                    'title' => 'Error',
-                    'text' => 'Error al eliminar la compra: ' . (isset($respuesta['error']) ? $respuesta['error'] : ''),
-                    'icon' => 'error'
-                ];
-            }
-            
-            header("Location: ?pagina=entrada");
-            exit; 
-        }
+    $resultado = $entrada->procesarCompra(json_encode($datosCompra));
+
+    if ($resultado['respuesta'] == 1) {
+        $bitacora = [
+            'id_persona' => $_SESSION["id"],
+            'accion' => 'Eliminación de compra',
+            'descripcion' => 'Se eliminó la compra ID: ' . $datosCompra['datos']['id_compra']
+        ];
+        $entrada->registrarBitacora(json_encode($bitacora));
+    }
+
+    if (esAjax()) {
+        header('Content-Type: application/json');
+        echo json_encode($resultado);
+        exit;
+    } else {
+        $_SESSION['message'] = [
+            'title' => ($resultado['respuesta'] == 1) ? '¡Éxito!' : 'Error',
+            'text' => $resultado['mensaje'],
+            'icon' => ($resultado['respuesta'] == 1) ? 'success' : 'error'
+        ];
+        header("Location: ?pagina=entrada");
+        exit;
     }
 }
 
 // Consultar datos para la vista
-$compras = $entrada->consultar();
+$resultadoCompras = $entrada->procesarCompra(json_encode(['operacion' => 'consultar']));
+$compras = $resultadoCompras['datos'];
 
 // Si hay un ID en la URL, consultamos los detalles de esa compra
 $detalles_compra = [];
 if (isset($_GET['id'])) {
-    $detalles_compra = $entrada->consultarDetalles(intval($_GET['id']));
+    $resultadoDetalles = $entrada->procesarCompra(json_encode([
+        'operacion' => 'consultarDetalles',
+        'datos' => ['id_compra' => intval($_GET['id'])]
+    ]));
+    $detalles_compra = $resultadoDetalles['datos'];
 }
 
 // Obtener la lista de productos y proveedores para los formularios
-$productos_lista = $entrada->consultarProductos();
-$proveedores = $entrada->consultarProveedores();
+$resultadoProductos = $entrada->procesarCompra(json_encode(['operacion' => 'consultarProductos']));
+$productos_lista = $resultadoProductos['datos'];
+
+$resultadoProveedores = $entrada->procesarCompra(json_encode(['operacion' => 'consultarProveedores']));
+$proveedores = $resultadoProveedores['datos'];
 
 if(isset($_POST['generar'])){
     $entrada->generarPDF();
@@ -324,10 +309,12 @@ generarGrafico();
 
 // Cargamos la vista
 if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-    $id_persona = $_SESSION["id"];
-    $accion = 'Acceso a Módulo';
-    $descripcion = 'módulo de Compra';
-    $entrada->registrarBitacora($id_persona, $accion, $descripcion);
+    $bitacora = [
+        'id_persona' => $_SESSION["id"],
+        'accion' => 'Acceso a Módulo',
+        'descripcion' => 'módulo de Compra'
+    ];
+    $entrada->registrarBitacora(json_encode($bitacora));
     require_once 'vista/entrada.php';
 } else {
     header("location:?pagina=home");

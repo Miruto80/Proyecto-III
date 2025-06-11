@@ -5,47 +5,412 @@ use Dompdf\Options;
 require_once 'conexion.php';
 
 class Entrada extends Conexion {
-    private $conex1;
-    private $conex2;
-    private $id_compra;
-    private $fecha_entrada;
-    private $id_proveedor;
-    private $detalles; // Para almacenar los detalles de la compra (productos)
-
-    public function __construct() {
-        parent::__construct(); // Llama al constructor de la clase padre
-
-        // Obtener las conexiones de la clase padre
-        $this->conex1 = $this->getConex1();
-        $this->conex2 = $this->getConex2();
     
-         // Verifica si las conexiones son exitosas
-        if (!$this->conex1) {
-            die('Error al conectar con la primera base de datos');
-        }
+    public function __construct() {
+        parent::__construct();
+    }
 
-        if (!$this->conex2) {
-            die('Error al conectar con la segunda base de datos');
+    public function registrarBitacora($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
+        
+        try {
+            $conex = $this->getConex2();
+            $conex->beginTransaction();
+            
+            $sql = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
+                    VALUES (:accion, NOW(), :descripcion, :id_persona)";
+            
+            $stmt = $conex->prepare($sql);
+            $stmt->execute($datos);
+            
+            $conex->commit();
+            $conex = null;
+            return ['respuesta' => 1, 'mensaje' => 'Registro en bitácora exitoso'];
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
         }
     }
 
-    private function imgToBase64($imgPath) {
-        $fullPath = __DIR__ . '/../' . $imgPath;
-    
-        if (file_exists($fullPath)) {
-            $imgData = file_get_contents($fullPath);
-            return 'data:image/png;base64,' . base64_encode($imgData);
+    public function procesarCompra($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
+        $operacion = $datos['operacion'];
+        $datosProcesar = isset($datos['datos']) ? $datos['datos'] : null;
+        
+        try {
+            switch ($operacion) {
+                case 'registrar':
+                    return $this->ejecutarRegistro($datosProcesar);
+                    
+                case 'actualizar':
+                    return $this->ejecutarActualizacion($datosProcesar);
+                    
+                case 'eliminar':
+                    return $this->ejecutarEliminacion($datosProcesar);
+                    
+                case 'consultar':
+                    return $this->ejecutarConsulta();
+                    
+                case 'consultarDetalles':
+                    return $this->ejecutarConsultaDetalles($datosProcesar);
+                    
+                case 'consultarProductos':
+                    return $this->ejecutarConsultaProductos();
+                    
+                case 'consultarProveedores':
+                    return $this->ejecutarConsultaProveedores();
+                    
+                default:
+                    return ['respuesta' => 0, 'mensaje' => 'Operación no válida'];
+            }
+        } catch (Exception $e) {
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
         }
-        return '';
+    }
+
+    private function ejecutarRegistro($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+            // Validación de datos
+            if (empty($datos['fecha_entrada']) || empty($datos['id_proveedor']) || empty($datos['productos'])) {
+                throw new Exception('Datos incompletos');
+            }
+            
+            // Validar stock máximo para cada producto
+            foreach ($datos['productos'] as $producto) {
+                $sql = "SELECT stock_disponible, stock_maximo FROM productos WHERE id_producto = :id_producto";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute(['id_producto' => $producto['id_producto']]);
+                $prod_info = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($prod_info) {
+                    $stockTotal = $prod_info['stock_disponible'] + $producto['cantidad'];
+                    if ($stockTotal > $prod_info['stock_maximo']) {
+                        throw new Exception('La cantidad ingresada para el producto ID: ' . $producto['id_producto'] . 
+                                         ' superaría el stock máximo permitido (' . $prod_info['stock_maximo'] . ')');
+                    }
+                }
+            }
+            
+            // Insertar cabecera
+            $sql = "INSERT INTO compra(fecha_entrada, id_proveedor) VALUES (:fecha_entrada, :id_proveedor)";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute([
+                'fecha_entrada' => $datos['fecha_entrada'],
+                'id_proveedor' => $datos['id_proveedor']
+            ]);
+            $id_compra = $conex->lastInsertId();
+            
+            // Insertar detalles
+            foreach ($datos['productos'] as $producto) {
+                // Verificar producto
+                $sql = "SELECT COUNT(*) FROM productos WHERE id_producto = :id_producto AND estatus = 1";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute(['id_producto' => $producto['id_producto']]);
+                if ($stmt->fetchColumn() == 0) {
+                    throw new Exception('Producto no encontrado: ' . $producto['id_producto']);
+                }
+                
+                // Insertar detalle
+                $sql = "INSERT INTO compra_detalles(cantidad, precio_total, precio_unitario, id_compra, id_producto) 
+                       VALUES (:cantidad, :precio_total, :precio_unitario, :id_compra, :id_producto)";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute([
+                    'cantidad' => $producto['cantidad'],
+                    'precio_total' => $producto['precio_total'],
+                    'precio_unitario' => $producto['precio_unitario'],
+                    'id_compra' => $id_compra,
+                    'id_producto' => $producto['id_producto']
+                ]);
+                
+                // Actualizar stock
+                $sql = "UPDATE productos SET stock_disponible = stock_disponible + :cantidad 
+                       WHERE id_producto = :id_producto";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute([
+                    'cantidad' => $producto['cantidad'],
+                    'id_producto' => $producto['id_producto']
+                ]);
+            }
+            
+            $conex->commit();
+            $conex = null;
+            return ['respuesta' => 1, 'mensaje' => 'Compra registrada exitosamente', 'id_compra' => $id_compra];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    private function ejecutarActualizacion($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+            // Verificar que existe la compra
+            $sql = "SELECT COUNT(*) FROM compra WHERE id_compra = :id_compra";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_compra' => $datos['id_compra']]);
+            if ($stmt->fetchColumn() == 0) {
+                throw new Exception('La compra no existe');
+            }
+            
+            // Validar stock máximo para cada producto
+            foreach ($datos['productos'] as $producto) {
+                $sql = "SELECT p.stock_disponible, p.stock_maximo, COALESCE(cd.cantidad, 0) as cantidad_actual 
+                       FROM productos p 
+                       LEFT JOIN compra_detalles cd ON cd.id_producto = p.id_producto 
+                       AND cd.id_compra = :id_compra 
+                       WHERE p.id_producto = :id_producto";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute([
+                    'id_compra' => $datos['id_compra'],
+                    'id_producto' => $producto['id_producto']
+                ]);
+                $prod_info = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($prod_info) {
+                    $stockTotal = ($prod_info['stock_disponible'] - $prod_info['cantidad_actual']) + $producto['cantidad'];
+                    if ($stockTotal > $prod_info['stock_maximo']) {
+                        throw new Exception('La cantidad ingresada para el producto ID: ' . $producto['id_producto'] . 
+                                         ' superaría el stock máximo permitido (' . $prod_info['stock_maximo'] . ')');
+                    }
+                }
+            }
+            
+            // Actualizar cabecera
+            $sql = "UPDATE compra SET fecha_entrada = :fecha_entrada, id_proveedor = :id_proveedor 
+                   WHERE id_compra = :id_compra";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute([
+                'fecha_entrada' => $datos['fecha_entrada'],
+                'id_proveedor' => $datos['id_proveedor'],
+                'id_compra' => $datos['id_compra']
+            ]);
+            
+            // Obtener detalles actuales para ajustar stock
+            $sql = "SELECT id_producto, cantidad FROM compra_detalles WHERE id_compra = :id_compra";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_compra' => $datos['id_compra']]);
+            $detalles_actuales = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Restar stock actual
+            foreach ($detalles_actuales as $detalle) {
+                $sql = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad 
+                       WHERE id_producto = :id_producto";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute([
+                    'cantidad' => $detalle['cantidad'],
+                    'id_producto' => $detalle['id_producto']
+                ]);
+            }
+            
+            // Eliminar detalles actuales
+            $sql = "DELETE FROM compra_detalles WHERE id_compra = :id_compra";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_compra' => $datos['id_compra']]);
+            
+            // Insertar nuevos detalles
+            foreach ($datos['productos'] as $producto) {
+                // Verificar producto
+                $sql = "SELECT COUNT(*) FROM productos WHERE id_producto = :id_producto AND estatus = 1";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute(['id_producto' => $producto['id_producto']]);
+                if ($stmt->fetchColumn() == 0) {
+                    throw new Exception('Producto no encontrado: ' . $producto['id_producto']);
+                }
+                
+                // Insertar detalle
+                $sql = "INSERT INTO compra_detalles(cantidad, precio_total, precio_unitario, id_compra, id_producto) 
+                       VALUES (:cantidad, :precio_total, :precio_unitario, :id_compra, :id_producto)";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute([
+                    'cantidad' => $producto['cantidad'],
+                    'precio_total' => $producto['precio_total'],
+                    'precio_unitario' => $producto['precio_unitario'],
+                    'id_compra' => $datos['id_compra'],
+                    'id_producto' => $producto['id_producto']
+                ]);
+                
+                // Actualizar stock
+                $sql = "UPDATE productos SET stock_disponible = stock_disponible + :cantidad 
+                       WHERE id_producto = :id_producto";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute([
+                    'cantidad' => $producto['cantidad'],
+                    'id_producto' => $producto['id_producto']
+                ]);
+            }
+            
+            $conex->commit();
+            $conex = null;
+            return ['respuesta' => 1, 'mensaje' => 'Compra actualizada exitosamente'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    private function ejecutarEliminacion($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+            // Verificar que existe la compra
+            $sql = "SELECT COUNT(*) FROM compra WHERE id_compra = :id_compra";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_compra' => $datos['id_compra']]);
+            if ($stmt->fetchColumn() == 0) {
+                throw new Exception('La compra no existe');
+            }
+            
+            // Obtener detalles para ajustar stock
+            $sql = "SELECT id_producto, cantidad FROM compra_detalles WHERE id_compra = :id_compra";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_compra' => $datos['id_compra']]);
+            $detalles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Verificar stock disponible
+            foreach ($detalles as $detalle) {
+                $sql = "SELECT stock_disponible FROM productos WHERE id_producto = :id_producto";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute(['id_producto' => $detalle['id_producto']]);
+                $stock_actual = $stmt->fetchColumn();
+                
+                if ($stock_actual < $detalle['cantidad']) {
+                    throw new Exception('No se puede eliminar la compra porque el producto ID: ' . $detalle['id_producto'] . 
+                                     ' no tiene suficiente stock disponible');
+                }
+            }
+            
+            // Actualizar stock
+            foreach ($detalles as $detalle) {
+                $sql = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad 
+                       WHERE id_producto = :id_producto";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute([
+                    'cantidad' => $detalle['cantidad'],
+                    'id_producto' => $detalle['id_producto']
+                ]);
+            }
+            
+            // Eliminar detalles
+            $sql = "DELETE FROM compra_detalles WHERE id_compra = :id_compra";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_compra' => $datos['id_compra']]);
+            
+            // Eliminar cabecera
+            $sql = "DELETE FROM compra WHERE id_compra = :id_compra";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_compra' => $datos['id_compra']]);
+            
+            $conex->commit();
+            $conex = null;
+            return ['respuesta' => 1, 'mensaje' => 'Compra eliminada exitosamente'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    private function ejecutarConsulta() {
+        $conex = $this->getConex1();
+        try {
+            $sql = "SELECT c.id_compra, c.fecha_entrada, p.nombre as proveedor_nombre, p.id_proveedor 
+                   FROM compra c 
+                   JOIN proveedor p ON c.id_proveedor = p.id_proveedor 
+                   ORDER BY c.id_compra DESC";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute();
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return ['respuesta' => 1, 'datos' => $resultado];
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    private function ejecutarConsultaDetalles($datos) {
+        $conex = $this->getConex1();
+        try {
+            $sql = "SELECT cd.id_detalle_compra, cd.cantidad, cd.precio_total, cd.precio_unitario, 
+                   p.id_producto, p.nombre as producto_nombre, p.marca 
+                   FROM compra_detalles cd 
+                   JOIN productos p ON cd.id_producto = p.id_producto 
+                   WHERE cd.id_compra = :id_compra";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_compra' => $datos['id_compra']]);
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return ['respuesta' => 1, 'datos' => $resultado];
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    private function ejecutarConsultaProductos() {
+        $conex = $this->getConex1();
+        try {
+            $sql = "SELECT id_producto, nombre, marca, stock_disponible FROM productos WHERE estatus = 1";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute();
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return ['respuesta' => 1, 'datos' => $resultado];
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    private function ejecutarConsultaProveedores() {
+        $conex = $this->getConex1();
+        try {
+            $sql = "SELECT id_proveedor, nombre FROM proveedor WHERE estatus = 1";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute();
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return ['respuesta' => 1, 'datos' => $resultado];
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
     }
 
     public function generarPDF() {
-        $compras = $this->consultar();
+        $datosCompra = $this->procesarCompra(json_encode(['operacion' => 'consultar']));
+        $compras = $datosCompra['datos'];
         $fechaHoraActual = date('d/m/Y h:i A');
-    
-        // Ruta de la imagen en la carpeta img
         $graficoBase64 = $this->imgToBase64('assets/img/grafica_reportes/grafico_entradas.png');
-    
+        
         $html = '
     <html>
     <head>
@@ -83,7 +448,11 @@ class Entrada extends Conexion {
                     <tbody>';
     
         foreach ($compras as $compra) {
-            $detalles = $this->consultarDetalles($compra['id_compra']);
+            $resultadoDetalles = $this->procesarCompra(json_encode([
+                'operacion' => 'consultarDetalles',
+                'datos' => ['id_compra' => $compra['id_compra']]
+            ]));
+            $detalles = $resultadoDetalles['datos'];
             $productos = [];
             $total = 0;
     
@@ -110,499 +479,14 @@ class Entrada extends Conexion {
         $dompdf->stream("Reporte_Compras.pdf", array("Attachment" => false));
     }
 
-    public function registrarBitacora($id_persona, $accion, $descripcion) {
-    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
+    private function imgToBase64($imgPath) {
+        $fullPath = __DIR__ . '/../' . $imgPath;
     
-    $strExec = $this->conex2->prepare($consulta);
-    $strExec->bindParam(':accion', $accion);
-    $strExec->bindParam(':descripcion', $descripcion);
-    $strExec->bindParam(':id_persona', $id_persona);
-    
-    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
-    }
-
-    public function registrar() {
-        try {
-            $this->conex1->beginTransaction();
-            
-            // Validación de datos antes de insertar
-            if (empty($this->fecha_entrada) || empty($this->id_proveedor) || empty($this->detalles)) {
-                return ['respuesta' => 0, 'accion' => 'incluir', 'error' => 'Datos incompletos'];
-            }
-            
-            // Validar stock máximo para cada producto
-            foreach ($this->detalles as $detalle) {
-                // Obtener información del producto
-                $query = "SELECT stock_disponible, stock_maximo FROM productos WHERE id_producto = :id_producto";
-                $stmt = $this->conex1->prepare($query);
-                $stmt->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                $stmt->execute();
-                $producto = $stmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($producto) {
-                    $stockTotal = $producto['stock_disponible'] + $detalle['cantidad'];
-                    if ($stockTotal > $producto['stock_maximo']) {
-                        $this->conex1->rollBack();
-                        return [
-                            'respuesta' => 0, 
-                            'accion' => 'incluir', 
-                            'error' => 'La cantidad ingresada para el producto ID: ' . $detalle['id_producto'] . 
-                                     ' superaría el stock máximo permitido (' . $producto['stock_maximo'] . ')'
-                        ];
-                    }
-                }
-            }
-            
-            // Insertamos la cabecera de la compra
-            $registro = "INSERT INTO compra(fecha_entrada, id_proveedor) VALUES (:fecha_entrada, :id_proveedor)";
-            $strExec = $this->conex1->prepare($registro);
-            $strExec->bindParam(':fecha_entrada', $this->fecha_entrada);
-            $strExec->bindParam(':id_proveedor', $this->id_proveedor);
-            $resul = $strExec->execute();
-            
-            if (!$resul) {
-                $this->conex1->rollBack();
-                $error = $strExec->errorInfo();
-                return ['respuesta' => 0, 'accion' => 'incluir', 'error' => $error[2]];
-            }
-            
-            // Obtenemos el ID de la compra recién insertada
-            $id_compra = $this->conex1->lastInsertId();
-            
-            // Insertamos los detalles de la compra
-            if (isset($this->detalles) && !empty($this->detalles)) {
-                foreach ($this->detalles as $detalle) {
-                    // Validación de datos del detalle
-                    if (empty($detalle['id_producto']) || empty($detalle['cantidad']) || 
-                        empty($detalle['precio_unitario']) || empty($detalle['precio_total'])) {
-                        $this->conex1->rollBack();
-                        return ['respuesta' => 0, 'accion' => 'incluir', 'error' => 'Datos de producto incompletos'];
-                    }
-                    
-                    // Verificamos que el producto exista
-                    $producto_existe = $this->verificarProducto($detalle['id_producto']);
-                    if (!$producto_existe) {
-                        $this->conex1->rollBack();
-                        return ['respuesta' => 0, 'accion' => 'incluir', 'error' => 'Producto no encontrado'];
-                    }
-                    
-                    $registro_detalle = "INSERT INTO compra_detalles(cantidad, precio_total, precio_unitario, id_compra, id_producto) VALUES (:cantidad, :precio_total, :precio_unitario, :id_compra, :id_producto)";
-                    $strExecDetalle = $this->conex1->prepare($registro_detalle);
-                    $strExecDetalle->bindParam(':cantidad', $detalle['cantidad'], PDO::PARAM_INT);
-                    $strExecDetalle->bindParam(':precio_total', $detalle['precio_total'], PDO::PARAM_STR);
-                    $strExecDetalle->bindParam(':precio_unitario', $detalle['precio_unitario'], PDO::PARAM_STR);
-                    $strExecDetalle->bindParam(':id_compra', $id_compra, PDO::PARAM_INT);
-                    $strExecDetalle->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                    $resulDetalle = $strExecDetalle->execute();
-                    
-                    if (!$resulDetalle) {
-                        $this->conex1->rollBack();
-                        $error = $strExecDetalle->errorInfo();
-                        return ['respuesta' => 0, 'accion' => 'incluir', 'error' => $error[2]];
-                    }
-                    
-                    // Actualizamos el stock del producto
-                    $actualizar_stock = "UPDATE productos SET stock_disponible = stock_disponible + :cantidad WHERE id_producto = :id_producto";
-                    $strExecStock = $this->conex1->prepare($actualizar_stock);
-                    $strExecStock->bindParam(':cantidad', $detalle['cantidad'], PDO::PARAM_INT);
-                    $strExecStock->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                    $resulStock = $strExecStock->execute();
-                    
-                    if (!$resulStock) {
-                        $this->conex1->rollBack();
-                        $error = $strExecStock->errorInfo();
-                        return ['respuesta' => 0, 'accion' => 'incluir', 'error' => $error[2]];
-                    }
-                }
-            } else {
-                $this->conex1->rollBack();
-                return ['respuesta' => 0, 'accion' => 'incluir', 'error' => 'No hay productos en la compra'];
-            }
-            
-            $this->conex1->commit();
-            return ['respuesta' => 1, 'accion' => 'incluir', 'id_compra' => $id_compra];
-            
-        } catch (Exception $e) {
-            if ($this->conex1->inTransaction()) {
-                $this->conex1->rollBack();
-            }
-            return ['respuesta' => 0, 'accion' => 'incluir', 'error' => $e->getMessage()];
+        if (file_exists($fullPath)) {
+            $imgData = file_get_contents($fullPath);
+            return 'data:image/png;base64,' . base64_encode($imgData);
         }
-    }
-
-    public function modificar() {
-        try {
-            $this->conex1->beginTransaction();
-            
-            // Validar que exista la compra
-            $compra_existe = $this->consultarCompra($this->id_compra);
-            if (empty($compra_existe)) {
-                return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'La compra no existe'];
-            }
-            
-            // Validar stock máximo para cada producto
-            foreach ($this->detalles as $detalle) {
-                // Obtener información del producto
-                $query = "SELECT p.stock_disponible, p.stock_maximo, COALESCE(cd.cantidad, 0) as cantidad_actual 
-                         FROM productos p 
-                         LEFT JOIN compra_detalles cd ON cd.id_producto = p.id_producto AND cd.id_compra = :id_compra 
-                         WHERE p.id_producto = :id_producto";
-                $stmt = $this->conex1->prepare($query);
-                $stmt->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                $stmt->bindParam(':id_compra', $this->id_compra, PDO::PARAM_INT);
-                $stmt->execute();
-                $producto = $stmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($producto) {
-                    // Calcular el nuevo stock total considerando la cantidad actual
-                    $stockTotal = ($producto['stock_disponible'] - $producto['cantidad_actual']) + $detalle['cantidad'];
-                    if ($stockTotal > $producto['stock_maximo']) {
-                        $this->conex1->rollBack();
-                        return [
-                            'respuesta' => 0, 
-                            'accion' => 'actualizar', 
-                            'error' => 'La cantidad ingresada para el producto ID: ' . $detalle['id_producto'] . 
-                                     ' superaría el stock máximo permitido (' . $producto['stock_maximo'] . ')'
-                        ];
-                    }
-                }
-            }
-            
-            // Actualizamos la cabecera de la compra
-            $registro = "UPDATE compra SET fecha_entrada = :fecha_entrada, id_proveedor = :id_proveedor WHERE id_compra = :id_compra";
-            $strExec = $this->conex1->prepare($registro);
-            $strExec->bindParam(':fecha_entrada', $this->fecha_entrada);
-            $strExec->bindParam(':id_proveedor', $this->id_proveedor, PDO::PARAM_INT);
-            $strExec->bindParam(':id_compra', $this->id_compra, PDO::PARAM_INT);
-            $resul = $strExec->execute();
-            
-            if (!$resul) {
-                $this->conex1->rollBack();
-                $error = $strExec->errorInfo();
-                return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $error[2]];
-            }
-            
-            // Primero, recuperamos los detalles actuales para ajustar el stock
-            $query = "SELECT id_producto, cantidad FROM compra_detalles WHERE id_compra = :id_compra";
-            $strExecConsulta = $this->conex1->prepare($query);
-            $strExecConsulta->bindParam(':id_compra', $this->id_compra, PDO::PARAM_INT);
-            $resultado = $strExecConsulta->execute();
-            
-            if (!$resultado) {
-                $this->conex1->rollBack();
-                $error = $strExecConsulta->errorInfo();
-                return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $error[2]];
-            }
-            
-            $detalles_actuales = $strExecConsulta->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Restamos el stock de los productos que ya estaban en el detalle
-            foreach ($detalles_actuales as $detalle_actual) {
-                $actualizar_stock = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad WHERE id_producto = :id_producto";
-                $strExecStock = $this->conex1->prepare($actualizar_stock);
-                $strExecStock->bindParam(':cantidad', $detalle_actual['cantidad'], PDO::PARAM_INT);
-                $strExecStock->bindParam(':id_producto', $detalle_actual['id_producto'], PDO::PARAM_INT);
-                $resulStock = $strExecStock->execute();
-                
-                if (!$resulStock) {
-                    $this->conex1->rollBack();
-                    $error = $strExecStock->errorInfo();
-                    return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $error[2]];
-                }
-            }
-            
-            // Eliminamos los detalles actuales
-            $eliminar_detalles = "DELETE FROM compra_detalles WHERE id_compra = :id_compra";
-            $strExecEliminar = $this->conex1->prepare($eliminar_detalles);
-            $strExecEliminar->bindParam(':id_compra', $this->id_compra, PDO::PARAM_INT);
-            $resulEliminar = $strExecEliminar->execute();
-            
-            if (!$resulEliminar) {
-                $this->conex1->rollBack();
-                $error = $strExecEliminar->errorInfo();
-                return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $error[2]];
-            }
-            
-            // Insertamos los nuevos detalles
-            if (isset($this->detalles) && !empty($this->detalles)) {
-                foreach ($this->detalles as $detalle) {
-                    // Validación de datos del detalle
-                    if (empty($detalle['id_producto']) || empty($detalle['cantidad']) || 
-                        empty($detalle['precio_unitario']) || empty($detalle['precio_total'])) {
-                        $this->conex1->rollBack();
-                        return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'Datos de producto incompletos'];
-                    }
-                    
-                    // Verificamos que el producto exista
-                    $producto_existe = $this->verificarProducto($detalle['id_producto']);
-                    if (!$producto_existe) {
-                        $this->conex1->rollBack();
-                        return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'Producto no encontrado'];
-                    }
-                    
-                    $registro_detalle = "INSERT INTO compra_detalles(cantidad, precio_total, precio_unitario, id_compra, id_producto) VALUES (:cantidad, :precio_total, :precio_unitario, :id_compra, :id_producto)";
-                    $strExecDetalle = $this->conex1->prepare($registro_detalle);
-                    $strExecDetalle->bindParam(':cantidad', $detalle['cantidad'], PDO::PARAM_INT);
-                    $strExecDetalle->bindParam(':precio_total', $detalle['precio_total'], PDO::PARAM_STR);
-                    $strExecDetalle->bindParam(':precio_unitario', $detalle['precio_unitario'], PDO::PARAM_STR);
-                    $strExecDetalle->bindParam(':id_compra', $this->id_compra, PDO::PARAM_INT);
-                    $strExecDetalle->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                    $resulDetalle = $strExecDetalle->execute();
-                    
-                    if (!$resulDetalle) {
-                        $this->conex1->rollBack();
-                        $error = $strExecDetalle->errorInfo();
-                        return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $error[2]];
-                    }
-                    
-                    // Actualizamos el stock del producto
-                    $actualizar_stock = "UPDATE productos SET stock_disponible = stock_disponible + :cantidad WHERE id_producto = :id_producto";
-                    $strExecStock = $this->conex1->prepare($actualizar_stock);
-                    $strExecStock->bindParam(':cantidad', $detalle['cantidad'], PDO::PARAM_INT);
-                    $strExecStock->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                    $resulStock = $strExecStock->execute();
-                    
-                    if (!$resulStock) {
-                        $this->conex1->rollBack();
-                        $error = $strExecStock->errorInfo();
-                        return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $error[2]];
-                    }
-                }
-            } else {
-                $this->conex1->rollBack();
-                return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => 'No hay productos en la compra'];
-            }
-            
-            $this->conex1->commit();
-            return ['respuesta' => 1, 'accion' => 'actualizar'];
-            
-        } catch (Exception $e) {
-            if ($this->conex1->inTransaction()) {
-                $this->conex1->rollBack();
-            }
-            return ['respuesta' => 0, 'accion' => 'actualizar', 'error' => $e->getMessage()];
-        }
-    }
-
-    public function eliminar() {
-        try {
-            $this->conex1->beginTransaction();
-            
-            // Validar que exista la compra
-            $compra_existe = $this->consultarCompra($this->id_compra);
-            if (empty($compra_existe)) {
-                return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => 'La compra no existe'];
-            }
-            
-            // Recuperamos los detalles para ajustar el stock
-            $query = "SELECT id_producto, cantidad FROM compra_detalles WHERE id_compra = :id_compra";
-            $strExecConsulta = $this->conex1->prepare($query);
-            $strExecConsulta->bindParam(':id_compra', $this->id_compra, PDO::PARAM_INT);
-            $resultado = $strExecConsulta->execute();
-            
-            if (!$resultado) {
-                $this->conex1->rollBack();
-                $error = $strExecConsulta->errorInfo();
-                return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $error[2]];
-            }
-            
-            $detalles = $strExecConsulta->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Verificamos si eliminar afectaría negativamente el stock
-            foreach ($detalles as $detalle) {
-                $consulta_stock = "SELECT stock_disponible FROM productos WHERE id_producto = :id_producto";
-                $strExecStock = $this->conex1->prepare($consulta_stock);
-                $strExecStock->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                $strExecStock->execute();
-                $stock_actual = $strExecStock->fetchColumn();
-                
-                if ($stock_actual < $detalle['cantidad']) {
-                    $this->conex1->rollBack();
-                    return [
-                        'respuesta' => 0, 
-                        'accion' => 'eliminar', 
-                        'error' => 'No se puede eliminar la compra porque el producto ID: ' . $detalle['id_producto'] . ' no tiene suficiente stock disponible'
-                    ];
-                }
-            }
-            
-            // Restamos el stock de los productos
-            foreach ($detalles as $detalle) {
-                $actualizar_stock = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad WHERE id_producto = :id_producto";
-                $strExecStock = $this->conex1->prepare($actualizar_stock);
-                $strExecStock->bindParam(':cantidad', $detalle['cantidad'], PDO::PARAM_INT);
-                $strExecStock->bindParam(':id_producto', $detalle['id_producto'], PDO::PARAM_INT);
-                $resulStock = $strExecStock->execute();
-                
-                if (!$resulStock) {
-                    $this->conex1->rollBack();
-                    $error = $strExecStock->errorInfo();
-                    return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $error[2]];
-                }
-            }
-            
-            // Eliminamos los detalles
-            $eliminar_detalles = "DELETE FROM compra_detalles WHERE id_compra = :id_compra";
-            $strExecEliminar = $this->conex1->prepare($eliminar_detalles);
-            $strExecEliminar->bindParam(':id_compra', $this->id_compra, PDO::PARAM_INT);
-            $resulEliminar = $strExecEliminar->execute();
-            
-            if (!$resulEliminar) {
-                $this->conex1->rollBack();
-                $error = $strExecEliminar->errorInfo();
-                return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $error[2]];
-            }
-            
-            // Eliminamos la cabecera
-            $eliminar_cabecera = "DELETE FROM compra WHERE id_compra = :id_compra";
-            $strExecEliminarCab = $this->conex1->prepare($eliminar_cabecera);
-            $strExecEliminarCab->bindParam(':id_compra', $this->id_compra, PDO::PARAM_INT);
-            $resulEliminarCab = $strExecEliminarCab->execute();
-            
-            if (!$resulEliminarCab) {
-                $this->conex1->rollBack();
-                $error = $strExecEliminarCab->errorInfo();
-                return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $error[2]];
-            }
-            
-            $this->conex1->commit();
-            return ['respuesta' => 1, 'accion' => 'eliminar'];
-            
-        } catch (Exception $e) {
-            if ($this->conex1->inTransaction()) {
-                $this->conex1->rollBack();
-            }
-            return ['respuesta' => 0, 'accion' => 'eliminar', 'error' => $e->getMessage()];
-        }
-    }
-
-    public function consultar() {
-        try {
-            $registro = "SELECT c.id_compra, c.fecha_entrada, p.nombre as proveedor_nombre, p.id_proveedor 
-                        FROM compra c 
-                        JOIN proveedor p ON c.id_proveedor = p.id_proveedor 
-                        ORDER BY c.id_compra DESC";
-            $consulta = $this->conex1->prepare($registro);
-            $resul = $consulta->execute();
-            
-            if (!$resul) {
-                $error = $consulta->errorInfo();
-                return [];
-            }
-            
-            return $consulta->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-
-    public function consultarDetalles($id_compra) {
-        try {
-            $registro = "SELECT cd.id_detalle_compra, cd.cantidad, cd.precio_total, cd.precio_unitario, 
-                        p.id_producto, p.nombre as producto_nombre, p.marca 
-                        FROM compra_detalles cd 
-                        JOIN productos p ON cd.id_producto = p.id_producto 
-                        WHERE cd.id_compra = :id_compra";
-            $consulta = $this->conex1->prepare($registro);
-            $consulta->bindParam(':id_compra', $id_compra, PDO::PARAM_INT);
-            $resul = $consulta->execute();
-            
-            if (!$resul) {
-                $error = $consulta->errorInfo();
-                return [];
-            }
-            
-            return $consulta->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-
-    public function consultarCompra($id_compra) {
-        try {
-            $registro = "SELECT c.id_compra, c.fecha_entrada, c.id_proveedor, p.nombre as proveedor_nombre 
-                        FROM compra c 
-                        JOIN proveedor p ON c.id_proveedor = p.id_proveedor 
-                        WHERE c.id_compra = :id_compra";
-            $consulta = $this->conex1->prepare($registro);
-            $consulta->bindParam(':id_compra', $id_compra, PDO::PARAM_INT);
-            $resul = $consulta->execute();
-            
-            if (!$resul) {
-                $error = $consulta->errorInfo();
-                return [];
-            }
-            
-            return $consulta->fetch(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-
-    public function consultarProductos() {
-        try {
-            $registro = "SELECT id_producto, nombre, marca, stock_disponible FROM productos WHERE estatus = 1";
-            $consulta = $this->conex1->prepare($registro);
-            $resul = $consulta->execute();
-            
-            if (!$resul) {
-                $error = $consulta->errorInfo();
-                return [];
-            }
-            
-            return $consulta->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-
-    public function consultarProveedores() {
-        try {
-            $registro = "SELECT id_proveedor, nombre FROM proveedor WHERE estatus = 1";
-            $consulta = $this->conex1->prepare($registro);
-            $resul = $consulta->execute();
-            
-            if (!$resul) {
-                $error = $consulta->errorInfo();
-                return [];
-            }
-            
-            return $consulta->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-
-    // Método para verificar si existe un producto
-    private function verificarProducto($id_producto) {
-        try {
-            $query = "SELECT COUNT(*) FROM productos WHERE id_producto = :id_producto AND estatus = 1";
-            $consulta = $this->conex1->prepare($query);
-            $consulta->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
-            $consulta->execute();
-            
-            return $consulta->fetchColumn() > 0;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    // Setters
-    public function set_Id_compra($id_compra) {
-        $this->id_compra = $id_compra;
-    }
-
-    public function set_Fecha_entrada($fecha_entrada) {
-        $this->fecha_entrada = $fecha_entrada;
-    }
-
-    public function set_Id_proveedor($id_proveedor) {
-        $this->id_proveedor = $id_proveedor;
-    }
-
-    public function set_Detalles($detalles) {
-        $this->detalles = $detalles;
+        return '';
     }
 }
 ?>

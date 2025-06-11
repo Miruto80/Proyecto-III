@@ -95,7 +95,11 @@
                   <?php foreach($compras as $compra): ?>
                     <?php 
                     // Obtener el primer producto de la compra para mostrar en la tabla principal
-                    $detalles_producto = $entrada->consultarDetalles($compra['id_compra']);
+                    $resultadoDetalles = $entrada->procesarCompra(json_encode([
+                        'operacion' => 'consultarDetalles',
+                        'datos' => ['id_compra' => $compra['id_compra']]
+                    ]));
+                    $detalles_producto = $resultadoDetalles['datos'];
                     $primer_producto = !empty($detalles_producto) ? $detalles_producto[0]['producto_nombre'] : 'Sin productos';
                     ?>
                     <tr>
@@ -132,7 +136,11 @@
                                   </div>
                                   
                                   <?php
-                                  $detalles_compra = $entrada->consultarDetalles($compra['id_compra']);
+                                  $resultadoDetalles = $entrada->procesarCompra(json_encode([
+                                      'operacion' => 'consultarDetalles',
+                                      'datos' => ['id_compra' => $compra['id_compra']]
+                                  ]));
+                                  $detalles_compra = $resultadoDetalles['datos'];
                                   foreach($detalles_compra as $detalle):
                                   ?>
                                   
@@ -195,8 +203,12 @@
                                 <h6>Productos</h6>
                                 <div id="productos-container-edit<?php echo $compra['id_compra']; ?>">
                                   <?php 
-                                  $detalles = $entrada->consultarDetalles($compra['id_compra']);
-                                  foreach($detalles as $index => $detalle): 
+                                  $resultadoDetalles = $entrada->procesarCompra(json_encode([
+                                      'operacion' => 'consultarDetalles',
+                                      'datos' => ['id_compra' => $compra['id_compra']]
+                                  ]));
+                                  $detalles_compra = $resultadoDetalles['datos'];
+                                  foreach($detalles_compra as $index => $detalle): 
                                   ?>
                                     <div class="row mb-2 producto-fila">
                                       <div class="col-md-4">
