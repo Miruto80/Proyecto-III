@@ -90,17 +90,24 @@
       </div>
     </div>
 
-    <!-- Modal para registrar -->
-    <div class="modal fade" id="registro" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header header-color">
-            <h1 class="modal-title fs-5">Registrar Proveedor</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="formRegistrar" autocomplete="off">
-              <div class="row">
+    
+
+<!-- Modal único para Registrar/Modificar -->
+<div class="modal fade" id="registro" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header header-color">
+        <h5 class="modal-title" id="modalTitle">Registrar Proveedor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formProveedor" enctype="multipart/form-data" autocomplete="off">
+          <input type="hidden" name="id_proveedor" id="id_proveedor" value="">
+          <input type="hidden" name="accion" id="accion" value="registrar">
+          
+
+
+                        <div class="row">
                 <div class="col-md-6">
                   <label>TIPO DE DOCUMENTO</label>
                   <select class="form-control" name="tipo_documento" id="tipo_documento" required>
@@ -147,98 +154,17 @@
                </div>
               </div>
               <br>
-              <div class="text-center">
-                <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
-                <button type="reset" class="btn btn-primary">Limpiar</button>
-              </div>
-            </form>
+
+
+          <div class="text-center">
+            <button type="button" class="btn btn-primary" id="btnEnviar">Guardar</button>
+            <button type="reset" class="btn btn-secondary">Limpiar</button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
-
-    <!-- Modal para modificar -->
-    <div class="modal fade" id="modificar" tabindex="-1" aria-labelledby="modificarLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header header-color">
-            <h5 class="modal-title">Modificar Proveedor</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="formModificar" autocomplete="off">
-              <input type="hidden" name="id_proveedor" id="id_proveedor_modificar">
-              <div class="row">
-                <div class="col-md-6">
-                  <label>TIPO DE DOCUMENTO</label>
-                  <select class="form-control" name="tipo_documento" id="tipo_documento_modificar" required>
-                    <option value="">Seleccione...</option>
-                    <option value="V">V</option>
-                    <option value="J">J</option>
-                    <option value="E">E</option>
-                    <option value="G">G</option>
-                  </select>
-                </div>
-                <div class="col-md-6">
-                  <label>NÚMERO DE DOCUMENTO</label>
-                  <input type="text" class="form-control" name="numero_documento" id="numero_documento_modificar" placeholder="Ejemplo: 12345678" maxlength="9" required>
-                  <span id="snumero_documento_modificar" class="text-danger"></span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-md-12">
-                  <label>NOMBRE</label>
-                  <input type="text" class="form-control" name="nombre" id="nombre_modificar" placeholder="Ejemplo: Proveedor XYZ" maxlength="30" required>
-                  <span id="snombre_modificar" class="text-danger"></span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-md-6">
-                  <label>CORREO</label>
-                  <input type="email" class="form-control" name="correo" id="correo_modificar" placeholder="Ejemplo: proveedor@ejemplo.com" maxlength="60" required>
-                  <span id="scorreo_modificar" class="text-danger"></span>
-                 </div>
-                <div class="col-md-6">
-                  <label>TELÉFONO</label>
-                  <input type="text" class="form-control" name="telefono" id="telefono_modificar" placeholder="Ejemplo: 04121234567" maxlength="11" required>
-                  <span id="stelefono_modificar" class="text-danger"></span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-md-12">
-                  <label>DIRECCIÓN</label>
-                  <textarea class="form-control" name="direccion" id="direccion_modificar" rows="3" placeholder="Ejemplo: Av. Principal, Local #123" maxlength="70" required></textarea>
-                  <span id="sdireccion_modificar" class="text-danger"></span>
-                </div>
-              </div>
-              <br>
-              <div class="text-center">
-                <button type="button" class="btn btn-primary" id="btnModificar">Modificar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-   
-            <div style="text-align: center; margin-top: 20px;">
-              <h3>Top 5 Proveedores con Más Compras</h3>
-            </div>
-
-              <!-- Mostrar gráfica-->
-            <div style="text-align:center; margin-top:20px;">
-<?php if (file_exists("assets/img/grafica_reportes/grafico_proveedores.png")): ?>
-    <img src="assets/img/grafica_reportes/grafico_proveedores.png" alt="Gráfico de pastel de proveedores">
-<?php else: ?>
-    <p>No hay datos suficientes para generar un gráfico.</p>
-<?php endif; ?>
-
-            </div>
-
+  </div>
+</div>
 
 
 

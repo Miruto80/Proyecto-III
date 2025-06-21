@@ -35,77 +35,92 @@
           </div>
         </div>
 
+           <div class="col-md-3 col-sm-6">
+          <div class="footer-menu">
+            <h5 class="fs-5 fw-normal text-white">Información de<br> contacto</h5>
+            <ul class="menu-list list-unstyled">
+              <li class="menu-item">
+                <a href="https://www.instagram.com/lovemakeupyk/" target="_blank" class="nav-link text-secondary-emphasis">
+                  <i class="fa-brands fa-instagram"></i>   Instagram</a>
+              </li>
+                <li class="menu-item">
+                <a href="https://www.facebook.com/lovemakeupyk/" target="_blank" class="nav-link text-secondary-emphasis">
+                  <i class="fa-brands fa-facebook"></i>  Facebook</a>
+              </li>
+              <li class="menu-item">
+                <a href="https://www.instagram.com/lovemakeupyk/" target="_blank" class="nav-link text-secondary-emphasis">
+                  <i class="fa-solid fa-phone"></i> 04245115414
+                </a>
+              </li>
+              <li class="menu-item">
+                <a href="#" class="nav-link text-secondary-emphasis">
+                  <i class="fa-solid fa-location-dot"></i> Av 20 entre calles 29 y 30 <br> CC 
+                  Barquisimeto Plaza</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+
+
+        <style>
+.footer-menu .menu-list .menu-item .nav-link {
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+.footer-menu .menu-list .menu-item .nav-link:hover {
+  color: #fa48c9 !important;
+}
+.footer-menu .menu-list .menu-item .nav-link i {
+  transition: color 0.3s ease;
+}
+.footer-menu .menu-list .menu-item .nav-link:hover i {
+  color: #fa48c9;
+}
+        </style>
         <div class="col-md-3 col-sm-6">
           <div class="footer-menu">
             <h5 class="fs-5 fw-normal text-white">Tienda</h5>
             <ul class="menu-list list-unstyled">
               <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Sobre nosotros</a>
+                <a href="?pagina=catalogo" class="nav-link text-secondary-emphasis">Inicio</a>
               </li>
               <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Condiciones</a>
+                <a href="?pagina=catalogo_producto" class="nav-link text-secondary-emphasis">Todos los productos</a>
               </li>
               <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Nuestras Revistas</a>
+                <a href="?pagina=catalogo_consejo" class="nav-link text-secondary-emphasis">Nuestros Consejos</a>
               </li>
+
+              
+             <?php if ($sesion_activa): ?>
+              <?php if($_SESSION["nivel_rol"] == 1) { ?>
+
               <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Carreras</a>
+                <a href="?pagina=listadeseo" class="nav-link text-secondary-emphasis">Lista de deseos</a>
               </li>
-              <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Programa de Afiliados</a>
-              </li>
-              <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Prensa Ultras</a>
-              </li>
+               <?php } ?>
+               <?php endif; ?>
             </ul>
           </div>
         </div>
-        <div class="col-md-3 col-sm-6">
-          <div class="footer-menu">
-            <h5 class="fs-5 fw-normal text-white">Enlaces rápidos</h5>
-            <ul class="menu-list list-unstyled">
-              <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Ofrece</a>
-              </li>
-              <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Cupones de descuento</a>
-              </li>
-              <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Reservas</a>
-              </li>
-              <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Orden de seguimiento</a>
-              </li>
-              <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Tienda</a>
-              </li>
-              <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Información</a>
-              </li>
-            </ul>
-          </div>
-        </div>
+        
         <div class="col-md-3 col-sm-6">
           <div class="footer-menu">
             <h5 class="fs-5 fw-normal text-white">Servicio al cliente</h5>
             <ul class="menu-list list-unstyled">
-              <li class="menu-item">
+               <li class="menu-item">
                 <a href="#" class="nav-link text-secondary-emphasis">FAQ</a>
               </li>
               <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Contacto</a>
+                <a href="?pagina=catalogo_contacto" class="nav-link text-secondary-emphasis">Contacto</a>
               </li>
               <li class="menu-item">
                 <a href="#" class="nav-link text-secondary-emphasis">Política de privacidad</a>
               </li>
               <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Devoluciones y reembolsos</a>
-              </li>
-              <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Directrices sobre cookies</a>
-              </li>
-              <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Información de entrega</a>
+                <a href="#" class="nav-link text-secondary-emphasis">Politica de cookies</a>
               </li>
             </ul>
           </div>

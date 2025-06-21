@@ -427,6 +427,16 @@ transition: transform 0.2s;
   padding: 0;
 }
 
+.categorias label:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.transition {
+  transition: background-color 0.3s ease;
+}
+
+
 @media screen and (max-width:991px) {
   .product-item {
     box-shadow: 0px 0px 44px rgba(0, 0, 0, 0.08);

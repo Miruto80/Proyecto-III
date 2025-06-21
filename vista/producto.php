@@ -138,7 +138,7 @@
   <form id="formGenerarPDF" method="POST" target="_blank">
     <input type="hidden" name="nombre" value="Listado de proveedores">
     <button type="submit" name="generar" class="btn btn-info">
-      Generar PDF
+    <i class="fas fa-file-pdf"></i> Generar PDF
     </button>
   </form>
 </div>

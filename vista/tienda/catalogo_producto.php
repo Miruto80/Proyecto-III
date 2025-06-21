@@ -27,26 +27,28 @@
     <div class="container-lg">
         <div class="row g-md-5">
             <!-- CATEGORÍAS -->
-          <div class="col-md-3">
-    <h5>Categoría</h5>
-    <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex flex-column  categorias">
-    <?php if (empty($categorias)): ?>
-      <div class="col-12">
-                <p class="fs-4 text-muted">No se encontraron categorias.</p>
-            </div>
-<?php endif; ?>
-        <?php foreach ($categorias as $cat): ?>
-            <li class="nav-item">
-                <label for="cat-<?php echo $cat['id_categoria']; ?>" class="nav-link d-flex align-items-center gap-3 p-2">
-                    <input type="checkbox" id="cat-<?php echo $cat['id_categoria']; ?>" value="<?php echo $cat['id_categoria']; ?>" class="filtro-checkbox">
-                    <svg width="24" height="24" viewBox="0 0 24 24">
-                        <use xlink:href="#icon-<?php echo strtolower($cat['nombre']); ?>"></use>
-                    </svg>
-                    <span><?php echo htmlspecialchars($cat['nombre']); ?></span>
-                </label>
-            </li>
-        <?php endforeach; ?>
+            <div class="row g-md-5">
+            <!-- CATEGORÍAS -->
+            <div class="col-md-3">
+  <div class="p-3 border rounded bg-white shadow-sm">
+    <h5 class="mb-3">Filtrado por categorias</h5>
+    <ul class="navbar-nav menu-list list-unstyled d-flex flex-column gap-2 categorias">
+      <?php if (empty($categorias)): ?>
+        <li class="text-muted">No se encontraron categorías.</li>
+      <?php endif; ?>
+      <?php foreach ($categorias as $cat): ?>
+        <li class="nav-item">
+          <label for="cat-<?php echo $cat['id_categoria']; ?>" class="categoria-label nav-link d-flex align-items-center gap-2 px-2 py-1 rounded-2 transition">
+            <input type="checkbox" id="cat-<?php echo $cat['id_categoria']; ?>" value="<?php echo $cat['id_categoria']; ?>" class="form-check-input filtro-checkbox">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+              <use xlink:href="#icon-<?php echo strtolower($cat['nombre']); ?>"></use>
+            </svg>
+            <span><?php echo htmlspecialchars($cat['nombre']); ?></span>
+          </label>
+        </li>
+      <?php endforeach; ?>
     </ul>
+  </div>
 </div>
 
 
