@@ -88,12 +88,13 @@
 
   <!-- MODALS ====================================== -->
 
-  <!-- Modal Compras -->
+ <?php $hoy = date('Y-m-d'); ?>
+<!-- Modal Compras -->
 <div class="modal fade" id="modalCompra" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Reporte Productos</h5>
+        <h5 class="modal-title">Reporte Compras</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form method="post" action="?pagina=reporte" target="_blank">
@@ -104,31 +105,43 @@
           <div class="row g-2 mb-3">
             <div class="col-6">
               <label class="form-label">Fecha Inicio</label>
-              <input type="date" name="f_start" class="form-control">
+              <input
+                type="date"
+                name="f_start"
+                class="form-control"
+                max="<?= $hoy ?>"
+              >
             </div>
             <div class="col-6">
               <label class="form-label">Fecha Fin</label>
-              <input type="date" name="f_end" class="form-control">
+              <input
+                type="date"
+                name="f_end"
+                class="form-control"
+                max="<?= $hoy ?>"
+              >
             </div>
             <div class="col-12">
               <label class="form-label">Producto (opcional)</label>
               <select name="f_id" class="form-select">
                 <option value="">— Todos —</option>
-<?php foreach($productos_lista as $p): ?>
-                <option value="<?= $p['id_producto'] ?>">
-                  <?= htmlspecialchars($p['nombre']) ?>
-                </option>
-<?php endforeach; ?>
+                <?php foreach($productos_lista as $p): ?>
+                  <option value="<?= $p['id_producto'] ?>">
+                    <?= htmlspecialchars($p['nombre']) ?>
+                  </option>
+                <?php endforeach; ?>
               </select>
             </div>
           </div>
-          <!-- fin mini‐formulario -->
+          <!-- /mini‐formulario -->
 
-          <p class="text-center">¿Generar listado de productos?</p>
+          <p class="text-center">¿Generar listado de compras?</p>
         </div>
 
         <div class="modal-footer">
-          <button type="submit" name="generar" class="btn btn-danger">GENERAR PDF</button>
+          <button type="submit" name="generar" class="btn btn-danger">
+            GENERAR PDF
+          </button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             Cerrar
           </button>
@@ -139,6 +152,7 @@
 </div>
 
 
+<?php $hoy = date('Y-m-d'); ?>
 <!-- Modal Productos -->
 <div class="modal fade" id="modalProducto" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -155,31 +169,43 @@
           <div class="row g-2 mb-3">
             <div class="col-6">
               <label class="form-label">Fecha Inicio</label>
-              <input type="date" name="f_start" class="form-control">
+              <input
+                type="date"
+                name="f_start"
+                class="form-control"
+                max="<?= $hoy ?>"
+              >
             </div>
             <div class="col-6">
               <label class="form-label">Fecha Fin</label>
-              <input type="date" name="f_end" class="form-control">
+              <input
+                type="date"
+                name="f_end"
+                class="form-control"
+                max="<?= $hoy ?>"
+              >
             </div>
             <div class="col-12">
               <label class="form-label">Producto (opcional)</label>
               <select name="f_id" class="form-select">
                 <option value="">— Todos —</option>
-<?php foreach($productos_lista as $p): ?>
-                <option value="<?= $p['id_producto'] ?>">
-                  <?= htmlspecialchars($p['nombre']) ?>
-                </option>
-<?php endforeach; ?>
+                <?php foreach($productos_lista as $p): ?>
+                  <option value="<?= $p['id_producto'] ?>">
+                    <?= htmlspecialchars($p['nombre']) ?>
+                  </option>
+                <?php endforeach; ?>
               </select>
             </div>
           </div>
-          <!-- fin mini‐formulario -->
+          <!-- /mini‐formulario -->
 
           <p class="text-center">¿Generar listado de productos?</p>
         </div>
 
         <div class="modal-footer">
-          <button type="submit" name="generar" class="btn btn-danger">GENERAR PDF</button>
+          <button type="submit" name="generar" class="btn btn-danger">
+            GENERAR PDF
+          </button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             Cerrar
           </button>
@@ -190,12 +216,14 @@
 </div>
 
 
-  <!-- Modal Ventas -->
+
+<?php $hoy = date('Y-m-d'); ?>
+<!-- Modal Ventas -->
 <div class="modal fade" id="modalVenta" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Reporte Productos</h5>
+        <h5 class="modal-title">Reporte Ventas</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form method="post" action="?pagina=reporte" target="_blank">
@@ -206,31 +234,43 @@
           <div class="row g-2 mb-3">
             <div class="col-6">
               <label class="form-label">Fecha Inicio</label>
-              <input type="date" name="f_start" class="form-control">
+              <input
+                type="date"
+                name="f_start"
+                class="form-control"
+                max="<?= $hoy ?>"
+              >
             </div>
             <div class="col-6">
               <label class="form-label">Fecha Fin</label>
-              <input type="date" name="f_end" class="form-control">
+              <input
+                type="date"
+                name="f_end"
+                class="form-control"
+                max="<?= $hoy ?>"
+              >
             </div>
             <div class="col-12">
               <label class="form-label">Producto (opcional)</label>
               <select name="f_id" class="form-select">
                 <option value="">— Todos —</option>
-<?php foreach($productos_lista as $p): ?>
-                <option value="<?= $p['id_producto'] ?>">
-                  <?= htmlspecialchars($p['nombre']) ?>
-                </option>
-<?php endforeach; ?>
+                <?php foreach($productos_lista as $p): ?>
+                  <option value="<?= $p['id_producto'] ?>">
+                    <?= htmlspecialchars($p['nombre']) ?>
+                  </option>
+                <?php endforeach; ?>
               </select>
             </div>
           </div>
-          <!-- fin mini‐formulario -->
+          <!-- /mini‐formulario -->
 
-          <p class="text-center">¿Generar listado de productos?</p>
+          <p class="text-center">¿Generar listado de ventas?</p>
         </div>
 
         <div class="modal-footer">
-          <button type="submit" name="generar" class="btn btn-danger">GENERAR PDF</button>
+          <button type="submit" name="generar" class="btn btn-danger">
+            GENERAR PDF
+          </button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             Cerrar
           </button>
@@ -241,12 +281,14 @@
 </div>
 
 
-  <!-- Modal Proveedores -->
+
+<?php $hoy = date('Y-m-d'); ?>
+ <!-- Modal Proveedores -->
 <div class="modal fade" id="modalProveedor" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Reporte Productos</h5>
+        <h5 class="modal-title">Reporte Proveedores</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form method="post" action="?pagina=reporte" target="_blank">
@@ -257,31 +299,43 @@
           <div class="row g-2 mb-3">
             <div class="col-6">
               <label class="form-label">Fecha Inicio</label>
-              <input type="date" name="f_start" class="form-control">
+              <input
+                type="date"
+                name="f_start"
+                class="form-control"
+                max="<?= $hoy ?>"
+              >
             </div>
             <div class="col-6">
               <label class="form-label">Fecha Fin</label>
-              <input type="date" name="f_end" class="form-control">
+              <input
+                type="date"
+                name="f_end"
+                class="form-control"
+                max="<?= $hoy ?>"
+              >
             </div>
             <div class="col-12">
-              <label class="form-label">Producto (opcional)</label>
+              <label class="form-label">Proveedor (opcional)</label>
               <select name="f_id" class="form-select">
                 <option value="">— Todos —</option>
-<?php foreach($productos_lista as $p): ?>
-                <option value="<?= $p['id_producto'] ?>">
-                  <?= htmlspecialchars($p['nombre']) ?>
-                </option>
-<?php endforeach; ?>
+                <?php foreach($proveedores_lista as $prov): ?>
+                  <option value="<?= $prov['id_proveedor'] ?>">
+                    <?= htmlspecialchars($prov['nombre']) ?>
+                  </option>
+                <?php endforeach; ?>
               </select>
             </div>
           </div>
-          <!-- fin mini‐formulario -->
+          <!-- /mini‐formulario -->
 
-          <p class="text-center">¿Generar listado de productos?</p>
+          <p class="text-center">¿Generar listado de proveedores?</p>
         </div>
 
         <div class="modal-footer">
-          <button type="submit" name="generar" class="btn btn-danger">GENERAR PDF</button>
+          <button type="submit" name="generar" class="btn btn-danger">
+            GENERAR PDF
+          </button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             Cerrar
           </button>
@@ -292,13 +346,14 @@
 </div>
 
 
-  <!-- Modal Pedido Web -->
-<!-- Modal Productos -->
+
+<?php $hoy = date('Y-m-d'); ?>
+ <!-- Modal Pedido Web -->
 <div class="modal fade" id="modalPedidoWeb" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Reporte Productos</h5>
+        <h5 class="modal-title">Reporte Pedido Web</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form method="post" action="?pagina=reporte" target="_blank">
@@ -309,31 +364,43 @@
           <div class="row g-2 mb-3">
             <div class="col-6">
               <label class="form-label">Fecha Inicio</label>
-              <input type="date" name="f_start" class="form-control">
+              <input
+                type="date"
+                name="f_start"
+                class="form-control"
+                max="<?= $hoy ?>"
+              >
             </div>
             <div class="col-6">
               <label class="form-label">Fecha Fin</label>
-              <input type="date" name="f_end" class="form-control">
+              <input
+                type="date"
+                name="f_end"
+                class="form-control"
+                max="<?= $hoy ?>"
+              >
             </div>
             <div class="col-12">
               <label class="form-label">Producto (opcional)</label>
               <select name="f_id" class="form-select">
                 <option value="">— Todos —</option>
-<?php foreach($productos_lista as $p): ?>
-                <option value="<?= $p['id_producto'] ?>">
-                  <?= htmlspecialchars($p['nombre']) ?>
-                </option>
-<?php endforeach; ?>
+                <?php foreach($productos_lista as $p): ?>
+                  <option value="<?= $p['id_producto'] ?>">
+                    <?= htmlspecialchars($p['nombre']) ?>
+                  </option>
+                <?php endforeach; ?>
               </select>
             </div>
           </div>
-          <!-- fin mini‐formulario -->
+          <!-- /mini‐formulario -->
 
-          <p class="text-center">¿Generar listado de productos?</p>
+          <p class="text-center">¿Generar listado de pedidos web?</p>
         </div>
 
         <div class="modal-footer">
-          <button type="submit" name="generar" class="btn btn-danger">GENERAR PDF</button>
+          <button type="submit" name="generar" class="btn btn-danger">
+            GENERAR PDF
+          </button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             Cerrar
           </button>
@@ -343,7 +410,6 @@
   </div>
 </div>
 
- 
 
 
   <script src="assets/js/reporte.js"></script>
