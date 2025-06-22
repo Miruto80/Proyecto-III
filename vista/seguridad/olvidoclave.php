@@ -14,10 +14,7 @@
 
 <style type="text/css">
 	body{
-	background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-image: url('assets/img/f010.png');
+	background-color: #7f7f7f;
 	}
 
 	.text-g{
@@ -35,7 +32,7 @@
 		<div class="text-center">
 		<img src="assets/img/logo2.png" class="img-fluid mb-1" style="width:100px;">
 		</div>
-    	<h4 class="text-center color-g mb-1">Olvido de Contraseña</h4>
+    	<h4 class="text-center text-primary mb-1">Olvido de Contraseña</h4>
 		<hr class="bg-dark">
     	<h6 class="text-center mb-3">Estimado Cliente, <?php echo $_SESSION["nombres"]." ".$_SESSION["apellidos"]; ?> </h6>
         <form action="?pagina=olvidoclave" method="POST" id="forclave" autocomplete="off">

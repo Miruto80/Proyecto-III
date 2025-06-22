@@ -1,5 +1,5 @@
 // ||||||||||||||| OJITO ||||||||||||||||||||
-const passwordInput = document.getElementById('password');
+const passwordInput = document.getElementById('pid');
 const showPasswordButton = document.getElementById('show-password');
 
 showPasswordButton.addEventListener('click', () => {
@@ -37,84 +37,7 @@ mensaje){
     }
 }
 
-// ||||||||||||||| MODAL ||||||||||||||||||||
- document.addEventListener("DOMContentLoaded", function () {
-        const modal = document.getElementById("myModal");
-        let clickCount = 0; // Contador de clics en el fondo
 
-        // Inicialmente ocultar el modal
-        modal.style.display = "none";
-
-        // Mostrar el modal solo cuando se presione el botón
-        document.getElementById("openModal").addEventListener("click", function() {
-            modal.style.display = "flex";
-            setTimeout(() => modal.classList.add("show"), 10);
-            clickCount = 0; // Reiniciar contador al abrir el modal
-        });
-
-        // Función para cerrar el modal solo con doble clic
-        function closeModal() {
-            modal.classList.remove("show");
-            setTimeout(() => modal.style.display = "none", 300);
-            clickCount = 0; // Reiniciar el contador
-        }
-
-        document.getElementById("closeModal").addEventListener("click", closeModal);
-        document.getElementById("closeModalFooter").addEventListener("click", closeModal);
-
-        // Detectar doble clic en el fondo oscuro para cerrar el modal
-        modal.addEventListener("click", function(event) {
-            if (event.target === modal) {
-                clickCount++;
-                
-                if (clickCount === 2) {
-                    closeModal();
-                }
-
-                setTimeout(() => { clickCount = 0; }, 500); // Reinicia el contador después de 500ms
-            }
-        });
-    });
-
-
- // ||||||||||||||| MODAL ||||||||||||||||||||
- document.addEventListener("DOMContentLoaded", function () {
-        const modal = document.getElementById("myModalclave");
-        let clickCount = 0; // Contador de clics en el fondo
-
-        // Inicialmente ocultar el modal
-        modal.style.display = "none";
-
-        // Mostrar el modal solo cuando se presione el botón
-        document.getElementById("openModalclave").addEventListener("click", function() {
-            modal.style.display = "flex";
-            setTimeout(() => modal.classList.add("show"), 10);
-            clickCount = 0; // Reiniciar contador al abrir el modal
-        });
-
-        // Función para cerrar el modal solo con doble clic
-        function closeModal() {
-            modal.classList.remove("show");
-            setTimeout(() => modal.style.display = "none", 300);
-            clickCount = 0; // Reiniciar el contador
-        }
-
-        document.getElementById("closeModalclave").addEventListener("click", closeModal);
-        document.getElementById("closeModalFooterclave").addEventListener("click", closeModal);
-
-        // Detectar doble clic en el fondo oscuro para cerrar el modal
-        modal.addEventListener("click", function(event) {
-            if (event.target === modal) {
-                clickCount++;
-                
-                if (clickCount === 2) {
-                    closeModal();
-                }
-
-                setTimeout(() => { clickCount = 0; }, 500); // Reinicia el contador después de 500ms
-            }
-        });
-    });
 
 //|||||||||||||| VALIDAR ENVIO ||||||||||||||||||||||
 function validarFormulario() {
@@ -155,12 +78,31 @@ function validarFormulario() {
         $("#textocorreo").text("");
     }
 
+    if (!/^.{8,16}$/.test($("#recontrasena").val())) {
+        $("#textorecontrasena").text("Debe tener entre 8 y 16 caracteres.");
+        valido = false;
+    } else {
+        $("#textorecontrasena").text("");
+    }
+
     if (!/^.{8,16}$/.test($("#clave").val())) {
         $("#textoclave").text("Debe tener entre 8 y 16 caracteres.");
         valido = false;
     } else {
         $("#textoclave").text("");
     }
+
+    if ($("#clave").val() !== $("#recontrasena").val()) {
+    $("#textoclave").text("Las contraseñas no coinciden.");
+    valido = false;
+    } else {
+    // Solo limpiamos si ya pasaron las validaciones anteriores
+    if (/^.{8,16}$/.test($("#clave").val()) && /^.{8,16}$/.test($("#recontrasena").val())) {
+        $("#textorecontrasena").text("");
+    }
+}
+
+
 
     return valido;
 }
@@ -193,11 +135,11 @@ function validarForlogin() {
         $("#textousuario").text("");
     }
 
-    if (!/^.{8,16}$/.test($("#password").val())) {
-        $("#textopassword").text("Debe tener entre 8 y 16 caracteres.");
+    if (!/^.{8,16}$/.test($("#pid").val())) {
+        $("#textop").text("Debe tener entre 8 y 16 caracteres.");
         valido = false;
     } else {
-        $("#textopassword").text("");
+        $("#textop").text("");
     }
 
     return valido;
@@ -291,6 +233,7 @@ $(document).ready(function() {
          // Restaurar botón después de completar el proceso
         $('#registrar').prop("disabled", false).html('<i class="fa-solid fa-user-plus"></i> Registrar');
           });
+       
         } else {
             Swal.fire({
                 icon: "error",
@@ -325,11 +268,12 @@ $(document).ready(function(){
     $("#textousuario"),"El formato debe ser 1222333");
   });
 
-  $("#password").on("keypress", function(e) {
+  $("#pid").on("keypress", function(e) {
     validarkeyup(/^.{8,16}$/, e);
   });
-  $("#password").on("keyup", function() {
-    validarkeyup(/^.{8,16}$/, $(this), $("#textopassword"), "El formato debe ser entre 8 y 16 caracteres");
+
+  $("#pid").on("keyup", function() {
+    validarkeyup(/^.{8,16}$/, $(this), $("#textop"), "El formato debe ser entre 8 y 16 caracteres");
   });
  
   $("#cedulac").on("keypress",function(e){
@@ -401,20 +345,20 @@ $(document).ready(function(){
     
     $("#clave").on("keyup", function() {
     validarkeyup(/^.{8,16}$/, $(this), $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+    });
+
+    $("#recontrasena").on("keypress", function(e) {
+    validarkeyup(/^.{8,16}$/, e);
+    });
+    
+    $("#recontrasena").on("keyup", function() {
+    validarkeyup(/^.{8,16}$/, $(this), $("#textorecontrasena"), "El formato debe ser entre 8 y 16 caracteres");
     })
 
 
 
 });
   
-
-//||||||||| CERRAR MODAL  
-function closeModal() {
-    const modal = document.getElementById("myModal");
-    modal.classList.remove("show");
-    setTimeout(() => modal.style.display = "none", 300);
-}
-
 
 // AJAX
 function muestraMensaje(icono, tiempo, titulo, mensaje) {
@@ -474,19 +418,8 @@ function enviaAjax(datos) {
                 
                    
                   setTimeout(() => {
-                  document.getElementById("cedula").value = "";
-                  document.getElementById("nombre").value = "";
-                  document.getElementById("apellido").value = "";
-                  document.getElementById("telefono").value = "";
-                  document.getElementById("correo").value = "";
-                  document.getElementById("clave").value = "";
-
-               
-                  $('#registrar').prop("disabled", false).html('<i class="fa-solid fa-user-plus"></i> Registrar');
-                
-                  setTimeout(() => {
-                     closeModal(); 
-                    }, 500);
+                     $('#registrar').prop("disabled", false).html('<i class="fa-solid fa-user-plus"></i> Registrar');
+                     location = '?pagina=login';
                   }, 2000); 
               } else {
                   muestraMensaje("error", 2500, lee.text, "revise o cambialo y lo vuelve a intentar");
