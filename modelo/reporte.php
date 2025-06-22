@@ -117,17 +117,78 @@ public static function compra($start = null, $end = null, $prodId = null): void 
     //
     // 7) Construir texto legible de filtros
     //
-    if (!$start && !$end) {
-        $filtroText = 'Registro general';
-    } elseif ($start && !$end) {
-        $filtroText = 'Desde ' . date('d/m/Y', strtotime($start));
-    } elseif (!$start && $end) {
-        $filtroText = 'Hasta ' . date('d/m/Y', strtotime($end));
-    } else {
-        $filtroText  = 'Desde ' . date('d/m/Y', strtotime($start))
-                     . ' hasta ' . date('d/m/Y', strtotime($end));
-    }
-
+ // … justo antes de armar tu $html …
+ if (!$start && !$end) {
+    // Sin ninguna fecha → todo el historial
+    $filtroText = 'Registro general';
+ }
+ elseif ($start && !$end) {
+    // Sólo fecha inicio
+    $filtroText = 'Reporte desde ' . date('d/m/Y', strtotime($start));
+ }
+ elseif (!$start && $end) {
+    // Sólo fecha fin
+    $filtroText = 'Reporte hasta ' . date('d/m/Y', strtotime($end));
+ }
+ elseif ($start === $end) {
+    // Misma fecha de inicio y fin
+    $filtroText = 'Reporte del ' . date('d/m/Y', strtotime($start));
+ }
+ else {
+    // Rango distinto
+    $filtroText = 'Desde '
+        . date('d/m/Y', strtotime($start))
+        . ' hasta '
+        . date('d/m/Y', strtotime($end));
+ }
+ // … justo antes de armar tu $html …
+ if (!$start && !$end) {
+    // Sin ninguna fecha → todo el historial
+    $filtroText = 'Registro general';
+ }
+ elseif ($start && !$end) {
+    // Sólo fecha inicio
+    $filtroText = 'Reporte desde ' . date('d/m/Y', strtotime($start));
+ }
+ elseif (!$start && $end) {
+    // Sólo fecha fin
+    $filtroText = 'Reporte hasta ' . date('d/m/Y', strtotime($end));
+ }
+ elseif ($start === $end) {
+    // Misma fecha de inicio y fin
+    $filtroText = 'Reporte del ' . date('d/m/Y', strtotime($start));
+ }
+ else {
+    // Rango distinto
+    $filtroText = 'Desde '
+        . date('d/m/Y', strtotime($start))
+        . ' hasta '
+        . date('d/m/Y', strtotime($end));
+ }
+ // … justo antes de armar tu $html …
+ if (!$start && !$end) {
+    // Sin ninguna fecha → todo el historial
+    $filtroText = 'Registro general';
+ }
+ elseif ($start && !$end) {
+    // Sólo fecha inicio
+    $filtroText = 'Reporte desde ' . date('d/m/Y', strtotime($start));
+  }
+ elseif (!$start && $end) {
+    // Sólo fecha fin
+    $filtroText = 'Reporte hasta ' . date('d/m/Y', strtotime($end));
+  }
+ elseif ($start === $end) {
+    // Misma fecha de inicio y fin
+    $filtroText = 'Reporte del ' . date('d/m/Y', strtotime($start));
+  }
+ else {
+    // Rango distinto
+    $filtroText = 'Desde '
+        . date('d/m/Y', strtotime($start))
+        . ' hasta '
+        . date('d/m/Y', strtotime($end));
+  }
     //
     // 8) Armar el HTML completo para el PDF
     //
@@ -187,8 +248,9 @@ public static function compra($start = null, $end = null, $prodId = null): void 
 
 
 
-public static function producto($start = null, $end = null, $prodId = null): void {
-    // 1) includes y setup
+
+public static function producto($prodId = null, $provId = null, $catId = null): void {
+    // 1) Includes y setup
     require_once 'modelo/conexion.php';
     require_once 'assets/dompdf/vendor/autoload.php';
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph.php';
@@ -198,29 +260,37 @@ public static function producto($start = null, $end = null, $prodId = null): voi
     $cnx = (new Conexion())->getConex1();
 
     //
-    // 2) Filtros para el gráfico (Top 10 stock)
+    // 2) Construcción de filtros para el GRÁFICO (Top 10 stock)
     //
-    $whereG  = ['p.estatus IN (1,2)'];
+    $whereG  = ['1=1'];
     $paramsG = [];
+    $joinComprasG = '';
 
-    // Rango de fechas (ajusta campo si es diferente)
-    if ($start && $end) {
-        $whereG[]        = 'p.fecha_ingreso BETWEEN :sG AND :eG';
-        $paramsG[':sG']  = $start . ' 00:00:00';
-        $paramsG[':eG']  = $end   . ' 23:59:59';
-    }
-    // Filtrar un único producto
     if ($prodId) {
-        $whereG[]         = 'p.id_producto = :pidG';
-        $paramsG[':pidG'] = $prodId;
+      $whereG[]        = 'p.id_producto = :pid';
+      $paramsG[':pid'] = $prodId;
+    }
+    if ($provId) {
+      // incluir sólo productos comprados a este proveedor
+      $joinComprasG     = "
+        JOIN compra_detalles cd ON cd.id_producto = p.id_producto
+        JOIN compra           c  ON c.id_compra    = cd.id_compra
+      ";
+      $whereG[]         = 'c.id_proveedor = :prov';
+      $paramsG[':prov'] = $provId;
+    }
+    if ($catId) {
+      $whereG[]         = 'p.id_categoria = :cat';
+      $paramsG[':cat']  = $catId;
     }
 
     $whereGSQL = implode(' AND ', $whereG);
 
     $sqlG = "
-      SELECT p.nombre, p.stock_disponible
+      SELECT p.id_producto, p.nombre, p.stock_disponible
       FROM productos p
-      JOIN categoria c ON p.id_categoria = c.id_categoria
+      JOIN categoria cat ON cat.id_categoria = p.id_categoria
+      $joinComprasG
       WHERE $whereGSQL
       ORDER BY p.stock_disponible DESC
       LIMIT 10
@@ -228,154 +298,158 @@ public static function producto($start = null, $end = null, $prodId = null): voi
     $stmtG = $cnx->prepare($sqlG);
     $stmtG->execute($paramsG);
 
-    $labels = $data = [];
-    while ($row = $stmtG->fetch(PDO::FETCH_ASSOC)) {
-        $labels[] = $row['nombre'];
-        $data[]   = (int)$row['stock_disponible'];
+    $labels = $data = $graphIds = [];
+    while ($r = $stmtG->fetch(PDO::FETCH_ASSOC)) {
+      $graphIds[] = $r['id_producto'];
+      $labels[]   = $r['nombre'];
+      $data[]     = (int)$r['stock_disponible'];
     }
 
-    // 3) Generar gráfico
+    // Generar imagen del gráfico 3D
     $imgDir  = __DIR__ . '/../assets/img/grafica_reportes/';
     $imgFile = $imgDir . 'grafico_productos.png';
     if (!is_dir($imgDir)) mkdir($imgDir, 0777, true);
     if (file_exists($imgFile)) unlink($imgFile);
 
     if (!empty($data)) {
-        $graph = new \PieGraph(900, 500);
-        $pie   = new \PiePlot3D($data);
-        $pie->SetLegends($labels);
-        $pie->SetCenter(0.5, 0.5);
-        $pie->ExplodeSlice(1);
-        $graph->Add($pie);
-        $graph->Stroke($imgFile);
+      $graph = new \PieGraph(900, 500);
+      $pie   = new \PiePlot3D($data);
+      $pie->SetLegends($labels);
+      $pie->SetCenter(0.5, 0.5);
+      $pie->ExplodeSlice(1);
+      $graph->Add($pie);
+      $graph->Stroke($imgFile);
     }
-
     $graf = file_exists($imgFile)
-          ? 'data:image/png;base64,' . base64_encode(file_get_contents($imgFile))
+          ? 'data:image/png;base64,'.base64_encode(file_get_contents($imgFile))
           : '';
 
     //
-    // 4) Filtros para la tabla
+    // 3) Construcción de filtros para la TABLA
     //
-    $whereT  = [];
+    $whereT  = ['1=1'];
     $paramsT = [];
+    $joinComprasT = '';
 
-    if ($start && $end) {
-        $whereT[]        = 'p.fecha_ingreso BETWEEN :sT AND :eT';
-        $paramsT[':sT']  = $start . ' 00:00:00';
-        $paramsT[':eT']  = $end   . ' 23:59:59';
-    }
     if ($prodId) {
-        $whereT[]         = 'p.id_producto = :pidT';
-        $paramsT[':pidT'] = $prodId;
+      $whereT[]         = 'p.id_producto = :pidT';
+      $paramsT[':pidT'] = $prodId;
+    }
+    if ($catId) {
+      $whereT[]         = 'p.id_categoria = :catT';
+      $paramsT[':catT'] = $catId;
+    }
+    if ($provId) {
+      $joinComprasT     = "
+        JOIN compra_detalles cd2 ON cd2.id_producto = p.id_producto
+        JOIN compra           c2  ON c2.id_compra    = cd2.id_compra
+      ";
+      $whereT[]         = 'c2.id_proveedor = :provT';
+      $paramsT[':provT']= $provId;
     }
 
-    $whereTSQL = !empty($whereT)
-               ? 'AND ' . implode(' AND ', $whereT)
-               : '';
+    $whereTSQL = implode(' AND ', $whereT);
 
     $sqlT = "
-      SELECT 
+      SELECT DISTINCT
         p.nombre,
         p.descripcion,
         p.marca,
         p.precio_detal,
         p.precio_mayor,
         p.stock_disponible,
-        c.nombre AS nombre_categoria
+        cat.nombre   AS categoria
       FROM productos p
-      JOIN categoria c ON p.id_categoria = c.id_categoria
-      WHERE p.estatus IN (1,2)
-        $whereTSQL
+      JOIN categoria cat ON cat.id_categoria = p.id_categoria
+      $joinComprasT
+      WHERE $whereTSQL
       ORDER BY p.nombre ASC
     ";
     $stmtT = $cnx->prepare($sqlT);
     $stmtT->execute($paramsT);
     $rows  = $stmtT->fetchAll(PDO::FETCH_ASSOC);
 
-    //
-    // 5) Texto legible de filtros
-    //
-    if (!$start && !$end && !$prodId) {
-        $filtroText = 'Registro general';
-    } elseif ($prodId && !$start && !$end) {
-        // Obtén nombre de producto para mostrar
-        $prodName   = htmlspecialchars($rows[0]['nombre'] ?? '—');
-        $filtroText = "Producto: $prodName";
-    } else {
-        // Combinar fecha y/o producto
-        $parts = [];
-        if ($start && $end) {
-            $parts[] = 'Desde ' . date('d/m/Y', strtotime($start))
-                     . ' hasta ' . date('d/m/Y', strtotime($end));
-        } elseif ($start) {
-            $parts[] = 'Desde ' . date('d/m/Y', strtotime($start));
-        } elseif ($end) {
-            $parts[] = 'Hasta ' . date('d/m/Y', strtotime($end));
-        }
-        if ($prodId) {
-            $parts[] = "Producto: $prodName";
-        }
-        $filtroText = implode(' | ', $parts);
+    // 4) Si no hay filas, mostramos PDF con mensaje y salimos
+    if (empty($rows)) {
+      $html = '<html><head><style>
+        body{font-family:Arial;font-size:14px;text-align:center;padding:40px;}
+        h1{color:#555;}
+      </style></head><body>
+        <h1>Lo siento 😔</h1>
+        <p>No hay datos suficientes para generar el reporte de Productos.</p>
+      </body></html>';
+
+      $pdf = new Dompdf();
+      $pdf->loadHtml($html);
+      $pdf->setPaper('A4','portrait');
+      $pdf->render();
+      $pdf->stream('Reporte_Productos.pdf',['Attachment'=>false]);
+      exit;
     }
 
     //
-    // 6) Armar el HTML
+    // 5) Texto legible de filtros y fecha de generación
+    //
+    $parts = [];
+    if ($prodId) $parts[] = 'Producto: '.htmlspecialchars($rows[0]['nombre'] ?? '—');
+    if ($provId) $parts[] = 'Proveedor ID: '.$provId;
+    if ($catId)  $parts[] = 'Categoría: '.htmlspecialchars($rows[0]['categoria'] ?? '—');
+    $filtroText = empty($parts) 
+                ? 'Listado general de productos' 
+                : implode(' | ', $parts);
+
+    $fechaGen = date('d/m/Y H:i');
+
+    //
+    // 6) Armar HTML y generar PDF
     //
     $html = "<html><head><style>
       body{font-family:Arial;font-size:12px;}
       h1,h2{text-align:center;}
-      p{margin:0 0 10px;}
+      p{margin:0 0 8px;}
       table{width:100%;border-collapse:collapse;margin-top:10px;}
       th,td{border:1px solid #000;padding:6px;text-align:center;}
       th{background:#f36ca4;color:#fff;}
     </style></head><body>
       <h1>Listado de Productos</h1>
-      <p><strong>Filtro:</strong> $filtroText</p>";
+      <p><strong>Fecha generación:</strong> {$fechaGen}</p>
+      <p><strong>Filtro:</strong> {$filtroText}</p>";
 
     if ($graf) {
-        $html .= "<h2>Top 10 Productos por Stock</h2>
-        <div style='text-align:center;'>
-          <img src=\"$graf\" width=\"600\"/>
-        </div>";
+      $html .= "<h2>Top 10 Productos por Stock</h2>
+      <div style='text-align:center;'>
+        <img src=\"{$graf}\" width=\"600\"/>
+      </div>";
     }
 
     $html .= "<table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Marca</th>
-            <th>Precio Detal</th>
-            <th>Precio Mayor</th>
-            <th>Stock</th>
-            <th>Categoría</th>
-          </tr>
-        </thead><tbody>";
+      <thead><tr>
+        <th>Nombre</th><th>Descripción</th><th>Marca</th>
+        <th>Precio Detal</th><th>Precio Mayor</th>
+        <th>Stock</th><th>Categoría</th>
+      </tr></thead><tbody>";
 
     foreach ($rows as $r) {
-        $html .= "<tr>
-            <td>" . htmlspecialchars($r['nombre']) . "</td>
-            <td>" . htmlspecialchars($r['descripcion']) . "</td>
-            <td>" . htmlspecialchars($r['marca']) . "</td>
-            <td>" . number_format($r['precio_detal'], 2) . "</td>
-            <td>" . number_format($r['precio_mayor'], 2) . "</td>
-            <td>" . (int)$r['stock_disponible'] . "</td>
-            <td>" . htmlspecialchars($r['nombre_categoria']) . "</td>
-          </tr>";
+      $html .= "<tr>
+        <td>".htmlspecialchars($r['nombre'])."</td>
+        <td>".htmlspecialchars($r['descripcion'])."</td>
+        <td>".htmlspecialchars($r['marca'])."</td>
+        <td>".number_format($r['precio_detal'],2)."</td>
+        <td>".number_format($r['precio_mayor'],2)."</td>
+        <td>".(int)$r['stock_disponible']."</td>
+        <td>".htmlspecialchars($r['categoria'])."</td>
+      </tr>";
     }
 
     $html .= "</tbody></table></body></html>";
 
-    //
-    // 7) Generar y stream
-    //
     $pdf = new Dompdf();
     $pdf->loadHtml($html);
-    $pdf->setPaper('A4', 'portrait');
+    $pdf->setPaper('A4','portrait');
     $pdf->render();
-    $pdf->stream('Reporte_Productos.pdf', ['Attachment' => false]);
+    $pdf->stream('Reporte_Productos.pdf',['Attachment'=>false]);
 }
+
 
 
 
@@ -577,191 +651,7 @@ public static function venta($start = null, $end = null, $prodId = null): void {
 
 
 
-public static function proveedor($start = null, $end = null, $provId = null): void {
-    // 1) includes y setup
-    require_once 'modelo/conexion.php';
-    require_once 'assets/dompdf/vendor/autoload.php';
-    require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph.php';
-    require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie.php';
-    require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie3d.php';
 
-    $cnx = (new Conexion())->getConex1();
-
-    //
-    // 2) Filtros para el gráfico (Top 5 proveedores con más compras)
-    //
-    $whereG  = ['pr.estatus = 1'];
-    $paramsG = [];
-
-    if ($start && $end) {
-        $whereG[]       = 'c.fecha_entrada BETWEEN :sG AND :eG';
-        $paramsG[':sG'] = $start . ' 00:00:00';
-        $paramsG[':eG'] = $end   . ' 23:59:59';
-    }
-    if ($provId) {
-        $whereG[]         = 'pr.id_proveedor = :pidG';
-        $paramsG[':pidG'] = $provId;
-    }
-    $whereGSQL = implode(' AND ', $whereG);
-
-    $sqlG = "
-      SELECT pr.nombre, COUNT(c.id_compra) AS total_compras
-      FROM compra c
-      JOIN proveedor pr ON c.id_proveedor = pr.id_proveedor
-      WHERE $whereGSQL
-      GROUP BY pr.id_proveedor, pr.nombre
-      ORDER BY total_compras DESC
-      LIMIT 5
-    ";
-    $stmtG = $cnx->prepare($sqlG);
-    $stmtG->execute($paramsG);
-
-    $labels = [];
-    $data   = [];
-    while ($r = $stmtG->fetch(PDO::FETCH_ASSOC)) {
-        $labels[] = $r['nombre'];
-        $data[]   = (int)$r['total_compras'];
-    }
-
-    // 3) Generar gráfico 3D
-    $imgDir  = __DIR__ . '/../assets/img/grafica_reportes/';
-    $imgFile = $imgDir . 'grafico_proveedores.png';
-    if (!is_dir($imgDir)) mkdir($imgDir, 0777, true);
-    if (file_exists($imgFile)) unlink($imgFile);
-
-    if ($data) {
-        $graph = new \PieGraph(900, 500);
-        $pie   = new \PiePlot3D($data);
-        $pie->SetLegends($labels);
-        $pie->SetCenter(0.5, 0.5);
-        $pie->ExplodeSlice(1);
-        $graph->Add($pie);
-        $graph->Stroke($imgFile);
-    }
-    $graf = file_exists($imgFile)
-          ? 'data:image/png;base64,' . base64_encode(file_get_contents($imgFile))
-          : '';
-
-    //
-    // 4) Filtros para la tabla de proveedores
-    //
-    $whereT  = [];
-    $paramsT = [];
-
-    if ($start && $end) {
-        $whereT[]        = 'c.fecha_entrada BETWEEN :sT AND :eT';
-        $paramsT[':sT']  = $start . ' 00:00:00';
-        $paramsT[':eT']  = $end   . ' 23:59:59';
-    }
-    if ($provId) {
-        $whereT[]         = 'pr.id_proveedor = :pidT';
-        $paramsT[':pidT'] = $provId;
-    }
-    $whereTSQL = !empty($whereT)
-               ? 'AND ' . implode(' AND ', $whereT)
-               : '';
-
-    $sqlT = "
-      SELECT DISTINCT
-        pr.nombre,
-        pr.tipo_documento,
-        pr.numero_documento,
-        pr.correo,
-        pr.telefono,
-        pr.direccion
-      FROM proveedor pr
-      JOIN compra c ON c.id_proveedor = pr.id_proveedor
-      WHERE pr.estatus = 1
-        $whereTSQL
-      ORDER BY pr.nombre ASC
-    ";
-    $stmtT = $cnx->prepare($sqlT);
-    $stmtT->execute($paramsT);
-    $rows  = $stmtT->fetchAll(PDO::FETCH_ASSOC);
-
-    //
-    // 5) Construir texto legible de filtros
-    //
-    if (!$start && !$end && !$provId) {
-        $filtroText = 'Registro general';
-    } elseif ($provId && !$start && !$end) {
-        // Obtener nombre del proveedor filtrado
-        $provName   = htmlspecialchars($rows[0]['nombre'] ?? '—');
-        $filtroText = "Proveedor: $provName";
-    } else {
-        if ($start && $end) {
-            $filtroText = 'Desde ' . date('d/m/Y', strtotime($start))
-                        . ' hasta ' . date('d/m/Y', strtotime($end));
-        } elseif ($start) {
-            $filtroText = 'Desde ' . date('d/m/Y', strtotime($start));
-        } else {
-            $filtroText = 'Hasta ' . date('d/m/Y', strtotime($end));
-        }
-        if ($provId) {
-            $provName = htmlspecialchars($rows[0]['nombre'] ?? '—');
-            $filtroText .= " | Proveedor: $provName";
-        }
-    }
-
-    //
-    // 6) Armar el HTML
-    //
-    $html = "<html><head><style>
-      body{font-family:Arial;font-size:12px;}
-      h1,h2{text-align:center;}
-      p{margin:0 0 10px;}
-      table{width:100%;border-collapse:collapse;margin-top:10px;}
-      th,td{border:1px solid #000;padding:6px;text-align:center;}
-      th{background:#f36ca4;color:#fff;}
-    </style></head><body>
-      <h1>Listado de Proveedores</h1>
-      <p><strong>Filtro:</strong> $filtroText</p>";
-
-    if ($graf) {
-        $html .= "<h2>Top 5 Proveedores con Más Compras</h2>
-        <div style='text-align:center;'>
-          <img src=\"$graf\" width=\"600\"/>
-        </div>";
-    }
-
-    $html .= "<table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Tipo Doc.</th>
-            <th>Documento</th>
-            <th>Correo</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
-          </tr>
-        </thead><tbody>";
-
-    foreach ($rows as $r) {
-        $html .= "<tr>
-            <td>" . htmlspecialchars($r['nombre']) . "</td>
-            <td>" . htmlspecialchars($r['tipo_documento']) . "</td>
-            <td>" . htmlspecialchars($r['numero_documento']) . "</td>
-            <td>" . htmlspecialchars($r['correo']) . "</td>
-            <td>" . htmlspecialchars($r['telefono']) . "</td>
-            <td>" . htmlspecialchars($r['direccion']) . "</td>
-          </tr>";
-    }
-
-    $html .= "</tbody></table></body></html>";
-
-    //
-    // 7) Renderizar y enviar PDF
-    //
-    $pdf = new Dompdf();
-    $pdf->loadHtml($html);
-    $pdf->setPaper('A4', 'portrait');
-    $pdf->render();
-    $pdf->stream('Reporte_Proveedores.pdf', ['Attachment' => false]);
-}
-
-
-
-// En modelo/reporte.php
 public static function pedidoWeb($start = null, $end = null, $prodId = null): void {
     // 1) includes y setup
     require_once 'modelo/conexion.php';
@@ -955,5 +845,142 @@ public static function pedidoWeb($start = null, $end = null, $prodId = null): vo
     $pdf->render();
     $pdf->stream('Reporte_PedidosWeb.pdf', ['Attachment' => false]);
 }
+
+
+
+
+
+public static function countCompra($start = null, $end = null, $prodId = null): int {
+    $cnx = (new Conexion())->getConex1();
+    $where  = [];
+    $params = [];
+
+    if ($start && $end) {
+      $where[]        = 'c.fecha_entrada BETWEEN :s AND :e';
+      $params[':s']   = $start . ' 00:00:00';
+      $params[':e']   = $end   . ' 23:59:59';
+    }
+    if ($prodId) {
+      $where[]           = 'cd.id_producto = :pid';
+      $params[':pid']    = $prodId;
+    }
+    $w = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+
+    $sql  = "
+      SELECT COUNT(DISTINCT c.id_compra) AS cnt
+      FROM compra c
+      JOIN compra_detalles cd ON cd.id_compra = c.id_compra
+      $w
+    ";
+    $stmt = $cnx->prepare($sql);
+    $stmt->execute($params);
+    return (int)$stmt->fetchColumn();
+}
+
+
+
+
+public static function countProducto($prodId = null, $provId = null, $catId = null): int {
+    $cnx = (new Conexion())->getConex1();
+    $where  = ['1=1'];
+    $params = [];
+    $join   = '';
+
+    if ($prodId) {
+      $where[]          = 'p.id_producto = :pid';
+      $params[':pid']   = $prodId;
+    }
+    if ($catId) {
+      $where[]          = 'p.id_categoria = :cat';
+      $params[':cat']   = $catId;
+    }
+    if ($provId) {
+      $join = "
+        JOIN compra_detalles cd ON cd.id_producto = p.id_producto
+        JOIN compra           c  ON c.id_compra    = cd.id_compra
+      ";
+      $where[]          = 'c.id_proveedor = :prov';
+      $params[':prov']  = $provId;
+    }
+
+    $w   = implode(' AND ', $where);
+    $sql = "
+      SELECT COUNT(DISTINCT p.id_producto) 
+      FROM productos p
+      $join
+      WHERE $w
+    ";
+    $stmt = $cnx->prepare($sql);
+    $stmt->execute($params);
+    return (int)$stmt->fetchColumn();
+}
+
+  /**
+   * Devuelve el número de ventas (tipo 1) que cumplen filtros.
+   */
+public static function countVenta($start = null, $end = null, $prodId = null): int {
+    $cnx = (new Conexion())->getConex1();
+    $where  = ['pe.tipo = 1'];
+    $params = [];
+
+    if ($start && $end) {
+      $where[]        = 'pe.fecha BETWEEN :s AND :e';
+      $params[':s']   = $start . ' 00:00:00';
+      $params[':e']   = $end   . ' 23:59:59';
+    }
+    if ($prodId) {
+      $where[]           = 'pd.id_producto = :pid';
+      $params[':pid']    = $prodId;
+    }
+    $w = 'WHERE ' . implode(' AND ', $where);
+
+    $sql  = "
+      SELECT COUNT(DISTINCT pe.id_pedido) AS cnt
+      FROM pedido pe
+      JOIN pedido_detalles pd ON pd.id_pedido = pe.id_pedido
+      $w
+    ";
+    $stmt = $cnx->prepare($sql);
+    $stmt->execute($params);
+    return (int)$stmt->fetchColumn();
+  }
+
+
+  /**
+   * Devuelve el número de pedidos web (tipo 2) que cumplen filtros.
+   */
+  public static function countPedidoWeb($start = null, $end = null, $prodId = null): int {
+    $cnx = (new Conexion())->getConex1();
+    $where  = ['p.tipo = 2'];
+    $params = [];
+
+    if ($start && $end) {
+      $where[]        = 'p.fecha BETWEEN :s AND :e';
+      $params[':s']   = $start . ' 00:00:00';
+      $params[':e']   = $end   . ' 23:59:59';
+    }
+    if ($prodId) {
+      $where[]           = 'pd.id_producto = :pid';
+      $params[':pid']    = $prodId;
+    }
+    $w = 'WHERE ' . implode(' AND ', $where);
+
+    $sql  = "
+      SELECT COUNT(DISTINCT p.id_pedido) AS cnt
+      FROM pedido p
+      JOIN pedido_detalles pd ON pd.id_pedido = p.id_pedido
+      $w
+    ";
+    $stmt = $cnx->prepare($sql);
+    $stmt->execute($params);
+    return (int)$stmt->fetchColumn();
+  }
+
+
+
+
+
+
+
 
 }
