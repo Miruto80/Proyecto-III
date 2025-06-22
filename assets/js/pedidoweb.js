@@ -6,12 +6,13 @@ $(document).on('click', '.ver-detalles', function () {
   detalles.forEach(detalle => {
     const fila = `
       <tr>
-        <td>${detalle.nombre_producto}</td>
+        <td>${detalle.nombre}</td>
         <td>${detalle.cantidad}</td>
         <td>${detalle.precio_unitario}$</td>
       </tr>
     `;
-    tbody.append(fila);
+    tbody.append(fila); 
+
   });
 
   $('#modalDetallesProducto').modal('show');
