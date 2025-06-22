@@ -42,41 +42,31 @@
             </div>
 
               <!-- BOTONES DE REPORTES -->
-              <div class="card-body">
-              <div class="row g-3">
+<div class="card-body">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-5">
+    <div class="col">
+      <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalCompra">
+        Compras
+      </button>
+    </div>
+    <div class="col">
+      <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalProducto">
+        Productos
+      </button>
+    </div>
+    <div class="col">
+      <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalVenta">
+        Ventas
+      </button>
+    </div>
+    <div class="col">
+      <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalPedidoWeb">
+        Pedido Web
+      </button>
+    </div>
+  </div>
+</div>
 
-                <div class="col-md-2 col-sm-4">
-                  <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalCompra">
-                    Compras
-                  </button>
-                </div>
-
-                <div class="col-md-2 col-sm-4">
-                  <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalProducto">
-                    Productos
-                  </button>
-                </div>
-                
-                <div class="col-md-2 col-sm-4">
-                  <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalVenta">
-                    Ventas
-                  </button>
-                </div>
-
-                <div class="col-md-2 col-sm-4">
-                  <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalProveedor">
-                    Proveedores
-                  </button>
-                </div>
-
-                <div class="col-md-2 col-sm-4">
-                  <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalPedidoWeb">
-                    Pedido Web
-                  </button>
-                </div>
-
-              </div>
-            </div>
             
             <!-- FIN CABECERA -->
           </div>
@@ -97,7 +87,7 @@
         <h5 class="modal-title">Reporte Compras</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form method="post" action="?pagina=reporte" target="_blank">
+      <form class="report-form" method="post" action="?pagina=reporte" target="_blank">
         <input type="hidden" name="reportType" value="compra">
 
         <div class="modal-body">
@@ -159,32 +149,15 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Reporte Productos</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form method="post" action="?pagina=reporte" target="_blank">
+      <form class="report-form" method="post" action="?pagina=reporte" target="_blank">
         <input type="hidden" name="reportType" value="producto">
 
         <div class="modal-body">
-          <!-- mini‐formulario de filtros -->
           <div class="row g-2 mb-3">
-            <div class="col-6">
-              <label class="form-label">Fecha Inicio</label>
-              <input
-                type="date"
-                name="f_start"
-                class="form-control"
-                max="<?= $hoy ?>"
-              >
-            </div>
-            <div class="col-6">
-              <label class="form-label">Fecha Fin</label>
-              <input
-                type="date"
-                name="f_end"
-                class="form-control"
-                max="<?= $hoy ?>"
-              >
-            </div>
+
+            <!-- Filtro por Producto -->
             <div class="col-12">
               <label class="form-label">Producto (opcional)</label>
               <select name="f_id" class="form-select">
@@ -196,9 +169,34 @@
                 <?php endforeach; ?>
               </select>
             </div>
-          </div>
-          <!-- /mini‐formulario -->
 
+            <!-- Filtro por Proveedor -->
+            <div class="col-12">
+              <label class="form-label">Proveedor (opcional)</label>
+              <select name="f_prov" class="form-select">
+                <option value="">— Todos —</option>
+                <?php foreach($proveedores_lista as $prov): ?>
+                  <option value="<?= $prov['id_proveedor'] ?>">
+                    <?= htmlspecialchars($prov['nombre']) ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            <!-- Filtro por Categoría -->
+            <div class="col-12">
+              <label class="form-label">Categoría (opcional)</label>
+              <select name="f_cat" class="form-select">
+                <option value="">— Todas —</option>
+                <?php foreach($categorias_lista as $c): ?>
+                  <option value="<?= $c['id_categoria'] ?>">
+                    <?= htmlspecialchars($c['nombre']) ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+          </div>
           <p class="text-center">¿Generar listado de productos?</p>
         </div>
 
@@ -217,6 +215,8 @@
 
 
 
+
+
 <?php $hoy = date('Y-m-d'); ?>
 <!-- Modal Ventas -->
 <div class="modal fade" id="modalVenta" tabindex="-1">
@@ -226,7 +226,7 @@
         <h5 class="modal-title">Reporte Ventas</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form method="post" action="?pagina=reporte" target="_blank">
+      <form class="report-form" method="post" action="?pagina=reporte" target="_blank">
         <input type="hidden" name="reportType" value="venta">
 
         <div class="modal-body">
@@ -282,68 +282,6 @@
 
 
 
-<?php $hoy = date('Y-m-d'); ?>
- <!-- Modal Proveedores -->
-<div class="modal fade" id="modalProveedor" tabindex="-1">
-  <div class="modal-dialog modal-sm modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Reporte Proveedores</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <form method="post" action="?pagina=reporte" target="_blank">
-        <input type="hidden" name="reportType" value="proveedor">
-
-        <div class="modal-body">
-          <!-- mini‐formulario de filtros -->
-          <div class="row g-2 mb-3">
-            <div class="col-6">
-              <label class="form-label">Fecha Inicio</label>
-              <input
-                type="date"
-                name="f_start"
-                class="form-control"
-                max="<?= $hoy ?>"
-              >
-            </div>
-            <div class="col-6">
-              <label class="form-label">Fecha Fin</label>
-              <input
-                type="date"
-                name="f_end"
-                class="form-control"
-                max="<?= $hoy ?>"
-              >
-            </div>
-            <div class="col-12">
-              <label class="form-label">Proveedor (opcional)</label>
-              <select name="f_id" class="form-select">
-                <option value="">— Todos —</option>
-                <?php foreach($proveedores_lista as $prov): ?>
-                  <option value="<?= $prov['id_proveedor'] ?>">
-                    <?= htmlspecialchars($prov['nombre']) ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-          </div>
-          <!-- /mini‐formulario -->
-
-          <p class="text-center">¿Generar listado de proveedores?</p>
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" name="generar" class="btn btn-danger">
-            GENERAR PDF
-          </button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            Cerrar
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 
 
 
@@ -356,7 +294,7 @@
         <h5 class="modal-title">Reporte Pedido Web</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form method="post" action="?pagina=reporte" target="_blank">
+      <form class="report-form" method="post" action="?pagina=reporte" target="_blank">
         <input type="hidden" name="reportType" value="pedidoWeb">
 
         <div class="modal-body">
