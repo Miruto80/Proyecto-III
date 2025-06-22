@@ -92,7 +92,6 @@
               <li class="menu-item">
                 <a href="?pagina=catalogo_consejo" class="nav-link text-secondary-emphasis">Nuestros Consejos</a>
               </li>
-
               
              <?php if ($sesion_activa): ?>
               <?php if($_SESSION["nivel_rol"] == 1) { ?>
@@ -108,16 +107,17 @@
         
         <div class="col-md-3 col-sm-6">
           <div class="footer-menu">
-            <h5 class="fs-5 fw-normal text-white">Servicio al cliente</h5>
+            <h5 class="fs-5 fw-normal text-white">Información</h5>
             <ul class="menu-list list-unstyled">
                <li class="menu-item">
                 <a href="#" class="nav-link text-secondary-emphasis">FAQ</a>
               </li>
               <li class="menu-item">
-                <a href="?pagina=catalogo_contacto" class="nav-link text-secondary-emphasis">Contacto</a>
+                <a href="?pagina=aviso_legal" class="nav-link text-secondary-emphasis">Aviso Legal</a>
               </li>
+           
               <li class="menu-item">
-                <a href="#" class="nav-link text-secondary-emphasis">Política de privacidad</a>
+                <a href="#" class="nav-link text-secondary-emphasis">Politica de Privacidad</a>
               </li>
               <li class="menu-item">
                 <a href="#" class="nav-link text-secondary-emphasis">Politica de cookies</a>

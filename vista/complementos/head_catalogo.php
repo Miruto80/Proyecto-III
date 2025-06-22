@@ -14,6 +14,7 @@
   <link rel="stylesheet" type="text/css" href="assets/css/catalago/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="assets/css/catalago/vendor.css">
   <link rel="stylesheet" type="text/css" href="assets/css/catalago/style.css">
+  <link rel="stylesheet" href="assets/css/aviso.css">
 
 
 
