@@ -138,9 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         echo json_encode($resultado);
-    } else if(isset($_POST['generar'])) {
-        $objproducto->generarPDF();
-        exit;
     }
 } else if($_SESSION["nivel_rol"] == 3) {
     $bitacora = [
