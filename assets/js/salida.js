@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Referencias a elementos del formulario
     const formVenta = document.getElementById('formRegistroVenta');
-    const formBuscarCliente = document.getElementById('formBuscarCliente');
     const cedulaInput = document.getElementById('cedula_cliente');
     const nombreInput = document.getElementById('nombre_cliente');
     const apellidoInput = document.getElementById('apellido_cliente');
@@ -23,42 +22,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnBuscarCliente = document.getElementById('btnBuscarCliente');
     const camposCliente = document.getElementById('campos-cliente');
     const contenedorProductos = document.getElementById('productos-container-venta');
-    const btnAgregarProducto = document.getElementById('agregar-producto-venta');
     const idClienteHidden = document.getElementById('id_cliente_hidden');
 
     // Referencias a las secciones de venta y productos
     const seccionVenta = document.querySelector('.seccion-venta');
     const seccionProductos = document.querySelector('.seccion-productos');
-
-    // Evento para cuando se abre el modal de registro
-    const registroModal = document.getElementById('registroModal');
-    if (registroModal) {
-        registroModal.addEventListener('show.bs.modal', function () {
-            // Estado inicial al abrir el modal
-            camposCliente.style.display = 'none';
-            btnBuscarCliente.style.display = 'block';
-            btnCancelarRegistro.style.display = 'none';
-            btnRegistrarCliente.style.display = 'block';
-            
-            // Ocultar secciones de venta y productos
-            seccionVenta.style.display = 'none';
-            seccionProductos.style.display = 'none';
-            
-            // Limpiar todos los campos
-            cedulaInput.value = '';
-            nombreInput.value = '';
-            apellidoInput.value = '';
-            telefonoInput.value = '';
-            correoInput.value = '';
-            idClienteHidden.value = '';
-            
-            // Restablecer estados de readonly
-            nombreInput.readOnly = false;
-            apellidoInput.readOnly = false;
-            telefonoInput.readOnly = false;
-            correoInput.readOnly = false;
-        });
-    }
 
     // Variable para almacenar el ID del cliente
     let clienteActualId = null;
@@ -69,134 +37,616 @@ document.addEventListener('DOMContentLoaded', function() {
     const regexSoloLetras = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/;
     const regexCorreo = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     const regexTelefono = /^0[0-9]{10}$/;
-
-    // Expresiones regulares para validaciones de pago
     const regexReferencia = /^[0-9]{4,6}$/;
     const regexTelefonoPago = /^(04|02)[0-9]{9}$/;
-    const regexBanco = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]{3,20}$/;
 
-    // Función para mostrar mensajes de error
+    // Funciones de utilidad
     function mostrarError(elemento, mensaje) {
-        let span = elemento.nextElementSibling;
-        if (!span || !span.classList.contains('error-message')) {
-            span = document.createElement('span');
-            span.classList.add('error-message', 'text-danger');
-            elemento.parentNode.insertBefore(span, elemento.nextSibling);
-        }
-        span.textContent = mensaje;
+        limpiarError(elemento);
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'invalid-feedback';
+        errorDiv.textContent = mensaje;
+        elemento.classList.add('is-invalid');
+        elemento.parentNode.appendChild(errorDiv);
     }
 
-    // Función para limpiar mensajes de error
     function limpiarError(elemento) {
-        const span = elemento.nextElementSibling;
-        if (span && span.classList.contains('error-message')) {
-            span.textContent = '';
+        elemento.classList.remove('is-invalid');
+        elemento.classList.remove('is-valid');
+        const errorDiv = elemento.parentNode.querySelector('.invalid-feedback');
+        if (errorDiv) {
+            errorDiv.remove();
         }
     }
 
-    // Validación de cédula en tiempo real
-    cedulaInput.addEventListener('keypress', function(e) {
-        // Prevenir entrada de letras y caracteres especiales
-        if (!regexSoloNumeros.test(e.key) && e.key !== 'Backspace' && e.key !== 'Tab') {
-            e.preventDefault();
-        }
-    });
+    function mostrarExito(elemento) {
+        elemento.classList.remove('is-invalid');
+        elemento.classList.add('is-valid');
+    }
 
-    // Variable para controlar si se ha buscado el cliente
-    let clienteBuscado = false;
-
-    cedulaInput.addEventListener('input', function() {
-        // Limpiar cualquier caracter que no sea número
-        this.value = this.value.replace(/[^0-9]/g, '');
-        clienteBuscado = false;
+    function resetearFormulario() {
+        // Limpiar campos
+        cedulaInput.value = '';
+        nombreInput.value = '';
+        apellidoInput.value = '';
+        telefonoInput.value = '';
+        correoInput.value = '';
+        idClienteHidden.value = '';
         
-        if (this.value.length > 0 && !regexSoloNumeros.test(this.value)) {
-            this.setCustomValidity('Solo se permiten números');
-            this.classList.add('is-invalid');
-        } else if (this.value.length < 7 || this.value.length > 8) {
-            this.setCustomValidity('La cédula debe tener entre 7 y 8 dígitos');
-            this.classList.add('is-invalid');
-        } else {
-            this.setCustomValidity('');
-            this.classList.remove('is-invalid');
-            this.classList.add('is-valid');
-        }
-    });
+        // Limpiar errores
+        [cedulaInput, nombreInput, apellidoInput, telefonoInput, correoInput].forEach(limpiarError);
+        
+        // Restablecer estados
+        nombreInput.readOnly = false;
+        apellidoInput.readOnly = false;
+        telefonoInput.readOnly = false;
+        correoInput.readOnly = false;
+        
+        // Ocultar secciones
+        camposCliente.style.display = 'none';
+        seccionVenta.style.display = 'none';
+        seccionProductos.style.display = 'none';
+        
+        // Mostrar botón de búsqueda
+        btnBuscarCliente.style.display = 'block';
+        btnCancelarRegistro.style.display = 'none';
+        
+        clienteActualId = null;
+    }
 
-    // Validación del formulario de búsqueda
-    if (formBuscarCliente) {
-        formBuscarCliente.addEventListener('submit', function(e) {
-            if (!this.checkValidity()) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            this.classList.add('was-validated');
+    // Evento para cuando se abre el modal de registro
+    const registroModal = document.getElementById('registroModal');
+    if (registroModal) {
+        registroModal.addEventListener('show.bs.modal', function () {
+            resetearFormulario();
         });
     }
 
-    // Validación de nombre y apellido
-    [nombreInput, apellidoInput].forEach(input => {
-        input.addEventListener('keypress', function(e) {
-            if (!regexSoloLetras.test(e.key) && e.key !== 'Backspace' && e.key !== 'Tab' && e.key !== ' ') {
-                e.preventDefault();
+    // Evento para buscar cliente
+    if (btnBuscarCliente) {
+        btnBuscarCliente.addEventListener('click', function() {
+            const cedula = cedulaInput.value.trim();
+            
+            // Validar cédula
+            if (!cedula) {
+                mostrarError(cedulaInput, 'Por favor ingrese una cédula');
+                return;
             }
-        });
 
-        input.addEventListener('keyup', function() {
-            if (this.value.length > 0 && !regexSoloLetras.test(this.value)) {
-                mostrarError(this, 'Solo se permiten letras');
-            } else if (this.value.length < 3) {
-                mostrarError(this, 'Debe contener al menos 3 caracteres');
+            if (!regexCedula.test(cedula)) {
+                mostrarError(cedulaInput, 'La cédula debe tener entre 7 y 8 dígitos');
+                return;
+            }
+
+            // Mostrar loading
+            btnBuscarCliente.disabled = true;
+            btnBuscarCliente.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+
+            // Obtener token CSRF
+            const csrfToken = document.querySelector('input[name="csrf_token"]')?.value;
+            if (!csrfToken) {
+                Swal.fire('Error', 'Error de seguridad. Recargue la página.', 'error');
+                btnBuscarCliente.disabled = false;
+                btnBuscarCliente.innerHTML = '<i class="fas fa-search"></i> Buscar';
+                return;
+            }
+
+            fetch('?pagina=salida', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `buscar_cliente=1&cedula=${encodeURIComponent(cedula)}&csrf_token=${csrfToken}`
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+                return response.json();
+            })
+            .then(data => {
+                btnBuscarCliente.disabled = false;
+                btnBuscarCliente.innerHTML = '<i class="fas fa-search"></i> Buscar';
+
+                if (data.respuesta === 1 && data.cliente) {
+                    // Cliente encontrado
+                    clienteActualId = data.cliente.id_persona;
+                    idClienteHidden.value = data.cliente.id_persona;
+                    
+                    nombreInput.value = data.cliente.nombre || '';
+                    apellidoInput.value = data.cliente.apellido || '';
+                    telefonoInput.value = data.cliente.telefono || '';
+                    correoInput.value = data.cliente.correo || '';
+                    
+                    // Hacer campos readonly
+                    nombreInput.readOnly = true;
+                    apellidoInput.readOnly = true;
+                    telefonoInput.readOnly = true;
+                    correoInput.readOnly = true;
+                    
+                    // Mostrar campos y secciones
+                    camposCliente.style.display = 'block';
+                    seccionVenta.style.display = 'block';
+                    seccionProductos.style.display = 'block';
+                    
+                    // Ocultar botón de búsqueda y mostrar cancelar
+                    btnBuscarCliente.style.display = 'none';
+                    btnCancelarRegistro.style.display = 'block';
+                    
+                    // Mostrar éxito en cédula
+                    mostrarExito(cedulaInput);
+                    
+                    Swal.fire('Éxito', 'Cliente encontrado', 'success');
+                } else {
+                    // Cliente no encontrado - mostrar campos para registro automáticamente
+                    Swal.fire({
+                        title: 'Cliente no encontrado',
+                        text: 'Complete los datos para registrar un nuevo cliente',
+                        icon: 'info',
+                        confirmButtonText: 'Entendido'
+                    }).then(() => {
+                            // Mostrar campos para registro
+                            camposCliente.style.display = 'block';
+                            nombreInput.readOnly = false;
+                            apellidoInput.readOnly = false;
+                            telefonoInput.readOnly = false;
+                            correoInput.readOnly = false;
+                            
+                            // Limpiar campos
+                            nombreInput.value = '';
+                            apellidoInput.value = '';
+                            telefonoInput.value = '';
+                            correoInput.value = '';
+                            
+                            // Ocultar botón de búsqueda y mostrar cancelar
+                            btnBuscarCliente.style.display = 'none';
+                            btnCancelarRegistro.style.display = 'block';
+                        
+                        // Mostrar secciones de venta y productos
+                        seccionVenta.style.display = 'block';
+                        seccionProductos.style.display = 'block';
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btnBuscarCliente.disabled = false;
+                btnBuscarCliente.innerHTML = '<i class="fas fa-search"></i> Buscar';
+                Swal.fire('Error', 'Error al buscar el cliente. Intente nuevamente.', 'error');
+            });
+        });
+    }
+
+    // Evento para cancelar registro
+    if (btnCancelarRegistro) {
+        btnCancelarRegistro.addEventListener('click', function() {
+            resetearFormulario();
+        });
+    }
+
+    // Evento para registrar cliente
+    if (btnRegistrarCliente) {
+        btnRegistrarCliente.addEventListener('click', function() {
+        const datos = {
+                cedula: cedulaInput.value.trim(),
+                nombre: nombreInput.value.trim(),
+                apellido: apellidoInput.value.trim(),
+                telefono: telefonoInput.value.trim(),
+                correo: correoInput.value.trim()
+            };
+
+            // Validar datos
+            let hayErrores = false;
+
+            if (!datos.cedula) {
+                mostrarError(cedulaInput, 'La cédula es obligatoria');
+                hayErrores = true;
+            } else if (!regexCedula.test(datos.cedula)) {
+                mostrarError(cedulaInput, 'La cédula debe tener entre 7 y 8 dígitos');
+                hayErrores = true;
             } else {
-                limpiarError(this);
+                mostrarExito(cedulaInput);
             }
-        });
-    });
 
-    // Validación de teléfono
-    telefonoInput.addEventListener('keypress', function(e) {
-        if (!regexSoloNumeros.test(e.key) && e.key !== 'Backspace' && e.key !== 'Tab') {
+            if (!datos.nombre) {
+                mostrarError(nombreInput, 'El nombre es obligatorio');
+                hayErrores = true;
+            } else if (!regexSoloLetras.test(datos.nombre)) {
+                mostrarError(nombreInput, 'El nombre solo puede contener letras');
+                hayErrores = true;
+            } else if (datos.nombre.length < 2) {
+                mostrarError(nombreInput, 'El nombre debe tener al menos 2 caracteres');
+                hayErrores = true;
+            } else {
+                mostrarExito(nombreInput);
+            }
+
+            if (!datos.apellido) {
+                mostrarError(apellidoInput, 'El apellido es obligatorio');
+                hayErrores = true;
+            } else if (!regexSoloLetras.test(datos.apellido)) {
+                mostrarError(apellidoInput, 'El apellido solo puede contener letras');
+                hayErrores = true;
+            } else if (datos.apellido.length < 2) {
+                mostrarError(apellidoInput, 'El apellido debe tener al menos 2 caracteres');
+                hayErrores = true;
+            } else {
+                mostrarExito(apellidoInput);
+            }
+
+            if (!datos.telefono) {
+                mostrarError(telefonoInput, 'El teléfono es obligatorio');
+                hayErrores = true;
+            } else if (!regexTelefono.test(datos.telefono)) {
+                mostrarError(telefonoInput, 'El teléfono debe tener 11 dígitos y comenzar con 0');
+                hayErrores = true;
+            } else {
+                mostrarExito(telefonoInput);
+            }
+
+            if (!datos.correo) {
+                mostrarError(correoInput, 'El correo es obligatorio');
+                hayErrores = true;
+            } else if (!regexCorreo.test(datos.correo)) {
+                mostrarError(correoInput, 'Ingrese un correo electrónico válido');
+                hayErrores = true;
+            } else {
+                mostrarExito(correoInput);
+            }
+
+            if (hayErrores) {
+                return;
+            }
+
+            // Mostrar loading
+            btnRegistrarCliente.disabled = true;
+            btnRegistrarCliente.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+
+            // Obtener token CSRF
+            const csrfToken = document.querySelector('input[name="csrf_token"]')?.value;
+            if (!csrfToken) {
+                Swal.fire('Error', 'Error de seguridad. Recargue la página.', 'error');
+                btnRegistrarCliente.disabled = false;
+                btnRegistrarCliente.innerHTML = '<i class="fas fa-user-plus"></i> Registrar cliente';
+                return;
+            }
+
+            fetch('?pagina=salida', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `registrar_cliente=1&${new URLSearchParams(datos).toString()}&csrf_token=${csrfToken}`
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+                return response.json();
+            })
+            .then(data => {
+                btnRegistrarCliente.disabled = false;
+                btnRegistrarCliente.innerHTML = '<i class="fas fa-user-plus"></i> Registrar cliente';
+
+                if (data.success) {
+                    clienteActualId = data.id_cliente;
+                    idClienteHidden.value = data.id_cliente;
+                    
+                    // Hacer campos readonly
+                    nombreInput.readOnly = true;
+                    apellidoInput.readOnly = true;
+                    telefonoInput.readOnly = true;
+                    correoInput.readOnly = true;
+                    
+                    // Mostrar secciones
+                    seccionVenta.style.display = 'block';
+                    seccionProductos.style.display = 'block';
+                    
+                    Swal.fire('Éxito', data.message, 'success');
+                } else {
+                    Swal.fire('Error', data.message || 'Error al registrar el cliente', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btnRegistrarCliente.disabled = false;
+                btnRegistrarCliente.innerHTML = '<i class="fas fa-user-plus"></i> Registrar cliente';
+                Swal.fire('Error', 'Error al registrar el cliente. Intente nuevamente.', 'error');
+            });
+        });
+    }
+
+    // Evento para el formulario de venta
+    if (formVenta) {
+        formVenta.addEventListener('submit', function(e) {
             e.preventDefault();
-        }
-    });
-
-    telefonoInput.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9]/g, '');
-        
-        if (this.value.length > 0) {
-            if (!this.value.startsWith('0')) {
-                mostrarError(this, 'El número debe comenzar con 0');
-                this.classList.add('is-invalid');
-                this.classList.remove('is-valid');
-            } else if (this.value.length !== 11) {
-                mostrarError(this, 'El teléfono debe tener 11 dígitos');
-                this.classList.add('is-invalid');
-                this.classList.remove('is-valid');
-            } else if (!regexTelefono.test(this.value)) {
-                mostrarError(this, 'Formato de teléfono inválido');
-                this.classList.add('is-invalid');
-                this.classList.remove('is-valid');
-            } else {
-                limpiarError(this);
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
+            
+            // Validar que se haya seleccionado un cliente
+            if (!clienteActualId) {
+                Swal.fire('Error', 'Debe seleccionar o registrar un cliente primero', 'error');
+                return;
             }
-        }
-    });
 
-    // Validación de correo
-    correoInput.addEventListener('keyup', function() {
-        if (!regexCorreo.test(this.value)) {
-            mostrarError(this, 'Ingrese un correo electrónico válido');
+            // Validar método de pago
+            if (!metodoPagoSelect.value) {
+                Swal.fire('Error', 'Debe seleccionar un método de pago', 'error');
+                return;
+            }
+
+            // Validar método de entrega
+            if (!metodoEntregaSelect.value) {
+                Swal.fire('Error', 'Debe seleccionar un método de entrega', 'error');
+                return;
+            }
+
+            // Validar productos
+            const productos = document.querySelectorAll('#productos-container-venta tr.producto-fila');
+            if (productos.length === 0) {
+                Swal.fire('Error', 'Debe agregar al menos un producto', 'error');
+                return;
+            }
+
+            // Validar que todos los productos tengan datos válidos
+            let productosValidos = 0;
+            productos.forEach(fila => {
+                const select = fila.querySelector('.producto-select-venta');
+                const cantidad = fila.querySelector('.cantidad-input-venta');
+                if (select.value && cantidad.value > 0) {
+                    productosValidos++;
+                }
+            });
+
+            if (productosValidos === 0) {
+                Swal.fire('Error', 'Debe seleccionar al menos un producto válido', 'error');
+                return;
+            }
+
+            // Validar datos de pago según el método seleccionado
+            if (metodoPagoSelect.value === '1') { // Pago Móvil
+                if (!referenciaBancaria.value.trim()) {
+                    mostrarError(referenciaBancaria, 'La referencia bancaria es obligatoria');
+                    return;
+                }
+                if (!telefonoEmisor.value.trim()) {
+                    mostrarError(telefonoEmisor, 'El teléfono emisor es obligatorio');
+                    return;
+                }
+                if (!banco.value) {
+                    mostrarError(banco, 'Debe seleccionar un banco emisor');
+                    return;
+                }
+                if (!bancoDestino.value) {
+                    mostrarError(bancoDestino, 'Debe seleccionar un banco receptor');
+                    return;
+                }
+            } else if (metodoPagoSelect.value === '2') { // Transferencia Bancaria
+                if (!referenciaBancaria.value.trim()) {
+                    mostrarError(referenciaBancaria, 'La referencia bancaria es obligatoria');
+                    return;
+                }
+                if (!banco.value) {
+                    mostrarError(banco, 'Debe seleccionar un banco emisor');
+                    return;
+                }
+                if (!bancoDestino.value) {
+                    mostrarError(bancoDestino, 'Debe seleccionar un banco receptor');
+                    return;
+                }
+            } else if (metodoPagoSelect.value === '3') { // Punto de Venta
+                if (!referenciaBancaria.value.trim()) {
+                    mostrarError(referenciaBancaria, 'La referencia del punto es obligatoria');
+                    return;
+                }
+            }
+
+            // Validar dirección si es delivery
+            if (metodoEntregaSelect.value === '1' && !direccion.value.trim()) {
+                mostrarError(direccion, 'Debe ingresar la dirección de entrega');
+                return;
+            }
+
+            // Mostrar confirmación
+            Swal.fire({
+                title: '¿Confirmar venta?',
+                text: '¿Está seguro de que desea registrar esta venta?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, registrar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    registrarVenta();
+                }
+            });
+        });
+    }
+
+    function registrarVenta() {
+        // Mostrar loading
+        const submitBtn = formVenta.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+
+        // Preparar datos del formulario
+        const formData = new FormData(formVenta);
+        formData.append('registrar', '1');
+
+                    fetch('?pagina=salida', {
+                        method: 'POST',
+            body: formData
+                    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+            return response.json();
+        })
+                    .then(data => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+
+                        if (data.respuesta === 1) {
+                Swal.fire({
+                    title: '¡Venta registrada exitosamente!',
+                    text: `La venta ha sido registrada con ID: ${data.id_pedido}`,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    // Cerrar modal y recargar página
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('registroModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                                window.location.reload();
+                            });
+                        } else {
+                Swal.fire('Error', data.error || data.mensaje || 'Error al registrar la venta', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            Swal.fire('Error', 'Error al registrar la venta. Intente nuevamente.', 'error');
+        });
+    }
+
+    // Eventos para productos
+    function inicializarEventosProducto() {
+        // Evento para agregar producto
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('agregar-producto-venta')) {
+                const fila = e.target.closest('tr');
+                const nuevaFila = fila.cloneNode(true);
+                
+                // Limpiar valores de la nueva fila
+                nuevaFila.querySelector('.producto-select-venta').value = '';
+                nuevaFila.querySelector('.cantidad-input-venta').value = '1';
+                nuevaFila.querySelector('.precio-input-venta').value = '0.00';
+                nuevaFila.querySelector('.subtotal-venta').textContent = '0.00';
+                nuevaFila.querySelector('.stock-info').textContent = '';
+                
+                // Obtener el contenedor de botones
+                const contenedorBotones = nuevaFila.querySelector('td:last-child');
+                
+                // Limpiar todos los botones existentes
+                contenedorBotones.innerHTML = '';
+                
+                // Agregar solo el botón de eliminar
+                const btnEliminar = document.createElement('button');
+                btnEliminar.type = 'button';
+                btnEliminar.className = 'btn btn-danger btn-sm remover-producto-venta';
+                btnEliminar.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                contenedorBotones.appendChild(btnEliminar);
+                
+                contenedorProductos.appendChild(nuevaFila);
+                inicializarEventosFila(nuevaFila);
+            }
+            
+            if (e.target.classList.contains('remover-producto-venta')) {
+                const filas = contenedorProductos.querySelectorAll('tr.producto-fila');
+                if (filas.length > 1) {
+                    e.target.closest('tr').remove();
+                    actualizarTotalVenta();
         } else {
-            limpiarError(this);
+                    Swal.fire('Error', 'Debe mantener al menos un producto', 'error');
+                }
+            }
+        });
+
+        // Eventos para cambio de producto
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('producto-select-venta')) {
+                const fila = e.target.closest('tr');
+                const option = e.target.options[e.target.selectedIndex];
+                
+                if (option.value) {
+                    const precio = option.getAttribute('data-precio');
+                    const stock = option.getAttribute('data-stock');
+                    
+                    fila.querySelector('.precio-input-venta').value = precio;
+                    fila.querySelector('.cantidad-input-venta').setAttribute('data-stock', stock);
+                    fila.querySelector('.stock-info').textContent = `Stock: ${stock}`;
+                    
+                    calcularSubtotalVenta(fila);
+                } else {
+                    fila.querySelector('.precio-input-venta').value = '0.00';
+                    fila.querySelector('.cantidad-input-venta').removeAttribute('data-stock');
+                    fila.querySelector('.stock-info').textContent = '';
+                    fila.querySelector('.subtotal-venta').textContent = '0.00';
+                    actualizarTotalVenta();
+                }
+            }
+            
+            if (e.target.classList.contains('cantidad-input-venta')) {
+                const fila = e.target.closest('tr');
+                const cantidad = parseInt(e.target.value);
+                const stock = parseInt(e.target.getAttribute('data-stock') || 0);
+                
+                if (stock > 0 && cantidad > stock) {
+                    Swal.fire('Error', `Stock disponible: ${stock}`, 'error');
+                    e.target.value = stock;
+                }
+                
+                if (cantidad < 1) {
+                    e.target.value = 1;
+                }
+                
+                calcularSubtotalVenta(fila);
+            }
+        });
+
+        // Inicializar eventos en filas existentes
+        document.querySelectorAll('tr.producto-fila').forEach(fila => {
+            inicializarEventosFila(fila);
+        });
+    }
+
+    function inicializarEventosFila(fila) {
+        const select = fila.querySelector('.producto-select-venta');
+        const cantidad = fila.querySelector('.cantidad-input-venta');
+        
+        if (select.value) {
+            const option = select.options[select.selectedIndex];
+            const stock = option.getAttribute('data-stock');
+            cantidad.setAttribute('data-stock', stock);
+            fila.querySelector('.stock-info').textContent = `Stock: ${stock}`;
         }
-    });
+    }
+
+    function calcularSubtotalVenta(fila) {
+        const cantidad = parseFloat(fila.querySelector('.cantidad-input-venta').value) || 0;
+        const precio = parseFloat(fila.querySelector('.precio-input-venta').value) || 0;
+        const subtotal = cantidad * precio;
+        fila.querySelector('.subtotal-venta').textContent = subtotal.toFixed(2);
+        actualizarTotalVenta();
+    }
+
+    function actualizarTotalVenta() {
+        let total = 0;
+        document.querySelectorAll('.subtotal-venta').forEach(subtotal => {
+            total += parseFloat(subtotal.textContent) || 0;
+        });
+        document.getElementById('total-general-venta').textContent = `$${total.toFixed(2)}`;
+        
+        // Actualizar campo oculto para el total
+        const totalInput = document.querySelector('input[name="precio_total"]');
+        if (totalInput) {
+            totalInput.value = total.toFixed(2);
+        }
+    }
 
     // Evento para cambio en método de pago
     if (metodoPagoSelect) {
         metodoPagoSelect.addEventListener('change', function() {
-            // ID 1 = Pago Móvil, ID 2 = Transferencia Bancaria, ID 3 = Punto de Venta
+            // Limpiar campos y errores
+            [referenciaBancaria, telefonoEmisor, banco, bancoDestino].forEach(limpiarError);
+            referenciaBancaria.value = '';
+            telefonoEmisor.value = '';
+            banco.value = '';
+            bancoDestino.value = '';
+
             if (this.value === '2') { // Transferencia Bancaria
                 camposPagoAdicionales.style.display = 'flex';
                 document.querySelector('label[for="referencia_bancaria"]').textContent = 'Referencia Bancaria';
@@ -276,14 +726,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 telefonoEmisor.removeAttribute('required');
                 banco.removeAttribute('required');
                 bancoDestino.removeAttribute('required');
-                referenciaBancaria.value = '';
-                telefonoEmisor.value = '';
-                banco.value = '';
-                bancoDestino.value = '';
-                limpiarError(referenciaBancaria);
-                limpiarError(telefonoEmisor);
-                limpiarError(banco);
-                limpiarError(bancoDestino);
             }
         });
     }
@@ -291,7 +733,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Evento para cambio en método de entrega
     if (metodoEntregaSelect && campoDireccion && direccion) {
         metodoEntregaSelect.addEventListener('change', function() {
-            console.log('Método de entrega seleccionado:', this.value);
+            // Limpiar campo y errores
+            limpiarError(direccion);
+            direccion.value = '';
+
             if (this.value === '1') { // Delivery
                 campoDireccion.style.display = 'block';
                 document.querySelector('label[for="direccion"]').textContent = 'Dirección de Entrega';
@@ -322,8 +767,6 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 campoDireccion.style.display = 'none';
                 direccion.removeAttribute('required');
-                direccion.value = '';
-                limpiarError(direccion);
             }
         });
     }
@@ -336,1263 +779,260 @@ document.addEventListener('DOMContentLoaded', function() {
         campoDireccion.style.display = 'none';
     }
 
+    // Validación de cédula en tiempo real
+    cedulaInput.addEventListener('keypress', function(e) {
+        // Prevenir entrada de letras y caracteres especiales
+        if (!regexSoloNumeros.test(e.key) && e.key !== 'Backspace' && e.key !== 'Tab') {
+            e.preventDefault();
+        }
+    });
+
+    cedulaInput.addEventListener('input', function() {
+        // Limpiar cualquier caracter que no sea número
+        this.value = this.value.replace(/[^0-9]/g, '');
+        
+        if (this.value.length > 0) {
+            if (!regexCedula.test(this.value)) {
+                mostrarError(this, 'La cédula debe tener entre 7 y 8 dígitos');
+        } else {
+                mostrarExito(this);
+            }
+        } else {
+            limpiarError(this);
+        }
+    });
+
+    // Validación de nombre y apellido
+    [nombreInput, apellidoInput].forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (!regexSoloLetras.test(e.key) && e.key !== 'Backspace' && e.key !== 'Tab' && e.key !== ' ') {
+                e.preventDefault();
+            }
+        });
+
+        input.addEventListener('input', function() {
+            if (this.value.length > 0) {
+                if (!regexSoloLetras.test(this.value)) {
+                mostrarError(this, 'Solo se permiten letras');
+                } else if (this.value.length < 2) {
+                    mostrarError(this, 'Debe contener al menos 2 caracteres');
+                } else {
+                    mostrarExito(this);
+                }
+            } else {
+                limpiarError(this);
+            }
+        });
+    });
+
+    // Validación de teléfono
+    telefonoInput.addEventListener('keypress', function(e) {
+        if (!regexSoloNumeros.test(e.key) && e.key !== 'Backspace' && e.key !== 'Tab') {
+            e.preventDefault();
+        }
+    });
+
+    telefonoInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        
+        if (this.value.length > 0) {
+            if (!this.value.startsWith('0')) {
+                mostrarError(this, 'El número debe comenzar con 0');
+            } else if (this.value.length !== 11) {
+                mostrarError(this, 'El teléfono debe tener 11 dígitos');
+            } else if (!regexTelefono.test(this.value)) {
+                mostrarError(this, 'Formato de teléfono inválido');
+            } else {
+                mostrarExito(this);
+            }
+            } else {
+                limpiarError(this);
+        }
+    });
+
+    // Validación de correo
+    correoInput.addEventListener('input', function() {
+        if (this.value.length > 0) {
+        if (!regexCorreo.test(this.value)) {
+            mostrarError(this, 'Ingrese un correo electrónico válido');
+            } else {
+                mostrarExito(this);
+            }
+        } else {
+            limpiarError(this);
+        }
+    });
+
     // Validación de referencia bancaria
+    if (referenciaBancaria) {
     referenciaBancaria.addEventListener('input', function() {
         this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
         
         if (this.value.length > 0) {
             if (!regexReferencia.test(this.value)) {
                 mostrarError(this, 'La referencia debe tener entre 4 y 6 dígitos');
-                this.classList.add('is-invalid');
-                this.classList.remove('is-valid');
+                } else {
+                    mostrarExito(this);
+                }
             } else {
                 limpiarError(this);
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-            }
         }
     });
+    }
 
     // Validación de teléfono emisor
+    if (telefonoEmisor) {
     telefonoEmisor.addEventListener('input', function() {
         this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);
         
         if (this.value.length > 0) {
             if (!regexTelefonoPago.test(this.value)) {
-                mostrarError(this, 'El teléfono debe empezar con 04');
-                this.classList.add('is-invalid');
-                this.classList.remove('is-valid');
+                    mostrarError(this, 'El teléfono debe empezar con 04 o 02');
+                } else {
+                    mostrarExito(this);
+                }
             } else {
                 limpiarError(this);
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-            }
         }
     });
+    }
 
     // Validación de banco
+    if (banco) {
     banco.addEventListener('change', function() {
-        if (!this.value) {
-            mostrarError(this, 'Debe seleccionar un banco emisor');
-            this.classList.add('is-invalid');
-            this.classList.remove('is-valid');
+            if (this.value) {
+                mostrarExito(this);
         } else {
             limpiarError(this);
-            this.classList.remove('is-invalid');
-            this.classList.add('is-valid');
         }
     });
+    }
 
     // Validación de banco destino
+    if (bancoDestino) {
     bancoDestino.addEventListener('change', function() {
-        if (!this.value) {
-            mostrarError(this, 'Debe seleccionar un banco receptor');
-            this.classList.add('is-invalid');
-            this.classList.remove('is-valid');
+            if (this.value) {
+                mostrarExito(this);
         } else {
             limpiarError(this);
-            this.classList.remove('is-invalid');
-            this.classList.add('is-valid');
         }
     });
+    }
 
     // Validación de dirección
+    if (direccion) {
     direccion.addEventListener('input', function() {
-        if (this.value.length > 0 && this.value.length < 10) {
+            if (this.value.length > 0) {
+                if (this.value.length < 10) {
             mostrarError(this, 'La dirección debe tener al menos 10 caracteres');
-            this.classList.add('is-invalid');
-            this.classList.remove('is-valid');
+                } else {
+                    mostrarExito(this);
+                }
         } else {
             limpiarError(this);
-            this.classList.remove('is-invalid');
-            this.classList.add('is-valid');
         }
     });
-
-    // Función para calcular subtotal
-    function calcularSubtotal(fila) {
-        const cantidad = parseInt(fila.querySelector('.cantidad-input-venta').value) || 0;
-        const precioStr = fila.querySelector('.precio-input-venta').value.replace('$', '').trim();
-        const precio = parseFloat(precioStr) || 0;
-        const subtotal = cantidad * precio;
-        fila.querySelector('.subtotal-venta').textContent = subtotal.toFixed(2);
-        actualizarTotal();
     }
 
-    // Función para actualizar el total general
-    function actualizarTotal() {
-        let total = 0;
-        document.querySelectorAll('.subtotal-venta').forEach(span => {
-            const subtotalStr = span.textContent.replace('$', '').trim();
-            total += parseFloat(subtotalStr) || 0;
-        });
-        
-        // Actualizar total en dólares
-        document.getElementById('total-general-venta').textContent = `$${total.toFixed(2)}`;
-        
-        // Obtener la tasa del día y calcular el total en bolívares
-        fetch('https://ve.dolarapi.com/v1/dolares/oficial')
-            .then(response => response.json())
-            .then(data => {
-                const tasaBCV = data.promedio;
-                const totalBolivares = total * tasaBCV;
-                
-                // Crear o actualizar el elemento para mostrar el total en bolívares
-                let totalBsElement = document.getElementById('total-general-bs');
-                if (!totalBsElement) {
-                    totalBsElement = document.createElement('span');
-                    totalBsElement.id = 'total-general-bs';
-                    totalBsElement.className = 'text-success ms-2';
-                    document.getElementById('total-general-venta').parentNode.appendChild(totalBsElement);
-                }
-                totalBsElement.textContent = ` (${totalBolivares.toFixed(2)} Bs)`;
-            })
-            .catch(error => {
-                console.error('Error al obtener la tasa:', error);
-                // Si hay error, intentar usar la tasa mostrada en el slider
-                const bcvText = document.getElementById("bcv").textContent;
-                const tasaMatch = bcvText.match(/[\d.]+/);
-                if (tasaMatch) {
-                    const tasaBCV = parseFloat(tasaMatch[0]);
-                    const totalBolivares = total * tasaBCV;
-                    let totalBsElement = document.getElementById('total-general-bs');
-                    if (!totalBsElement) {
-                        totalBsElement = document.createElement('span');
-                        totalBsElement.id = 'total-general-bs';
-                        totalBsElement.className = 'text-success ms-2';
-                        document.getElementById('total-general-venta').parentNode.appendChild(totalBsElement);
-                    }
-                    totalBsElement.textContent = ` (${totalBolivares.toFixed(2)} Bs)`;
-                }
-            });
-    }
+    // Inicializar eventos de productos
+    inicializarEventosProducto();
 
-    // Función para inicializar eventos en fila de producto
-    function inicializarEventosProducto(fila) {
-        const selectProducto = fila.querySelector('.producto-select-venta');
-        const inputCantidad = fila.querySelector('.cantidad-input-venta');
-        const inputPrecio = fila.querySelector('.precio-input-venta');
-        const btnRemover = fila.querySelector('.remover-producto-venta');
-        const btnAgregar = fila.querySelector('.agregar-producto-venta');
-        const stockInfo = fila.querySelector('.stock-info');
-
-        // Inicializar evento para agregar producto
-        if (btnAgregar) {
-            btnAgregar.addEventListener('click', function() {
-                const nuevaFila = fila.cloneNode(true);
-                
-                // Limpiar valores de la nueva fila
-                nuevaFila.querySelector('.producto-select-venta').value = '';
-                nuevaFila.querySelector('.precio-input-venta').value = '0.00';
-                nuevaFila.querySelector('.subtotal-venta').textContent = '0.00';
-                nuevaFila.querySelector('.cantidad-input-venta').value = '1';
-                nuevaFila.querySelector('.stock-info').textContent = '';
-                
-                // Insertar la nueva fila después de la fila actual
-                fila.parentNode.insertBefore(nuevaFila, fila.nextSibling);
-                
-                // Inicializar eventos en la nueva fila
-                inicializarEventosProducto(nuevaFila);
-                actualizarTotal();
-            });
-        }
-
-        selectProducto.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            if (selectedOption.value === '') {
-                inputPrecio.value = '0.00';
-                inputCantidad.value = '1';
-                inputCantidad.removeAttribute('max');
-                stockInfo.textContent = '';
-                calcularSubtotal(fila);
-                return;
-            }
-            
-            // Verificar si el producto ya está seleccionado en otra fila
-            const productoId = selectedOption.value;
-            let filaExistente = null;
-            let cantidadExistente = 0;
-            
-            document.querySelectorAll('.producto-select-venta').forEach(select => {
-                if (select !== this && select.value === productoId) {
-                    filaExistente = select.closest('tr');
-                    cantidadExistente = parseInt(filaExistente.querySelector('.cantidad-input-venta').value) || 0;
-                }
-            });
-
-            if (filaExistente) {
-                // Restaurar el valor anterior del select
-                this.value = '';
-                inputPrecio.value = '0.00';
-                inputCantidad.value = '1';
-                stockInfo.textContent = '';
-                calcularSubtotal(fila);
-
-                Swal.fire({
-                    title: 'Producto ya registrado',
-                    text: '¿Desea sumar la cantidad al producto existente?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, sumar',
-                    cancelButtonText: 'No, cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const stock = parseInt(selectedOption.getAttribute('data-stock')) || 0;
-                        const cantidadNueva = cantidadExistente + 1;
-                        
-                        if (cantidadNueva > stock) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Stock insuficiente',
-                                text: `Solo hay ${stock} unidades disponibles de este producto`
-                            });
-                            return;
+    // Evento para el botón de ayuda
+    const btnAyuda = document.getElementById('btnAyuda');
+    if (btnAyuda) {
+        btnAyuda.addEventListener('click', function() {
+            const driver = window.driver.js.driver;
+            const driverObj = new driver({
+                nextBtnText: 'Siguiente',
+                prevBtnText: 'Anterior',
+                doneBtnText: 'Listo',
+                popoverClass: 'driverjs-theme',
+                closeBtn: false,
+                steps: [
+                    {
+                        element: '.table-color th:nth-child(1)',
+                        popover: {
+                            title: 'Cliente',
+                            description: 'Muestra el nombre y apellido del cliente que realizó la compra.',
+                            side: "bottom"
                         }
+                    },
+                    {
+                        element: '.table-color th:nth-child(2)',
+                        popover: {
+                            title: 'Fecha',
+                            description: 'Indica la fecha en la que se registró la venta en el sistema.',
+                            side: "bottom"
+                        }
+                    },
+                    {
+                        element: '.table-color th:nth-child(3)',
+                        popover: {
+                            title: 'Estado',
+                            description: 'Refleja el estado actual de la venta. Ejemplo: Verificar pago, Entregado, Enviado, Anulado, etc.',
+                            side: "bottom"
+                        }
+                    },
+                    {
+                        element: '.table-color th:nth-child(4)',
+                        popover: {
+                            title: 'Total',
+                            description: 'Muestra el monto total de la venta en dólares estadounidenses (USD).',
+                            side: "bottom"
+                        }
+                    },
+                    {
+                        element: '.table-color th:nth-child(5)',
+                        popover: {
+                            title: 'Método Pago',
+                            description: 'Indica el método de pago utilizado por el cliente, por ejemplo: Pago móvil, Transferencia bancaria, Punto de venta, etc.',
+                            side: "bottom"
+                        }
+                    },
+                    {
+                        element: '.table-color th:nth-child(6)',
+                        popover: {
+                            title: 'Método Entrega',
+                            description: 'Especifica el método de entrega seleccionado para la venta, como Delivery, MRW, Zoom, etc.',
+                            side: "bottom"
+                        }
+                    },
+                    {
+                        element: '.table-color th:nth-child(7)',
+                        popover: {
+                            title: 'Acción',
+                            description: 'Contiene los botones de acción para cada venta: ver detalles, gestionar delivery o actualizar el estado.',
+                            side: "bottom"
+                        }
+                    },
+                    { element: '#btnAyuda', popover: { title: 'Botón de ayuda', description: 'Haz clic aquí para ver esta guía interactiva del módulo de ventas.', side: "bottom", align: 'start' }},
+                    { element: '.btn-success[data-bs-target="#registroModal"]', popover: { title: 'Registrar venta', description: 'Este botón abre el formulario para registrar una nueva venta.', side: "bottom", align: 'start' }},
+                    { element: '.btn-info', popover: { title: 'Ver detalles', description: 'Haz clic aquí para ver los detalles de una venta específica.', side: "left", align: 'start' }},
+                    { element: '.btn-primary[data-bs-target^="#deliveryModal"]', popover: { title: 'Gestionar delivery', description: 'Permite actualizar el estado de entrega de la venta.', side: "left", align: 'start' }},
+                    { popover: { title: 'Eso es todo', description: 'Este es el fin de la guía del módulo de ventas. ¡Gracias por usar el sistema!' } }
+                ]
+            });
+            driverObj.drive();
+        });
+    }
 
-                        // Actualizar cantidad en la fila existente
-                        const inputCantidadExistente = filaExistente.querySelector('.cantidad-input-venta');
-                        inputCantidadExistente.value = cantidadNueva;
-                        calcularSubtotal(filaExistente);
-                    }
-                });
-                return;
-            }
+    // Eventos para editar dirección en modales de delivery
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('btnEditarDireccion')) {
+            const input = e.target.previousElementSibling;
+            const btnEditar = e.target;
             
-            // Obtener precio y stock del option seleccionado
-            const precio = selectedOption.getAttribute('data-precio');
-            const stock = parseInt(selectedOption.getAttribute('data-stock')) || 0;
-            
-            // Actualizar campos
-            inputPrecio.value = precio || '0.00';
-            inputCantidad.value = '1';
-            inputCantidad.setAttribute('max', stock);
-            
-            // Mostrar stock disponible en el span
-            stockInfo.textContent = `Stock: ${stock}`;
-            if (stock === 0) {
-                inputCantidad.classList.add('is-invalid');
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Sin stock',
-                    text: 'Este producto no tiene unidades disponibles'
-                });
+            if (input.readOnly) {
+                input.readOnly = false;
+                input.style.backgroundColor = 'white';
+                btnEditar.innerHTML = '<i class="fas fa-save"></i> Guardar';
+                btnEditar.className = 'btn btn-success btn-sm btnEditarDireccion';
             } else {
-                inputCantidad.classList.remove('is-invalid');
-            }
-            
-            calcularSubtotal(fila);
-        });
-
-        inputCantidad.addEventListener('input', function() {
-            const selectedOption = selectProducto.options[selectProducto.selectedIndex];
-            const stock = parseInt(selectedOption.dataset.stock) || 0;
-            const cantidad = parseInt(this.value) || 0;
-
-            if (cantidad < 1) {
-                this.value = 1;
-            } else if (cantidad > stock) {
-                this.value = stock;
-                this.classList.add('is-invalid');
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Stock insuficiente',
-                    text: `Solo hay ${stock} unidades disponibles de este producto`
-                });
-            } else {
-                this.classList.remove('is-invalid');
-            }
-            
-            calcularSubtotal(fila);
-        });
-
-        btnRemover.addEventListener('click', function() {
-            const totalFilas = contenedorProductos.querySelectorAll('.producto-fila').length;
-            if (totalFilas > 1) {
-                fila.remove();
-                actualizarTotal();
-            } else {
-                Swal.fire({
-                    title: '¡Atención!',
-                    text: 'Debe mantener al menos un producto en la venta',
-                    icon: 'warning',
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'Entendido'
-                });
-            }
-        });
-    }
-
-    // Inicializar eventos en todas las filas existentes
-    document.querySelectorAll('.producto-fila').forEach(fila => {
-        inicializarEventosProducto(fila);
-    });
-
-    // Eliminar el evento de agregar producto del botón global ya que ahora cada fila tiene su propio botón
-    if (btnAgregarProducto) {
-        btnAgregarProducto.remove();
-    }
-
-    // Función para validar el formulario antes de enviar
-    function validarFormularioVenta() {
-        // Validar cliente (existente o nuevo)
-        const idCliente = document.getElementById('id_cliente_hidden').value;
-        const esClienteNuevo = !idCliente && 
-                              nombreInput.value && 
-                              apellidoInput.value && 
-                              telefonoInput.value && 
-                              correoInput.value;
-
-        if (!idCliente && !esClienteNuevo) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Por favor, seleccione un cliente existente o complete los datos para registrar uno nuevo'
-            });
-            return false;
-        }
-
-        // Si es un cliente nuevo, validar los campos
-        if (esClienteNuevo) {
-            if (!regexSoloLetras.test(nombreInput.value)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'El nombre del cliente solo debe contener letras'
-                });
-                return false;
-            }
-            if (!regexSoloLetras.test(apellidoInput.value)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'El apellido del cliente solo debe contener letras'
-                });
-                return false;
-            }
-            if (!regexTelefono.test(telefonoInput.value)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'El teléfono debe tener 11 dígitos y comenzar con 0'
-                });
-                return false;
-            }
-            if (!regexCorreo.test(correoInput.value)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ingrese un correo electrónico válido'
-                });
-                return false;
-            }
-        }
-
-        // Validar método de pago
-        if (!metodoPagoSelect.value) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Por favor, seleccione un método de pago'
-            });
-            metodoPagoSelect.focus();
-            return false;
-        }
-
-        // Validar método de entrega
-        if (!metodoEntregaSelect.value) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Por favor, seleccione un método de entrega'
-            });
-            metodoEntregaSelect.focus();
-            return false;
-        }
-
-        // Validar que haya al menos un producto
-        const productos = document.querySelectorAll('.producto-select-venta');
-        let hayProductosValidos = false;
-        let todosProductosValidos = true;
-
-        productos.forEach(producto => {
-            if (producto.value) {
-                hayProductosValidos = true;
-                // Validar cantidad
-                const cantidadInput = producto.closest('tr').querySelector('.cantidad-input-venta');
-                if (!cantidadInput.value || cantidadInput.value < 1) {
-                    todosProductosValidos = false;
-                }
-            }
-        });
-
-        if (!hayProductosValidos) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Por favor, seleccione al menos un producto'
-            });
-            return false;
-        }
-
-        if (!todosProductosValidos) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Por favor, ingrese cantidades válidas para todos los productos'
-            });
-            return false;
-        }
-
-        // Validar campos adicionales si es pago móvil
-        if (metodoPagoSelect.value === '1') {
-            if (!referenciaBancaria.value || !telefonoEmisor.value || !banco.value || !bancoDestino.value) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Por favor, complete todos los campos del pago móvil'
-                });
-                return false;
-            }
-        }
-
-        if (metodoEntregaSelect.value === '2' && !direccion.value) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Por favor, ingrese la dirección de entrega'
-            });
-            return false;
-        }
-
-        return true;
-    }
-
-    // Evento para mostrar las secciones de venta y productos
-    function mostrarSeccionesVenta() {
-        seccionVenta.style.display = 'block';
-        seccionProductos.style.display = 'block';
-    }
-
-    // Función para ocultar las secciones de venta y productos
-    function ocultarSeccionesVenta() {
-        seccionVenta.style.display = 'none';
-        seccionProductos.style.display = 'none';
-    }
-
-    // Función para buscar cliente
-    function buscarCliente() {
-            const cedula = cedulaInput.value.trim();
-            clienteBuscado = true;
-            
-            if (cedula.length < 7 || cedula.length > 8) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'La cédula debe tener entre 7 y 8 dígitos'
-                });
-                return;
-            }
-
-            // Crear FormData y agregar los datos
-            const formData = new FormData();
-            formData.append('buscar_cliente', '1');
-            formData.append('cedula', cedula);
-            formData.append('csrf_token', document.querySelector('input[name="csrf_token"]').value);
-
-            // Realizar la petición AJAX
-            fetch('?pagina=salida', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.respuesta === 1 && data.cliente) {
-                    // Cliente encontrado
-                    camposCliente.style.display = 'block';
-                    btnBuscarCliente.style.display = 'none';
-                    btnCancelarRegistro.style.display = 'block';
-                    btnRegistrarCliente.style.display = 'none';
-
-                // Mostrar secciones de venta y productos
-                mostrarSeccionesVenta();
-
-                    // Llenar los campos con los datos del cliente
-                    nombreInput.value = data.cliente.nombre || '';
-                    apellidoInput.value = data.cliente.apellido || '';
-                    telefonoInput.value = data.cliente.telefono || '';
-                    correoInput.value = data.cliente.correo || '';
-                    idClienteHidden.value = data.cliente.id_persona || '';
-
-                    // Hacer los campos de solo lectura
-                    nombreInput.readOnly = true;
-                    apellidoInput.readOnly = true;
-                    telefonoInput.readOnly = true;
-                    correoInput.readOnly = true;
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Cliente encontrado!',
-                        text: 'Los datos del cliente han sido cargados'
-                    });
-                } else {
-                    // Cliente no encontrado - preguntar si desea registrarlo
-                    Swal.fire({
-                        title: 'Cliente no encontrado',
-                        text: '¿Desea registrar un nuevo cliente?',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Sí, registrar',
-                        cancelButtonText: 'No, cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Mostrar campos para registro
-                            camposCliente.style.display = 'block';
-                            btnBuscarCliente.style.display = 'none';
-                            btnCancelarRegistro.style.display = 'block';
-                            btnRegistrarCliente.style.display = 'block';
-
-                            // Mostrar secciones de venta y productos
-                            mostrarSeccionesVenta();
-
-                            // Limpiar y habilitar los campos para nuevo registro
-                            nombreInput.value = '';
-                            apellidoInput.value = '';
-                            telefonoInput.value = '';
-                            correoInput.value = '';
-                            idClienteHidden.value = '';
-
-                            // Hacer los campos editables
-                            nombreInput.readOnly = false;
-                            apellidoInput.readOnly = false;
-                            telefonoInput.readOnly = false;
-                            correoInput.readOnly = false;
-                        } else {
-                            // Si cancela, volver al estado inicial
-                            camposCliente.style.display = 'none';
-                            btnBuscarCliente.style.display = 'block';
-                            btnCancelarRegistro.style.display = 'none';
-                            btnRegistrarCliente.style.display = 'block';
-                            
-                            // Limpiar campos
-                            cedulaInput.value = '';
-                            nombreInput.value = '';
-                            apellidoInput.value = '';
-                            telefonoInput.value = '';
-                            correoInput.value = '';
-                            idClienteHidden.value = '';
-                        }
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ocurrió un error al buscar el cliente'
-                });
-            });
-    }
-
-    // Evento para buscar con Enter en el campo de cédula
-    cedulaInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault(); // Prevenir el envío del formulario
-            buscarCliente();
-        }
-    });
-
-    // Evento para el botón de búsqueda
-    if (btnBuscarCliente) {
-        btnBuscarCliente.addEventListener('click', buscarCliente);
-    }
-
-    // Botón cancelar registro
-    if (btnCancelarRegistro) {
-        btnCancelarRegistro.addEventListener('click', function() {
-            mostrarModoBusqueda();
-        });
-    }
-
-    // Para el formulario de registro
-    const formRegistroVenta = document.getElementById('formRegistroVenta');
-    if (formRegistroVenta) {
-        formRegistroVenta.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            if (!validarFormularioVenta()) {
-                return;
-            }
-
-            try {
-                // Si es un cliente nuevo, registrarlo primero
-                if (!idClienteHidden.value && nombreInput.value) {
-                    const clienteData = new FormData();
-                    clienteData.append('registrar_cliente', '1');
-                    clienteData.append('cedula', cedulaInput.value);
-                    clienteData.append('nombre', nombreInput.value);
-                    clienteData.append('apellido', apellidoInput.value);
-                    clienteData.append('telefono', telefonoInput.value);
-                    clienteData.append('correo', correoInput.value);
-                    clienteData.append('csrf_token', document.querySelector('input[name="csrf_token"]').value);
-
-                    const response = await fetch('?pagina=salida', {
-                        method: 'POST',
-                        body: clienteData
-                    });
-
-                    const responseText = await response.text();
-                    
-                    // Depuración
-                    console.log('Respuesta del servidor:', responseText);
-                    
-                    let clienteResult;
-                    try {
-                        clienteResult = JSON.parse(responseText);
-                    } catch (e) {
-                        console.error('Error al parsear JSON:', e);
-                        console.error('Respuesta recibida:', responseText);
-                        throw new Error('Error al procesar la respuesta del servidor');
-                    }
-
-                    if (!clienteResult || !clienteResult.success) {
-                        throw new Error(clienteResult?.message || 'Error al registrar el cliente');
-                    }
-
-                    // Asignar el ID del cliente nuevo
-                    idClienteHidden.value = clienteResult.id_cliente;
-                }
-
-                // Continuar con el registro de la venta
-                const precioTotal = document.getElementById('total-general-venta').textContent.replace('$', '').trim();
-                const inputPrecioTotal = document.createElement('input');
-                inputPrecioTotal.type = 'hidden';
-                inputPrecioTotal.name = 'precio_total';
-                inputPrecioTotal.value = precioTotal;
-                this.appendChild(inputPrecioTotal);
-
-                Swal.fire({
-                    title: '¿Confirmar venta?',
-                    text: "¿Está seguro de registrar esta venta?",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, registrar venta',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Mostrar indicador de carga
-                        Swal.fire({
-                            title: 'Procesando...',
-                            text: 'Por favor espere mientras se registra la venta',
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                            allowEnterKey: false,
-                            showConfirmButton: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-
-                        // Crear FormData con los datos del formulario
-                        const formData = new FormData(this);
-                        formData.append('registrar_venta', '1');
-
-                        // Log de los datos que se envían
-                        console.log('Datos del formulario:');
-                        for (let [key, value] of formData.entries()) {
-                            console.log(`${key}: ${value}`);
-                        }
-
-                        // Verificar datos críticos
-                        const idPersona = formData.get('id_persona');
-                        const idMetodoPago = formData.get('id_metodopago');
-                        const idEntrega = formData.get('id_entrega');
-                        
-                        if (!idPersona || !idMetodoPago || !idEntrega) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Faltan datos importantes: ' + 
-                                      (!idPersona ? 'Cliente, ' : '') +
-                                      (!idMetodoPago ? 'Método de pago, ' : '') +
-                                      (!idEntrega ? 'Método de entrega' : ''),
-                                showConfirmButton: true,
-                                confirmButtonText: 'Aceptar'
-                            });
-                            return;
-                        }
-
-                        // Verificar productos
-                        const productos = formData.getAll('id_producto[]');
-                        if (!productos.length) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Debe seleccionar al menos un producto',
-                                showConfirmButton: true,
-                                confirmButtonText: 'Aceptar'
-                            });
-                            return;
-                        }
-
-                        // Realizar la petición AJAX
-                        fetch('?pagina=salida', {
-                            method: 'POST',
-                            body: formData
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`Error HTTP: ${response.status}`);
-                            }
-                            return response.text();
-                        })
-                        .then(text => {
-                            try {
-                                // Verificar si el texto está vacío
-                                if (!text.trim()) {
-                                    throw new Error('Respuesta vacía del servidor');
-                                }
-                                // Intentar parsear el JSON
-                                const data = JSON.parse(text);
-                                if (data && data.respuesta === 1) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: '¡Éxito!',
-                                        text: 'Venta registrada correctamente',
-                                        showConfirmButton: true,
-                                        confirmButtonText: 'Aceptar'
-                                    }).then(() => {
-                                        window.location.href = '?pagina=salida';
-                                    });
-                                } else {
-                                    throw new Error(data?.error || 'Error al registrar la venta');
-                                }
-                            } catch (e) {
-                                console.error('Error al procesar la respuesta:', text);
-                                throw new Error('Error al procesar la respuesta del servidor');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: error.message || 'Ocurrió un error al procesar la venta',
-                                showConfirmButton: true,
-                                confirmButtonText: 'Aceptar'
-                            });
-                        });
-                    }
-                });
-            } catch (error) {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.message || 'Ocurrió un error al procesar la operación'
-                });
-            }
-        });
-    }
-
-    // Manejo de modales y confirmaciones
-    // Inicializar todos los modales
-    var modales = document.querySelectorAll('.modal');
-    modales.forEach(function(modal) {
-        new bootstrap.Modal(modal);
-    });
-
-    // Función para mostrar modo registro
-    function mostrarModoRegistro() {
-        camposCliente.style.display = 'block';
-        btnCancelarRegistro.style.display = 'block';
-        btnBuscarCliente.style.display = 'none';
-        btnRegistrarCliente.style.display = 'none';
-        
-        // Limpiar y habilitar campos para edición
-        nombreInput.value = '';
-        apellidoInput.value = '';
-        telefonoInput.value = '';
-        correoInput.value = '';
-        
-        nombreInput.removeAttribute('readonly');
-        apellidoInput.removeAttribute('readonly');
-        telefonoInput.removeAttribute('readonly');
-        correoInput.removeAttribute('readonly');
-        
-        nombreInput.setAttribute('required', true);
-        apellidoInput.setAttribute('required', true);
-        telefonoInput.setAttribute('required', true);
-        correoInput.setAttribute('required', true);
-    }
-
-    // Función para mostrar modo búsqueda
-    function mostrarModoBusqueda() {
-        camposCliente.style.display = 'none';
-        btnCancelarRegistro.style.display = 'none';
-        btnBuscarCliente.style.display = 'block';
-        btnRegistrarCliente.style.display = 'block';
-        
-        // Ocultar secciones de venta y productos
-        ocultarSeccionesVenta();
-        
-        // Limpiar campos del cliente
-        cedulaInput.value = '';
-        nombreInput.value = '';
-        apellidoInput.value = '';
-        telefonoInput.value = '';
-        correoInput.value = '';
-        idClienteHidden.value = '';
-        
-        // Limpiar clases de validación de la cédula
-        cedulaInput.classList.remove('is-valid', 'is-invalid');
-        cedulaInput.setCustomValidity('');
-        limpiarError(cedulaInput);
-        
-        // Limpiar campos de pago
-        if(metodoPagoSelect) metodoPagoSelect.value = '';
-        if(metodoEntregaSelect) metodoEntregaSelect.value = '';
-        if(referenciaBancaria) referenciaBancaria.value = '';
-        if(telefonoEmisor) telefonoEmisor.value = '';
-        if(banco) banco.value = '';
-        if(bancoDestino) bancoDestino.value = '';
-        if(direccion) direccion.value = '';
-        
-        // Ocultar campos adicionales
-        if(camposPagoAdicionales) camposPagoAdicionales.style.display = 'none';
-        if(campoDireccion) campoDireccion.style.display = 'none';
-        
-        // Limpiar productos
-        const primeraFila = document.querySelector('.producto-fila');
-        if(primeraFila) {
-            const selectProducto = primeraFila.querySelector('.producto-select-venta');
-            const inputCantidad = primeraFila.querySelector('.cantidad-input-venta');
-            const inputPrecio = primeraFila.querySelector('.precio-input-venta');
-            const subtotal = primeraFila.querySelector('.subtotal-venta');
-            const stockInfo = primeraFila.querySelector('.stock-info');
-            
-            if(selectProducto) selectProducto.value = '';
-            if(inputCantidad) inputCantidad.value = '1';
-            if(inputPrecio) inputPrecio.value = '0.00';
-            if(subtotal) subtotal.textContent = '0.00';
-            if(stockInfo) stockInfo.textContent = '';
-        }
-        
-        // Eliminar filas adicionales de productos
-        const filas = document.querySelectorAll('.producto-fila');
-        if(filas.length > 1) {
-            for(let i = 1; i < filas.length; i++) {
-                filas[i].remove();
-            }
-        }
-        
-        // Actualizar total general y limpiar total en bolívares
-        const totalGeneral = document.getElementById('total-general-venta');
-        const totalBs = document.getElementById('total-general-bs');
-        if(totalGeneral) totalGeneral.textContent = '$0.00';
-        if(totalBs) totalBs.textContent = ' (0.00 Bs)';
-        
-        // Quitar required y clases de validación
-        const campos = [nombreInput, apellidoInput, telefonoInput, correoInput, 
-                       referenciaBancaria, telefonoEmisor, banco, bancoDestino, direccion];
-        campos.forEach(campo => {
-            if(campo) {
-                campo.removeAttribute('required');
-                campo.classList.remove('is-valid', 'is-invalid');
-                limpiarError(campo);
-            }
-        });
-    }
-
-    // Evento para mostrar campos de registro de cliente
-    btnRegistrarCliente.addEventListener('click', function() {
-        mostrarModoRegistro();
-        // Mostrar secciones de venta y productos
-        mostrarSeccionesVenta();
-    });
-
-    // Evento para cancelar registro
-    btnCancelarRegistro.addEventListener('click', function() {
-        mostrarModoBusqueda();
-    });
-
-    // Evento para el botón reset del formulario
-    if (formVenta) {
-        formVenta.addEventListener('reset', function(e) {
-            setTimeout(() => {
-                mostrarModoBusqueda();
-            }, 0);
-        });
-    }
-
-    // Manejar el modal de delivery
-    document.querySelectorAll('[id^="deliveryModal"]').forEach(modal => {
-        const form = modal.querySelector('form');
-        const inputDireccion = modal.querySelector('input[name="direccion"]');
-        const btnEditar = modal.querySelector('.btn-warning');
-        const estadoSelect = modal.querySelector('select[name="estado_delivery"]');
-        const metodoEntrega = modal.querySelector('.modal-title').textContent.toLowerCase();
-        // Guardar el valor original de la dirección
-        let direccionOriginal = inputDireccion.value;
-        // --- NUEVO: Filtrar opciones válidas según método de entrega y estado actual ---
-        function filtrarOpcionesEstado() {
-            if (!estadoSelect) return;
-            const estadoActual = estadoSelect.getAttribute('data-estado-anterior');
-            let opcionesValidas = [];
-            if (estadoActual === '0') {
-                // Cancelado: solo mostrar cancelado
-                opcionesValidas = [{value: '0', text: 'Cancelado'}];
-            } else if (metodoEntrega.includes('delivery')) {
-                if (estadoActual === '1') {
-                    // Pendiente: puede ir a En camino, Entregado o Cancelado
-                    opcionesValidas = [
-                        {value: '1', text: 'Pendiente'},
-                        {value: '3', text: 'En camino'},
-                        {value: '2', text: 'Entregado'},
-                        {value: '0', text: 'Cancelado'}
-                    ];
-                } else if (estadoActual === '3') {
-                    // En camino: puede ir a Entregado o Cancelado
-                    opcionesValidas = [
-                        {value: '3', text: 'En camino'},
-                        {value: '2', text: 'Entregado'},
-                        {value: '0', text: 'Cancelado'}
-                    ];
-                } else if (estadoActual === '2') {
-                    // Entregado: solo mostrar entregado
-                    opcionesValidas = [
-                        {value: '2', text: 'Entregado'}
-                    ];
-                }
-            } else if (metodoEntrega.includes('mrw') || metodoEntrega.includes('zoom')) {
-                if (estadoActual === '1') {
-                    // Pendiente: puede ir a En camino, Enviado o Cancelado
-                    opcionesValidas = [
-                        {value: '1', text: 'Pendiente'},
-                        {value: '3', text: 'En camino'},
-                        {value: '4', text: 'Enviado'},
-                        {value: '0', text: 'Cancelado'}
-                    ];
-                } else if (estadoActual === '3') {
-                    // En camino: puede ir a Enviado o Cancelado
-                    opcionesValidas = [
-                        {value: '3', text: 'En camino'},
-                        {value: '4', text: 'Enviado'},
-                        {value: '0', text: 'Cancelado'}
-                    ];
-                } else if (estadoActual === '4') {
-                    // Enviado: solo mostrar enviado
-                    opcionesValidas = [
-                        {value: '4', text: 'Enviado'}
-                    ];
-                }
-            }
-            estadoSelect.innerHTML = '';
-            opcionesValidas.forEach(opt => {
-                const option = document.createElement('option');
-                option.value = opt.value;
-                option.textContent = opt.text;
-                if (estadoActual === opt.value) option.selected = true;
-                estadoSelect.appendChild(option);
-            });
-        }
-        filtrarOpcionesEstado();
-        // --- FIN NUEVO ---
-        
-        if (btnEditar) {
-            btnEditar.addEventListener('click', function() {
-                if (inputDireccion.readOnly) {
-                    inputDireccion.readOnly = false;
-                    inputDireccion.disabled = false;
-                    inputDireccion.classList.remove('bg-light');
-                    inputDireccion.focus();
-                    this.innerHTML = '<i class="fas fa-save"></i> Guardar';
-                    this.classList.replace('btn-warning', 'btn-success');
-                } else {
-                    if (inputDireccion.value.trim().length < 10) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'La dirección debe tener al menos 10 caracteres'
-                        });
-                        return;
-                    }
-                    inputDireccion.readOnly = true;
-                    inputDireccion.disabled = false;
-                    inputDireccion.classList.add('bg-light');
-                    this.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
-                    this.classList.replace('btn-success', 'btn-warning');
-                    direccionOriginal = inputDireccion.value;
-                }
-            });
-        }
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                if (!estadoSelect.value) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Debe seleccionar un estado para el delivery'
-                    });
-                    return;
-                }
-                if (inputDireccion.value !== direccionOriginal && inputDireccion.value.trim().length < 10) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'La dirección debe tener al menos 10 caracteres'
-                    });
-                    return;
-                }
-                Swal.fire({
-                    title: '¿Confirmar cambios?',
-                    text: "¿Está seguro de actualizar el estado del delivery?",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, actualizar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Asegurarse de que la dirección esté habilitada para el envío
-                        inputDireccion.disabled = false;
-                        // Enviar el formulario por AJAX para poder mostrar el SweetAlert y ocultar el botón
-                        const formData = new FormData(form);
-                        fetch(form.action, {
-                            method: 'POST',
-                            body: formData
-                        })
-                        .then(response => response.text())
-                        .then(text => {
-                            // Detectar si el estado fue actualizado a final
-                            let estadoNuevo = estadoSelect.value;
-                            let mostrarSweet = false;
-                            let mensaje = '';
-                            if (metodoEntrega.includes('delivery') && estadoNuevo === '2') {
-                                mostrarSweet = true;
-                                mensaje = 'El delivery ya ha sido entregado.';
-                            } else if ((metodoEntrega.includes('mrw') || metodoEntrega.includes('zoom')) && estadoNuevo === '4') {
-                                mostrarSweet = true;
-                                mensaje = 'El delivery ya ha sido enviado.';
-                            } else if (estadoNuevo === '0') {
-                                mostrarSweet = true;
-                                mensaje = 'El delivery ha sido cancelado.';
-                            }
-                            if (mostrarSweet) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: '¡Actualizado!',
-                                    text: mensaje
-                                });
-                                // Ocultar el botón de delivery en la tabla
-                                const idPedido = form.querySelector('input[name="id_pedido"]').value;
-                                const botonTabla = document.querySelector(`button[data-bs-target='#deliveryModal${idPedido}']`);
-                                if (botonTabla) {
-                                    botonTabla.style.display = 'none';
-                                }
-                                // Cerrar el modal
-                                const modalInstance = bootstrap.Modal.getInstance(modal);
-                                if (modalInstance) {
-                                    modalInstance.hide();
-                                }
-                            } else {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: '¡Actualizado!',
-                                    text: 'La dirección ha sido actualizada correctamente.'
-                                }).then(() => {
-                                    window.location.reload();
-                                });
-                            }
-                        });
-                    }
-                });
-            });
-            modal.addEventListener('hidden.bs.modal', function() {
-                inputDireccion.value = direccionOriginal;
-                inputDireccion.readOnly = true;
-                inputDireccion.disabled = true;
-                inputDireccion.classList.add('bg-light');
+                input.readOnly = true;
+                input.style.backgroundColor = '#e9ecef';
                 btnEditar.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
-                btnEditar.classList.replace('btn-success', 'btn-warning');
-                filtrarOpcionesEstado();
-            });
-        }
-    });
-
-    // Para el formulario de edición
-    document.querySelectorAll('[id^="formGestionarDelivery"]').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: '¿Confirmar cambios?',
-                text: "¿Está seguro de actualizar el estado del delivery?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, actualizar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        });
-    });
-
-    // Para el formulario de delivery
-    document.querySelectorAll('.btnEditarDireccion').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const inputDireccion = this.previousElementSibling;
-            if (inputDireccion.readOnly) {
-                // Habilitar edición
-                inputDireccion.readOnly = false;
-                inputDireccion.disabled = false;
-                inputDireccion.classList.remove('bg-light');
-                inputDireccion.style.backgroundColor = '#ffffff !important';
-                this.innerHTML = '<i class="fas fa-save"></i> Guardar';
-                this.classList.replace('btn-warning', 'btn-success');
-            } else {
-                // Validar que no esté vacío
-                if (!inputDireccion.value.trim()) {
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'La dirección de entrega no puede estar vacía',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                    return;
-                }
-                // Deshabilitar edición
-                inputDireccion.readOnly = true;
-                inputDireccion.disabled = true;
-                inputDireccion.classList.add('bg-light');
-                inputDireccion.style.backgroundColor = '#e9ecef !important';
-                this.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
-                this.classList.replace('btn-success', 'btn-warning');
+                btnEditar.className = 'btn btn-warning btn-sm btnEditarDireccion';
             }
-        });
-    });
-
-    // Validación del formulario antes de enviar
-    document.querySelectorAll('[id^="formGestionarDelivery"]').forEach(function(form) {
-        const estadoSelect = form.querySelector('select[name="estado_delivery"]');
-        const direccionInput = form.querySelector('input[name="direccion"]');
-
-        if (estadoSelect) {
-            estadoSelect.addEventListener('change', function() {
-                const estadoActual = this.value;
-                const estadoAnterior = this.getAttribute('data-estado-anterior');
-                
-                // Validar cambios de estado no permitidos
-                if (estadoAnterior === '2' && estadoActual !== '2') { // Si ya está entregado (2), no se puede cambiar
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se puede cambiar el estado de un delivery ya entregado'
-                    });
-                    this.value = estadoAnterior;
-                    return;
-                }
-                
-                if (estadoAnterior === '0' && estadoActual !== '0') { // Si ya está cancelado (0), no se puede cambiar
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se puede cambiar el estado de un delivery cancelado'
-                    });
-                    this.value = estadoAnterior;
-                    return;
-                }
-
-                // Validar secuencia lógica de estados
-                // Si está Pendiente (1) y quiere pasar a Entregado (2) sin pasar por En camino (3) o Enviado (4)
-                if (estadoAnterior === '1' && estadoActual === '2') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se puede marcar como entregado un pedido pendiente. Debe pasar por los estados intermedios (En camino o Enviado).'
-                    });
-                    this.value = estadoAnterior;
-                    return;
-                }
-
-                // Si está En camino (3) y quiere regresar a Pendiente (1)
-                if (estadoAnterior === '3' && estadoActual === '1') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se puede regresar a pendiente un pedido en camino'
-                    });
-                    this.value = estadoAnterior;
-                    return;
-                }
-
-                // Si está Enviado (4), solo permitir cambio a Entregado (2) o Cancelado (0)
-                if (estadoAnterior === '4' && !['2', '0'].includes(estadoActual)) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Un pedido enviado solo puede marcarse como Entregado o Cancelado'
-                    });
-                    this.value = estadoAnterior;
-                    return;
-                }
-            });
         }
-
-        form.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-            // Validar estado
-            if (!estadoSelect.value) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Debe seleccionar un estado para el delivery'
-                });
-                return;
-            }
-            
-            // Validar dirección si fue modificada
-            if (direccionInput.value !== direccionOriginal && direccionInput.value.trim().length < 10) {
-                        Swal.fire({
-                            icon: 'error',
-                    title: 'Error',
-                    text: 'La dirección debe tener al menos 10 caracteres'
-                        });
-                        return;
-                    }
-
-            Swal.fire({
-                title: '¿Confirmar cambios?',
-                text: "¿Está seguro de actualizar el estado del delivery?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, actualizar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Asegurarse de que la dirección esté habilitada para el envío
-                    direccionInput.disabled = false;
-                    // Enviar el formulario
-                    form.submit();
-                }
-            });
-        });
     });
 }); 

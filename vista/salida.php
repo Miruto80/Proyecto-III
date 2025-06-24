@@ -63,21 +63,13 @@
           </button>
 
           <button type="button" class="btn btn-primary" id="btnAyuda">
-    <span class="icon text-white">
-      <i class="fas fa-info-circle"></i>
-    </span>
-    <span class="text-white">Ayuda</span>
-  </button>
-
-  <form id="formGenerarPDF" method="POST" action="?pagina=salida" target="_blank">
-    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-    <input type="hidden" name="nombre" value="Listado de ventas">
-    <button type="submit" name="generar" class="btn btn-info">
-      <i class="fas fa-file-pdf"></i> Generar PDF
-    </button>
-  </form>
-</div>
-</div>
+            <span class="icon text-white">
+              <i class="fas fa-info-circle"></i>
+            </span>
+            <span class="text-white">Ayuda</span>
+          </button>
+        </div>
+      </div>
           
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
@@ -409,11 +401,6 @@
                       <i class="fas fa-times"></i> Cancelar
                     </button>
                 </div>
-                <div class="col-md-3">
-                  <button type="button" class="btn btn-outline-success w-100" id="registrarCliente">
-                    <i class="fas fa-user-plus"></i> Registrar cliente
-                  </button>
-                </div>
               </div>
             </div>
 
@@ -437,7 +424,7 @@
                 <div class="col-md-6">
                   <div class="mb-3">
                     <label for="telefono_cliente" class="form-label">Teléfono</label>
-                    <input type="text" class="form-control" name="telefono_cliente" id="telefono_cliente" maxlength="10" required>
+                    <input type="text" class="form-control" name="telefono_cliente" id="telefono_cliente" maxlength="11" required>
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -655,6 +642,8 @@
                   <div class="card">
                     <div class="card-body text-center">
                       <h5 class="mb-0">Total: <span id="total-general-venta" class="text-success">$0.00</span></h5>
+                      <!-- Campo oculto para el precio total -->
+                      <input type="hidden" name="precio_total" value="0.00">
                     </div>
                   </div>
                 </div>
@@ -689,4 +678,4 @@
 
 </main>
 </body>
-</html
+</html>
