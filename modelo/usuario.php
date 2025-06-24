@@ -101,12 +101,12 @@ class Usuario extends Conexion
             if ($resultado) {
                 $conex->commit();
                 $conex = null;
-                return ['respuesta' => 1, 'mensaje' => 'Usuario registrado exitosamente'];
+                return ['respuesta' => 1, 'accion' => 'incluir'];
             }
             
             $conex->rollBack();
             $conex = null;
-            return ['respuesta' => 0, 'mensaje' => 'Error al registrar usuario'];
+            return ['respuesta' => 0, 'accion' => 'incluir'];
             
         } catch (PDOException $e) {
             if ($conex) {
@@ -135,12 +135,12 @@ class Usuario extends Conexion
             if ($resultado) {
                 $conex->commit();
                 $conex = null;
-                return ['respuesta' => 1, 'mensaje' => 'Usuario actualizado exitosamente'];
+                return ['respuesta' => 1, 'accion' => 'actualizar'];
             }
             
             $conex->rollBack();
             $conex = null;
-            return ['respuesta' => 0, 'mensaje' => 'Error al actualizar usuario'];
+            return ['respuesta' => 0, 'accion' => 'actualizar'];
             
         } catch (PDOException $e) {
             if ($conex) {
@@ -164,12 +164,12 @@ class Usuario extends Conexion
             if ($resultado) {
                 $conex->commit();
                 $conex = null;
-                return ['respuesta' => 1, 'mensaje' => 'Usuario eliminado exitosamente'];
+                return ['respuesta' => 1, 'accion' => 'eliminar'];
             }
             
             $conex->rollBack();
             $conex = null;
-            return ['respuesta' => 0, 'mensaje' => 'Error al eliminar usuario'];
+            return ['respuesta' => 0, 'accion' => 'eliminar'];
             
         } catch (PDOException $e) {
             if ($conex) {
@@ -203,7 +203,7 @@ class Usuario extends Conexion
             $sql = "SELECT p.*, ru.id_rol, ru.nombre AS nombre_tipo, ru.nivel
                     FROM usuario p 
                     INNER JOIN rol_usuario ru ON p.id_rol = ru.id_rol
-                    WHERE ru.nivel IN (2, 3)";
+                    WHERE ru.nivel IN (2, 3) AND p.estatus >= 1";
                     
             $stmt = $conex->prepare($sql);
             $stmt->execute();
