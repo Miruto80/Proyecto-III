@@ -54,15 +54,15 @@ if (isset($_POST['registrar'])) {
             'cedula_actual' => $_POST['cedulaactual'],
             'correo_actual' => $_POST['correoactual']
         ]
-    ];
+    ]; 
 
     if($datosUsuario['datos']['id_persona'] == 1) { 
         if($datosUsuario['datos']['id_rol'] != 1) {
-            echo json_encode(['respuesta' => 0, 'mensaje' => 'No puedes cambiar el Rol del usuario administrador']);
+            echo json_encode(['respuesta' => 0, 'accion' => 'actualizar', 'text' => 'No puedes cambiar el Rol del usuario administrador']);
             exit;
         }
         if($datosUsuario['datos']['estatus'] != 1) {
-            echo json_encode(['respuesta' => 0, 'mensaje' => 'No puedes cambiar el estatus del usuario administrador']);
+            echo json_encode(['respuesta' => 0, 'accion' => 'actualizar', 'text' => 'No puedes cambiar el estatus del usuario administrador']);
             exit;
         }
     }
@@ -91,12 +91,12 @@ if (isset($_POST['registrar'])) {
     ];
 
     if ($datosUsuario['datos']['id_persona'] == 1) {
-        echo json_encode(['respuesta' => 0, 'mensaje' => 'No se puede eliminar al usuario administrador']);
+        echo json_encode(['respuesta' => 0, 'accion' => 'eliminar', 'text' => 'No se puede eliminar al usuario administrador']);
         exit;
     } 
     
     if ($datosUsuario['datos']['id_persona'] == $_SESSION['id']) {
-        echo json_encode(['respuesta' => 0, 'mensaje' => 'No puedes eliminarte a ti mismo']);
+        echo json_encode(['respuesta' => 0, 'accion' => 'eliminar', 'text' => 'No puedes eliminarte a ti mismo']);
         exit;
     }
 
