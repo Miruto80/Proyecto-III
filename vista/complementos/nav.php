@@ -26,11 +26,9 @@
            </li>
            <li><a class="dropdown-item" href="?pagina=datos"><i class="fa-solid fa-user-pen"></i> Modificar Datos</a></li>
         </ul>
-      <div class="nombre-usuario">
-         <?php 
-           echo $_SESSION['nombre']." ".$_SESSION['apellido'];
-         ?>
-       </div> 
+        <div class="nombre-usuario ms-2 d-none d-md-block">
+            <?php echo $_SESSION['nombre'] . " " . $_SESSION['apellido']; ?>
+        </div>
 
         </div>
 
