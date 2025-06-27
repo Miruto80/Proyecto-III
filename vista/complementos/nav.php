@@ -19,16 +19,27 @@
              <i class="fa-solid fa-user-gear" aria-hidden="true"></i>
          </span>
         <ul class="dropdown-menu" id="dropdownOptions" aria-labelledby="dropdownIcon">
-           <li> 
+         <li class="d-block d-md-none">
+      <a class="dropdown-item text-dark">
+        <?php echo $_SESSION['nombre'] . " " . $_SESSION['apellido']; ?>
+      </a>
+    </li>  
+        <li> 
              <a class="dropdown-item text-primary"><b><?php 
                echo "Rol:"." ".$_SESSION['nombre_usuario'];
              ?></b></a>
            </li>
            <li><a class="dropdown-item" href="?pagina=datos"><i class="fa-solid fa-user-pen"></i> Modificar Datos</a></li>
         </ul>
-        <div class="nombre-usuario ms-2 d-none d-md-block">
-            <?php echo $_SESSION['nombre'] . " " . $_SESSION['apellido']; ?>
-        </div>
+                    <!-- Solo el nombre en móviles 
+            <div class="nombre-usuario d-block d-md-none">
+              <?php /* echo $_SESSION['nombre'];*/ ?>
+            </div>
+                -->
+           
+            <div class="nombre-usuario d-none d-md-block">
+                <?php echo $_SESSION['nombre'] . " " . $_SESSION['apellido']; ?>
+            </div>
 
         </div>
 
@@ -56,6 +67,9 @@
         </div>
       </div>
     </nav>
+
+
+    
     <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarAyuda" aria-labelledby="sidebarAyudaLabel">
     <div class="offcanvas-header">
         <h5 id="sidebarAyudaLabel">Ayuda Lovemakeup</h5>
