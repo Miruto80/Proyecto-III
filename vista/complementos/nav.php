@@ -12,8 +12,6 @@
       
         </a>
         
-
-        
         <div class="input-group">
           <span class="input-group-text text-body dropdown-toggle" id="dropdownIcon" aria-expanded="false" style="cursor: pointer;">
              <i class="fa-solid fa-user-gear" aria-hidden="true"></i>
@@ -69,7 +67,7 @@
     </nav>
 
 
-    
+
     <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarAyuda" aria-labelledby="sidebarAyudaLabel">
     <div class="offcanvas-header">
         <h5 id="sidebarAyudaLabel">Ayuda Lovemakeup</h5>

@@ -66,13 +66,12 @@
           <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
-                  <th class="text-white">Cedula</th>
-                  <th class="text-white">Nombre</th>
-                  <th class="text-white">Apellido</th>
-                  <th class="text-white">Telefono</th>
-                  <th class="text-white">Correo</th>
-                  <th class="text-white">Rol</th>
-                  <th class="text-white">Estatus</th>
+                  <th class="text-white">CEDULA</th>
+                  <th class="text-white">NOMBRE</th>
+                  <th class="text-white">APELLIDO</th>
+              
+                  <th class="text-white">ROL</th>
+           
                   <th class="text-white">ACCION</th>
                 </tr>
               </thead>
@@ -94,17 +93,26 @@
                   <td><?php echo $dato['cedula']?></td>
                   <td><?php echo $dato['nombre']?></td>
                   <td><?php echo $dato['apellido']?></td>
-                  <td><?php echo $dato['telefono']?></td>
-                  <td><?php echo $dato['correo']?></td>
                   <td><?php echo $dato['nombre_tipo']?></td>
-                  <td>
-                    <span class="<?= $estatus_classes[$dato['estatus']] ?>">
-                      <?php echo $estatus_texto[$dato['estatus']] ?>
-                    </span>
-                  </td>
+                 
                 
                   <td>
+                    
+
                     <form method="POST" action="?pagina=usuario">
+                      <button type="button" class="btn btn-info btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#infoModal"
+                      data-nombre="<?php echo $dato['nombre']; ?>"
+                      data-apellido="<?php echo $dato['apellido']; ?>"
+                      data-rol="<?php echo $dato['nombre_tipo']; ?>"
+                      data-telefono="<?php echo $dato['telefono']; ?>"
+                      data-correo="<?php echo $dato['correo']; ?>"
+                      data-estatus="<?php echo $dato['estatus']; ?>"
+                    >
+                      <i class="fas fa-eye" title="Ver Detalles"></i>
+                    </button>
+
                       <button type="button" class="btn btn-primary btn-sm modificar"
                    data-bs-toggle="modal"
                    data-bs-target="#editarModal"
@@ -312,6 +320,76 @@
 
 <!--FIN Modal -->
  </div>
+
+
+
+
+
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="infoModalLabel">Información del Usuario</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table ">
+          <tr>
+            <th>Nombre Completo</th>
+            <td id="modalNombreCompleto"></td>
+          </tr>
+          <tr>
+            <th>Rol</th>
+            <td id="modalRol"></td>
+          </tr>
+          <tr>
+            <th>Teléfono</th>
+            <td id="modalTelefonoss"></td>
+          </tr>
+          <tr>
+            <th>Correo</th>
+            <td id="modalCorreoss"></td>
+          </tr>
+          <tr>
+            <th>Estatus</th>
+            <td id="modalEstatus"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const infoModal = document.getElementById('infoModal');
+  infoModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+
+    const nombre = button.getAttribute('data-nombre');
+    const apellido = button.getAttribute('data-apellido');
+    const rol = button.getAttribute('data-rol');
+    const telefono = button.getAttribute('data-telefono');
+    const correo = button.getAttribute('data-correo');
+    const estatus = button.getAttribute('data-estatus');
+
+    const estatusTexto = {
+      1: 'Activo',
+      5: 'Inactivo'
+    };
+
+    const estatusClase = {
+      1: 'badge bg-success',
+      5: 'badge bg-warning text-dark'
+    };
+
+    document.getElementById('modalNombreCompleto').textContent = `${nombre} ${apellido}`;
+    document.getElementById('modalRol').textContent = rol;
+    document.getElementById('modalTelefonoss').textContent = telefono;
+    document.getElementById('modalCorreoss').textContent = correo;
+    document.getElementById('modalEstatus').innerHTML = `<span class="${estatusClase[estatus]}">${estatusTexto[estatus]}</span>`;
+  });
+</script>
+
+
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
 <!-- para el datatable-->
