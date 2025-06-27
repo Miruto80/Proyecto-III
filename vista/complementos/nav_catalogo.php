@@ -121,9 +121,12 @@ nav {
                </a>
             <?php else: ?>
               <!-- Si no hay sesión activa, muestra el ícono de usuario para iniciar sesión -->
-              <a href="?pagina=login" class="p-2 mx-1">
-               <i class="fa-solid fa-circle-user" style="font-size: 25px;"></i>
+              
+              <a href="?pagina=login" class="p-2 mx-1" id="userPopover" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="Inicia sesión aquí">
+                <i class="fa-solid fa-circle-user" style="font-size: 25px;"></i>
               </a>
+
+         
            <?php endif; ?>
             </li>
              
@@ -216,8 +219,10 @@ window.addEventListener("scroll", () => {
   ultimaPosicionScroll = posicionScroll;
 });
 
-
-
+document.addEventListener('DOMContentLoaded', function () {
+    const popoverTrigger = document.querySelector('#userPopover');
+    new bootstrap.Popover(popoverTrigger);
+  });
 
   </script>
  <script src="assets/js/Tasa.js"></script>

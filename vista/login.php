@@ -101,7 +101,7 @@
                   <div class="row">
                     <div class="col">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                          <button ctype="button" class="btn btn-secondary btn-sm me-md-2 tex-modal" data-bs-dismiss="modal">Cancelar</button>
+                          <button type="button" class="btn btn-secondary btn-sm me-md-2 tex-modal" data-bs-dismiss="modal" aria-label="Cerrar">Cancelar</button>
                          <button type="button" class="btn btn-success btn-sm tex-modal text-dark"  id="validarolvido">Validar</button>
                   </div>
                     </div>
