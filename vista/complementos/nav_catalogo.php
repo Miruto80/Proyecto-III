@@ -35,10 +35,6 @@ nav {
   color: #fff;
   background-color: #ff71d8;
 }
-
-
-
-
 </style>
   <header>
     <div class="container-lg">
@@ -56,14 +52,14 @@ nav {
           </div>
         </div>
 
-   <div class="col-sm-12 col-md-4 col-lg-7 d-none d-md-block">
+        <div class="col-sm-12 col-md-4 col-lg-7 d-none d-md-block">
           <div class="search-bar row justify-content-between bg-light p-2 rounded-4">
             <div class="col-11">
             <form id="search-form" class="text-center" action="index.php" method="get">
-  <input type="hidden" name="pagina" value="catalogo_producto">
-  <input type="text" name="busqueda" class="form-control border-0 bg-transparent"
-    placeholder="Búsqueda de más de 1.000 productos">
-</form>
+              <input type="hidden" name="pagina" value="catalogo_producto">
+              <input type="text" name="busqueda" class="form-control border-0 bg-transparent"
+                placeholder="Búsqueda de más de 1.000 productos">
+            </form>
             </div>
             <div class="col-1">
             <i class="fa-solid fa-magnifying-glass" style="font-size: 25px; cursor:pointer;" onclick="document.getElementById('search-form').submit();"></i>
@@ -78,39 +74,43 @@ nav {
         <div class="col-sm-6 col-md-3 col-lg-2 d-flex justify-content-end gap-5 align-items-center mt-4 mt-sm-0 justify-content-center justify-content-sm-end">
           <ul class="d-flex justify-content-end list-unstyled m-0">
          
-            
           <?php if ($sesion_activa && $_SESSION["nivel_rol"] == 1): ?>
-  <?php 
-    $pagina = $_GET['pagina'] ?? '';
-    $paginasPermitidas = ['catalogo', 'catalogo_producto', 'vercarrito', 'verpedidoweb'];
-    $paginasOcultas = ['vercarrito', 'verpedidoweb'];
-  ?>
- <?php if (in_array($pagina,$paginasPermitidas)): ?>
-   <li>
-    <a class="p-2 mx-1" id="btnAyuda">
-      <span class="icon text-dark">
-        <i class="fa-solid fa-circle-question"  style="font-size: 25px; color:#004adf; cursor: pointer;"></i>
-      </span>
-    </a>
-  </li>
-  <?php endif; ?>
+            <?php 
+              $pagina = $_GET['pagina'] ?? '';
+              $paginasPermitidas = ['catalogo', 'catalogo_producto', 'vercarrito', 'verpedidoweb'];
+              $paginasOcultas = ['vercarrito', 'verpedidoweb'];
+            ?>
+          <?php if (in_array($pagina,$paginasPermitidas)): ?>
+            <li>
+              <a class="p-2 mx-1" id="btnAyuda">
+                <span class="icon text-dark">
+                  <i class="fa-solid fa-circle-question"  style="font-size: 25px; color:#004adf; cursor: pointer;"></i>
+                </span>
+              </a>
+            </li>
+            <?php endif; ?>
 
-  <?php if (!in_array($pagina, $paginasOcultas)): ?>
-    <li id="carrito">
-      <a href="#" class="p-0 m-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
-        aria-controls="offcanvasCart">
-        <span class="badge rounded-pill contador contadorL">
-          <?php echo count($carrito); ?>
-        </span>
-        <i class="fa-solid fa-cart-shopping" style="font-size: 25px;"></i>
-      </a>
-    </li>
-  <?php endif; ?>
+              <?php if (!in_array($pagina, $paginasOcultas)): ?>
+                <li id="carrito">
+                  <a href="#" class="p-0 m-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
+                    aria-controls="offcanvasCart">
+                    <span class="badge rounded-pill contador contadorL">
+                      <?php echo count($carrito); ?>
+                    </span>
+                    <i class="fa-solid fa-cart-shopping" style="font-size: 25px;"></i>
+                  </a>
+                </li>
+              <?php endif; ?>
 
-<?php endif; ?>
+            <?php endif; ?>
 
 
-           
+            <li class="d-md-none">
+              <a href="#" class="p-2 mx-1" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSearch"
+                aria-controls="offcanvasSearch">
+               <i class="fa-solid fa-magnifying-glass" style="font-size: 25px;"></i>
+              </a>
+            </li>
            
 
             <li>
@@ -126,6 +126,7 @@ nav {
               </a>
            <?php endif; ?>
             </li>
+             
           </ul>
           
         </div>
@@ -136,7 +137,7 @@ nav {
         
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
           <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Offcanvas</h5>
+            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">LoveMakeup C.A</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
           </div>
           <div class="offcanvas-body justify-content-center">
