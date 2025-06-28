@@ -49,7 +49,7 @@ function muestraMensaje(icono, tiempo, titulo, mensaje) {
                       title: res.respuesta === 'ok' ? 'Pedido confirmado' : 'Error',
                       text: res.mensaje,
                       icon: res.respuesta === 'ok' ? 'success' : 'error',
-                      timer: 1500,
+                      timer: 1000,
                       showConfirmButton: false,
                       timerProgressBar: true
                   }).then(() => {
@@ -84,7 +84,7 @@ function muestraMensaje(icono, tiempo, titulo, mensaje) {
                         title: res.respuesta === 1 ? 'Pedido eliminado' : 'Error',
                         text: res.mensaje,
                         icon: res.respuesta === 1 ? 'success' : 'error',
-                        timer: 1500,
+                        timer: 1000,
                         showConfirmButton: false,
                         timerProgressBar: true
                     }).then(() => {

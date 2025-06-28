@@ -2,26 +2,13 @@
 require_once 'conexion.php';
 
 class Catalogopedido extends Conexion{
-    private $conex1;
-    private $conex2;
+    
    
 
 
     public function __construct() {
         parent::__construct(); // Llama al constructor de la clase padre
-
-        // Obtener las conexiones de la clase padre
-        $this->conex1 = $this->getConex1();
-        $this->conex2 = $this->getConex2();
-    
-         // Verifica si las conexiones son exitosas
-        if (!$this->conex1) {
-            die('Error al conectar con la primera base de datos');
-        }
-
-        if (!$this->conex2) {
-            die('Error al conectar con la segunda base de datos');
-        }
+      
     }
     
     
@@ -44,7 +31,7 @@ class Catalogopedido extends Conexion{
     WHERE p.tipo = 2 AND p.id_persona = ?
     ORDER BY p.fecha DESC";
     
-        $stmt = $this->conex1->prepare($sql);  
+        $stmt = $this->getConex1()->prepare($sql);  
         $stmt->execute([$id_persona]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -59,7 +46,7 @@ class Catalogopedido extends Conexion{
                 JOIN productos pr ON pd.id_producto = pr.id_producto
                 WHERE pd.id_pedido = ?";
         
-        $stmt = $this->conex1->prepare($sql);
+        $stmt = $this->getConex1()->prepare($sql);
         $stmt->execute([$id_pedido]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
