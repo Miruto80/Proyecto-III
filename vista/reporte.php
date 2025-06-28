@@ -3,6 +3,40 @@
 <head>
   <?php include 'complementos/head.php'; ?>
   <title> Reporte | LoveMakeup </title>
+   <style>
+        .report-card {
+            transition: transform 0.3s ease;
+            border-radius: 15px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .report-card:hover {
+            transform: translateY(-5px);
+        }
+        .card-img-container {
+            height: 180px;
+            overflow: hidden;
+        }
+        .card-img-top {
+            object-fit: cover;
+            height: 100%;
+            width: 100%;
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .report-btn {
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+        .report-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+    </style>
 </head>
 <body class="g-sidenav-show bg-gray-100">
   <?php include 'complementos/sidebar.php'; ?>
@@ -43,29 +77,80 @@
 
               <!-- BOTONES DE REPORTES -->
 <div class="card-body">
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-5">
-    <div class="col">
-      <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalCompra">
-        Compras
-      </button>
-    </div>
-    <div class="col">
-      <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalProducto">
-        Productos
-      </button>
-    </div>
-    <div class="col">
-      <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalVenta">
-        Ventas
-      </button>
-    </div>
-    <div class="col">
-      <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#modalPedidoWeb">
-        Pedido Web
-      </button>
-    </div>
-  </div>
-</div>
+          
+        <div class="row g-4">
+            <!-- Card Compras -->
+            <div class="col-md-6 col-lg-3">
+                <div class="report-card h-100 d-flex flex-column">
+                    <div class="card-img-container">
+                        <img src="https://placehold.co/600x400/f6c5b4/FFFFFF?text=Compra" class="card-img-top" alt="Reporte gráfico de niveles de inventario con productos de maquillaje organizados">
+                    </div>
+                    <div class="card-body flex-grow-1">
+                        <h5 class="card-title fw-bold">Reporte de Compras</h5>
+                        <p class="card-text text-secondary">-</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3 pt-0">
+                        <button class="btn btn-primary w-100 report-btn py-2" data-bs-toggle="modal" data-bs-target="#modalCompra">
+                           <i class="fas fa-file-invoice-dollar me-2"></i> Generar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card Productos --> 
+            <div class="col-md-6 col-lg-3">
+                <div class="report-card h-100 d-flex flex-column">
+                    <div class="card-img-container">
+                        <img src="https://placehold.co/600x400/d67888/FFFFFF?text=Producto" class="card-img-top" alt="Vista de productos de maquillaje organizados por categorías con precios visibles">
+                    </div>
+                    <div class="card-body flex-grow-1">
+                        <h5 class="card-title fw-bold">Reporte de Productos</h5>
+                        <p class="card-text text-secondary">-</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3 pt-0">
+                        <button class="btn btn-primary w-100 report-btn py-2" data-bs-toggle="modal" data-bs-target="#modalProducto">
+                           <i class="fas fa-boxes me-2"></i> Generar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card Ventas -->
+            <div class="col-md-6 col-lg-3">
+                <div class="report-card h-100 d-flex flex-column">
+                    <div class="card-img-container">
+                        <img src="https://placehold.co/600x400/fc91a3/000000?text=Ventas" class="card-img-top" alt="Gráfico de crecimiento de ventas de maquillaje con tendencia alcista">
+                    </div>
+                    <div class="card-body flex-grow-1">
+                        <h5 class="card-title fw-bold">Reporte de Ventas</h5>
+                        <p class="card-text text-secondary">-</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3 pt-0">
+                        <button class="btn btn-primary w-100 report-btn py-2" data-bs-toggle="modal" data-bs-target="#modalVenta">
+                             <i class="fas fa-chart-line me-2"></i> Generar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card Pedidos Web -->
+            <div class="col-md-6 col-lg-3">
+                <div class="report-card h-100 d-flex flex-column">
+                    <div class="card-img-container">
+                        <img src="https://placehold.co/600x400/7f7f7f/FFFFFF?text=Pedidos+Web" class="card-img-top" alt="Dashboard digital mostrando pedidos online de productos de belleza">
+                    </div>
+                    <div class="card-body flex-grow-1">
+                        <h5 class="card-title fw-bold">Reporte Web</h5>
+                        <p class="card-text text-secondary">-</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3 pt-0">
+                        <button class="btn btn-primary w-100 report-btn py-2" data-bs-toggle="modal" data-bs-target="#modalPedidoWeb">
+                             <i class="fas fa-shopping-cart me-2"></i> Generar
+                        </button>
+                    </div>
+                </div>
+            </div>
+      
 
             
             <!-- FIN CABECERA -->
