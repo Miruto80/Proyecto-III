@@ -257,6 +257,56 @@ class producto extends Conexion {
         }
     }
 
+    public function MasVendidos() {
+        $conex = $this->getConex1();
+         try {
+        $sql = "
+            SELECT 
+                productos.*
+            FROM 
+                productos
+            INNER JOIN 
+                pedido_detalles ON productos.id_producto = pedido_detalles.id_producto
+            INNER JOIN 
+                pedido ON pedido.id_pedido = pedido_detalles.id_pedido
+            WHERE 
+                productos.estatus = 1 AND pedido.estado = 2
+            GROUP BY 
+                productos.id_producto
+            ORDER BY 
+                SUM(pedido_detalles.cantidad) DESC
+            LIMIT 10
+        ";
+         $stmt = $conex->prepare($sql);
+         $stmt->execute();
+         $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+         $conex = null;
+         return $resultado;
+        }catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    public function ProductosActivos() {
+    $conex = $this->getConex1();
+    try {
+        $sql = "SELECT * FROM productos WHERE estatus = 1";
+        $stmt = $conex->prepare($sql);
+        $stmt->execute();
+        $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $conex = null;
+        return $resultado;
+    } catch (PDOException $e) {
+        if ($conex) {
+            $conex = null;
+        }
+        throw $e;
+    }
+}
+
     public function obtenerCategoria() {
         return $this->objcategoria->consultar();
     }
