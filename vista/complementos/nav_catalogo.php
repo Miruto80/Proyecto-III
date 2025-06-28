@@ -82,17 +82,18 @@ nav {
             ?>
           <?php if (in_array($pagina,$paginasPermitidas)): ?>
             <li>
-              <a class="p-2 mx-1" id="btnAyuda">
+              <a class="p-2 mx-1" id="btnAyuda" title="Ayuda">
                 <span class="icon text-dark">
                   <i class="fa-solid fa-circle-question"  style="font-size: 25px; color:#004adf; cursor: pointer;"></i>
                 </span>
+                
               </a>
             </li>
             <?php endif; ?>
 
               <?php if (!in_array($pagina, $paginasOcultas)): ?>
                 <li id="carrito">
-                  <a href="#" class="p-0 m-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
+                  <a href="#" class="p-0 m-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" title="Ver Carrito"
                     aria-controls="offcanvasCart">
                     <span class="badge rounded-pill contador contadorL">
                       <?php echo count($carrito); ?>
@@ -116,9 +117,14 @@ nav {
             <li>
              <?php if ($sesion_activa): ?>
                <!-- Si hay sesión activa, muestra el botón de cerrar sesión con otro ícono -->
-             <a href="#" class="p-2 mx-1" data-bs-toggle="modal" data-bs-target="#cerrar">
-                  <i class="fa-solid fa-right-from-bracket" style="font-size: 25px; color:red;"></i> <!-- Ícono de salida -->
-               </a>
+               <a href="#" class="p-2 mx-1"  data-bs-toggle="modal" data-bs-target="#cerrar" role="button">
+                <span id="logoutPopover"  data-bs-toggle="popover"  data-bs-placement="bottom" data-bs-trigger="hover focus" 
+                      data-bs-content="Cerrar sesión"  data-bs-container="body">
+                  <i class="fa-solid fa-right-from-bracket" style="font-size: 25px; color:red;"></i>
+                </span>
+              </a>
+
+
             <?php else: ?>
               <!-- Si no hay sesión activa, muestra el ícono de usuario para iniciar sesión -->
               
@@ -220,9 +226,10 @@ window.addEventListener("scroll", () => {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    const popoverTrigger = document.querySelector('#userPopover');
-    new bootstrap.Popover(popoverTrigger);
-  });
+  const popoverElements = document.querySelectorAll('[data-bs-toggle="popover"]');
+  popoverElements.forEach(el => new bootstrap.Popover(el));
+});
+
 
   </script>
  <script src="assets/js/Tasa.js"></script>
