@@ -393,6 +393,12 @@ h1,h2,h3,h4,h5,h6 {
 .product-item {
 cursor: pointer;
 transition: transform 0.2s;
+height: 100%;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+border: 1px solid #e0e0e0;
+border-radius: 8px;
 }
 
 .product-item:hover {
