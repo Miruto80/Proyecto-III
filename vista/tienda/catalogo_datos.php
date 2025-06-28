@@ -77,57 +77,53 @@
           </div>';
             }
             ?>  
-            <div class="col">
-             
-                <label>Cedula</label>
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-id-card" style="color:#ff2bc3;"></i></span>
-                    <input type="text" class="form-control text-dark" id="cedula" name="cedula" value ="<?php echo $_SESSION['cedula']?>">
-                   
-                </div>
-                 <p id="textocedula"></p>
-            </div>
-            <div class="col">
-                <label>Nombre</label>
-                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user" style="color:#ff2bc3;"></i></span>
-                   <input type="text" class="form-control text-dark" id="nombre" name="nombre" value ="<?php echo $_SESSION['nombre']?>">
-                       
-                </div>
-                <p id="textonombre"></p>
-                
-            </div>
-            <div class="col">
-                <label>Apellido</label>
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user" style="color:#ff2bc3;"></i></span>
-                     <input type="text" class="form-control text-dark" id="apellido" name="apellido" value ="<?php echo $_SESSION['apellido']?>">
-                         
-                </div>
-              <p id="textoapellido"></p>
-            </div>
-        </div>
-         <div class="row">
-            <div class="col">
-                 <label>Telefono</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-mobile-screen-button"  style="color:#ff2bc3;"></i></span>
-                    <input type="text" class="form-control text-dark" name="telefono" id="telefono" value ="<?php echo $_SESSION['telefono']?>">
-                        
-                </div>
-                <p id="textotelefono"></p>
-            </div>
-            <div class="col">
-                <label>Correo Electronico</label>
-                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-envelope" style="color:#ff2bc3;"></i></span>
-                    <input type="text" class="form-control text-dark" name="correo" id="correo" value ="<?php echo $_SESSION['correo']?>">
-                       
-                </div>
-                 <p id="textocorreo"></p>
+        </div>  
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="cedula">Cédula</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-id-card" style="color:#ff2bc3;"></i></span>
+                <input type="text" class="form-control text-dark" id="cedula" name="cedula" value="<?php echo $_SESSION['cedula'] ?>">
+              </div>
+              <p id="textocedula"></p>
             </div>
 
-        </div>
+            <div class="col-md-6 mb-3">
+              <label for="nombre">Nombre</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-user" style="color:#ff2bc3;"></i></span>
+                <input type="text" class="form-control text-dark" id="nombre" name="nombre" value="<?php echo $_SESSION['nombre'] ?>">
+              </div>
+              <p id="textonombre"></p>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="apellido">Apellido</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-user" style="color:#ff2bc3;"></i></span>
+                <input type="text" class="form-control text-dark" id="apellido" name="apellido" value="<?php echo $_SESSION['apellido'] ?>">
+              </div>
+              <p id="textoapellido"></p>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="telefono">Teléfono</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-mobile-screen-button" style="color:#ff2bc3;"></i></span>
+                <input type="text" class="form-control text-dark" id="telefono" name="telefono" value="<?php echo $_SESSION['telefono'] ?>">
+              </div>
+              <p id="textotelefono"></p>
+            </div>
+
+            <div class="col-md-12 mb-3">
+              <label for="correo">Correo Electrónico</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-envelope" style="color:#ff2bc3;"></i></span>
+                <input type="text" class="form-control text-dark" id="correo" name="correo" value="<?php echo $_SESSION['correo'] ?>">
+              </div>
+              <p id="textocorreo"></p>
+            </div>
+          </div>
 
         <div class="row">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -138,42 +134,50 @@
 
         </div>
      </form>   
-
+<hr>
 <div class="row bg-light">
         <div class="section-header d-flex align-items-center justify-content-between mb-lg-2">
           <h2 class="section-title">Seguridad </h2>
         </div>
       </div>
       <form action="?pagina=catalogo_datos" method="POST" autocomplete="off" id="formclave">
-      <div class="row">
-         <h5>Clave Actual</h5>
-            <div class="col-sm-5">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-key" style="color:#ff2bc3;"></i></span>
-                    <input type="text" class="form-control" id="clave" name="clave">
-                </div>
-                 <p id="textoclave" class="text-danger"></p>
-            </div>
-        </div>
-         <div class="row">
-            <div class="col">
-                  <label class="text-dark"><b>Clave Nueva</b></label>
-                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-unlock" style="color:#ff2bc3;"></i></span>
-                   <input type="text" class="form-control" id="clavenueva" name="clavenueva">
-                </div>
-                <p id="textoclavenueva" class="text-danger"></p>
-            </div>
-            <div class="col">
-                  <label class="text-dark"><b>Confirmar Clave Nueva</b></label>
-                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-unlock" style="color:#ff2bc3;"></i></span>
-                    <input type="text" class="form-control" id="clavenuevac" name="clavenuevac">
-                </div>
-                 <p id="textoclavenuevac" class="text-danger"></p>
-            </div>
-                <input type="hidden" name="persona" value="<?php echo $_SESSION['id'] ?>" >
-        </div>
+    
+  <div class="row mb-3">
+    <div class="col-12">
+      <h5 class="mb-3">Clave Actual</h5>
+    </div>
+    <div class="col-md-6 col-lg-5">
+      <div class="input-group">
+        <span class="input-group-text"><i class="fa-solid fa-key" style="color:#ff2bc3;"></i></span>
+        <input type="password" class="form-control" id="clave" name="clave">
+      </div>
+      <p id="textoclave" class="text-danger"></p>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label for="clavenueva" class="text-dark"><b>Clave Nueva</b></label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="fa-solid fa-unlock" style="color:#ff2bc3;"></i></span>
+        <input type="password" class="form-control" id="clavenueva" name="clavenueva">
+      </div>
+      <p id="textoclavenueva" class="text-danger"></p>
+    </div>
+
+    <div class="col-md-6">
+      <label for="clavenuevac" class="text-dark"><b>Confirmar Clave Nueva</b></label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="fa-solid fa-unlock" style="color:#ff2bc3;"></i></span>
+        <input type="password" class="form-control" id="clavenuevac" name="clavenuevac">
+      </div>
+      <p id="textoclavenuevac" class="text-danger"></p>
+    </div>
+  </div>
+
+  <input type="hidden" name="persona" value="<?php echo $_SESSION['id'] ?>">
+
+
         <div class="row">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
              <button class="btn btn-dark me-md-2" type="button" id="actualizarclave"> <i class="fa-solid fa-key"></i> Cambiar Clave</button>
@@ -182,73 +186,26 @@
              </form>
         </div>
 
-
+<hr>
         <div class="row bg-light">
         <div class="section-header d-flex align-items-center justify-content-between mb-lg-2">
           <h2 class="section-title">Estado de la Cuenta </h2>
         </div>
       </div>
-        
-         <div class="row">
-            <div class="col">
-                <label>Estado</label>
-                <?php
-                // Definir los textos para cada estado
-                $estatus_texto = [
-                1 => "Cliente Activo",
-                2 => "Cliente Favorito",
-                3 => "Mal Cliente"
-                ];
-
-                // Obtener el estatus desde la sesión
-                $estatus_numero = $_SESSION["estatus"];
-
-                // Convertir el número en texto
-                $estatus_mostrado = isset($estatus_texto[$estatus_numero]) ? $estatus_texto[$estatus_numero] : "Estado desconocido";
-                ?>
-                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user-tag" style="color:#ff2bc3;"></i></span>
-                   <input type="text" class="form-control text-dark" name="" value="<?php echo $estatus_mostrado; ?>" disabled>
-                </div>
-                
-            </div>
-           <div class="col">
-                <label>Cantidad de Pedido Completados</label>
-                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">@</span>
-                    <input type="text" class="form-control text-dark" name=""  value ="100">
-                </div>
-                
-            </div>
-             <div class="col">
-                <label>Cantidad de Pedido Por Confirmar Pago</label>
-                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">@</span>
-                    <input type="text" class="form-control text-dark" name=""  value ="100">
-                </div>
-                
-            </div>
-        </div>
-        <br>
+      
+ 
         <div class="row">
-            <div class="col">
-                
-                <p class="text-dark"> <i class="fa-solid fa-user-xmark"></i> ¿Deseas Eliminar la Cuenta?  <button class="btn btn-dark"  data-bs-toggle="modal" data-bs-target="#cuenta"> Eliminar Cuenta</button>
-               
-             </p> 
-             </div>
+          <div class="col">
+            <p class="text-dark">
+              <i class="fa-solid fa-user-xmark"></i> ¿Deseas Eliminar la Cuenta? 
+              <button class="btn btn-dark ms-2" data-bs-toggle="modal" data-bs-target="#cuenta">Eliminar Cuenta</button>
+            </p>
+          </div>
         </div>
 
-      </div>
-      </div>
 
-
-      </div>
      
       </div>
-
-
-
     </div>
   </section>
 

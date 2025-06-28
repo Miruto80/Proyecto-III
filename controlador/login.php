@@ -93,7 +93,7 @@ if (isset($_POST['ingresar'])) {
         $_SESSION["apellidos"] = $persona->apellido;
         $_SESSION["correos"] = $persona->correo;
         $_SESSION["iduser"] = 1;
-        $_SESSION["tabla_origen"] = ($persona->origen == 'usuario') ? 1 : 2;
+        $_SESSION["tabla_origen"] = ($persona->origen == 'usuario') ? 2 : 1;
         echo json_encode(['respuesta' => 1, 'accion' => 'validarclave']);
         exit;
     } else {

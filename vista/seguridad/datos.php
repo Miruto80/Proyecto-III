@@ -48,108 +48,107 @@
             }
             ?>  
           <form action="?pagina=usuario" method="POST" autocomplete="off" id="datos">
-            <div class="row">
-              <div class="col">
-                <label class="text-g">Cedula</label>
-                
-              <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-id-card" style="color:#ff2bc3;"></i></span>
-                    <input type="text" class="form-control" name="cedula" id="cedula" value="<?php echo $_SESSION['cedula']?>">
+      
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label for="cedula" class="form-label text-g">Cédula</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-id-card" style="color:#ff2bc3;"></i></span>
+                <input type="text" class="form-control" name="cedula" id="cedula" value="<?php echo $_SESSION['cedula'] ?>">
               </div>
-              <span id="textocedula"></span>
-              </div>
-              <div class="col">
-                <label class="text-g">Nombre</label>
-                
-                 <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user" style="color:#ff2bc3;"></i></span>
-                    <input type="text" class="form-control" name="nombre" id="nombre" value="<?php echo $_SESSION['nombre']?>">
-              </div>
-                <span id="textonombre"></span>
-              </div>
-              <div class="col">
-                <label class="text-g">Apellido</label>
-                
-                 <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user" style="color:#ff2bc3;"></i></span>
-                    <input type="text" class="form-control" name="apellido" id="apellido" value="<?php echo $_SESSION['apellido']?>">
-              </div>
-                <span id="textoapellido"></span>
-              </div>
+              <span id="textocedula" class="text-danger"></span>
             </div>
-            
-            <div class="row">
-              <div class="col">
-                <label class="text-g">Telefono</label>
-               
-                    <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-mobile-screen-button"  style="color:#ff2bc3;"></i></span>
-                     <input type="text" class="form-control" name="telefono" id="telefono" value="<?php echo $_SESSION['telefono']?>">  
+
+            <div class="col-md-4">
+              <label for="nombre" class="form-label text-g">Nombre</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-user" style="color:#ff2bc3;"></i></span>
+                <input type="text" class="form-control" name="nombre" id="nombre" value="<?php echo $_SESSION['nombre'] ?>">
               </div>
-                <span id="textotelefono"></span>
-              </div>
-              <div class="col">
-                <label class="text-g">Correo Electrónico</label>
-                
-                <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-envelope" style="color:#ff2bc3;"></i></span>
-                    <input type="text" class="form-control" id="correo" name="correo" value="<?php echo $_SESSION['correo']?>">
-              </div>
-                <span id="textocorreo"></span>
-              </div>
+              <span id="textonombre" class="text-danger"></span>
             </div>
-            <br>
+
+            <div class="col-md-4">
+              <label for="apellido" class="form-label text-g">Apellido</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-user" style="color:#ff2bc3;"></i></span>
+                <input type="text" class="form-control" name="apellido" id="apellido" value="<?php echo $_SESSION['apellido'] ?>">
+              </div>
+              <span id="textoapellido" class="text-danger"></span>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="telefono" class="form-label text-g">Teléfono</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-mobile-screen-button" style="color:#ff2bc3;"></i></span>
+                <input type="text" class="form-control" name="telefono" id="telefono" value="<?php echo $_SESSION['telefono'] ?>">
+              </div>
+              <span id="textotelefono" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+              <label for="correo" class="form-label text-g">Correo Electrónico</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-envelope" style="color:#ff2bc3;"></i></span>
+                <input type="text" class="form-control" id="correo" name="correo" value="<?php echo $_SESSION['correo'] ?>">
+              </div>
+              <span id="textocorreo" class="text-danger"></span>
+            </div>
+          </div>
+   
         
-            <div class="row">
-              <div class="col">
-                <div class="d-flex justify-content-between">
-                    
-                   
-                        
-                    </form>
-                </div>
                    <div class="row">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
              <button type="button" class="btn btn-success" name="actualizar" id="actualizar"><i class="fa-solid fa-floppy-disk"></i> Actulizar Datos</button>
              <button class="btn btn-primary" type="reset"> <i class="fa-solid fa-eraser"></i> Limpiar</button>
         </div>
              </form>
-                 <hr class="bg-dark">
+ 
+ 
+             <hr class="bg-dark">
 
                
           <h5>Seguridad </h5>
         
       </div>
       <form action="?pagina=datos" method="POST" autocomplete="off" id="formclave">
-      <div class="row">
-         <label class="text-g">Clave Actual</label>
-            <div class="col-sm-5">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-key" style="color:#ff2bc3;"></i></span>
-                    <input type="text" class="form-control" id="clave" name="clave">
-                </div>
-                 <p id="textoclave" class="text-danger"></p>
+     
+        <div class="row mb-3">
+          <div class="col-12">
+            <label for="clave" class="form-label text-g">Clave Actual</label>
+          </div>
+          <div class="col-md-6 col-lg-5">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-key" style="color:#ff2bc3;"></i></span>
+              <input type="password" class="form-control" id="clave" name="clave">
             </div>
+            <p id="textoclave" class="text-danger mt-1"></p>
+          </div>
         </div>
-         <div class="row">
-            <div class="col">
-                  <label class="text-g"><b>Clave Nueva</b></label>
-                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-unlock" style="color:#ff2bc3;"></i></span>
-                   <input type="text" class="form-control" id="clavenueva" name="clavenueva">
-                </div>
-                <p id="textoclavenueva" class="text-danger"></p>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="clavenueva" class="form-label text-g"><b>Clave Nueva</b></label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-unlock" style="color:#ff2bc3;"></i></span>
+              <input type="password" class="form-control" id="clavenueva" name="clavenueva">
             </div>
-            <div class="col">
-                  <label class="text-g"><b>Confirmar Clave Nueva</b></label>
-                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-unlock" style="color:#ff2bc3;"></i></span>
-                    <input type="text" class="form-control" id="clavenuevac" name="clavenuevac">
-                </div>
-                 <p id="textoclavenuevac" class="text-danger"></p>
+            <p id="textoclavenueva" class="text-danger mt-1"></p>
+          </div>
+
+          <div class="col-md-6">
+            <label for="clavenuevac" class="form-label text-g"><b>Confirmar Clave Nueva</b></label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-unlock" style="color:#ff2bc3;"></i></span>
+              <input type="password" class="form-control" id="clavenuevac" name="clavenuevac">
             </div>
-                <input type="hidden" name="persona" value="<?php echo $_SESSION['id'] ?>" >
+            <p id="textoclavenuevac" class="text-danger mt-1"></p>
+          </div>
         </div>
+
+        <input type="hidden" name="persona" value="<?php echo $_SESSION['id'] ?>">
         <div class="row">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
              <button class="btn btn-success me-md-2" type="button" id="actualizarclave"> <i class="fa-solid fa-key"></i> Cambiar Clave</button>

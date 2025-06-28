@@ -23,7 +23,7 @@
 <?php include 'vista/complementos/nav_catalogo.php' ?>
 
 
-   <section id="shop-categories" class="section-padding">
+   <section id="shop-categories" class="section-padding" style="background-color:#f3f3f1;">
     <div class="container-lg">
         <div class="row g-md-5">
             <!-- CATEGORÍAS -->

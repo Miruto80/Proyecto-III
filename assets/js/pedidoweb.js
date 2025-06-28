@@ -1,97 +1,113 @@
-$(document).on('click', '.ver-detalles', function () {
-  const detalles = $(this).data('detalles');
-  const tbody = $('#tbody-detalles-producto');
-  tbody.empty();
-
-  detalles.forEach(detalle => {
-    const fila = `
-      <tr>
-        <td>${detalle.nombre}</td>
-        <td>${detalle.cantidad}</td>
-        <td>${detalle.precio_unitario}$</td>
-      </tr>
-    `;
-    tbody.append(fila); 
-
-  });
-
-  $('#modalDetallesProducto').modal('show');
-});
-
-$(document).on('click', '.btn-validar', function () {
-  const idPedido = $(this).data('id');
-  console.log('Validar pedido:', idPedido);
-
-  Swal.fire({
-      title: '¿Confirmar este pedido?',
-      text: 'Esta acción no se puede deshacer.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, confirmar',
-      cancelButtonText: 'Cancelar'
-  }).then((result) => {
-      if (result.isConfirmed) {
-          $.post('controlador/pedidoweb.php', { accion: 'confirmar', id_pedido: idPedido }, function (response) {
-              console.log('Respuesta:', response);
-              try {
-                  const res = JSON.parse(response);
-                  Swal.fire({
-                      title: res.status === 'ok' ? 'Pedido confirmado' : 'Error',
-                      text: res.msg,
-                      icon: res.status === 'ok' ? 'success' : 'error'
-                  }).then(() => {
-                      if (res.status === 'ok') location.reload();
-                  });
-              } catch(e) {
-                  Swal.fire('Error', 'Error en la respuesta del servidor.', 'error');
-                  console.error(e);
-              }
-          });
-      }
-  });
-});
-
-$(document).on('click', '.btn-eliminar', function () {
-  const idPedido = $(this).data('id');
-  console.log('Eliminar pedido:', idPedido);
-
-  Swal.fire({
-      title: '¿Eliminar este pedido?',
-      text: 'Esta acción es irreversible.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-  }).then((result) => {
-      if (result.isConfirmed) {
-          $.post('controlador/pedidoweb.php', { accion: 'eliminar', id_pedido: idPedido }, function (response) {
-              console.log('Respuesta:', response);
-              try {
-                  const res = JSON.parse(response);
-                  Swal.fire({
-                      title: res.status === 'ok' ? 'Pedido eliminado' : 'Error',
-                      text: res.msg,
-                      icon: res.status === 'ok' ? 'success' : 'error'
-                  }).then(() => {
-                      if (res.status === 'ok') location.reload();
-                  });
-              } catch(e) {
-                  Swal.fire('Error', 'Error en la respuesta del servidor.', 'error');
-                  console.error(e);
-              }
-          });
-      }
-  });
-});
-
-$('#btnAyuda').on("click", function () {
+function muestraMensaje(icono, tiempo, titulo, mensaje) {
+    Swal.fire({
+        icon: icono,
+        timer: tiempo,
+        title: titulo,
+        html: mensaje,
+        showConfirmButton: false,
+        timerProgressBar: true
+    });
+  }
   
+  
+  $(document).on('click', '.ver-detalles', function () {
+    const detalles = $(this).data('detalles');
+    const tbody = $('#tbody-detalles-producto');
+    tbody.empty();
+  
+    detalles.forEach(detalle => {
+      const fila = `
+        <tr>
+          <td>${detalle.nombre}</td>
+          <td>${detalle.cantidad}</td>
+          <td>${detalle.precio_unitario}$</td>
+        </tr>
+      `;
+      tbody.append(fila);
+    });
+    $('#modalDetallesProducto').modal('show');
+  });
+  
+  $(document).on('click', '.btn-validar', function () {
+    const idPedido = $(this).data('id');
+  
+    Swal.fire({
+        title: '¿Confirmar este pedido?',
+        text: 'Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, confirmar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.post('controlador/pedidoweb.php', { accion: 'confirmar', id_pedido: idPedido }, function (response) {
+              console.log("Texto crudo del servidor:", response);
+    
+                try {
+                    const res = JSON.parse(response);
+                    Swal.fire({
+                      title: res.respuesta === 'ok' ? 'Pedido confirmado' : 'Error',
+                      text: res.mensaje,
+                      icon: res.respuesta === 'ok' ? 'success' : 'error',
+                      timer: 1000,
+                      showConfirmButton: false,
+                      timerProgressBar: true
+                  }).then(() => {
+                      if (res.respuesta === 'ok') location.reload();
+                  });
+                  } catch (e) {
+                    console.error("Error al parsear JSON:", e);
+                    muestraMensaje('error', 2000, 'Error', 'Error en la respuesta del servidor.');
+                    console.error(e);
+                  }
+            });
+        }
+    });
+  });
+  
+  $(document).on('click', '.btn-eliminar', function () {
+    const idPedido = $(this).data('id');
+  
+    Swal.fire({
+        title: '¿Eliminar este pedido?',
+        text: 'Esta acción es irreversible.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.post('controlador/pedidoweb.php', { accion: 'eliminar', id_pedido: idPedido }, function (response) {
+                try {
+                    const res = JSON.parse(response);
+                    Swal.fire({
+                        title: res.respuesta === 1 ? 'Pedido eliminado' : 'Error',
+                        text: res.mensaje,
+                        icon: res.respuesta === 1 ? 'success' : 'error',
+                        timer: 1000,
+                        showConfirmButton: false,
+                        timerProgressBar: true
+                    }).then(() => {
+                        if (res.respuesta === 1) location.reload();
+                    });
+                } catch(e) {
+                    Swal.fire('Error', 'Error en la respuesta del servidor.', 'error');
+                    console.error(e);
+                }
+            });
+        }
+    });
+  });
+  
+  // Tu código para #btnAyuda queda igual
+  $('#btnAyuda').on("click", function () {
+    
     const driver = window.driver.js.driver;
     
     const driverObj = new driver({
       nextBtnText: 'Siguiente',
-          prevBtnText: 'Anterior',
-          doneBtnText: 'Listo',
+      prevBtnText: 'Anterior',
+      doneBtnText: 'Listo',
       popoverClass: 'driverjs-theme',
       closeBtn:false,
       steps: [

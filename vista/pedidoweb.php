@@ -202,7 +202,7 @@
     <td class=" m-3 text-white badge <?php echo $badgeClass; ?>"><?php echo $estatus_texto[$pedido['estado']] ?></td>
     <td><?= $pedido['precio_total'] ?>$</td>
     <td><?= $pedido['referencia_bancaria'] ?></td>
-    <td><?= $_SESSION['nombre'] ?></td>
+    <td><?= $pedido['nombre'] ?></td>
     <td><?= $pedido['telefono_emisor'] ?></td>
     <td><?= $pedido['metodo_entrega'] ?></td>
     <td><?= $pedido['metodo_pago'] ?></td>

@@ -90,6 +90,8 @@ $carrito = $_SESSION['carrito'] ?? [];
   </div>
 </div>
 
+
+<!--- BUSCARDOR RESPOSIVE-->
   <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasSearch">
     <div class="offcanvas-header justify-content-center">
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -97,12 +99,12 @@ $carrito = $_SESSION['carrito'] ?? [];
     <div class="offcanvas-body">
       <div class="order-md-last">
         <h4 class="d-flex justify-content-between align-items-center mb-3">
-          <span class="text-primary">Search</span>
+          <span class="text-primary">Buscardor</span>
         </h4>
         <form role="search" action="index.html" method="get" class="d-flex mt-3 gap-0">
-          <input class="form-control rounded-start rounded-0 bg-light" type="email"
-            placeholder="What are you looking for?" aria-label="What are you looking for?">
-          <button class="btn btn-dark rounded-end rounded-0" type="submit">Search</button>
+          <input class="form-control rounded-start rounded-0 bg-light" type="text"
+            placeholder="Búsqueda de más de 1.000 productos" aria-label="Búsqueda de más de 1.000 productos">
+          <button class="btn btn-dark rounded-end rounded-0" type="button">Buscar</button>
         </form>
       </div>
     </div>
