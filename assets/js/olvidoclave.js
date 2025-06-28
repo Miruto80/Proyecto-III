@@ -26,29 +26,47 @@ function cambiarVista() {
     let vistaActual = document.getElementById("forclave").parentNode.parentNode;
     let nuevaVista = `
         <div class="container d-flex justify-content-center align-items-center vh-100">
-            <div class="card p-4 shadow-lg" style="width: 600px;">
-                <div class="text-center">
-                    <img src="assets/img/logo2.png" class="img-fluid mb-1" style="width:100px;">
-                </div>
-                <h4 class="text-center color-g mb-1">Olvido de Contraseña</h4>
-                <hr class="bg-dark">
-              
-                <form action="?pagina=olvidoclave" method="POST" id="forcambio_clave" autocomplete="off">
-                    <div class="mb-3 text-center">
-                        <div class="alert alert-secondary text-white" role="alert">
-                          <strong>Importante!</strong> colocar el codigo que se envio al correo!, revisar la bandeja de spam o correo no deseados
-                        </div>
-                        <label for="input" class="form-label fw-bold text-g">Ingrese el código de verificación</label>
-                        <input type="text" id="codigo" name="codigo" class="form-control text-center" placeholder="codigo de verificación">
-                        <span id="textocodigo"></span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <button type="submit" name="cerrarolvido" class="btn btn-danger">Cancelar</button>
-                        <button type="button" class="btn btn-success" id="validarNuevo">Continuar</button>
-                    </div>
-                </form>
-            </div>
+    <div class="card p-4 shadow-lg" style="width: 600px;">
+        <div class="text-center">
+            <img src="assets/img/logo2.png" class="img-fluid mb-1" style="width:100px;">
         </div>
+        <h4 class="text-center text-primary mb-1">Olvido de Contraseña</h4>
+         <p class="text-center">Paso: 2 de 3</p>      
+        <hr class="bg-dark">
+
+        <form action="?pagina=olvidoclave" method="POST" id="forcambio_clave" autocomplete="off">
+            <div class="mb-3 text-center">
+                
+                <p><b>Importante: Por favor, ingresa el código que se envió a tu correo electrónico.</b></p>
+                   
+               
+                <label class="form-label fw-bold text-g">Ingrese el código de verificación</label>
+                <div class="d-flex justify-content-center gap-1">
+                    <input type="text" maxlength="1" class="form-control text-center codigo" inputmode="numeric" pattern="[0-9]*">
+                    <input type="text" maxlength="1" class="form-control text-center codigo" inputmode="numeric" pattern="[0-9]*">
+                    <input type="text" maxlength="1" class="form-control text-center codigo" inputmode="numeric" pattern="[0-9]*">
+                    <input type="text" maxlength="1" class="form-control text-center codigo" inputmode="numeric" pattern="[0-9]*">
+                    <input type="text" maxlength="1" class="form-control text-center codigo" inputmode="numeric" pattern="[0-9]*">
+                    <input type="text" maxlength="1" class="form-control text-center codigo" inputmode="numeric" pattern="[0-9]*">
+                </div>
+                <input type="hidden" id="codigo" name="codigo">
+                <span id="textocodigo"></span>
+            </div>
+
+            <div class="text-center">
+            <p>Te recomendamos revisar también la bandeja de spam o los correos no deseados en caso de que no lo encuentres.</p>   
+       <p><b>Reenviar el codigo 1:00 </b></p>
+
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <button type="submit" name="cerrarolvido" class="btn btn-danger">Cancelar</button>
+                <button type="button" class="btn btn-success" id="validarNuevo" disabled>Continuar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
     `;
 
     vistaActual.innerHTML = nuevaVista;
@@ -75,6 +93,37 @@ $("#codigo").on("keyup", function () {
   validarkeyup(/^[0-9]{6}$/, $(this),
       $("#textocodigo"), "Debe contener exactamente 6 dígitos numéricos.");
 });
+
+
+
+document.querySelectorAll('.codigo').forEach((input, index, inputs) => {
+    input.addEventListener('input', (e) => {
+       
+        input.value = input.value.replace(/[^0-9]/g, '');
+
+        if (input.value && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+        }
+
+        validarCodigo();
+    });
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !input.value && index > 0) {
+            inputs[index - 1].focus();
+        }
+    });
+});
+
+function validarCodigo() {
+    const valores = Array.from(document.querySelectorAll('.codigo')).map(i => i.value);
+    const completo = valores.every(val => val !== '');
+    document.getElementById('validarNuevo').disabled = !completo;
+
+    if (completo) {
+        document.getElementById('codigo').value = valores.join('');
+    }
+}
 }
 
 
@@ -88,18 +137,20 @@ function cambiarVistaConfirmacion() {
                 <div class="text-center">
                     <img src="assets/img/logo2.png" class="img-fluid mb-1" style="width:100px;">
                 </div>
-                <h4 class="text-center color-g mb-1">Cambiar la Contraseña</h4>
+              
+                <h4 class="text-center text-primary mb-1">Cambiar la Contraseña</h4>
+                 <p class="text-center">Paso: 3 de 3</p>
                 <hr class="bg-dark">
           
                 <form action="?pagina=olvidoclave" method="POST" id="forconfirmacion" autocomplete="off">
-                    <div class="mb-3 text-center">
+                    <div class="mb-3 text-center mb-5">
                         <label for="clave" class="form-label fw-bold text-g">Constraseña Nueva</label>
-                        <input type="text" id="clavenueva" name="clavenueva" class="form-control text-center" placeholder="Código de confirmación">
-                        <span id="textoclavenueva"></span>
+                        <input type="text" id="clavenueva" name="clavenueva" class="form-control text-center" placeholder="Constraseña Nuevo">
+                        <span id="textoclavenueva" class="text-danger"></span>
                             <br>
                          <label for="clavenueva" class="form-label fw-bold text-g">Confirmar Contraseña</label>
-                        <input type="text" id="clavenuevac" name="confirmar" class="form-control text-center" placeholder="Código de confirmación">
-                         <span id="textoclavenuevac"></span>
+                        <input type="text" id="clavenuevac" name="confirmar" class="form-control text-center" placeholder="Confirmar la constraseña nueva">
+                         <span id="textoclavenuevac" class="text-danger"></span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="submit" name="cerrarconfirmacion" class="btn btn-danger">Cancelar</button>

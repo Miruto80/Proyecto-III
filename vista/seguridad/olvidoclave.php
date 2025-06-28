@@ -34,6 +34,7 @@
 		</div>
 		
     	<h4 class="text-center text-primary mb-1">Olvido de Contraseña</h4>
+		<p class="text-center">Paso: 1 de 3</p>
 		<hr class="bg-dark">
     	<h6 class="text-center mb-3">
 			Estimado 
@@ -44,7 +45,7 @@
 		</h6>
 
         <form action="?pagina=olvidoclave" method="POST" id="forclave" autocomplete="off">
-		<div class="mb-3 text-center">
+		<div class="mb-3 text-center mb-5">
             <label for="input" class="form-label fw-bold text-g">Ingrese su correo Electronico</label>
             <input type="text" id="correo" name="correo" class="form-control text-center" placeholder="correo: tucorreo@dominio.com"> 
             <span id="textocorreo" class="text-danger"></span>
