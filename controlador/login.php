@@ -103,18 +103,22 @@ if (isset($_POST['ingresar'])) {
     session_destroy();
     header('Location: ?pagina=login');
     exit;
+
 } else if (!empty($_SESSION['id'])) {
-    if (isset($_SESSION["id"])) {
-        $bitacora = [
-            'id_persona' => $_SESSION["id"],
-            'accion' => 'Cierre de sesión',
-            'descripcion' => 'El usuario ha cerrado sesión por URL.'
-        ];
-        $objlogin->registrarBitacora(json_encode($bitacora));
-    }    
+    
+    if (isset($_SESSION["nivel_rol"]) && ($_SESSION["nivel_rol"] == 2 || $_SESSION["nivel_rol"] == 3)) {
+    $bitacora = [
+        'id_persona' => $_SESSION["id"],
+        'accion' => 'Cierre de sesión',
+        'descripcion' => 'El usuario ha cerrado sesión por URL.'
+    ];
+    $objlogin->registrarBitacora(json_encode($bitacora));
+    }
+  
     session_destroy();
     header('Location: ?pagina=login');
     exit;
+
 } else {    
     require_once 'vista/login.php';
 }
