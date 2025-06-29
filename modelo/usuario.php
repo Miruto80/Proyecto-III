@@ -129,8 +129,16 @@ class Usuario extends Conexion
                         id_rol = :id_rol 
                     WHERE id_persona = :id_persona";
             
+               $parametros = [
+                'cedula' => $datos['cedula'],
+                'correo' => $datos['correo'],
+                'estatus' => $datos['estatus'],
+                'id_rol' => $datos['id_rol'],
+                'id_persona' => $datos['id_persona']
+                ];
+
             $stmt = $conex->prepare($sql);
-            $resultado = $stmt->execute($datos);
+            $resultado = $stmt->execute($parametros);
             
             if ($resultado) {
                 $conex->commit();
