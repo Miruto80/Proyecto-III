@@ -303,14 +303,14 @@ function enviaAjax(datos) {
       timeout: 10000,
       success: function (respuesta) {
         console.log(respuesta);
-        try {
-    // Eliminar contenido HTML en caso de que aparezca
-    var respuestaLimpiada = respuesta.split("<!DOCTYPE html>")[0].trim();
-    var lee = JSON.parse(respuestaLimpiada);
-    console.log("JSON parseado correctamente:", lee);
-} catch (error) {
-    console.error("Error al parsear JSON:", error.message);
-}
+            try {
+        // Eliminar contenido HTML en caso de que aparezca
+        var respuestaLimpiada = respuesta.split("<!DOCTYPE html>")[0].trim();
+        var lee = JSON.parse(respuestaLimpiada);
+        console.log("JSON parseado correctamente:", lee);
+        } catch (error) {
+            console.error("Error al parsear JSON:", error.message);
+        }
 
         try {
   

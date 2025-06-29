@@ -91,7 +91,7 @@ class Datos extends Conexion{
     
     public function eliminar(){
         try {
-            $registro = "DELETE FROM cliente WHERE id_persona = :id_persona";
+            $registro = "UPDATE cliente SET estatus = 0 WHERE id_persona = :id_persona";
             $strExec = $this->conex1->prepare($registro);
             $strExec->bindParam(':id_persona', $this->id_persona);
             $result = $strExec->execute();
