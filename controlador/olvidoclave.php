@@ -32,6 +32,8 @@
         $res = array('respuesta' => 0, 'accion' => 'validar', 'text' => 'El correo no encuentra en su registro.');
         echo json_encode($res);
     }
+
+
 }else if (isset($_POST['validarcodigo'])) {    
     $codigo_ingresado = $_POST['codigo'];
     $codigo_guardado = isset($_SESSION['codigo_recuperacion']) ? $_SESSION['codigo_recuperacion'] : null;
@@ -45,6 +47,22 @@
     echo json_encode($res);
 
 
+
+} else if (isset($_POST['btnReenviar'])) {
+    $correo = $_SESSION['correos'];
+    if ($correo) {
+        $codigo_recuperacion = rand(100000, 999999);
+        $_SESSION['codigo_recuperacion'] = $codigo_recuperacion;
+
+        require_once 'modelo/enviarcorreo.php';
+        enviarCodigoRecuperacion($correo, $codigo_recuperacion);
+
+        $res = array('respuesta' => 1, 'accion' => 'reenviar');
+    } else {
+        $res = array('respuesta' => 0, 'accion' => 'reenviar', 'text' => 'al obtener el correo');
+    }
+    echo json_encode($res);
+    exit;
 
 } else if(isset($_POST['validarclave'])){
    $id_persona = $_SESSION["persona"];
@@ -62,7 +80,7 @@
     }
     
  
-} {
+} else{
     require_once 'vista/seguridad/olvidoclave.php';
 }
 

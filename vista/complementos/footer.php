@@ -55,24 +55,21 @@
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="assets/js/argon-dashboard.min.js?v=2.1.0"></script>
 
+      <script>
+        
+      const dropdownIcon = document.getElementById('dropdownIcon');
+      const dropdownMenu = document.getElementById('dropdownOptions');
 
-<script>
-  // Obtener el ícono y el menú desplegable
-const dropdownIcon = document.getElementById('dropdownIcon');
-const dropdownMenu = document.getElementById('dropdownOptions');
+      dropdownIcon.addEventListener('click', () => {
+        const isExpanded = dropdownIcon.getAttribute('aria-expanded') === 'true';
+        dropdownIcon.setAttribute('aria-expanded', !isExpanded); 
+        dropdownMenu.classList.toggle('show'); 
+      });
 
-// Escuchar el evento de clic en el ícono
-dropdownIcon.addEventListener('click', () => {
-  const isExpanded = dropdownIcon.getAttribute('aria-expanded') === 'true';
-  dropdownIcon.setAttribute('aria-expanded', !isExpanded); // Cambiar el estado
-  dropdownMenu.classList.toggle('show'); // Mostrar/ocultar el menú
-});
-
-// Cerrar el menú si se hace clic fuera de él
-document.addEventListener('click', (event) => {
-  if (!dropdownIcon.contains(event.target) && !dropdownMenu.contains(event.target)) {
-    dropdownMenu.classList.remove('show');
-    dropdownIcon.setAttribute('aria-expanded', 'false');
-  }
-});
-</script>
+      document.addEventListener('click', (event) => {
+        if (!dropdownIcon.contains(event.target) && !dropdownMenu.contains(event.target)) {
+          dropdownMenu.classList.remove('show');
+          dropdownIcon.setAttribute('aria-expanded', 'false');
+        }
+      });
+      </script>

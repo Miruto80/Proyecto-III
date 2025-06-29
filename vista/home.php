@@ -126,7 +126,7 @@
         <div class="card">
             <div class="card-body">
                 <h5>Los 5 Producto más vendidos</h5>
-                <table class="table">
+    <table class="table">
     <thead>
         <tr>
             <th style="color:#d67888;" class="text-center"><b>Producto</b></th>

@@ -37,10 +37,10 @@ function cambiarVista() {
         <form action="?pagina=olvidoclave" method="POST" id="forcambio_clave" autocomplete="off">
             <div class="mb-3 text-center">
                 
-                <p><b>Importante: Por favor, ingresa el código que se envió a tu correo electrónico.</b></p>
+                <p><b>Por favor, ingresa el código que se envió a tu correo electrónico.</b></p>
                    
                
-                <label class="form-label fw-bold text-g">Ingrese el código de verificación</label>
+                <p class="fw-bold text-g text-primary">Ingrese el código de verificación</p>
                 <div class="d-flex justify-content-center gap-1">
                     <input type="text" maxlength="1" class="form-control text-center codigo" inputmode="numeric" pattern="[0-9]*">
                     <input type="text" maxlength="1" class="form-control text-center codigo" inputmode="numeric" pattern="[0-9]*">
@@ -50,12 +50,16 @@ function cambiarVista() {
                     <input type="text" maxlength="1" class="form-control text-center codigo" inputmode="numeric" pattern="[0-9]*">
                 </div>
                 <input type="hidden" id="codigo" name="codigo">
-                <span id="textocodigo"></span>
+            
             </div>
 
-            <div class="text-center">
-            <p>Te recomendamos revisar también la bandeja de spam o los correos no deseados en caso de que no lo encuentres.</p>   
-       <p><b>Reenviar el codigo 1:00 </b></p>
+            <div class="text-center ">
+            <p >Te recomendamos revisar también la bandeja de spam o los correos no deseados en caso de que no lo encuentres.</p>   
+            
+           <p id="temporizador" class="text-primary fw-bold">Reenviar el código en 1:30</p>
+            <button type="button" id="btnReenviar" name="btnReenviar" class="btn btn-primary fw-bold d-none">Reenviar código</button>
+
+
 
             </div>
             
@@ -70,31 +74,6 @@ function cambiarVista() {
     `;
 
     vistaActual.innerHTML = nuevaVista;
-$("#codigo").on("keypress", function (e) {
-  const value = $(this).val();
-  const char = String.fromCharCode(e.which);
-  // Allow backspace (char code 8)
-  if (e.which === 8) {
-    return;
-  }
-  // Prevent input if already 6 digits
-  if (value.length >= 6) {
-    e.preventDefault();
-    return;
-  }
-  // Allow only digits
-  if (!/^[0-9]$/.test(char)) {
-    e.preventDefault();
-  }
-});
-
-$("#codigo").on("keyup", function () {
-  
-  validarkeyup(/^[0-9]{6}$/, $(this),
-      $("#textocodigo"), "Debe contener exactamente 6 dígitos numéricos.");
-});
-
-
 
 document.querySelectorAll('.codigo').forEach((input, index, inputs) => {
     input.addEventListener('input', (e) => {
@@ -124,6 +103,55 @@ function validarCodigo() {
         document.getElementById('codigo').value = valores.join('');
     }
 }
+
+
+
+$(document).ready(function () {
+
+    let intervalo;
+    
+    const tiempoEspera = 90;
+    const claveLocal = 'tiempo_inicio_codigo';
+    const $temporizador = $('#temporizador');
+    const $btnReenviar = $('#btnReenviar');
+
+    let tiempoInicio = localStorage.getItem(claveLocal);
+    if (!tiempoInicio) {
+        tiempoInicio = new Date().getTime();
+        localStorage.setItem(claveLocal, tiempoInicio);
+    }
+
+    function actualizarTemporizador() {
+        const ahora = new Date().getTime();
+        const transcurrido = Math.floor((ahora - tiempoInicio) / 1000);
+        const restante = tiempoEspera - transcurrido;
+
+        if (restante > 0) {
+            const min = Math.floor(restante / 60).toString().padStart(1, '0');
+            const seg = (restante % 60).toString().padStart(2, '0');
+            $temporizador.text(`Reenviar el código en ${min}:${seg}`);
+        } else {
+            clearInterval(intervalo); 
+            $temporizador.addClass('d-none');
+            $btnReenviar.removeClass('d-none');
+            localStorage.removeItem(claveLocal);
+        }
+    }
+
+    actualizarTemporizador();
+    intervalo = setInterval(actualizarTemporizador, 1000);
+
+    $(document).on("click", "#btnReenviar", function (event) {
+        event.preventDefault();
+        $btnReenviar.prop('disabled', true).text('Enviando...');
+        var datos = new FormData($('#forcambio_clave')[0]);
+        datos.append('btnReenviar', 'btnReenviar');
+        enviaAjax(datos);
+    });
+});
+
+
+
 }
 
 
@@ -153,7 +181,7 @@ function cambiarVistaConfirmacion() {
                          <span id="textoclavenuevac" class="text-danger"></span>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <button type="submit" name="cerrarconfirmacion" class="btn btn-danger">Cancelar</button>
+                        <button type="submit" name="cerrarolvido" class="btn btn-danger">Cancelar</button>
                         <button type="button" class="btn btn-success" id="validarclave">Cambiar Clave</button>
                     </div>
                 </form>
@@ -277,6 +305,8 @@ $(document).on("click", "#validarNuevo", function(event) {
 });
 
 
+
+
    // Agregar event listener al nuevo botón
     $(document).on("click", "#validarclave", function(event) {
         event.preventDefault(); // Evita la recarga de la página
@@ -284,6 +314,9 @@ $(document).on("click", "#validarNuevo", function(event) {
         if (validarFormularioclave()) {
              var datos = new FormData($('#forconfirmacion')[0]);
              datos.append('validarclave', 'validarclave');
+              $('#validarclave').prop('disabled', true);
+              $('#validarclave').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Validando...');
+
              enviaAjax(datos);
         } else {
              Swal.fire({
@@ -370,6 +403,53 @@ function muestraMensaje(icono, tiempo, titulo, mensaje) {
   });
 }
 
+function reiniciarTemporizador() {
+    const nuevoTiempo = new Date().getTime();
+    localStorage.setItem(claveLocal, nuevoTiempo);
+
+    $('#btnReenviar').addClass('d-none').prop('disabled', false).text('Reenviar código');
+    $('#temporizador').removeClass('d-none');
+
+    iniciarTemporizador(); 
+}
+
+
+const tiempoEspera = 90; 
+const claveLocal = 'tiempo_inicio_codigo';
+let intervalo; 
+
+function iniciarTemporizador() {
+    const $temporizador = $('#temporizador');
+    const $btnReenviar = $('#btnReenviar');
+    let tiempoInicio = localStorage.getItem(claveLocal);
+
+    if (!tiempoInicio) {
+        tiempoInicio = new Date().getTime();
+        localStorage.setItem(claveLocal, tiempoInicio);
+    }
+
+    function actualizarTemporizador() {
+        const ahora = new Date().getTime();
+        const transcurrido = Math.floor((ahora - tiempoInicio) / 1000);
+        const restante = tiempoEspera - transcurrido;
+
+        if (restante > 0) {
+            const min = Math.floor(restante / 60).toString().padStart(1, '0');
+            const seg = (restante % 60).toString().padStart(2, '0');
+            $temporizador.text(`Reenviar el código en ${min}:${seg}`);
+        } else {
+            clearInterval(intervalo);
+            $temporizador.addClass('d-none');
+            $btnReenviar.removeClass('d-none');
+            localStorage.removeItem(claveLocal);
+        }
+    }
+
+    clearInterval(intervalo);
+    actualizarTemporizador();
+    intervalo = setInterval(actualizarTemporizador, 1000);
+}
+
 
 function enviaAjax(datos) {
     $.ajax({
@@ -412,7 +492,6 @@ function enviaAjax(datos) {
             if (lee.respuesta == 1) {
                 muestraMensaje("success", 2000, "Codigo de verificación correcto", "");
         
-                // Después de la alerta, espera un momento y cambia la vista
                 setTimeout(() => {
                     cambiarVistaConfirmacion();
                 }, 2200);
@@ -422,18 +501,31 @@ function enviaAjax(datos) {
             } else if (lee.accion == 'actualizar') {
                 if (lee.respuesta == 1) {
                   muestraMensaje("success", 2500, "Se ha Cambiado su Constraseña con exito ", "ya puede iniciar su seccion");
+                   $('#validarclave').prop('disabled', false);
+                   $('#validarclave').html('Cambiar Clave');
                   setTimeout(function () {
                      location = '?pagina=login';
                   }, 2500);
                 }else if (lee.respuesta == 2) {
                   muestraMensaje("success", 2500, "Se ha Cambiado su Constraseña con exito ", "ya puede iniciar su seccion");
+                   $('#validarclave').prop('disabled', false);
+                   $('#validarclave').html('Cambiar Clave');
                   setTimeout(function () {
                      location = '?pagina=login';
                   }, 2500);
                 }else {
                   muestraMensaje("error", 2000, "ERROR", lee.text);
                 }
-              }
+              }  else if (lee.accion == 'reenviar') {
+                if (lee.respuesta == 1) {
+                    muestraMensaje("success", 2000, "Se ha reenviado el código con exito", "");
+                    reiniciarTemporizador(); 
+
+                } else {
+                    muestraMensaje("error", 2000, lee.text, "");
+                   $('#btnReenviar').prop('disabled', false).text('Reenviar código');
+                }
+                }
   
         } catch (e) {
           alert("Error en JSON " + e.name);
