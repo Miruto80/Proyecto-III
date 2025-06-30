@@ -5,7 +5,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const tbody = document.getElementById('notif-body');
   const vaciarBtn = document.getElementById('vaciar-notificaciones');
 
-  // 1) Vaciar todas las entregadas (solo Admin)
+  // ————————————————————————————
+  // 1) Badge de nuevas notificaciones (punto rosa)
+  // ————————————————————————————
+  const notifLink = document.querySelector('.notification-icon');
+  function updateNotifDot() {
+    fetch(`${api}&accion=count`)
+      .then(res => res.json())
+      .then(data => {
+        if (!notifLink) return;
+        const existing = notifLink.querySelector('.notif-dot');
+        if (data.count > 0 && !existing) {
+          notifLink.insertAdjacentHTML(
+            'beforeend',
+            '<span class="notif-dot"></span>'
+          );
+        } else if (data.count === 0 && existing) {
+          existing.remove();
+        }
+      })
+      .catch(console.error);
+  }
+  // Llama al cargar y cada 30s
+  updateNotifDot();
+  setInterval(updateNotifDot, 1000);
+
+  // ————————————————————————————
+  // 2) Vaciar todas las entregadas (solo Admin)
+  // ————————————————————————————
   vaciarBtn?.addEventListener('click', () => {
     Swal.fire({
       title: '¿Vaciar todas las notificaciones entregadas?',
@@ -38,7 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 2) Delegación en la tabla para leer, entregar y eliminar
+  // ————————————————————————————
+  // 3) Delegación en la tabla para leer, entregar y eliminar
+  // ————————————————————————————
   tbody.addEventListener('click', e => {
     const btn = e.target.closest('button');
     if (!btn) return;
@@ -80,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // c) Eliminar (Admin) con confirm y manejo de error por estado
+    // c) Eliminar (solo Admin) con confirmación
     if (btn.classList.contains('btn-eliminar')) {
       Swal.fire({
         title: '¿Eliminar notificación?',

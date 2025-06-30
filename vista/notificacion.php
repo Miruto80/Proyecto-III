@@ -4,6 +4,7 @@
 <head>
   <?php include 'complementos/head.php'; ?>
   <title>Notificaciones | LoveMakeup</title>
+  
   <style>
     /* Compacta padding en celdas */
     .table-compact th,
@@ -54,12 +55,7 @@
         <?php include 'complementos/nav.php'; ?>
       </div>
     </nav>
-<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
-  <div class="preloader-wrapper">
-    <div class="preloader">
-    </div>
-  </div> 
-<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+
     <div class="container-fluid py-4">
       <div class="card mb-4">
         <div class="card-header d-flex align-items-center justify-content-between py-3">
@@ -180,4 +176,4 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="assets/js/notificacion.js"></script>
 </body>
-</html>
+</html> 

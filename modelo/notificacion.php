@@ -12,7 +12,6 @@ class Notificacion {
 
     /**
      * 1) Genera notificaciones para pedidos pendientes (estado 1 o 2).
-     *    Evita duplicados y devuelve cuántas nuevas insertó.
      */
     public function generarDePedidos(): array {
         $sqlPed = "SELECT id_pedido, fecha
@@ -118,5 +117,21 @@ class Notificacion {
         } else {
             return ['ok' => false, 'error' => 'Error al vaciar notificaciones'];
         }
+    }
+
+    /**
+     * 7) Contar notificaciones nuevas para admin (estado = 1).
+     */
+    public function contarNuevas(): int {
+        $sql = "SELECT COUNT(*) FROM notificaciones WHERE estado = 1";
+        return (int)$this->cnx->query($sql)->fetchColumn();
+    }
+
+    /**
+     * 8) Contar notificaciones pendientes para asesora (estado = 2).
+     */
+    public function contarParaAsesora(): int {
+        $sql = "SELECT COUNT(*) FROM notificaciones WHERE estado = 2";
+        return (int)$this->cnx->query($sql)->fetchColumn();
     }
 }
