@@ -17,39 +17,60 @@ if (isset($_POST['ingresar'])) {
 
     $resultado = $objlogin->procesarLogin(json_encode($datosLogin));
 
-    if ($resultado && isset($resultado->id_persona)) {
-        if (in_array($resultado->estatus, [1, 2, 3])) {
-            $_SESSION["id"] = $resultado->id_persona;
-            $_SESSION["nombre"] = $resultado->nombre;
-            $_SESSION["apellido"] = $resultado->apellido;
-            $_SESSION["nivel_rol"] = isset($resultado->nivel) ? $resultado->nivel : 1;
-            $_SESSION['nombre_usuario'] = isset($resultado->nombre_usuario) ? $resultado->nombre_usuario : 'Cliente';
-            $_SESSION["cedula"] = $resultado->cedula;
-            $_SESSION["telefono"] = $resultado->telefono;
-            $_SESSION["correo"] = $resultado->correo;
-            $_SESSION["estatus"] = $resultado->estatus;
-
-            if ($_SESSION["nivel_rol"] == 1) {
-                echo json_encode(['respuesta' => 1, 'accion' => 'ingresar']);
-                exit;
-            } elseif ($_SESSION["nivel_rol"] == 2 || $_SESSION["nivel_rol"] == 3) {
-                $bitacora = [
-                    'id_persona' => $resultado->id_persona,
-                    'accion' => 'Inicio de sesión',
-                    'descripcion' => 'El usuario ha iniciado sesión exitosamente.'
-                ];
-                $objlogin->registrarBitacora(json_encode($bitacora));
-                echo json_encode(['respuesta' => 2, 'accion' => 'ingresar']);
-                exit;
-            } else {
-                echo json_encode(['respuesta' => 0, 'accion' => 'ingresar', 'text' => 'Su nivel de acceso no está definido.']);
-            }
-        } else if (isset($resultado->noactiva)) {
-            echo json_encode(['respuesta' => 0, 'accion' => 'ingresar', 'text' => 'Lo sentimos, su cuenta está suspendida. Por favor, póngase en contacto con el administrador.']);
-        }
-    } else {
-        echo json_encode(['respuesta' => 0, 'accion' => 'ingresar', 'text' => 'Cédula y/o Clave inválida.']);
+  if ($resultado && isset($resultado->id_persona)) {
+    if ((int)$resultado->estatus === 2) {
+        echo json_encode([
+            'respuesta' => 0,
+            'accion' => 'ingresar',
+            'text' => 'Lo sentimos, su cuenta está suspendida. Por favor, póngase en contacto con el administrador.'
+        ]);
+        exit;
     }
+
+    if ((int)$resultado->estatus === 1) {
+        $_SESSION["id"] = $resultado->id_persona;
+        $_SESSION["nombre"] = $resultado->nombre;
+        $_SESSION["apellido"] = $resultado->apellido;
+        $_SESSION["nivel_rol"] = isset($resultado->nivel) ? $resultado->nivel : 1;
+        $_SESSION['nombre_usuario'] = isset($resultado->nombre_usuario) ? $resultado->nombre_usuario : 'Cliente';
+        $_SESSION["cedula"] = $resultado->cedula;
+        $_SESSION["telefono"] = $resultado->telefono;
+        $_SESSION["correo"] = $resultado->correo;
+        $_SESSION["estatus"] = $resultado->estatus;
+
+        if ($_SESSION["nivel_rol"] == 1) {
+            echo json_encode(['respuesta' => 1, 'accion' => 'ingresar']);
+            exit;
+        } elseif ($_SESSION["nivel_rol"] == 2 || $_SESSION["nivel_rol"] == 3) {
+            $bitacora = [
+                'id_persona' => $resultado->id_persona,
+                'accion' => 'Inicio de sesión',
+                'descripcion' => 'El usuario ha iniciado sesión exitosamente.'
+            ];
+            $objlogin->registrarBitacora(json_encode($bitacora));
+            echo json_encode(['respuesta' => 2, 'accion' => 'ingresar']);
+            exit;
+        } else {
+            echo json_encode([
+                'respuesta' => 0,
+                'accion' => 'ingresar',
+                'text' => 'Su nivel de acceso no está definido.'
+            ]);
+            exit;
+        }
+    }
+
+} else {
+   
+    echo json_encode([
+        'respuesta' => 0,
+        'accion' => 'ingresar',
+        'text' => 'Cédula y/o Clave inválida.'
+    ]);
+}
+
+// ------------------
+
 } else if (isset($_POST['cerrar'])) {
     if (isset($_SESSION["id"])) {
         $bitacora = [
@@ -62,6 +83,10 @@ if (isset($_POST['ingresar'])) {
     session_destroy();
     header('Location: ?pagina=login');
     exit;
+
+
+// ------------------
+
 } else if (isset($_POST['registrar'])) {
     $datosRegistro = [
         'operacion' => 'registrar',
@@ -77,6 +102,9 @@ if (isset($_POST['ingresar'])) {
 
     $resultado = $objlogin->procesarLogin(json_encode($datosRegistro));
     echo json_encode($resultado);
+
+// ------------------
+
 } else if (isset($_POST['validarclave'])) {
     $datosValidar = [
         'operacion' => 'validar',
@@ -99,10 +127,15 @@ if (isset($_POST['ingresar'])) {
     } else {
         echo json_encode(['respuesta' => 0, 'accion' => 'validarclave', 'text' => 'Cédula incorrecta o no hay registro']);
     }
+
+ // ------------------
+
 } else if (isset($_POST['cerrarolvido'])) {    
     session_destroy();
     header('Location: ?pagina=login');
     exit;
+    
+// ------------------
 
 } else if (!empty($_SESSION['id'])) {
     

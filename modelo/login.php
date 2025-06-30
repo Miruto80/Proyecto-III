@@ -58,15 +58,16 @@ class Login extends Conexion {
         }
     }
 
-    private function verificarCredenciales($datos) {
+ private function verificarCredenciales($datos) {
     $conex1 = $this->getConex1();
     $conex2 = $this->getConex2();
+
     try {
-        // Verificar en usuarios
+        
         $sql = "SELECT p.*, ru.nombre AS nombre_usuario, ru.nivel, p.clave
                 FROM usuario p
                 INNER JOIN rol_usuario ru ON p.id_rol = ru.id_rol
-                WHERE p.cedula = :cedula AND p.estatus = 1";
+                WHERE p.cedula = :cedula AND p.estatus IN (1, 2)";
 
         $stmt = $conex2->prepare($sql);
         $stmt->execute(['cedula' => $datos['cedula']]);
@@ -75,19 +76,14 @@ class Login extends Conexion {
         if ($resultado) {
             $claveDesencriptada = $this->decryptClave(['clave_encriptada' => $resultado->clave]);
             if ($claveDesencriptada === $datos['clave']) {
-                if ((int)$resultado->estatus >= 1) {
-                    if ((int)$resultado->estatus === 2) {
-                        $resultado->noactiva = true;
-                    }
-                    $conex1 = null;
-                    $conex2 = null;
-                    return $resultado;
-                }
+                $conex1 = null;
+                $conex2 = null;
+                return $resultado;
             }
         }
 
-        // Verificar en clientes
-        $sql = "SELECT * FROM cliente WHERE cedula = :cedula AND estatus = 1";
+        // Verificar en clientes (estatus 1 o 2)
+        $sql = "SELECT * FROM cliente WHERE cedula = :cedula AND estatus IN (1, 2)";
         $stmt = $conex1->prepare($sql);
         $stmt->execute(['cedula' => $datos['cedula']]);
         $resultado = $stmt->fetchObject();
@@ -95,26 +91,23 @@ class Login extends Conexion {
         if ($resultado) {
             $claveDesencriptada = $this->decryptClave(['clave_encriptada' => $resultado->clave]);
             if ($claveDesencriptada === $datos['clave']) {
-                if ((int)$resultado->estatus >= 1) {
-                    if ((int)$resultado->estatus === 2) {
-                        $resultado->noactiva = true;
-                    }
-                    $conex1 = null;
-                    $conex2 = null;
-                    return $resultado;
-                }
+                $conex1 = null;
+                $conex2 = null;
+                return $resultado;
             }
         }
 
         $conex1 = null;
         $conex2 = null;
         return null;
+
     } catch (PDOException $e) {
         if ($conex1) $conex1 = null;
         if ($conex2) $conex2 = null;
         throw $e;
     }
 }
+
 
 
     private function registrarCliente($datos) {
@@ -161,14 +154,14 @@ class Login extends Conexion {
         $conex2 = $this->getConex2();
         try {
             // Verificar en clientes
-            $sql = "SELECT COUNT(*) FROM cliente WHERE {$datos['campo']} = :valor AND estatus = 1";
+            $sql = "SELECT COUNT(*) FROM cliente WHERE {$datos['campo']} = :valor AND estatus >= 1";
             $stmt = $conex1->prepare($sql);
             $stmt->execute(['valor' => $datos['valor']]);
             $existe = $stmt->fetchColumn() > 0;
             
             if (!$existe) {
                 // Si no existe en clientes, verificar en usuarios
-                $sql = "SELECT COUNT(*) FROM usuario WHERE {$datos['campo']} = :valor AND estatus = 1";
+                $sql = "SELECT COUNT(*) FROM usuario WHERE {$datos['campo']} = :valor AND estatus >= 1";
                 $stmt = $conex2->prepare($sql);
                 $stmt->execute(['valor' => $datos['valor']]);
                 $existe = $stmt->fetchColumn() > 0;
@@ -189,7 +182,7 @@ class Login extends Conexion {
         $conex2 = $this->getConex2();
         try {
             // Buscar en cliente
-            $sql = "SELECT *, 'cliente' AS origen FROM cliente WHERE cedula = :cedula AND estatus = 1";
+            $sql = "SELECT *, 'cliente' AS origen FROM cliente WHERE cedula = :cedula AND estatus >= 1";
             $stmt = $conex1->prepare($sql);
             $stmt->execute(['cedula' => $datos['cedula']]);
             
@@ -201,7 +194,7 @@ class Login extends Conexion {
             }
 
             // Buscar en usuario
-            $sql = "SELECT *, 'usuario' AS origen FROM usuario WHERE cedula = :cedula AND estatus = 1";
+            $sql = "SELECT *, 'usuario' AS origen FROM usuario WHERE cedula = :cedula AND estatus >= 1";
             $stmt = $conex2->prepare($sql);
             $stmt->execute(['cedula' => $datos['cedula']]);
             

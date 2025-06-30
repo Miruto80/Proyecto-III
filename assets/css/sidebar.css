@@ -95,7 +95,7 @@
 }
 
 .sidenav {
-   z-index: 1 !important; /* Push it behind the modal */
+   z-index: 1 !important; 
  }
  
  .password-input {
@@ -111,3 +111,76 @@
    cursor: pointer;
    color:#000;
  }
+
+
+
+/* CSS NAV */
+
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-3px); }
+    40% { transform: translateX(3px); }
+    60% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
+    100% { transform: translateX(0); }
+  }
+
+  .notification-icon {
+    background-color: white;
+    padding: 8px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  .notification-icon:hover {
+    background-color: #f1f1f1;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .notification-icon:hover i {
+    color: #ff9800;
+    animation: shake 0.6s ease;
+  }
+
+
+  .notification {
+    transition: all 0.3s ease;
+  }
+
+  .notification:hover {
+    background-color: #f1f1f1;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .notification:hover i {
+    color: #ff9800; 
+  }
+
+   .nav-link:hover {
+      background-color: rgba(226, 226, 226, 0.4);
+      border-radius: 0.40rem;
+      transform: scale(1.05);
+      transition: all 0.3s ease;
+      color:#000000;
+  }
+
+  .nav-link:hover i {
+    color:rgb(0, 0, 0); 
+ }
+
+  .input-group-text {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .input-group-text:hover {
+    background-color: #fff3f3; /* Azul Bootstrap */
+
+  }
+
+  .input-group-text:hover i {
+    color: rgb(252, 152, 243);
+  }

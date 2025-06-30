@@ -36,12 +36,17 @@
             <div class="card-header pb-0">  <!-- CARD N-1 -->  
     
     <!--Titulo de página -->
-     <div class="d-sm-flex align-items-center justify-content-between mb-5">
-       <h4 class="mb-0"><i class="fa-solid fa-user mr-2" style="color: #f6c5b4;"></i>
+     <div class="d-sm-flex align-items-center justify-content-between mb-3">
+       <h4 class="mb-0"><i class="fa-solid fa-user me-2" style="color: #f6c5b4;"></i>
         Cliente</h4>
            
        <!-- Button que abre el Modal N1 Registro -->
-       
+       <button type="button" class="btn btn-primary">
+            <span class="icon text-white">
+            <i class="fas fa-info-circle me-2"></i>
+            </span>
+            <span class="text-white" id="ayudacliente">Ayuda</span>
+          </button>
       </div>
           
 
@@ -50,34 +55,31 @@
            <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
-                   <th class="text-white">Cedula</th>
-                  <th class="text-white">Nombre</th>
-                  <th class="text-white">Apellido</th>
-                  <th class="text-white">Telefono</th>
-                  <th class="text-white">Correo</th>
-
-                  <th class="text-white">Estatus</th>
-                  <th class="text-white">ACCION</th>
+                  <th class="text-white text-center">Cedula</th>
+                  <th class="text-white text-center">Nombre</th>
+                  <th class="text-white text-center">Apellido</th>
+                  <th class="text-white text-center">Telefono</th>
+                  <th class="text-white text-center">Correo</th>
+                  <th class="text-white text-center">Estatus</th>
+                  <th class="text-white text-center">Acción</th>
                 </tr>
               </thead>
               <tbody>
               <?php
                   $estatus_texto = array(
-                    1 => "Cliente Activo",
-                    2 => "Cliente Favorito",
-                    3 => "Mal Cliente"
+                    1 => "Activo",
+                    2 => "Inactivo"
                   );
               
                   $estatus_classes = array(
-                    1 => 'activos',
-                    2 => 'favoritos',
-                    3 => 'malclientes' 
+                    1 =>  'badge bg-success',
+                    2 =>  'badge bg-warning text-dark'
                   );
 
                   foreach ($registro as $dato){
                 ?>
                 <tr>
-                   <td><?php echo $dato['cedula']?></td>
+                  <td><?php echo $dato['cedula']?></td>
                   <td><?php echo $dato['nombre']?></td>
                   <td><?php echo $dato['apellido']?></td>
                   <td><?php echo $dato['telefono']?></td>
@@ -90,34 +92,17 @@
                 
                   <td>
                       <form method="POST" action="?pagina=cliente" id="formestatus">
-                        <input type="hidden" name="id_persona" id="id_persona_hidden">
-
-                  <?php if ($dato['estatus'] == 1) { ?>
-                    <button type="button" class="btn btn-primary btn-sm favorito" data-id="<?php echo $dato['id_persona']; ?>">
-                        <i class="fa-solid fa-star"></i>
-                    </button>
-                  <?php } else { ?>
-                    <button type="button" class="btn btn-dark btn-sm clienteactivo" data-id="<?php echo $dato['id_persona']; ?>">
-                       <i class="fa-solid fa-star-half"></i>
-                    </button>
-                  <?php } ?>
-
-                  <?php if ($dato['estatus'] <= 2) { ?>
-                    <button type="button" class="btn btn-warning btn-sm malcliente" data-id="<?php echo $dato['id_persona']; ?>">
-                       <i class="fa-solid fa-face-angry"></i>
-                   </button>
-                  <?php } ?>
-
-                  <button type="button" class="btn btn-info btn-sm"
-                   data-bs-toggle="modal"
-                   data-bs-target="#editarModal"
-                   data-id="<?php echo $dato['id_persona']; ?>"
-                   data-cedula="<?php echo $dato['cedula']; ?>" 
-                   data-correo="<?php echo $dato['correo']; ?>">
-                  <i class="fas fa-pencil-alt" title="Editar"></i> 
-                </button>
-                </form>
-              </td>
+                  
+                        <button type="button" class="btn btn-primary btn-sm modificar"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editarModal"
+                            data-id="<?php echo $dato['id_persona']; ?>"
+                            data-cedula="<?php echo $dato['cedula']; ?>" 
+                            data-correo="<?php echo $dato['correo']; ?>">
+                            <i class="fas fa-pencil-alt" title="Editar"></i> 
+                      </button>
+                    </form>
+                 </td>
                 </tr>
                <?php } ?>
               </tbody>
@@ -182,7 +167,7 @@
 <?php include 'complementos/footer.php' ?>
 <!-- para el datatable-->
 <script src="assets/js/demo/datatables-demo.js"></script>
- <script src="assets/js/cliente.js"></script>
+<script src="assets/js/cliente.js"></script>
 </body>
 
 </html>

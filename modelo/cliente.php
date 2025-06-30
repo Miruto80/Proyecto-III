@@ -51,53 +51,7 @@ class Cliente extends Conexion
             return $res = 0;
         }
     } //fin consultar
-    
 
-     public function favorito(){
-        $registro = "UPDATE cliente SET estatus = 2 WHERE id_persona = :id_persona";
-
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':id_persona', $this->id_persona);
-
-        $resul = $strExec->execute();
-        if ($resul) {
-            $res=array('respuesta'=>1,'accion'=>'favorito');
-        } else {
-            $res=array('respuesta'=>0,'accion'=>'favorito');
-        }
-        return $res;
-    }
-
-    public function malcliente(){ 
-        $registro = "UPDATE cliente SET estatus = 3 WHERE id_persona = :id_persona";
-
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':id_persona', $this->id_persona);
-
-        $resul = $strExec->execute();
-        if ($resul) {
-            $res=array('respuesta'=>1,'accion'=>'malcliente');
-        } else {
-            $res=array('respuesta'=>0,'accion'=>'malcliente');
-        }
-        return $res;
-    } 
-
-
-  public function clienteactivo(){
-        $registro = "UPDATE cliente SET estatus = 1 WHERE id_persona = :id_persona";
-
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':id_persona', $this->id_persona);
-
-        $resul = $strExec->execute();
-        if ($resul) {
-            $res=array('respuesta'=>1,'accion'=>'clienteactivo');
-        } else {
-            $res=array('respuesta'=>0,'accion'=>'clienteactivo');
-        }
-        return $res;
-    }
   
     public function actualizar(){
         $registro = "UPDATE cliente SET cedula = :cedula, correo = :correo WHERE id_persona = :id_persona";
@@ -118,37 +72,37 @@ class Cliente extends Conexion
 
 
          public function existeCedula() {
-    // Buscar en conex1
-    $consulta = "SELECT cedula FROM cliente WHERE cedula = :cedula";
-    $strExec = $this->conex1->prepare($consulta);
-    $strExec->bindParam(':cedula', $this->cedula);
-    $strExec->execute();
+            // Buscar en conex1
+            $consulta = "SELECT cedula FROM cliente WHERE cedula = :cedula";
+            $strExec = $this->conex1->prepare($consulta);
+            $strExec->bindParam(':cedula', $this->cedula);
+            $strExec->execute();
 
-    // Si no hay resultados, buscar en conex2
-    if ($strExec->rowCount() == 0) {
-        $consulta = "SELECT cedula FROM usuario WHERE cedula = :cedula";
-        $strExec = $this->conex2->prepare($consulta);
-        $strExec->bindParam(':cedula', $this->cedula);
-        $strExec->execute();
-    }
+            // Si no hay resultados, buscar en conex2
+            if ($strExec->rowCount() == 0) {
+                $consulta = "SELECT cedula FROM usuario WHERE cedula = :cedula";
+                $strExec = $this->conex2->prepare($consulta);
+                $strExec->bindParam(':cedula', $this->cedula);
+                $strExec->execute();
+            }
 
-    return $strExec->rowCount() > 0;
-}
+            return $strExec->rowCount() > 0;
+        }
 
     public function existeCorreo() {
-    //conex1
-    $consulta = "SELECT correo FROM cliente WHERE correo = :correo";
-    $strExec = $this->conex1->prepare($consulta);
-    $strExec->bindParam(':correo', $this->correo);
-    $strExec->execute();
-
-    //buscar en conex2
-    if ($strExec->rowCount() == 0) {
-        $consulta = "SELECT correo FROM usuario WHERE correo = :correo";
-        $strExec = $this->conex2->prepare($consulta);
+        //conex1
+        $consulta = "SELECT correo FROM cliente WHERE correo = :correo";
+        $strExec = $this->conex1->prepare($consulta);
         $strExec->bindParam(':correo', $this->correo);
         $strExec->execute();
-    }
+
+        //buscar en conex2
+        if ($strExec->rowCount() == 0) {
+            $consulta = "SELECT correo FROM usuario WHERE correo = :correo";
+            $strExec = $this->conex2->prepare($consulta);
+            $strExec->bindParam(':correo', $this->correo);
+            $strExec->execute();
+        }
 
     return $strExec->rowCount() > 0;
 }

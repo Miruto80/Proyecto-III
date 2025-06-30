@@ -4,8 +4,8 @@
   <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href="?pagina=home">
-        <img src="assets/img/icono.png" width="26px" height="26px" class="navbar-brand-img h-100" alt="main_logo">
-        <span class="ms-1 font-weight-bold">LoveMakeup</span>
+        <img src="assets/img/icono.png" width="30px" height="30px" class="navbar-brand-img h-100" alt="main_logo">
+        <span class="ms-1 font-weight-bold">Love Makeup C.A</span>
       </a>
       <p class="text-center text-black m-0" id="bcv" style="font-size: 14px;"></p>
 

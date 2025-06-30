@@ -37,7 +37,7 @@
     
     <!--Titulo de página -->
      <div class="d-sm-flex align-items-center justify-content-between mb-5">
-       <h4 class="mb-0"><i class="fa-solid fa-user-gear mr-2" style="color: #f6c5b4;"></i>
+       <h4 class="mb-0"><i class="fa-solid fa-user-gear me-2" style="color: #f6c5b4;"></i>
         Usuario</h5>
          
       <div class="d-flex gap-2">
@@ -46,7 +46,7 @@
        <!-- Button que abre el Modal N1 Registro -->
           <button type="button" class="btn btn-success registrar" data-bs-toggle="modal" data-bs-target="#registro">
             <span class="icon text-white">
-            <i class="fas fa-file-medical"></i>
+            <i class="fas fa-file-medical me-2"></i>
             </span>
             <span class="text-white" id="btnAbrirRegistrar">Registrar</span>
           </button>
@@ -54,7 +54,7 @@
           
   <button type="button" class="btn btn-primary" id="ayuda">
     <span class="icon text-white">
-      <i class="fas fa-info-circle"></i>
+      <i class="fas fa-info-circle me-2"></i>
     </span>
     <span class="text-white">Ayuda</span>
   </button>
@@ -66,25 +66,24 @@
           <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
-                  <th class="text-white">CEDULA</th>
-                  <th class="text-white">NOMBRE</th>
-                  <th class="text-white">APELLIDO</th>
-              
-                  <th class="text-white">ROL</th>
-           
-                  <th class="text-white">ACCION</th>
+                  <th class="text-white text-center">Cedula</th>
+                  <th class="text-white text-center">Nombre</th>
+                  <th class="text-white text-center">Apellido</th>
+                  <th class="text-white text-center">Rol</th>
+                  <th class="text-white text-center">Estatus</th>
+                  <th class="text-white text-center">Acción</th>
                 </tr>
               </thead>
               <tbody>
               <?php
                 $estatus_texto = array(
                     1 => "Activo",
-                    5 => "Inactivo"
+                    2 => "Inactivo"
                   );
               
                   $estatus_classes = array(
-                    1 => 'activos',
-                    5 => 'malclientes' 
+                    1 =>  'badge bg-success',
+                    2 =>  'badge bg-warning text-dark'
                   );
 
                   foreach ($registro as $dato){
@@ -94,13 +93,17 @@
                   <td><?php echo $dato['nombre']?></td>
                   <td><?php echo $dato['apellido']?></td>
                   <td><?php echo $dato['nombre_tipo']?></td>
-                 
-                
+                  <td>
+                      <span class="<?= $estatus_classes[$dato['estatus']] ?>">
+                        <?php echo $estatus_texto[$dato['estatus']] ?>
+                      </span>
+                  </td>
+
                   <td>
                     
 
                     <form method="POST" action="?pagina=usuario">
-                      <button type="button" class="btn btn-info btn-sm"
+                      <button type="button" class="btn btn-info btn-sm informacion"
                       data-bs-toggle="modal"
                       data-bs-target="#infoModal"
                       data-nombre="<?php echo $dato['nombre']; ?>"
@@ -114,14 +117,14 @@
                     </button>
 
                       <button type="button" class="btn btn-primary btn-sm modificar"
-                   data-bs-toggle="modal"
-                   data-bs-target="#editarModal"
-                   data-id="<?php echo $dato['id_persona']; ?>"
-                   data-cedula="<?php echo $dato['cedula']; ?>" 
-                   data-correo="<?php echo $dato['correo']; ?>"
-                   data-nombre_rol="<?php echo $dato['nombre_tipo']; ?>"
-                   data-estatus="<?php echo $dato['estatus']; ?>"
-                   data-id_tipo="<?php echo $dato['id_rol'];
+                      data-bs-toggle="modal"
+                      data-bs-target="#editarModal"
+                      data-id="<?php echo $dato['id_persona']; ?>"
+                      data-cedula="<?php echo $dato['cedula']; ?>" 
+                      data-correo="<?php echo $dato['correo']; ?>"
+                      data-nombre_rol="<?php echo $dato['nombre_tipo']; ?>"
+                      data-estatus="<?php echo $dato['estatus']; ?>"
+                      data-id_tipo="<?php echo $dato['id_rol'];
                     ?>" >
                    
                   <i class="fas fa-pencil-alt" title="Editar"></i> 
@@ -300,7 +303,7 @@
                     <select class="form-select" name="estatus">
                       <option id="modalestatus"> </option>
                        <option value="1">Activo</option>
-                       <option value="5">Inactivo</option>
+                       <option value="2">Inactivo</option>
                     </select>
               </div>            
           </div>
@@ -325,7 +328,7 @@
 <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content shadow">
-      <div class="modal-header bg-info text-white">
+      <div class="modal-header header-color text-white">
         <h5 class="modal-title" id="infoModalLabel">Información del Usuario</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -370,12 +373,12 @@
 
     const estatusTexto = {
       1: 'Activo',
-      5: 'Inactivo'
+      2: 'Inactivo'
     };
 
     const estatusClase = {
       1: 'badge bg-success',
-      5: 'badge bg-warning text-dark'
+      2: 'badge bg-warning text-dark'
     };
 
     document.getElementById('modalNombreCompleto').textContent = `${nombre} ${apellido}`;

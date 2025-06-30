@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("modalrol").textContent = nombre_rol;
 
     document.getElementById("modalestatus").value = estatus;
-    document.getElementById("modalestatus").textContent = estatus == "1" ? "Activo - Actual" : estatus == "5" ? "Inactivo - Actual" : "Desconocido";
+    document.getElementById("modalestatus").textContent = estatus == "1" ? "Activo - Actual" : estatus == "2" ? "Inactivo - Actual" : "Desconocido";
 
   });
 });
@@ -343,6 +343,7 @@ function enviaAjax(datos) {
     steps: [
       { element: '.table-color', popover: { title: 'Tabla de usuario', description: 'Aqui es donde se guardaran los registros de usuario', side: "left", }},
       { element: '.registrar', popover: { title: 'Boton de registrar', description: 'Darle click aqui te llevara a un modal para poder registrar', side: "bottom", align: 'start' }},
+      { element: '.informacion', popover: { title: 'Mas informacion del Usuario', description: 'Este botón te permite ver mas información de un usuario registrado.', side: "left", align: 'start' }},
       { element: '.modificar', popover: { title: 'Modificar Usuario', description: 'Este botón te permite editar la información de un usuario registrado.', side: "left", align: 'start' }},
       { element: '.eliminar', popover: { title: 'Eliminar Usuario', description: 'Usa este botón para eliminar un usuario de la lista.', side: "left", align: 'start' }},
       { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un usuario en la tabla', side: "right", align: 'start' }},
