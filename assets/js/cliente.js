@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var idPersona = button.getAttribute("data-id");
     var cedula = button.getAttribute("data-cedula");
     var correo = button.getAttribute("data-correo");
+    var estatus = button.getAttribute("data-estatus"); 
 
     // Asignar valores al modal
     document.getElementById("modalIdPersona").value = idPersona;
@@ -12,6 +13,8 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("modalCorreo").value = correo;
     document.getElementById("modalce").value = cedula;
     document.getElementById("modalco").value = correo;
+    document.getElementById("modalestatus").value = estatus;
+    document.getElementById("modalestatus").textContent = estatus == "1" ? "Activo - Actual" : estatus == "2" ? "Inactivo - Actual" : "Desconocido";
   });
 });
 

@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var correo = button.getAttribute("data-correo");
     var id_tipo = button.getAttribute("data-id_tipo");
     var nombre_rol = button.getAttribute("data-nombre_rol");
-    var estatus = button.getAttribute("data-estatus");
+    var estatus = button.getAttribute("data-estatus"); 
 
     // Asignar valores al modal
     document.getElementById("modalIdPersona").value = idPersona;

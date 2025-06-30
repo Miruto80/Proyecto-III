@@ -54,12 +54,13 @@ class Cliente extends Conexion
 
   
     public function actualizar(){
-        $registro = "UPDATE cliente SET cedula = :cedula, correo = :correo WHERE id_persona = :id_persona";
+        $registro = "UPDATE cliente SET cedula = :cedula, correo = :correo, estatus = :estatus WHERE id_persona = :id_persona";
 
         $strExec = $this->conex1->prepare($registro);
         $strExec->bindParam(':id_persona', $this->id_persona);
         $strExec->bindParam(':cedula', $this->cedula);
         $strExec->bindParam(':correo', $this->correo);
+        $strExec->bindParam(':estatus', $this->estatus);
 
         $resul = $strExec->execute();
         if ($resul) {

@@ -103,7 +103,8 @@
                             data-bs-target="#editarModal"
                             data-id="<?php echo $dato['id_persona']; ?>"
                             data-cedula="<?php echo $dato['cedula']; ?>" 
-                            data-correo="<?php echo $dato['correo']; ?>">
+                            data-correo="<?php echo $dato['correo']; ?>"
+                            data-estatus="<?php echo $dato['estatus']; ?>">
                             <i class="fas fa-pencil-alt" title="Editar"></i> 
                       </button>
                     </form>
@@ -153,9 +154,19 @@
               </div>  
               <span id="textocorreomodal" class="text-danger"></span>
           </div>
-          <input type="hidden" id="modalIdPersona" name="id_persona">
+          <div class="mb-3">
+             <label for="rol" class="form-label text-g">Estatus</label>
+                 <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user-tag"></i></span>
+                    <select class="form-select" name="estatus">
+                      <option id="modalestatus"> </option>
+                       <option value="1">Activo</option>
+                       <option value="2">Inactivo</option>
+                    </select>
+              </div>   
+            <input type="hidden" id="modalIdPersona" name="id_persona">
             <input type="hidden" id="modalce" name="cedulaactual">
-              <input type="hidden" id="modalco" name="correoactual">
+            <input type="hidden" id="modalco" name="correoactual">
         </form>
       </div>
       <div class="modal-footer">

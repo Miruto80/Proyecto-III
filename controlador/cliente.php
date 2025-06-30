@@ -16,12 +16,14 @@ if(isset($_POST['actualizar'])){
    $id_persona = $_POST['id_persona'];
    $cedula = $_POST['cedula'];
    $correo = $_POST['correo'];
+   $estatus = $_POST['estatus'];
    $cedula_actual = $_POST['cedulaactual'];
    $correo_actual = $_POST['correoactual'];
   
     $objcliente->set_Id_persona($id_persona);
     $objcliente->set_Cedula($cedula); 
     $objcliente->set_Correo($correo);
+    $objcliente->set_Estatus($estatus);
     
     if ($cedula_actual !== $cedula) {
        if ($objcliente->existeCedula($cedula)) {

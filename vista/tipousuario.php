@@ -55,20 +55,16 @@
                 <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
                   <thead class="table-color">
                     <tr>
-                      <th class="text-white">ID</th>
-                      <th class="text-white">NOMBRE</th>
-                      <th class="text-white">NIVEL</th>
-                      <th class="text-white">ESTATUS</th>
-                      <th class="text-white">ACCION</th>
+                      <th class="text-white text-center">Nombre</th>
+                      <th class="text-white text-center">Nivel</th>
+                      <th class="text-white text-center">Accion</th>
                     </tr>
                   </thead>
                   <tbody id="tipousuarioTableBody">
                     <?php foreach ($registro as $dato): ?>
                     <tr>
-                      <td><?php echo $dato['id_rol']; ?></td>
                       <td><?php echo $dato['nombre']; ?></td>
                       <td><?php echo $dato['nivel']; ?></td>
-                      <td><?php echo $dato['estatus']; ?></td>
                       <td>
                         <button type="button" class="btn btn-primary btn-sm modificar" 
                                 onclick="abrirModalModificar(<?php echo $dato['id_rol']; ?>, '<?php echo $dato['nombre']; ?>', <?php echo $dato['nivel']; ?>, <?php echo $dato['estatus']; ?>)"> 
