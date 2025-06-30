@@ -20,37 +20,84 @@ function enviarCodigoRecuperacion($correo, $codigo) {
 
     $mail->Body = "
     <html>
-    <head>
-        <style>
-            .codigo {
-                font-size: 15px;
-                font-weight: bold;
-                color: #df059d; /* Color personalizado */
-            }
+  <head>
+    <style>
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f9f9f9;
+        padding: 20px;
+        color: #333333;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background-color: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        padding: 30px;
+      }
+      .header {
+        text-align: center;
+        color: #df059d;
+      }
+      .codigo {
+        background-color: #fce4f4;
+        color: #df059d;
+        font-weight: bold;
+        font-size: 20px;
+        padding: 10px 20px;
+        display: inline-block;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+      .footer {
+        font-size: 12px;
+        text-align: center;
+        color: #888;
+        margin-top: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <h2 class='header'>Código de Verificación</h2>
 
-            .img{
-                width:200px;
-            }
-        </style>
-    </head>
-    <body>
+      <p>Hola,</p>
 
-        <p>Estimado cliente</p>
+      <p>Gracias por confiar en <strong>LoveMakeup C.A</strong>. Usa el siguiente código para completar tu recuperación:</p>
 
-        <p>Tu código de verificación es: <span class='codigo'>$codigo</span></p>
-        <hr>
-        <p>LoveMakeup C.A es tu mejor aliado en productos de belleza y maquillaje. Contamos con una amplia variedad de artículos diseñados para resaltar tu estilo y personalidad.</p>
+      <div class='codigo'>$codigo</div>
 
-        <p>Si necesitas más ayuda, no dudes en contactarnos:</p>
-        <p> Teléfono: +58 424 5115414</p>
-        <p> Correo: <a href='mailto:help.lovemakeupca@gmail.com'>help.lovemakeupca@gmail.com</a></p>
-        
-        <p>Gracias por confiar en <strong>LoveMakeup C.A.</strong></p>
-        <p>¡Gracias por elegirnos!</p>
+      <p>Si no solicitaste este código, ignora este mensaje.</p>
 
-        <p>Atentamente,<br>El equipo de LoveMakeup C.A</p>
-    </body>
-    </html>
+      <hr>
+
+      <p><strong>LoveMakeup C.A</strong> es tu mejor aliado en productos de belleza y maquillaje. ¡Descubre tu mejor versión con nosotros!</p>
+
+      <p>Telf.: +58 424 5115414<br> Correo: <a href='mailto:help.lovemakeupca@gmail.com'>help.lovemakeupca@gmail.com</a></p>
+
+<!-- Redes Sociales -->
+<div style='text-align: center; margin-top: 30px;'>
+  <a href='https://www.instagram.com/lovemakeupyk/' target='_blank' style='margin: 0 10px;'>
+    <img src='https://cdn-icons-png.flaticon.com/24/1384/1384031.png' alt='Instagram' style='vertical-align: middle;'>
+  </a>
+  <a href='https://www.facebook.com/lovemakeupyk/' target='_blank' style='margin: 0 10px;'>
+    <img src='https://cdn-icons-png.flaticon.com/24/1384/1384005.png' alt='Facebook' style='vertical-align: middle;'>
+  </a>
+  <a href='https://wa.me/584245115414' target='_blank' style='margin: 0 10px;'>
+    <img src='https://cdn-icons-png.flaticon.com/24/733/733585.png' alt='WhatsApp' style='vertical-align: middle;'>
+  </a>
+</div>
+
+
+      <div class='footer'>
+        © 2025 LoveMakeup C.A. Todos los derechos reservados.
+      </div>
+    </div>
+  </body>
+</html>
+
     ";
     if (!$mail->send()) {
         return false;
