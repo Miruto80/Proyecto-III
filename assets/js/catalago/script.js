@@ -11,7 +11,7 @@
         $('.preloader-wrapper').fadeOut();
         $('body').removeClass('preloader-site');
     });
-  }
+  } 
 
   // init Chocolat light box
 	var initChocolat = function() {

@@ -21,7 +21,12 @@
         <?php include 'complementos/nav.php'; ?>
       </div>
     </nav>
-
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+  <div class="preloader-wrapper">
+    <div class="preloader">
+    </div>
+  </div> 
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
     <div class="container-fluid py-4">
       <div class="row">  
         <div class="col-12">

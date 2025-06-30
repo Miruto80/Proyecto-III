@@ -26,6 +26,13 @@
 <!-- php barra de navegacion-->    
 <?php include 'complementos/nav.php' ?>
 
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+  <div class="preloader-wrapper">
+    <div class="preloader">
+    </div>
+  </div> 
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+
 <div class="container-fluid py-4"> <!-- DIV CONTENIDO -->
 
 <div class="row"> <!-- CARD PRINCIPAL-->
@@ -84,20 +91,6 @@ showPasswordButton.addEventListener('click', () => {
 });
 </script>
 <script src="assets/js/bitacora.js"></script>
-
-
-<?php if(isset($_SESSION['message'])): ?>
-      <script>
-        Swal.fire({
-          title: '<?php echo $_SESSION['message']['title']; ?>',
-          text: '<?php echo $_SESSION['message']['text']; ?>',
-          icon: '<?php echo $_SESSION['message']['icon']; ?>',
-          confirmButtonColor: '#4899fa',
-          confirmButtonText: 'OK'
-        });
-      </script>
-      <?php unset($_SESSION['message']); ?>
-    <?php endif; ?>
 
 </body>
 </html>

@@ -27,7 +27,12 @@
 <!-- php barra de navegacion-->    
 <?php include 'complementos/nav.php' ?>
 
-
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+  <div class="preloader-wrapper">
+    <div class="preloader">
+    </div>
+  </div> 
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
 <div class="container-fluid py-4"> <!-- DIV CONTENIDO -->
 
     <div class="row"> <!-- CARD PRINCIPAL-->  

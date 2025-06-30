@@ -107,7 +107,12 @@
       <h6 class="font-weight-bolder text-white mb-0">Gestionar Producto</h6>
     </nav>
 <?php include 'complementos/nav.php' ?>
-
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+  <div class="preloader-wrapper">
+    <div class="preloader">
+    </div>
+  </div> 
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
 <div class="container-fluid py-4">
 
   <div class="row">

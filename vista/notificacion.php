@@ -54,7 +54,12 @@
         <?php include 'complementos/nav.php'; ?>
       </div>
     </nav>
-
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+  <div class="preloader-wrapper">
+    <div class="preloader">
+    </div>
+  </div> 
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
     <div class="container-fluid py-4">
       <div class="card mb-4">
         <div class="card-header d-flex align-items-center justify-content-between py-3">
