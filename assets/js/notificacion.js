@@ -1,91 +1,110 @@
-document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll('.btn-leer').forEach(button => {
-        button.addEventListener('click', function() {
-            let idNotificacion = this.getAttribute('data-id');
+// assets/js/notificacion.js
 
-            fetch('', { // Asegura que la ruta sea correcta
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `accion=leer&id_notificaciones=${idNotificacion}`
-            })
-            .then(response => response.text())
-            .then(data => {
-                try {
-                    let parsedData = JSON.parse(data);
-                    if (parsedData.respuesta === 1) {
-                        Swal.fire({
-                            title: "¡Éxito!",
-                            text: "Notificación marcada como leída.",
-                            icon: "success",
-                            confirmButtonText: "Aceptar"
-                        });
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        Swal.fire({
-                            title: "Error",
-                            text: "No se pudo marcar como leída.",
-                            icon: "error",
-                            confirmButtonText: "Aceptar"
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error en la respuesta del servidor:", data);
-                    Swal.fire({
-                        title: "Error",
-                        text: "Problema en la comunicación con el servidor.",
-                        icon: "warning",
-                        confirmButtonText: "Aceptar"
-                    });
-                }
-            });
+document.addEventListener('DOMContentLoaded', () => {
+  const api = '?pagina=notificacion';
+  const tbody = document.getElementById('notif-body');
+  const vaciarBtn = document.getElementById('vaciar-notificaciones');
+
+  // 1) Vaciar todas las entregadas (solo Admin)
+  vaciarBtn?.addEventListener('click', () => {
+    Swal.fire({
+      title: '¿Vaciar todas las notificaciones entregadas?',
+      text: 'Esto eliminará permanentemente todas las entregadas.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Vaciar',
+      cancelButtonText: 'Cancelar'
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      fetch(`${api}&accion=vaciar`, { method: 'POST' })
+        .then(r => r.json())
+        .then(json => {
+          if (!json.ok) {
+            return Swal.fire('Error', json.error, 'error');
+          }
+          if (json.deleted === 0) {
+            return Swal.fire(
+              'Nada por vaciar',
+              'No hay notificaciones entregadas para eliminar.',
+              'info'
+            );
+          }
+          Swal.fire(
+            'Vaciado',
+            `${json.deleted} notificación${json.deleted > 1 ? 'es' : ''} eliminada${json.deleted > 1 ? 's' : ''}`,
+            'success'
+          ).then(() => location.reload());
         });
     });
-});
+  });
 
+  // 2) Delegación en la tabla para leer, entregar y eliminar
+  tbody.addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const id = btn.dataset.id;
 
+    // a) Marcar como leída (Admin)
+    if (btn.classList.contains('marcar-leer')) {
+      fetch(`${api}&accion=marcarLeida`, {
+        method: 'POST',
+        body: new URLSearchParams({ id })
+      })
+      .then(r => r.json())
+      .then(json => {
+        if (json.ok) {
+          Swal.fire('Listo', 'Notificación marcada como leída.', 'success')
+            .then(() => location.reload());
+        } else {
+          Swal.fire('Error', json.error, 'error');
+        }
+      });
+      return;
+    }
 
-document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll('.btn-eliminar').forEach(button => {
-        button.addEventListener('click', function() {
-            let idNotificacion = this.getAttribute('data-id');
+    // b) Marcar como entregada (Asesora)
+    if (btn.classList.contains('marcar-entregar')) {
+      fetch(`${api}&accion=entregar`, {
+        method: 'POST',
+        body: new URLSearchParams({ id })
+      })
+      .then(r => r.json())
+      .then(json => {
+        if (json.ok) {
+          Swal.fire('Entregado', 'Notificación marcada como entregada.', 'success')
+            .then(() => location.reload());
+        } else {
+          Swal.fire('Error', json.error, 'error');
+        }
+      });
+      return;
+    }
 
-            fetch('', { // Ruta corregida
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `accion=eliminar&id_notificaciones=${idNotificacion}`
-            })
-            .then(response => response.text())  // Cambia a .text() para visualizar la respuesta
-            .then(data => {
-                console.log("Respuesta del servidor:", data); // Depuración
-                try {
-                    let parsedData = JSON.parse(data);
-
-                    if (parsedData.respuesta === 1) {
-                        document.querySelector(`#notificacion-${idNotificacion}`).remove(); // Elimina de la vista
-                        Swal.fire({
-                            title: "¡Éxito!",
-                            text: "Notificación eliminada correctamente.",
-                            icon: "success",
-                            confirmButtonText: "Aceptar"
-                        });
-                    } else {
-                        Swal.fire({
-                            title: "Error",
-                            text: parsedData.mensaje || "No se pudo eliminar la notificación.",
-                            icon: "error",
-                            confirmButtonText: "Aceptar"
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error al procesar JSON:", data);
-                    Swal.fire({
-                        title: "Error",
-                        text: "Problema en la comunicación con el servidor.",
-                        icon: "warning",
-                        confirmButtonText: "Aceptar"
-                    });
-                }
-            });
+    // c) Eliminar (Admin) con confirm y manejo de error por estado
+    if (btn.classList.contains('btn-eliminar')) {
+      Swal.fire({
+        title: '¿Eliminar notificación?',
+        text: 'Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      }).then(result => {
+        if (!result.isConfirmed) return;
+        fetch(`${api}&accion=eliminar`, {
+          method: 'POST',
+          body: new URLSearchParams({ id })
+        })
+        .then(r => r.json())
+        .then(json => {
+          if (json.ok) {
+            document.getElementById(`notif-${id}`)?.remove();
+            Swal.fire('Eliminado', 'Notificación borrada.', 'success');
+          } else {
+            Swal.fire('No permitido', json.error, 'warning');
+          }
         });
-    });
+      });
+    }
+  });
 });

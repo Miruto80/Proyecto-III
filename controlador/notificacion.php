@@ -1,51 +1,71 @@
-<?php  
-     session_start();
+<?php
+session_start();
+if (empty($_SESSION['id'])) {
+    header('Location:?pagina=login');
+    exit;
+}
+$nivel = (int)($_SESSION['nivel_rol'] ?? 0);
 
-     if (empty($_SESSION["id"])){
-       header("location:?pagina=login");
-       header('Content-Type: application/json'); // Asegura que el servidor envíe JSON
+require_once 'modelo/notificacion.php';
+$N = new Notificacion();
 
-     } /*  Validacion URL  */
-     
-     require_once 'modelo/notificacion.php';
-
-     $notificacion = new notificacion();
-
-
-// Registrar nuevas notificaciones de pedidos pendientes
+// POST: acciones AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['accion'], $_POST['id_notificaciones'])) {
-        $id = $_POST['id_notificaciones'];
-        $notificacion->setIdNotificacion($id);
+    header('Content-Type: application/json');
+    $accion = $_GET['accion']  ?? '';
+    $id     = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+    $resp   = ['ok' => false, 'error' => 'Acción inválida'];
 
-        if ($_POST['accion'] === 'leer') {
-            echo json_encode($notificacion->cambiarestato());
-            exit;
-        }
+    switch ($accion) {
+        case 'marcarLeida':
+            if ($nivel === 3 && $id > 0) {
+                $resp = $N->marcarLeida($id);
+            } else {
+                $resp['error'] = 'Solo Admin';
+            }
+            break;
 
-        if ($_POST['accion'] === 'eliminar') {
-            $resultado = $notificacion->eliminar();
-            header('Content-Type: application/json'); // Asegura que el servidor envíe JSON
-            echo json_encode($resultado); // Devuelve JSON correctamente
-            exit;
-        }
+        case 'entregar':
+            if ($nivel === 2 && $id > 0) {
+                $resp = $N->entregar($id);
+            } else {
+                $resp['error'] = 'Solo Asesora';
+            }
+            break;
+
+        case 'eliminar':
+            if ($nivel === 3 && $id > 0) {
+                $resp = $N->eliminar($id);
+            } else {
+                $resp['error'] = 'No autorizado';
+            }
+            break;
+
+        case 'vaciar':
+            if ($nivel === 3) {
+                $resp = $N->vaciarEntregadas();
+            } else {
+                $resp['error'] = 'Solo Admin';
+            }
+            break;
     }
 
-    echo json_encode(['respuesta' => 0, 'accion' => 'error', 'mensaje' => 'Solicitud no válida']);
+    echo json_encode($resp);
     exit;
 }
 
+// GET: regenerar + traer + filtrar
+$N->generarDePedidos();
+$res = $N->getAll();
+$all = $res['ok'] ? $res['data'] : [];
 
-// Si no es POST, mostrar la vista
-$resultadoRegistro = $notificacion->registrarNotificacionesDePedidos();
-$notificaciones = $notificacion->obtenerNotificaciones();
+// Filtrado según rol
+if ($nivel === 2) {
+    // Asesora ve solo estado = 2
+    $notificaciones = array_values(array_filter($all, fn($n) => intval($n['estado']) === 2));
+} else {
+    // Admin ve 1,2,3
+    $notificaciones = $all;
+}
+
 require_once 'vista/notificacion.php';
-
-
-// Obtener todas las notificaciones existentes
-
-
-     
-
-
-?>
