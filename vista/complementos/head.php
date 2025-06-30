@@ -30,12 +30,13 @@
 </style>
 
 <!-- JS LIBRERIA -->
-<script src="assets/js/loader.js"></script>
 <script src="assets/js/libreria/jquery.min.js"></script>
 <script src="assets/js/libreria/sweetalert2.js"></script>
 <script src="assets/js/libreria/moment.js"></script>
 <script src="assets/js/libreria/datatables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.js.iife.js"></script>
+
+<script src="assets/js/loader.js"></script>
 
 <!-- Tu módulo de notificaciones -->
 <script src="assets/js/notificacion.js"></script>
