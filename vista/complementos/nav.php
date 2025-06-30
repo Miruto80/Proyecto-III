@@ -11,7 +11,7 @@
          </a>
         
         <div class="input-group">
-          <span class="input-group-text text-body dropdown-toggle" id="dropdownIcon" aria-expanded="false" style="cursor: pointer;">
+          <span class="input-group-text text-body dropdown-toggle" id="dropdownIcon" aria-expanded="false" style="cursor: pointer; padding: 12px;">
              <i class="fa-solid fa-user-gear" aria-hidden="true"></i>
          </span>
         
@@ -46,8 +46,10 @@
             <li class="nav-item d-flex align-items-center">
               <a href="#" class="nav-link text-white font-weight-bold px-0" data-bs-toggle="modal" data-bs-target="#cerrar">
           
-              <i class="fa-solid fa-right-to-bracket me-sm-1"></i>  
+              <i class="fa-solid fa-right-to-bracket me-sm-1"></i> 
+               
                 <span class="d-sm-inline d-none">Cerrar Session</span>
+                <span class="d-block d-md-none">Salir</span> 
               </a>
             </li>
           </ul>
