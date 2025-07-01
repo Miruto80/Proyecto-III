@@ -99,12 +99,13 @@ $carrito = $_SESSION['carrito'] ?? [];
     <div class="offcanvas-body">
       <div class="order-md-last">
         <h4 class="d-flex justify-content-between align-items-center mb-3">
-          <span class="text-primary">Buscardor</span>
+          <span class="text-primary">Buscador</span>
         </h4>
-        <form role="search" action="index.html" method="get" class="d-flex mt-3 gap-0">
-          <input class="form-control rounded-start rounded-0 bg-light" type="text"
+        <form role="search" id="search-form" action="index.php" method="get" class="d-flex mt-3 gap-0">
+          <input type="hidden" name="pagina" value="catalogo_producto">
+          <input class="form-control rounded-start rounded-0 bg-light" type="text" name="busqueda"
             placeholder="Búsqueda de más de 1.000 productos" aria-label="Búsqueda de más de 1.000 productos">
-          <button class="btn btn-dark rounded-end rounded-0" type="button">Buscar</button>
+          <button class="btn btn-dark rounded-end rounded-0" type="button" onclick="document.getElementById('search-form').submit();">Buscar</button>
         </form>
       </div>
     </div>
