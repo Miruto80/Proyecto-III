@@ -77,6 +77,9 @@
                   <i class="fa-solid fa-file-pdf" style="color: #f6c5b4;"></i>
                   Generar Reporte
                 </h4>
+                <button id="btnAyuda" class="btn btn-info">
+                  <i class="fas fa-info-circle"></i> Ayuda
+                </button>
               </div>
             </div>
 
@@ -86,7 +89,7 @@
         <div class="row g-4">
             <!-- Card Compras -->
             <div class="col-md-6 col-lg-3">
-                <div class="report-card h-100 d-flex flex-column">
+                <div id="cardCompra" class="report-card h-100 d-flex flex-column">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/f6c5b4/FFFFFF?text=Compra" class="card-img-top" alt="Reporte gráfico de niveles de inventario con productos de maquillaje organizados">
                     </div>
@@ -104,7 +107,7 @@
             
             <!-- Card Productos --> 
             <div class="col-md-6 col-lg-3">
-                <div class="report-card h-100 d-flex flex-column">
+                <div id="cardProducto" class="report-card h-100 d-flex flex-column">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/d67888/FFFFFF?text=Producto" class="card-img-top" alt="Vista de productos de maquillaje organizados por categorías con precios visibles">
                     </div>
@@ -122,7 +125,7 @@
             
             <!-- Card Ventas -->
             <div class="col-md-6 col-lg-3">
-                <div class="report-card h-100 d-flex flex-column">
+                <div id="cardVentas" class="report-card h-100 d-flex flex-column">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/fc91a3/000000?text=Ventas" class="card-img-top" alt="Gráfico de crecimiento de ventas de maquillaje con tendencia alcista">
                     </div>
@@ -140,7 +143,7 @@
             
             <!-- Card Pedidos Web -->
             <div class="col-md-6 col-lg-3">
-                <div class="report-card h-100 d-flex flex-column">
+                <div id="cardPedidoWeb" class="report-card h-100 d-flex flex-column">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/7f7f7f/FFFFFF?text=Pedidos+Web" class="card-img-top" alt="Dashboard digital mostrando pedidos online de productos de belleza">
                     </div>
@@ -431,6 +434,15 @@
     </div>
   </div>
 </div>
+
+ 
+
+  <!-- Cargamos Driver.js para Admin (3) y Asesora (2) -->
+  <?php if(in_array($_SESSION['nivel_rol'], [2,3], true)): ?>
+    <link   rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/driver.js@1.0.7/dist/driver.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.7/dist/driver.min.js"></script>
+  <?php endif; ?>
 
   <script src="assets/js/reporte.js"></script>
 </body>
