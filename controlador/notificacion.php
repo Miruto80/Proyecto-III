@@ -14,15 +14,13 @@ $N = new Notificacion();
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['accion'] ?? '') === 'count') {
     header('Content-Type: application/json');
 
-    // Primero: generar notificaciones de pedidos pendientes
+    // regenerar pendientes
     $N->generarDePedidos();
 
-    // Luego: contar según rol
+    // contar según rol
     if ($nivel === 3) {
-        // Admin ve notificaciones sin leer (estado = 1)
         $count = $N->contarNuevas();
     } elseif ($nivel === 2) {
-        // Asesora ve notificaciones leídas (estado = 2)
         $count = $N->contarParaAsesora();
     } else {
         $count = 0;
@@ -32,69 +30,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['accion'] ?? '') === 'count')
     exit;
 }
 
-// 2) AJAX POST: acciones sobre notificaciones
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    header('Content-Type: application/json');
-    $accion = $_GET['accion']  ?? '';
-    $id     = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-    $resp   = ['ok' => false, 'error' => 'Acción inválida'];
-
+// 2) POST: acciones sobre notificaciones → procesar + redirect
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
+    $accion = $_GET['accion'];
+    $id     = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+    $msg    = '';
+    
     switch ($accion) {
+        case 'vaciar':
+            if ($nivel === 3) {
+                $res = $N->vaciarEntregadas();
+                $deleted = $res['deleted'] ?? 0;
+                $msg = $deleted
+                     ? "Se eliminaron {$deleted} notificaciones entregadas."
+                     : "No había notificaciones entregadas para vaciar.";
+            } else {
+                $msg = 'No autorizado.';
+            }
+            break;
+
         case 'marcarLeida':
             if ($nivel === 3 && $id > 0) {
-                $resp = $N->marcarLeida($id);
+                $ok = $N->marcarLeida($id);
+                $msg = $ok
+                     ? 'Notificación marcada como leída.'
+                     : 'No se pudo marcar como leída.';
             } else {
-                $resp['error'] = 'Solo Admin';
+                $msg = 'No autorizado.';
             }
             break;
 
         case 'entregar':
             if ($nivel === 2 && $id > 0) {
-                $resp = $N->entregar($id);
+                $ok = $N->entregar($id);
+                $msg = $ok
+                     ? 'Notificación marcada como entregada.'
+                     : 'No se pudo marcar como entregada.';
             } else {
-                $resp['error'] = 'Solo Asesora';
+                $msg = 'No autorizado.';
             }
             break;
 
         case 'eliminar':
             if ($nivel === 3 && $id > 0) {
-                $resp = $N->eliminar($id);
+                $ok = $N->eliminar($id);
+                $msg = $ok
+                     ? 'Notificación eliminada.'
+                     : 'No se pudo eliminar la notificación.';
             } else {
-                $resp['error'] = 'No autorizado';
+                $msg = 'No autorizado.';
             }
             break;
 
-        case 'vaciar':
-            if ($nivel === 3) {
-                $resp = $N->vaciarEntregadas();
-            } else {
-                $resp['error'] = 'Solo Admin';
-            }
-            break;
+        default:
+            // acción desconocida
+            header('HTTP/1.1 400 Bad Request');
+            exit;
     }
 
-    echo json_encode($resp);
+    // guardar mensaje en sesión
+    $_SESSION['flash_notif'] = $msg;
+
+    // redirigir a la lista
+    header('Location:?pagina=notificacion');
     exit;
 }
 
-// 3) GET normal: regenerar notificaciones y obtener listado
+// 3) GET normal: regenerar y listar
 $N->generarDePedidos();
 $res = $N->getAll();
 $all = $res['ok'] ? $res['data'] : [];
 
-// 4) Filtrar según rol para tabla
+// filtrar según rol
 if ($nivel === 2) {
-    // Asesora ve solo estado = 2
     $notificaciones = array_values(
         array_filter($all, fn($n) => intval($n['estado']) === 2)
     );
 } else {
-    // Admin ve estados 1,2,3
     $notificaciones = $all;
 }
 
-// 5) Conteo de nuevas para el badge rosa en el nav
-// (puede usarse en el nav o pasarse a la vista de notificaciones)
+// conteo de nuevas (para mostrar badge en nav si lo usas en PHP)
 if ($nivel === 3) {
     $newCount = $N->contarNuevas();
 } elseif ($nivel === 2) {
@@ -103,5 +119,5 @@ if ($nivel === 3) {
     $newCount = 0;
 }
 
-// 6) Cargar la vista de notificaciones
+// 4) Cargar vista
 require_once 'vista/notificacion.php';

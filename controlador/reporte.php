@@ -1,94 +1,77 @@
 <?php
-
 session_start();
 if (empty($_SESSION['id'])) {
     header('Location:?pagina=login');
     exit;
 }
 
-// Modelos necesarios
 require_once 'modelo/reporte.php';
 require_once 'modelo/producto.php';
-require_once 'modelo/proveedor.php';  // Solo para el filtro en Producto
+require_once 'modelo/proveedor.php';
 require_once 'modelo/categoria.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reportType'])) {
-    // 1) Recoger filtros
-    $start   = !empty($_POST['f_start']) ? $_POST['f_start'] : null;
-    $end     = !empty($_POST['f_end'])   ? $_POST['f_end']   : null;
-    $prodId  = !empty($_POST['f_id'])    ? $_POST['f_id']    : null;
-    $provId  = !empty($_POST['f_prov'])  ? $_POST['f_prov']  : null;  // Filtrar en Producto
-    $catId   = !empty($_POST['f_cat'])   ? $_POST['f_cat']   : null;
+// 1) Recoger y normalizar Filtros (GET o POST)
+$start  = $_REQUEST['f_start'] ?? null;
+$end    = $_REQUEST['f_end']   ?? null;
+$prodId = $_REQUEST['f_id']    ?? null;
+$provId = $_REQUEST['f_prov']  ?? null;
+$catId  = $_REQUEST['f_cat']   ?? null;
 
-    // 2) Validar fechas (si aplica)
-    $today = date('Y-m-d');
-    if ($start && $start > $today) $start = $today;
-    if ($end   && $end   > $today) $end   = $today;
-    if ($start && $end && $start > $end) {
-        list($start, $end) = [$end, $start];
-    }
-
-    // 3) ¿Chequeo AJAX (sin generar PDF)?
-    $checkOnly = isset($_POST['checkOnly']);
-
-    // 4) Disparar según tipo
-    switch ($_POST['reportType']) {
-        case 'compra':
-            if ($checkOnly) {
-                $cnt = Reporte::countCompra($start, $end, $prodId);
-                header('Content-Type: application/json');
-                echo json_encode(['count' => $cnt]);
-                exit;
-            }
-            Reporte::compra($start, $end, $prodId);
-            break;
-
-        case 'producto':
-            if ($checkOnly) {
-                $cnt = Reporte::countProducto($prodId, $provId, $catId);
-                header('Content-Type: application/json');
-                echo json_encode(['count' => $cnt]);
-                exit;
-            }
-            Reporte::producto($prodId, $provId, $catId);
-            break;
-
-        case 'venta':
-            if ($checkOnly) {
-                $cnt = Reporte::countVenta($start, $end, $prodId);
-                header('Content-Type: application/json');
-                echo json_encode(['count' => $cnt]);
-                exit;
-            }
-            Reporte::venta($start, $end, $prodId);
-            break;
-
-        case 'pedidoWeb':
-            if ($checkOnly) {
-                $cnt = Reporte::countPedidoWeb($start, $end, $prodId);
-                header('Content-Type: application/json');
-                echo json_encode(['count' => $cnt]);
-                exit;
-            }
-            Reporte::pedidoWeb($start, $end, $prodId);
-            break;
-
-        default:
-            echo "Tipo de reporte inválido.";
-    }
-
-    exit; // no renderizar vista
+// Limitar fechas a hoy y corregir orden
+$today = date('Y-m-d');
+if ($start && $start > $today) $start = $today;
+if ($end   && $end   > $today) $end   = $today;
+if ($start && $end && $start > $end) {
+    list($start, $end) = [$end, $start];
 }
 
-// --- GET: cargar listas para los <select> de los modales ---
+// 2) AJAX GET → Conteos JSON
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['accion'])) {
+    // Sólo contamos si la acción es una de las cuatro
+    $validCounts = ['countCompra','countProducto','countVenta','countPedidoWeb'];
+    if (in_array($_GET['accion'], $validCounts, true)) {
+        header('Content-Type: application/json');
+        switch ($_GET['accion']) {
+            case 'countCompra':
+                $cnt = Reporte::countCompra($start, $end, $prodId);
+                break;
+            case 'countProducto':
+                $cnt = Reporte::countProducto($prodId, $provId, $catId);
+                break;
+            case 'countVenta':
+                $cnt = Reporte::countVenta($start, $end, $prodId);
+                break;
+            case 'countPedidoWeb':
+                $cnt = Reporte::countPedidoWeb($start, $end, $prodId);
+                break;
+        }
+        echo json_encode(['count' => (int)$cnt]);
+        exit;
+    }
+}
 
-$prodModel         = new Producto();
-$productos_lista   = $prodModel->consultar();
+// 3) POST → Generar PDF según acción
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
+    switch ($_GET['accion']) {
+        case 'compra':
+            Reporte::compra($start, $end, $prodId);
+            break;
+        case 'producto':
+            Reporte::producto($prodId, $provId, $catId);
+            break;
+        case 'venta':
+            Reporte::venta($start, $end, $prodId);
+            break;
+        case 'pedidoWeb':
+            Reporte::pedidoWeb($start, $end, $prodId);
+            break;
+    }
+    exit; // El stream PDF ya finaliza la petición
+}
 
-$provModel         = new Proveedor();
-$proveedores_lista = $provModel->consultar();
-
-$catModel          = new Categoria();
-$categorias_lista  = $catModel->consultar();
+// 4) GET normal → Carga listas y muestra pantalla
+$productos_lista   = (new Producto())->consultar();
+$proveedores_lista = (new Proveedor())->consultar();
+$categorias_lista  = (new Categoria())->consultar();
 
 require_once 'vista/reporte.php';

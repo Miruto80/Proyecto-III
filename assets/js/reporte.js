@@ -1,108 +1,120 @@
+// assets/js/reporte.js
+
 (() => {
   if (typeof moment !== 'function') {
-    return console.error('❌ moment.js no cargado');
+    console.error('❌ moment.js no cargado');
+    return;
   }
 
-  const hasAlert = typeof muestraMensaje === 'function';
-  const forms    = document.querySelectorAll('.report-form');
+  const forms = document.querySelectorAll('.report-form');
+  const countMap = {
+    compra:    'countCompra',
+    producto:  'countProducto',
+    venta:     'countVenta',
+    pedidoWeb: 'countPedidoWeb'
+  };
 
   forms.forEach(form => {
     form.addEventListener('submit', e => {
       e.preventDefault();
 
-      const s   = form.querySelector('input[name="f_start"]')?.value || '';
-      const f   = form.querySelector('input[name="f_end"]')?.value   || '';
-      const fmt = d => moment(d, 'YYYY-MM-DD').format('DD/MM/YYYY');
+      // 1) Leer filtros del form
+      const data = new FormData(form);
+      const start = data.get('f_start') || '';
+      const end   = data.get('f_end')   || '';
+      const fmt   = d => moment(d, 'YYYY-MM-DD').format('DD/MM/YYYY');
 
+      // 2) Validar rango y construir mensaje
       let icon, title, text;
-
-      // 1) Sin fechas (total)
-      if (!s && !f) {
+      if (!start && !end) {
         icon  = 'success';
         title = 'Registro general';
         text  = 'Se generará el reporte general';
       }
-      // 2) Sólo desde
-      else if (s && !f) {
+      else if (start && !end) {
         icon  = 'success';
         title = 'Rango parcial';
-        text  = `Reporte desde ${fmt(s)}`;
+        text  = `Reporte desde ${fmt(start)}`;
       }
-      // 3) Sólo hasta
-      else if (!s && f) {
+      else if (!start && end) {
         icon  = 'success';
         title = 'Rango parcial';
-        text  = `Reporte hasta ${fmt(f)}`;
+        text  = `Reporte hasta ${fmt(end)}`;
       }
-      // 4) Rango invertido → error inmediato
-      else if (moment(s).isAfter(moment(f))) {
-        return show('error', 'Rango inválido',
-                    'La fecha de inicio no puede ser mayor que la fecha de fin.');
+      else if (moment(start).isAfter(moment(end))) {
+        return Swal.fire({
+          icon: 'error',
+          title: 'Rango inválido',
+          text: 'La fecha de inicio no puede ser mayor que la fecha de fin.',
+          confirmButtonText: 'Aceptar'
+        });
       }
-      // 5) Misma fecha
-      else if (moment(s).isSame(moment(f))) {
+      else if (moment(start).isSame(moment(end))) {
         icon  = 'success';
         title = 'Fecha única';
-        text  = `Reporte del ${fmt(s)}`;
+        text  = `Reporte del ${fmt(start)}`;
       }
-      // 6) Rango válido
       else {
         icon  = 'success';
         title = 'Rango válido';
-        text  = `Desde ${fmt(s)} hasta ${fmt(f)}`;
+        text  = `Desde ${fmt(start)} hasta ${fmt(end)}`;
       }
 
-      // Pasamos al chequeo y envío
-      checkAndSubmit(form, icon, title, text);
+      // 3) Cerrar modal si existe
+      const modalEl = form.closest('.modal');
+      if (modalEl) {
+        const bsModal = bootstrap.Modal.getInstance(modalEl);
+        bsModal?.hide();
+      }
+
+      // 4) Determinar endpoint de conteo
+      const action = new URL(form.action, window.location.origin)
+                         .searchParams.get('accion');
+      const countAction = countMap[action];
+      if (!countAction) {
+        console.error('Acción inválida:', action);
+        return;
+      }
+
+      // 5) Construir query string para GET
+      const params = new URLSearchParams();
+      for (let [key, val] of data.entries()) {
+        if (['f_start','f_end','f_id','f_prov','f_cat'].includes(key) && val) {
+          params.append(key, val);
+        }
+      }
+
+      // 6) AJAX GET para verificar existencia de datos
+      fetch(`?pagina=reporte&accion=${countAction}&${params}`)
+        .then(r => r.json())
+        .then(json => {
+          if (json.count > 0) {
+            // hay datos → confirmación y luego submit POST
+            Swal.fire({
+              icon,
+              title,
+              text,
+              confirmButtonText: 'Aceptar'
+            }).then(() => form.submit());
+          } else {
+            // sin datos → error
+            Swal.fire({
+              icon: 'error',
+              title: 'Sin datos',
+              text: 'No hay registros para generar el PDF.',
+              confirmButtonText: 'Aceptar'
+            });
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo verificar los datos.',
+            confirmButtonText: 'Aceptar'
+          });
+        });
     });
   });
-
-  /**
-   * Realiza el AJAX de checkOnly y muestra SOLO UNA alerta:
-   * - Si hay datos: muestra el resumen (icon,title,text) y luego submit.
-   * - Si no: muestra error de "Sin datos" y NO submit.
-   */
-  function checkAndSubmit(form, icon, title, text) {
-    // ocultamos la modal antes de la alerta
-    const modalEl = form.closest('.modal');
-    if (modalEl) {
-      (bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl)).hide();
-    }
-
-    // chequeo AJAX
-    const data = new FormData(form);
-    data.append('checkOnly', '1');
-
-    fetch('?pagina=reporte', { method: 'POST', body: data })
-      .then(r => r.json())
-      .then(json => {
-        if (json.count > 0) {
-          // hay datos → muestra resumen y al cerrar dispara form.submit()
-          show(icon, title, text, () => form.submit());
-        } else {
-          // no hay datos → solo mostramos error
-          show('error', 'Sin datos',
-               'No se puede generar el PDF por falta de datos.');
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        show('error', 'Error',
-             'No se pudo verificar la existencia de datos.');
-      });
-  }
-
-  /**
-   * Muestra alerta con muestraMensaje o SweetAlert fallback.
-   * cb opcional se ejecuta al cerrar la alerta.
-   */
-  function show(icon, title, text, cb) {
-    if (hasAlert) {
-      muestraMensaje(icon, 2000, title, text);
-      if (cb) setTimeout(cb, 2100);
-    } else {
-      Swal.fire({ icon, title, text, timer: 2000, showConfirmButton: false })
-         .then(() => cb && cb());
-    }
-  }
 })();
