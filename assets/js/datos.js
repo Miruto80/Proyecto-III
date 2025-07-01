@@ -168,7 +168,7 @@ $('#actualizarclave').on("click", function () {
             color: "#00000",
             confirmButtonColor: '#58c731',
             cancelButtonColor: '#42515A',
-            confirmButtonText: ' SI ',
+            confirmButtonText: ' Si, Cambiar ',
             cancelButtonText: 'NO'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -212,12 +212,12 @@ function enviaAjax(datos) {
   
            if (lee.accion == 'clave') {
                 if (lee.respuesta == 1) {  
-                  muestraMensaje("success", 2000, "Se ha Cambiado su clave con exito", "");
+                  muestraMensaje("success", 1500, "Se ha Cambiado su clave con exito", "");
                   setTimeout(function () {
                     location = '?pagina=datos';
                   }, 1000);
                 } else {
-                  muestraMensaje("error", 1000, lee.text, "");
+                  muestraMensaje("error", 2000, lee.text, "");
                 }
               } else if (lee.accion == 'actualizar') {
                 if (lee.respuesta == 1) {
@@ -228,17 +228,7 @@ function enviaAjax(datos) {
                 } else {
                   muestraMensaje("error", 2000, lee.text, "");
                 }
-              } else if (lee.accion == 'eliminar') {
-                if (lee.respuesta == 1) {
-                  muestraMensaje("success", 1000, "Se ha eliminado con éxito", "Los datos se han borrado correctamente ");
-                  setTimeout(function () {
-                     location = '?pagina=usuario';
-                  }, 1000);
-                } else {
-                  muestraMensaje("error", 2000, "ERROR", lee.text);
-                }
-              }
-  
+              } 
         } catch (e) {
           alert("Error en JSON " + e.name);
         }

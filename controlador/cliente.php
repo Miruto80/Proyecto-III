@@ -46,7 +46,7 @@ if(isset($_POST['actualizar'])){
         $bitacora = [
             'id_persona' => $_SESSION["id"],
             'accion' => 'Acceso a Módulo',
-            'descripcion' => 'módulo de Usuario'
+            'descripcion' => 'módulo de Cliente'
         ];
         $objcliente->registrarBitacora(json_encode($bitacora));
         require_once 'vista/cliente.php';

@@ -3,222 +3,235 @@
 require_once 'conexion.php';
 
 class Datos extends Conexion{
-
-    private $conex1;
-    private $conex2;
-    private $id_persona;
-    private $nombre;
-    private $apellido;
-    private $cedula;
-    private $telefono;
-    private $correo;
-    private $clave;
-    private $estatus;
-    private $encryptionKey = "MotorLoveMakeup"; 
-    private $cipherMethod = "AES-256-CBC";
     
     public function __construct() {
-        parent::__construct(); // Llama al constructor de la clase padre
-
-        // Obtener las conexiones de la clase padre
-        $this->conex1 = $this->getConex1();
-        $this->conex2 = $this->getConex2();
-    
-         // Verifica si las conexiones son exitosas
-        if (!$this->conex1) {
-            die('Error al conectar con la primera base de datos');
-        }
-
-        if (!$this->conex2) {
-            die('Error al conectar con la segunda base de datos');
-        }
+        parent::__construct();
     }
 
-    private function encryptClave($clave) {
-        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipherMethod)); 
-        $encrypted = openssl_encrypt($clave, $this->cipherMethod, $this->encryptionKey, 0, $iv);
+    private function encryptClave($datos) {
+        $config = [
+            'key' => "MotorLoveMakeup",
+            'method' => "AES-256-CBC"
+        ];
+        
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($config['method']));
+        $encrypted = openssl_encrypt($datos['clave'], $config['method'], $config['key'], 0, $iv);
         return base64_encode($iv . $encrypted);
     }
 
-    private function decryptClave($claveEncriptada) {
-        $data = base64_decode($claveEncriptada);
-        $ivLength = openssl_cipher_iv_length($this->cipherMethod);
+    private function decryptClave($datos) {
+        $config = [
+            'key' => "MotorLoveMakeup",
+            'method' => "AES-256-CBC"
+        ];
+        
+        $data = base64_decode($datos['clave_encriptada']);
+        $ivLength = openssl_cipher_iv_length($config['method']);
         $iv = substr($data, 0, $ivLength);
-        $encryptedData = substr($data, $ivLength);    
-        $claveDesencriptada = openssl_decrypt($encryptedData, $this->cipherMethod, $this->encryptionKey, 0, $iv);
-        return $claveDesencriptada;
+        $encrypted = substr($data, $ivLength);
+        return openssl_decrypt($encrypted, $config['method'], $config['key'], 0, $iv);
     }
 
-    public function registrarBitacora($id_persona, $accion, $descripcion) {
-    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
-    
-    $strExec = $this->conex2->prepare($consulta);
-    $strExec->bindParam(':accion', $accion);
-    $strExec->bindParam(':descripcion', $descripcion);
-    $strExec->bindParam(':id_persona', $id_persona);
-    
-    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
+/*-----*/
+
+    public function registrarBitacora($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
+        return $this->ejecutarSentenciaBitacora($datos);
     }
-    
-    public function actualizar(){
-        $registro = "UPDATE usuario SET nombre = :nombre, apellido = :apellido, cedula = :cedula, telefono = :telefono, correo = :correo WHERE id_persona = :id_persona";
 
-        $strExec = $this->conex2->prepare($registro);
-        $strExec->bindParam(':id_persona', $this->id_persona);
-        $strExec->bindParam(':nombre', $this->nombre);
-        $strExec->bindParam(':apellido', $this->apellido);
-        $strExec->bindParam(':cedula', $this->cedula);
-        $strExec->bindParam(':telefono', $this->telefono);
-        $strExec->bindParam(':correo', $this->correo);
-
-        $resul = $strExec->execute();
-        if ($resul) {
-            $res=array('respuesta'=>1,'accion'=>'actualizar');
-        } else {
-            $res=array('respuesta'=>0,'accion'=>'actualizar');
-        }
-        return $res;
-    } // fin actulizar
-
-     public function actualizarClave(){
-        $registro = "UPDATE usuario SET clave = :clave WHERE id_persona = :id_persona";
-
-        $strExec = $this->conex2->prepare($registro);
-        $strExec->bindParam(':id_persona', $this->id_persona);
-
-        // Encriptar la clave antes de almacenarla
-        $claveEncriptada = $this->encryptClave($this->clave);
-        $strExec->bindParam(':clave', $claveEncriptada);
-
-        $resul = $strExec->execute();
-        if ($resul) {
-            $res=array('respuesta'=>1,'accion'=>'clave');
-        } else {
-            $res=array('respuesta'=>0,'accion'=>'clave');
-        }
-        return $res;
-    } // fin actulizar
-
-
-    
-    public function eliminar(){
+    private function ejecutarSentenciaBitacora($datos) {
+        $conex = $this->getConex2();
         try {
-            $registro = "UPDATE usuario SET estatus = 0 WHERE id_persona = :id_persona";
-            $strExec = $this->conex2->prepare($registro);
-            $strExec->bindParam(':id_persona', $this->id_persona);
-            $result = $strExec->execute();
-                if ($result){
-                      $res=array('respuesta'=>1,'accion'=>'eliminar');
-                } else{
-                     $res=array('respuesta'=>0,'accion'=>'eliminar');
-                }
-
-                return $res;
-            } catch (PDOException $e) {
-                echo "Error: " . $e->getMessage();
+            $conex->beginTransaction();
+            
+            $sql = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
+                    VALUES (:accion, NOW(), :descripcion, :id_persona)";
+            
+            $stmt = $conex->prepare($sql);
+            $stmt->execute($datos);
+            
+            $conex->commit();
+            $conex = null;
+            return true;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
             }
+            throw $e;
         }
-
-     public function existeCedula() {
-        $consulta = "SELECT cedula FROM usuario WHERE cedula = :cedula";
-        $strExec = $this->conex2->prepare($consulta);
-        $strExec->bindParam(':cedula', $this->cedula);
-        $strExec->execute();
-        return $strExec->rowCount() > 0;
     }
 
+/*-----*/
 
-     
-    public function existeCorreo() {
-        $consulta = "SELECT correo FROM usuario WHERE correo = :correo";
-        $strExec = $this->conex2->prepare($consulta);
-        $strExec->bindParam(':correo', $this->correo);
-        $strExec->execute();
-        return $strExec->rowCount() > 0;
+    public function procesarUsuario($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
+        $operacion = $datos['operacion'];
+        $datosProcesar = $datos['datos'];
+        
+        try {
+            switch ($operacion) {
+                case 'actualizar':
+                    
+                    if ($datosProcesar['cedula'] !== $datosProcesar['cedula_actual']) {
+                        if ($this->verificarExistencia(['campo' => 'cedula', 'valor' => $datosProcesar['cedula']])) {
+                            return ['respuesta' => 0, 'accion' => 'actualizar', 'text' => 'La cédula ya está registrada'];
+                        }
+                    }
+
+                    if ($datosProcesar['correo'] !== $datosProcesar['correo_actual']) {
+                        if ($this->verificarExistencia(['campo' => 'correo', 'valor' => $datosProcesar['correo']])) {
+                            return ['respuesta' => 0, 'accion' => 'actualizar', 'text' => 'El correo electrónico ya está registrado'];
+                        }
+                    }
+
+                    return $this->ejecutarActualizacion($datosProcesar);
+                    
+                    case 'actualizarclave':
+                      
+                     if (!$this->validarClaveActual($datosProcesar)) {
+                        return ['respuesta' => 0, 'accion' => 'clave', 'text' => 'La clave actual es incorrecta.'];
+                    }
+
+                     return $this->ejecutarActualizacionClave($datosProcesar);
+
+                default:
+                    return ['respuesta' => 0, 'mensaje' => 'Operación no válida'];
+            }
+        } catch (Exception $e) {
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
+        }
     }
-
-    public function obtenerClave($id_persona) {
-        $consulta = "SELECT clave FROM usuario WHERE id_persona = :id_persona"; 
-        $strExec = $this->conex2->prepare($consulta);
-        $strExec->bindParam(':id_persona', $id_persona); 
-        $strExec->execute();
     
-        $fila = $strExec->fetch(PDO::FETCH_ASSOC);
-        if ($fila && isset($fila['clave'])) {
-            return $this->decryptClave($fila['clave']); // Desencripta la clave antes de retornarla
+     private function ejecutarActualizacion($datos) {
+        $conex = $this->getConex2();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "UPDATE usuario 
+                        SET cedula = :cedula, 
+                            correo = :correo, 
+                            nombre = :nombre,
+                            apellido = :apellido,
+                            telefono = :telefono
+                        WHERE id_persona = :id_persona";
+            
+               $parametros = [
+                'cedula' => $datos['cedula'],
+                'correo' => $datos['correo'],
+                'nombre' => $datos['nombre'],
+                'apellido' => $datos['apellido'],
+                'telefono' => $datos['telefono'],
+                'id_persona' => $datos['id_persona']
+                ];
+
+            $stmt = $conex->prepare($sql);
+            $resultado = $stmt->execute($parametros);
+            
+            if ($resultado) {
+                $conex->commit();
+                $conex = null;
+                return ['respuesta' => 1, 'accion' => 'actualizar'];
+            }
+            
+            $conex->rollBack();
+            $conex = null;
+            return ['respuesta' => 0, 'accion' => 'actualizar'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
         }
-        return null; // Retorna null si no se encuentra
+    }
+
+   private function validarClaveActual($datos) {
+        $conex = $this->getConex2();
+        try {
+            $sql = "SELECT clave FROM usuario WHERE id_persona = :id_persona AND estatus >= 1";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_persona' => $datos['id_persona']]);
+            $resultado = $stmt->fetch(PDO::FETCH_OBJ);
+
+            if ($resultado) {
+                $claveDesencriptada = $this->decryptClave(['clave_encriptada' => $resultado->clave]);
+                return $claveDesencriptada === $datos['clave_actual'];
+            }
+            
+            $conex = null;
+            return false;
+        } catch (PDOException $e) {
+            if ($conex) $conex = null;
+            throw $e;
+        }
     }
 
 
+   private function ejecutarActualizacionClave($datos) {
+        $conex = $this->getConex2();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "UPDATE usuario 
+                        SET clave = :clave
+                        WHERE id_persona = :id_persona";
+            
+               $parametros = [
+                    'clave' => $this->encryptClave(['clave' => $datos['clave']]),
+                    'id_persona' => $datos['id_persona']
+                ];
 
-    public function get_Id_persona()
-    {
-        return $this->id_persona;
-    }
-
-    public function set_Id_persona($id_persona)
-    {
-        $this->id_persona = $id_persona;
-    }
-
-    public function get_Nombre()
-    {
-        return $this->nombre;
-    }
-
-    public function set_Nombre($nombre)
-    {
-        return $this->nombre = ucfirst(strtolower($nombre));
-    }
-
-    public function get_Apellido()
-    {
-        return $this->apellido;
-    }
-    public function set_Apellido($apellido)
-    {
-        $this->apellido = ucfirst(strtolower($apellido));
-    }
-
-    public function get_Cedula()
-    {
-        return $this->cedula;
-    }
-    public function set_Cedula($cedula)
-    {
-        $this->cedula = $cedula;
+            $stmt = $conex->prepare($sql);
+            $resultado = $stmt->execute($parametros);
+            
+            if ($resultado) {
+                $conex->commit();
+                $conex = null;
+                return ['respuesta' => 1, 'accion' => 'clave'];
+            }
+            
+            $conex->rollBack();
+            $conex = null;
+            return ['respuesta' => 0, 'accion' => 'clave'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
     }
 
-    public function get_Telefono()
-    {
-        return $this->telefono;
+    
+   private function verificarExistencia($datos) {
+        $conex1 = $this->getConex1();
+        $conex2 = $this->getConex2();
+        try {
+            // Verificar en clientes
+            $sql = "SELECT COUNT(*) FROM cliente WHERE {$datos['campo']} = :valor AND estatus >= 1";
+            $stmt = $conex1->prepare($sql);
+            $stmt->execute(['valor' => $datos['valor']]);
+            $existe = $stmt->fetchColumn() > 0;
+            
+            if (!$existe) {
+                // Si no existe en clientes, verificar en usuarios
+                $sql = "SELECT COUNT(*) FROM usuario WHERE {$datos['campo']} = :valor AND estatus >= 1";
+                $stmt = $conex2->prepare($sql);
+                $stmt->execute(['valor' => $datos['valor']]);
+                $existe = $stmt->fetchColumn() > 0;
+            }
+            
+            $conex1 = null;
+            $conex2 = null;
+            return $existe;
+        } catch (PDOException $e) {
+            if ($conex1) $conex1 = null;
+            if ($conex2) $conex2 = null;
+            throw $e;
+        }
     }
-    public function set_Telefono($telefono)
-    {
-        $this->telefono = $telefono;
-    }
-
-    public function get_Correo()
-    {
-        return $this->correo;
-    }
-    public function set_Correo($correo)
-    {
-        $this->correo = ucfirst(strtolower($correo));
-    }
-
-  
-
-    public function get_Clave()
-    {
-        return $this->clave;
-    }
-    public function set_Clave($clave)
-    {
-        $this->clave = $clave;
-    }
-
   
 }
