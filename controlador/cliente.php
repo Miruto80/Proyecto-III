@@ -13,52 +13,42 @@ $registro = $objcliente->consultar();
 
 
 if(isset($_POST['actualizar'])){
-   $id_persona = $_POST['id_persona'];
-   $cedula = $_POST['cedula'];
-   $correo = $_POST['correo'];
-   $estatus = $_POST['estatus'];
-   $cedula_actual = $_POST['cedulaactual'];
-   $correo_actual = $_POST['correoactual'];
+     $datosCliente = [
+        'operacion' => 'actualizar',
+        'datos' => [
+            'id_persona' => $_POST['id_persona'],
+            'cedula' => $_POST['cedula'],
+            'correo' => strtolower($_POST['correo']),
+            'estatus' => $_POST['estatus'],
+            'cedula_actual' => $_POST['cedulaactual'],
+            'correo_actual' => $_POST['correoactual']
+        ]
+    ]; 
   
-    $objcliente->set_Id_persona($id_persona);
-    $objcliente->set_Cedula($cedula); 
-    $objcliente->set_Correo($correo);
-    $objcliente->set_Estatus($estatus);
+
+    $resultado = $objcliente->procesarCliente(json_encode($datosCliente));
     
-    if ($cedula_actual !== $cedula) {
-       if ($objcliente->existeCedula($cedula)) {
-           $res = array('respuesta' => 0, 'accion' => 'actualizar', 'text' => 'La cédula ya está registrada.');
-            echo json_encode($res);
-            exit; // Se detiene la ejecución si la cédula existe
-      } 
-   }
+     if ($resultado['respuesta'] == 1) {
+        $bitacora = [
+            'id_persona' => $_SESSION["id"],
+            'accion' => 'Modificación de cliente',
+            'descripcion' => 'Se modificó el cliente con ID: ' . $datosCliente['datos']['id_persona'] . 
+                           ' Cédula: ' . $datosCliente['datos']['cedula'] . 
+                           ' Correo: ' . $datosCliente['datos']['correo']
+        ];
+        $objcliente->registrarBitacora(json_encode($bitacora));
+    }
 
-   if ($correo_actual !== $correo) {
-       if ($objcliente->existeCorreo($correo)) {
-           $res = array('respuesta' => 0, 'accion' => 'actualizar', 'text' => 'El correo electrónico ya está registrado.');
-         echo json_encode($res);
-         exit; 
-      }
-   }
-
-    $result = $objcliente->actualizar();
-     /* BITACORA */
-        if ($result['respuesta'] == 1) {
-            $id_persona = $_SESSION["id"]; 
-            // Registrar en la bitácora
-            $accion = 'Modificación de Cliente';
-            $descripcion = 'Se Modifico de Cliente ID:'.$id_persona.' Cedula:'.$cedula;
-            $objcliente->registrarBitacora($id_persona, $accion, $descripcion);
-        } 
-    /* FIN BITACORA */
-    echo json_encode($result);
+    echo json_encode($resultado);
 
       
     } else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-        $id_persona = $_SESSION["id"];
-        $accion = 'Acceso a Módulo';
-        $descripcion = 'módulo de Cliente';
-        $objcliente->registrarBitacora($id_persona, $accion, $descripcion);
+        $bitacora = [
+            'id_persona' => $_SESSION["id"],
+            'accion' => 'Acceso a Módulo',
+            'descripcion' => 'módulo de Usuario'
+        ];
+        $objcliente->registrarBitacora(json_encode($bitacora));
         require_once 'vista/cliente.php';
     }else{
         require_once 'vista/seguridad/privilegio.php';

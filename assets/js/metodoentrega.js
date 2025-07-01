@@ -15,99 +15,136 @@ document.addEventListener('DOMContentLoaded', function () {
         validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $(this), $("#sdescripcion"), "Solo letras entre 3 y 30 caracteres");
     });
 
-    // Botón registrar
-    document.getElementById('registrar').addEventListener('click', function () {
-        const nombre = document.getElementById('nombre').value;
-        const descripcion = document.getElementById('descripcion').value;
-
-        if (!validarenvio()) return;
-
-        const datos = new FormData();
-        datos.append('nombre', nombre);
-        datos.append('descripcion', descripcion);
-        datos.append('registrar', 'registrar');
-        enviaAjax(datos);
-    });
-
-    // Botón modificar
-    document.getElementById('btnModificar').addEventListener('click', function () {
-        const id_entrega = document.getElementById('id_entrega_modificar').value;
-        const nombre = document.getElementById('nombre_modificar').value;
-        const descripcion = document.getElementById('descripcion_modificar').value;
-
-        if (!validarModificacion()) return;
-
-        const datos = new FormData();
-        datos.append('id_entrega', id_entrega);
-        datos.append('nombre', nombre);
-        datos.append('descripcion', descripcion);
-        datos.append('modificar', 'modificar');
-        enviaAjax(datos);
-    });
+    $(document).on('click', '#registrar', function () {
+        const nombre = $('#nombre').val().trim();
+        const descripcion = $('#descripcion').val().trim();
+      
+        if (!nombre || !descripcion) {
+          muestraMensaje('warning', 2000, 'Campos requeridos', 'Completa todos los campos.');
+          return;
+        }
+      
+        const datosPeticion = {
+          accion: 'incluir',
+          datos: {
+            nombre: nombre,
+            descripcion: descripcion
+          }
+        };
+      
+        $.post('controlador/metodoentrega.php', datosPeticion, function (response) {
+          try {
+            const res = JSON.parse(response);
+            const exito = res.respuesta === 1;
+      
+            muestraMensaje(exito ? 'success' : 'error', 1500,
+              exito ? 'Registrado' : 'Error',
+              exito ? 'Método registrado correctamente' : 'No se pudo registrar');
+      
+            if (exito) {
+              $('#nombre').val('');
+              $('#descripcion').val('');
+              setTimeout(() => location.reload(), 1500);
+            }
+          } catch (e) {
+            muestraMensaje('error', 2000, 'Error', 'Respuesta del servidor inválida.');
+          }
+        });
+      });
 });
+      
 
-function abrirModalModificar(id_entrega, nombre, descripcion) {
+$(document).on('click', '#btnModificar', function () {
+    const id_entrega = $('#id_entrega_modificar').val().trim();
+    const nombre = $('#nombre_modificar').val().trim();
+    const descripcion = $('#descripcion_modificar').val().trim();
+  
+    if (!id_entrega || !nombre || !descripcion) {
+      muestraMensaje('warning', 2000, 'Campos requeridos', 'Completa todos los campos.');
+      return;
+    }
+  
+    const datosPeticion = {
+      accion: 'modificar',
+      datos: {
+        id_entrega: id_entrega,
+        nombre: nombre,
+        descripcion: descripcion
+      }
+    };
+  
+    $.post('controlador/metodoentrega.php', datosPeticion, function (response) {
+      try {
+        const res = JSON.parse(response);
+        const exito = res.respuesta === 1;
+  
+        muestraMensaje(exito ? 'success' : 'error', 1500,
+          exito ? 'Modificado' : 'Error',
+          exito ? 'Método modificado correctamente' : 'No se pudo modificar');
+  
+        if (exito) {
+          setTimeout(() => location.reload(), 1500);
+        }
+      } catch (e) {
+        muestraMensaje('error', 2000, 'Error', 'Respuesta del servidor inválida.');
+      }
+    });
+  });
+  
+  function abrirModalModificar(id_entrega, nombre, descripcion) {
     document.getElementById('id_entrega_modificar').value = id_entrega;
     document.getElementById('nombre_modificar').value = nombre;
     document.getElementById('descripcion_modificar').value = descripcion;
     $('#modificar').modal('show');
-}
-
-function eliminarMetodoEntrega(id_entrega) {
-    if (confirm('¿Estás seguro de que deseas eliminar este método de entrega?')) {
-        const datos = new FormData();
-        datos.append('id_entrega', id_entrega);
-        datos.append('eliminar', 'eliminar');
-        enviaAjax(datos);
-    }
-}
-
-function muestraMensaje(icono, tiempo, titulo, mensaje) {
+  }
+  
+  function eliminarMetodoEntrega(id_entrega) {
     Swal.fire({
-        icon: icono,
-        timer: tiempo,
-        title: titulo,
-        html: mensaje,
-        showConfirmButton: false,
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const datosPeticion = {
+          accion: 'eliminar',
+          datos: {
+            id_entrega: id_entrega
+          }
+        };
+  
+        $.post('controlador/metodoentrega.php', datosPeticion, function (response) {
+          try {
+            const res = JSON.parse(response);
+            const exito = res.respuesta === 1;
+  
+            muestraMensaje(exito ? 'success' : 'error', 1500,
+              exito ? 'Eliminado' : 'Error',
+              exito ? 'Método eliminado correctamente' : 'No se pudo eliminar');
+  
+            if (exito) {
+              setTimeout(() => location.reload(), 1500);
+            }
+          } catch (e) {
+            muestraMensaje('error', 2000, 'Error', 'Respuesta del servidor inválida.');
+          }
+        });
+      }
     });
-}
-
-function enviaAjax(datos) {
-    fetch('', {
-        method: 'POST',
-        body: datos,
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.accion === 'incluir') {
-            if (data.respuesta === 1) {
-                document.getElementById('nombre').value = '';
-                document.getElementById('descripcion').value = '';
-                muestraMensaje("success", 1000, "Se ha registrado con éxito", "Su registro se ha completado exitosamente");
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                muestraMensaje("error", 1000, "ERROR", "ERROR al registrar");
-            }
-        } else if (data.accion === 'actualizar') {
-            if (data.respuesta === 1) {
-                muestraMensaje("success", 1000, "Se ha modificado con éxito", "Su registro se ha actualizado exitosamente");
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                muestraMensaje("error", 2000, "ERROR", "ERROR al modificar");
-            }
-        } else if (data.accion === 'eliminar') {
-            if (data.respuesta === 1) {
-                muestraMensaje("success", 1000, "Se ha eliminado con éxito", "Los datos se han borrado correctamente");
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                muestraMensaje("error", 2000, "ERROR", "ERROR al eliminar");
-            }
-        }
-    })
-    .catch(error => {
-        muestraMensaje("error", 2000, "Error", "ERROR: " + error);
-    });
-}
+  }
+      
+    function muestraMensaje(icono, tiempo, titulo, mensaje) {
+        Swal.fire({
+            icon: icono,
+            timer: tiempo,
+            title: titulo,
+            html: mensaje,
+            showConfirmButton: false,
+        });
+    }
+    
 
 function validarkeypress(er, e){
     key = e.keyCode;

@@ -19,12 +19,7 @@
       </nav>
 
       <?php include 'complementos/nav.php'; ?>
-<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
-  <div class="preloader-wrapper">
-    <div class="preloader">
-    </div>
-  </div> 
-<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+
       <div class="container-fluid py-4">
         <div class="row">  
           <div class="col-12">
@@ -47,7 +42,7 @@
                       </tr>
                     </thead>
                     <tbody id="entregaTableBody">
-                      <?php foreach ($registro as $dato): ?>
+                      <?php foreach ($metodos as $dato): ?>
                       <tr>
                         <td><?= $dato['id_entrega']; ?></td>
                         <td><?= htmlspecialchars($dato['nombre']); ?></td>
@@ -121,7 +116,7 @@
                   <input type="text" class="form-control" name="descripcion" id="descripcion_modificar" required>
                 </div>
                 <div class="modal-footer">
-                  <button type="submit" class="btn btn-primary" id="btnModificar">Modificar</button>
+                  <button type="button" class="btn btn-primary" id="btnModificar">Modificar</button>
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
               </form>
@@ -134,7 +129,7 @@
 <script src="assets/js/metodoentrega.js"></script>
 <script src="assets/js/demo/datatables-demo.js"></script>
 
-<!-- Modal detalles producto -->
+
 <div class="modal fade" id="modalDetallesMetodo" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">

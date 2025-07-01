@@ -3,83 +3,81 @@
 require_once 'conexion.php';
 
 class metodoentrega extends Conexion {
-    private $conex1;
-    private $conex2;
-    private $id_entrega;
-    private $nombre;
-    private $descripcion;
+   
+ 
 
     public function __construct() {
-        parent::__construct(); // Llama al constructor de la clase padre
-
-        // Obtener las conexiones de la clase padre
-        $this->conex1 = $this->getConex1();
-        $this->conex2 = $this->getConex2();
-    
-         // Verifica si las conexiones son exitosas 
-    }
-    public function registrarBitacora($id_persona, $accion, $descripcion) {
-    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
-    
-    $strExec = $this->conex2->prepare($consulta);
-    $strExec->bindParam(':accion', $accion);
-    $strExec->bindParam(':descripcion', $descripcion);
-    $strExec->bindParam(':id_persona', $id_persona);
-    
-    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
-    }
-
-    public function registrar() {
-        $registro = "INSERT INTO metodo_entrega(nombre, descripcion, estatus) VALUES (:nombre, :descripcion, 1)";
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':nombre', $this->nombre);
-        $strExec->bindParam(':descripcion', $this->descripcion);
-        $resul = $strExec->execute();
-        return $resul ? ['respuesta' => 1, 'accion' => 'incluir'] : ['respuesta' => 0, 'accion' => 'incluir'];
-    }
-
-    public function modificar() {
-        $registro = "UPDATE metodo_entrega SET nombre = :nombre, descripcion = :descripcion WHERE id_entrega = :id_entrega";
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':nombre', $this->nombre);
-        $strExec->bindParam(':descripcion', $this->descripcion);
-        $strExec->bindParam(':id_entrega', $this->id_entrega);
-        $resul = $strExec->execute();
-        return $resul ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
+        parent::__construct(); 
     }
 
 
-    public function eliminar() {
-        $registro = "UPDATE metodo_entrega SET estatus = 0 WHERE id_entrega = :id_entrega";
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':id_entrega', $this->id_entrega);
-        $resul = $strExec->execute();
-        return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
+    public function procesarMetodoEntrega($jsonDatos){
+        $datos = json_decode($jsonDatos, true);
+        $operacion = $datos ['operacion']?? '';
+        $datosProcesar = $datos ['datos']?? [];
+
+        try{
+            switch($operacion){
+                case 'incluir':
+                    return $this->registrar($datosProcesar['nombre'], $datosProcesar['descripcion']);
+        
+                case 'modificar':
+                    return $this->modificar(
+                        $datosProcesar['id_entrega'],
+                        $datosProcesar['nombre'],
+                        $datosProcesar['descripcion']
+                    );
+                case 'eliminar':
+                    return $this->eliminar($datosProcesar['id_entrega']);
+        
+                 default:
+                 return ['respuesta' => 0, 'mensaje' => 'Operación no válida'];  
+
+            }
+        }catch(Exception $e){
+            return ['respuesta' => 0, 'accion' => $operacion, 'error' => $e->getMessage()];
+        }
+    }
+   
+
+    private function registrar($nombre,$descripcion) {
+        $sql = "INSERT INTO metodo_entrega(nombre, descripcion, estatus) VALUES (:nombre, :descripcion, 1)";
+        $stmt = $this->getConex1()->prepare($sql);
+        $result = $stmt->execute([
+            'nombre' =>$nombre,
+            'descripcion'=>$descripcion
+        ]);
+        return $result ? ['respuesta' => 1, 'accion' => 'incluir'] : ['respuesta' => 0, 'accion' => 'incluir'];
+    }
+
+    private function modificar($id_entrega , $nombre , $descripcion) {
+        $sql = "UPDATE metodo_entrega SET nombre = :nombre, descripcion = :descripcion WHERE id_entrega = :id_entrega";
+        $stmt = $this->getConex1()->prepare($sql);
+        $result = $stmt->execute([
+           'id_entrega'=>$id_entrega ,
+           'nombre'=>$nombre,
+           'descripcion'=>$descripcion 
+        ]);
+        return $result ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
+    }
+
+
+    private function eliminar($id_entrega) {
+        $sql = "UPDATE metodo_entrega SET estatus = 0 WHERE id_entrega = :id_entrega";
+        $stmt = $this->getConex1()->prepare($sql);
+        $result = $stmt->execute(['id_entrega'=>$id_entrega]);
+        return $result ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
     }
 
     public function consultar() {
-        $registro = "SELECT * FROM metodo_entrega WHERE estatus = 1";
-        $consulta = $this->conex1->prepare($registro);
-        $resul = $consulta->execute();
-        return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
+        $sql = "SELECT * FROM metodo_entrega WHERE estatus = 1";
+        $stmt = $this->getConex1()->prepare($sql);
+         $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Setters
-    public function set_Id_entrega($id) {
-        $this->id_entrega = $id;
-    }
 
-    public function set_Nombre($nombre) {
-        $this->nombre = $nombre;
-    }
 
-    public function set_Descripcion($descripcion) {
-        $this->descripcion = $descripcion;
-    }
 }
-
-
-
 
 ?>
