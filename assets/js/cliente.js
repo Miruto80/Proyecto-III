@@ -81,7 +81,7 @@ $(document).ready(function() {
       color: "#00000",
       confirmButtonColor: '#58c731',
       cancelButtonColor: '#42515A',
-      confirmButtonText: ' SI ',
+      confirmButtonText: ' Si, Actualizar ',
       cancelButtonText: 'NO'
     }).then((result) => {
       if (result.isConfirmed) {

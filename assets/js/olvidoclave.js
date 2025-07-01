@@ -497,7 +497,7 @@ function enviaAjax(datos) {
                 }, 2200);
             } else {
                 muestraMensaje("error", 2000, lee.text, "");
-            }
+                 }
             } else if (lee.accion == 'actualizar') {
                 if (lee.respuesta == 1) {
                   muestraMensaje("success", 2500, "Se ha Cambiado su Constraseña con exito ", "ya puede iniciar su seccion");
@@ -506,17 +506,12 @@ function enviaAjax(datos) {
                   setTimeout(function () {
                      location = '?pagina=login';
                   }, 2500);
-                }else if (lee.respuesta == 2) {
-                  muestraMensaje("success", 2500, "Se ha Cambiado su Constraseña con exito ", "ya puede iniciar su seccion");
+            }else {
+                muestraMensaje("error", 2000, lee.text, "");
                    $('#validarclave').prop('disabled', false);
                    $('#validarclave').html('Cambiar Clave');
-                  setTimeout(function () {
-                     location = '?pagina=login';
-                  }, 2500);
-                }else {
-                  muestraMensaje("error", 2000, "ERROR", lee.text);
-                }
-              }  else if (lee.accion == 'reenviar') {
+               }      
+            } else if (lee.accion == 'reenviar') {
                 if (lee.respuesta == 1) {
                     muestraMensaje("success", 2000, "Se ha reenviado el código con exito", "");
                     reiniciarTemporizador(); 
@@ -525,7 +520,7 @@ function enviaAjax(datos) {
                     muestraMensaje("error", 2000, lee.text, "");
                    $('#btnReenviar').prop('disabled', false).text('Reenviar código');
                 }
-                }
+        }
   
         } catch (e) {
           alert("Error en JSON " + e.name);

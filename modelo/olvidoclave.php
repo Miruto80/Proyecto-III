@@ -2,152 +2,139 @@
 
 require_once 'conexion.php';
 
-class Clave extends Conexion{
+class Olvido extends Conexion{
 
-    private $conex1;
-    private $conex2;
-    private $id_persona;
-    private $nombre;
-    private $apellido;
-    private $cedula;
-    private $telefono;
-    private $correo;
-    private $clave;
-    private $estatus;
     private $encryptionKey = "MotorLoveMakeup"; 
     private $cipherMethod = "AES-256-CBC";
     
     function __construct() {
        parent::__construct(); // Llama al constructor de la clase padre
-
-        // Obtener las conexiones de la clase padre
-        $this->conex1 = $this->getConex1();
-        $this->conex2 = $this->getConex2();
     }
 
-    private function encryptClave($clave) {
-        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipherMethod)); 
-        $encrypted = openssl_encrypt($clave, $this->cipherMethod, $this->encryptionKey, 0, $iv);
-        return base64_encode($iv . $encrypted);
+     private function encryptClave($datos) {
+            $config = [
+                'key' => "MotorLoveMakeup",
+                'method' => "AES-256-CBC"
+            ];
+            
+            $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($config['method']));
+            $encrypted = openssl_encrypt($datos['clave'], $config['method'], $config['key'], 0, $iv);
+            return base64_encode($iv . $encrypted);
     }
 
-    private function decryptClave($claveEncriptada) {
-        $data = base64_decode($claveEncriptada);
-        $ivLength = openssl_cipher_iv_length($this->cipherMethod);
+    private function decryptClave($datos) {
+        $config = [
+            'key' => "MotorLoveMakeup",
+            'method' => "AES-256-CBC"
+        ];
+        
+        $data = base64_decode($datos['clave_encriptada']);
+        $ivLength = openssl_cipher_iv_length($config['method']);
         $iv = substr($data, 0, $ivLength);
-        $encryptedData = substr($data, $ivLength);    
-        $claveDesencriptada = openssl_decrypt($encryptedData, $this->cipherMethod, $this->encryptionKey, 0, $iv);
-        return $claveDesencriptada;
+        $encrypted = substr($data, $ivLength);
+        return openssl_decrypt($encrypted, $config['method'], $config['key'], 0, $iv);
     }
 
-
-     public function actualizarClave(){
-        $registro = "UPDATE cliente SET clave = :clave WHERE id_persona = :id_persona";
-
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':id_persona', $this->id_persona);
-        // Encriptar la clave antes de almacenarla
-        $claveEncriptada = $this->encryptClave($this->clave);
-        $strExec->bindParam(':clave', $claveEncriptada);
-
-        $resul = $strExec->execute();
-        if ($resul) {
-            $res=array('respuesta'=>1,'accion'=>'actualizar');
-        } else {
-            $res=array('respuesta'=>0,'accion'=>'actualizar');
-        }
-        return $res;
-    } // fin actulizar
-
-     public function actualizarClaveusuario(){
-        $registro = "UPDATE usuario SET clave = :clave WHERE id_persona = :id_persona";
-
-        $strExec = $this->conex2->prepare($registro);
-        $strExec->bindParam(':id_persona', $this->id_persona);
-        // Encriptar la clave antes de almacenarla
-        $claveEncriptada = $this->encryptClave($this->clave);
-        $strExec->bindParam(':clave', $claveEncriptada);
-
-        $resul = $strExec->execute();
-        if ($resul) {
-            $res=array('respuesta'=>2,'accion'=>'actualizar');
-        } else {
-            $res=array('respuesta'=>0,'accion'=>'actualizar');
-        }
-        return $res;
-    } // fin actulizar
-
-
+/*--------*/
      
-   
+   public function procesarOlvido($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
+        $operacion = $datos['operacion'];
+        $datosProcesar = $datos['datos'];
+        
+        try {
+            switch ($operacion) {
+                 case 'actualizar':
+                     return $this->ejecutarActualizacionPorOrigen($datosProcesar);            
+                default:
+                    return ['respuesta' => 0, 'mensaje' => 'Operación no válida'];
+            }
+        } catch (Exception $e) {
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
+        }
+    }
+
+    private function ejecutarActualizacionPorOrigen($datosProcesar) {
+        if (isset($datosProcesar['tabla_origen']) && $datosProcesar['tabla_origen'] == 1) {
+            return $this->ejecutarActualizacionCliente($datosProcesar);
+        } else {
+            return $this->ejecutarActualizacionUsuario($datosProcesar);
+        }
+    }
+
+    private function ejecutarActualizacionCliente($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "UPDATE cliente 
+                        SET  clave = :clave
+                        WHERE id_persona = :id_persona";
+            
+               $parametros = [
+                'clave' => $this->encryptClave(['clave' => $datos['clave']]),
+                'id_persona' => $datos['id_persona']
+                ];
+
+            $stmt = $conex->prepare($sql);
+            $resultado = $stmt->execute($parametros);
+            
+            if ($resultado) {
+                $conex->commit();
+                $conex = null;
+                return ['respuesta' => 1, 'accion' => 'actualizar'];
+            }
+            
+            $conex->rollBack();
+            $conex = null;
+            return ['respuesta' => 0, 'accion' => 'actualizar'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+     private function ejecutarActualizacionUsuario($datos) {
+        $conex = $this->getConex2();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "UPDATE usuario 
+                        SET  clave = :clave
+                        WHERE id_persona = :id_persona";
+            
+               $parametros = [
+                'clave' => $this->encryptClave(['clave' => $datos['clave']]),
+                'id_persona' => $datos['id_persona']
+                ];
+
+            $stmt = $conex->prepare($sql);
+            $resultado = $stmt->execute($parametros);
+            
+            if ($resultado) {
+                $conex->commit();
+                $conex = null;
+                return ['respuesta' => 1, 'accion' => 'actualizar'];
+            }
+            
+            $conex->rollBack();
+            $conex = null;
+            return ['respuesta' => 0, 'accion' => 'actualizar'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
 
    
-
-
-    public function get_Id_persona()
-    {
-        return $this->id_persona;
-    }
-
-    public function set_Id_persona($id_persona)
-    {
-        $this->id_persona = $id_persona;
-    }
-
-    public function get_Nombre()
-    {
-        return $this->nombre;
-    }
-
-    public function set_Nombre($nombre)
-    {
-        return $this->nombre = ucfirst(strtolower($nombre));
-    }
-
-    public function get_Apellido()
-    {
-        return $this->apellido;
-    }
-    public function set_Apellido($apellido)
-    {
-        $this->apellido = ucfirst(strtolower($apellido));
-    }
-
-    public function get_Cedula()
-    {
-        return $this->cedula;
-    }
-    public function set_Cedula($cedula)
-    {
-        $this->cedula = $cedula;
-    }
-
-    public function get_Telefono()
-    {
-        return $this->telefono;
-    }
-    public function set_Telefono($telefono)
-    {
-        $this->telefono = $telefono;
-    }
-
-    public function get_Correo()
-    {
-        return $this->correo;
-    }
-    public function set_Correo($correo)
-    {
-        $this->correo = strtolower($correo);
-    }
-
-    public function get_Clave()
-    {
-        return $this->clave;
-    }
-    public function set_Clave($clave)
-    {
-        $this->clave = $clave;
-    }
-
+   
   
 }

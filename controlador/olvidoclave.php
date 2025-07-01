@@ -5,7 +5,7 @@
      } /*  Validacion URL  */
      
   require_once 'modelo/olvidoclave.php'; 
-  $objclave = new Clave();   
+  $objolvido = new Olvido();    
   
   if (isset($_POST['cerrarolvido'])) {    
       session_destroy(); // Se cierra la sesión
@@ -17,12 +17,12 @@
     $correodato = $_SESSION['correos'];    
 
     if ($correo === $correodato) {
-        // Generar código aleatorio de 6 dígitos
+        
         $codigo_recuperacion = rand(100000, 999999);
-        $_SESSION['codigo_recuperacion'] = $codigo_recuperacion; // Guardar el código en la sesión
+        $_SESSION['codigo_recuperacion'] = $codigo_recuperacion;
         
         // Enviar correo con el código
-        require_once 'modelo/enviarcorreo.php'; // Archivo que contiene la lógica de PHP Mailer
+        require_once 'modelo/enviarcorreo.php'; 
         
         enviarCodigoRecuperacion($correo, $codigo_recuperacion);
         
@@ -64,22 +64,20 @@
     echo json_encode($res);
     exit;
 
-} else if(isset($_POST['validarclave'])){
-   $id_persona = $_SESSION["persona"];
-   $clave_nueva =$_POST['clavenueva'];
-    
-    $objclave->set_Id_persona($id_persona);
-    $objclave->set_Clave($clave_nueva);
 
-    if($_SESSION["tabla_origen"]==1){
-    $result = $objclave->actualizarClave();
-    echo json_encode($result);
-    } else{
-    $result = $objclave->actualizarClaveusuario();
-    echo json_encode($result);
-    }
-    
+} else if(isset($_POST['validarclave'])){
+     $datosOlvido = [
+        'operacion' => 'actualizar',
+        'datos' => [
+            'id_persona' => $_SESSION["persona"],
+             'clave' => $_POST['clavenueva'],
+            'tabla_origen' => $_SESSION["tabla_origen"]
+        ]
+    ]; 
+
+    $resultado = $objolvido->procesarOlvido(json_encode($datosOlvido));
  
+    echo json_encode($resultado);
 } else{
     require_once 'vista/seguridad/olvidoclave.php';
 }
