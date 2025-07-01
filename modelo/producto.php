@@ -149,7 +149,7 @@ class producto extends Conexion {
                 return ['respuesta' => 1, 'accion' => 'actualizar', 'mensaje' => 'Producto actualizado exitosamente'];
             }
             
-            $conex->rollBack();
+            $conex->rollBack(); 
             $conex = null;
             return ['respuesta' => 0, 'accion' => 'actualizar', 'mensaje' => 'Error al actualizar producto'];
             
