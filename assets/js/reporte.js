@@ -112,7 +112,7 @@
           element: '#cardCompra',
           popover: {
             title: 'Reporte de Compras',
-            description: 'Genera un PDF con el histórico de compras.',
+            description: 'Genera un PDF con un reporte sobre las compras y su estadistica de Top 10 Productos mas Comprados.',
             side: 'bottom'
           }
         },
@@ -120,7 +120,7 @@
           element: '#cardProducto',
           popover: {
             title: 'Reporte de Productos',
-            description: 'Listado detallado del inventario de productos.',
+            description: 'Genera un PDF con un listado de productos y su estadistica de Top 10 Productos por Stock.',
             side: 'bottom'
           }
         },
@@ -128,7 +128,7 @@
           element: '#cardVentas',
           popover: {
             title: 'Reporte de Ventas',
-            description: 'Analiza las ventas realizadas en el período.',
+            description: 'Genera un PDF con un listado de las ventas y si estadistica de Top 5 Productos Más Vendidos.',
             side: 'bottom'
           }
         },
@@ -136,7 +136,7 @@
           element: '#cardPedidoWeb',
           popover: {
             title: 'Reporte Web',
-            description: 'Muestra los pedidos generados vía e-commerce.',
+            description: 'Genera un PDF con un reporte sobre las compras por pedido web y su estadistica de Top 5 Productos mas Vendidos.',
             side: 'bottom'
           }
         },
