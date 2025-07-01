@@ -13,7 +13,7 @@ public static function compra($start = null, $end = null, $prodId = null): void 
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie.php';
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie3d.php';
 
-    $cnx = (new Conexion())->getConex1();
+    $conex = (new Conexion())->getConex1();
 
     // — Datos de gráfica —
     $whereG = ['p.estatus = 1']; $paramsG = [];
@@ -36,7 +36,7 @@ public static function compra($start = null, $end = null, $prodId = null): void 
       ORDER BY total DESC
       LIMIT 10
     ";
-    $stmtG = $cnx->prepare($sqlG);
+    $stmtG = $conex->prepare($sqlG);
     $stmtG->execute($paramsG);
     $labels = $data = [];
     while ($r = $stmtG->fetch(PDO::FETCH_ASSOC)) {
@@ -87,9 +87,11 @@ public static function compra($start = null, $end = null, $prodId = null): void 
       . " GROUP BY c.id_compra,c.fecha_entrada,pr.nombre
           ORDER BY c.id_compra DESC
     ";
-    $stmtT = $cnx->prepare($sqlT);
+    $stmtT = $conex->prepare($sqlT);
     $stmtT->execute($paramsT);
     $rows = $stmtT->fetchAll(PDO::FETCH_ASSOC);
+
+    $conex = null;
 
     // — Filtro textual —
     if (!$start && !$end) {
@@ -216,7 +218,7 @@ public static function producto($prodId = null, $provId = null, $catId = null): 
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie.php';
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie3d.php';
 
-    $cnx = (new Conexion())->getConex1();
+    $conex = (new Conexion())->getConex1();
 
     // 1) Datos para gráfico Top 10 stock
     $whereG = ['1=1']; $paramsG = []; $joinG = '';
@@ -245,7 +247,7 @@ public static function producto($prodId = null, $provId = null, $catId = null): 
       ORDER BY p.stock_disponible DESC
       LIMIT 10
     ";
-    $stmtG = $cnx->prepare($sqlG);
+    $stmtG = $conex->prepare($sqlG);
     $stmtG->execute($paramsG);
     $labels = $data = [];
     while ($r = $stmtG->fetch(PDO::FETCH_ASSOC)) {
@@ -300,9 +302,12 @@ public static function producto($prodId = null, $provId = null, $catId = null): 
       WHERE ".implode(' AND ',$whereT)."
       ORDER BY p.nombre ASC
     ";
-    $stmtT = $cnx->prepare($sqlT);
+    $stmtT = $conex->prepare($sqlT);
     $stmtT->execute($paramsT);
     $rows  = $stmtT->fetchAll(PDO::FETCH_ASSOC);
+
+    //Cerrar conexión antes de montar HTML
+    $conex = null;
 
     // 4) Sin datos, mensaje
     if (empty($rows)) {
@@ -430,7 +435,7 @@ public static function venta($start = null, $end = null, $prodId = null): void {
     require_once __DIR__.'/../assets/js/jpgraph/src/jpgraph_pie.php';
     require_once __DIR__.'/../assets/js/jpgraph/src/jpgraph_pie3d.php';
 
-    $cnx = (new Conexion())->getConex1();
+    $conex = (new Conexion())->getConex1();
 
     // 1) Datos gráfico Top 5 vendidos
     $whereG=['pe.estado=2','pe.tipo=1']; $paramsG=[];
@@ -453,7 +458,7 @@ public static function venta($start = null, $end = null, $prodId = null): void {
       ORDER BY total DESC
       LIMIT 5
     ";
-    $stmtG = $cnx->prepare($sqlG);
+    $stmtG = $conex->prepare($sqlG);
     $stmtG->execute($paramsG);
     $labels=$data=[];
     while($r=$stmtG->fetch(PDO::FETCH_ASSOC)){
@@ -506,9 +511,12 @@ public static function venta($start = null, $end = null, $prodId = null): void {
       WHERE ".implode(' AND ',$whereT)."
       ORDER BY pe.fecha DESC
     ";
-    $stmtT=$cnx->prepare($sqlT);
+    $stmtT=$conex->prepare($sqlT);
     $stmtT->execute($paramsT);
     $rows=$stmtT->fetchAll(PDO::FETCH_ASSOC);
+
+    //Cerrar conexión antes de montar HTML
+    $conex = null;
 
     // 4) Texto filtros y fecha
     if (!$start && !$end && !$prodId) $filtro='Registro general';
@@ -622,171 +630,207 @@ public static function venta($start = null, $end = null, $prodId = null): void {
 
 
 public static function pedidoWeb($start = null, $end = null, $prodId = null): void {
+    // includes y setup
     require_once 'modelo/conexion.php';
     require_once 'assets/dompdf/vendor/autoload.php';
     require_once __DIR__.'/../assets/js/jpgraph/src/jpgraph.php';
     require_once __DIR__.'/../assets/js/jpgraph/src/jpgraph_pie.php';
     require_once __DIR__.'/../assets/js/jpgraph/src/jpgraph_pie3d.php';
 
-    $cnx = (new Conexion())->getConex1();
+    // 1) abrir conexión
+    $conex = (new Conexion())->getConex1();
 
-    // 1) Datos gráfico Top5 pedidos web
-    $whereG=['p.tipo=2']; $paramsG=[];
-    if($start&&$end){
-      $whereG[]='p.fecha BETWEEN :sG AND :eG';
-      $paramsG[':sG']="$start 00:00:00";
-      $paramsG[':eG']="$end 23:59:59";
+    // 2) datos para gráfica Top 5 pedidos web
+    $whereG = ['p.tipo = 2'];
+    $paramsG = [];
+    if ($start && $end) {
+        $whereG[]       = 'p.fecha BETWEEN :sG AND :eG';
+        $paramsG[':sG'] = "$start 00:00:00";
+        $paramsG[':eG'] = "$end   23:59:59";
     }
-    if($prodId){
-      $whereG[]='pd.id_producto=:pidG';
-      $paramsG[':pidG']=$prodId;
+    if ($prodId) {
+        $whereG[]         = 'pd.id_producto = :pidG';
+        $paramsG[':pidG'] = $prodId;
     }
-    $sqlG="SELECT prod.nombre producto, SUM(pd.cantidad) total
-           FROM pedido p
-           JOIN pedido_detalles pd ON pd.id_pedido=p.id_pedido
-           JOIN productos prod ON prod.id_producto=pd.id_producto
-           WHERE ".implode(' AND ',$whereG)."
-           GROUP BY prod.id_producto
-           ORDER BY total DESC
-           LIMIT 5";
-    $stmtG=$cnx->prepare($sqlG); $stmtG->execute($paramsG);
-    $labels=$data=[];
-    while($r=$stmtG->fetch(PDO::FETCH_ASSOC)){
-      $labels[]=htmlspecialchars($r['producto']);
-      $data[]  =(int)$r['total'];
+    $sqlG = "
+      SELECT prod.nombre producto, SUM(pd.cantidad) total
+      FROM pedido p
+      JOIN pedido_detalles pd ON pd.id_pedido = p.id_pedido
+      JOIN productos prod     ON prod.id_producto = pd.id_producto
+      WHERE ".implode(' AND ', $whereG)."
+      GROUP BY prod.id_producto
+      ORDER BY total DESC
+      LIMIT 5
+    ";
+    $stmtG = $conex->prepare($sqlG);
+    $stmtG->execute($paramsG);
+    $labels = $data = [];
+    while ($r = $stmtG->fetch(PDO::FETCH_ASSOC)) {
+        $labels[] = htmlspecialchars($r['producto']);
+        $data[]   = (int)$r['total'];
     }
 
-    // 2) PNG + Base64
-    $imgDir=__DIR__.'/../assets/img/grafica_reportes/';
-    $imgFile=$imgDir.'grafico_pedidoweb.png';
-    if(!is_dir($imgDir)) mkdir($imgDir,0777,true);
-    if(file_exists($imgFile)) unlink($imgFile);
-    if($data){
-      $g=new \PieGraph(900,500);
-      $p=new \PiePlot3D($data);
-      $p->SetLegends($labels);
-      $p->SetCenter(0.5,0.5);
-      $p->ExplodeSlice(1);
-      $g->Add($p);
-      $g->Stroke($imgFile);
+    // 3) generar gráfico y codificar a base64
+    $imgDir  = __DIR__.'/../assets/img/grafica_reportes/';
+    $imgFile = $imgDir.'grafico_pedidoweb.png';
+    if (!is_dir($imgDir)) mkdir($imgDir, 0777, true);
+    if (file_exists($imgFile)) unlink($imgFile);
+    if ($data) {
+        $graph = new \PieGraph(900,500);
+        $pie   = new \PiePlot3D($data);
+        $pie->SetLegends($labels);
+        $pie->SetCenter(0.5,0.5);
+        $pie->ExplodeSlice(1);
+        $graph->Add($pie);
+        $graph->Stroke($imgFile);
     }
-    $graf= file_exists($imgFile)
-         ? 'data:image/png;base64,'.base64_encode(file_get_contents($imgFile))
-         : '';
+    $graf = file_exists($imgFile)
+          ? 'data:image/png;base64,'.base64_encode(file_get_contents($imgFile))
+          : '';
 
-    // 3) Tabla pedidos web
-    $whereT=['p.tipo=2']; $paramsT=[];
-    if($start&&$end){
-      $whereT[]='p.fecha BETWEEN :sT AND :eT';
-      $paramsT[':sT']="$start 00:00:00";
-      $paramsT[':eT']="$end 23:59:59";
+    // 4) consulta tabla de pedidos web
+    $whereT = ['p.tipo = 2'];
+    $paramsT = [];
+    if ($start && $end) {
+        $whereT[]       = 'p.fecha BETWEEN :sT AND :eT';
+        $paramsT[':sT'] = "$start 00:00:00";
+        $paramsT[':eT'] = "$end   23:59:59";
     }
-    if($prodId){
-      $whereT[]='p.id_pedido IN(
-                   SELECT id_pedido FROM pedido_detalles WHERE id_producto=:pidT
-                 )';
-      $paramsT[':pidT']=$prodId;
+    if ($prodId) {
+        $whereT[]         = 'p.id_pedido IN (
+                               SELECT id_pedido
+                               FROM pedido_detalles
+                               WHERE id_producto = :pidT
+                             )';
+        $paramsT[':pidT']= $prodId;
     }
-    $sqlT="SELECT
-            p.id_pedido,p.fecha,p.estado,p.precio_total,
-            p.referencia_bancaria,p.telefono_emisor,
-            CONCAT(cl.nombre,' ',cl.apellido) cliente,
-            mp.nombre metodo_pago,
-            me.nombre metodo_entrega
-           FROM pedido p
-           LEFT JOIN cliente cl ON p.id_persona=cl.id_persona
-           LEFT JOIN metodo_pago mp ON p.id_metodopago=mp.id_metodopago
-           LEFT JOIN metodo_entrega me ON p.id_entrega=me.id_entrega
-           WHERE ".implode(' AND ',$whereT)."
-           ORDER BY p.fecha DESC";
-    $stmtT=$cnx->prepare($sqlT); $stmtT->execute($paramsT);
-    $rows=$stmtT->fetchAll(PDO::FETCH_ASSOC);
+    $sqlT = "
+      SELECT
+        p.id_pedido, p.fecha, p.estado, p.precio_total,
+        p.referencia_bancaria, p.telefono_emisor,
+        CONCAT(cl.nombre,' ',cl.apellido) AS cliente,
+        mp.nombre AS metodo_pago,
+        me.nombre AS metodo_entrega
+      FROM pedido p
+      LEFT JOIN cliente       cl ON p.id_persona    = cl.id_persona
+      LEFT JOIN metodo_pago   mp ON p.id_metodopago = mp.id_metodopago
+      LEFT JOIN metodo_entrega me ON p.id_entrega    = me.id_entrega
+      WHERE ".implode(' AND ', $whereT)."
+      ORDER BY p.fecha DESC
+    ";
+    $stmtT = $conex->prepare($sqlT);
+    $stmtT->execute($paramsT);
+    $rows = $stmtT->fetchAll(PDO::FETCH_ASSOC);
 
-    // 4) Texto filtros y fecha
-    if(!$start&&!$end&&!$prodId)      $filtro='Registro general';
-    elseif($start&&!$end)             $filtro='Desde '.date('d/m/Y',strtotime($start));
-    elseif(!$start&&$end)             $filtro='Hasta '.date('d/m/Y',strtotime($end));
-    else                               $filtro='Desde '.date('d/m/Y',strtotime($start))
-                                        .' hasta '.date('d/m/Y',strtotime($end));
-    if($prodId && isset($labels[0])){
-      $filtro.=" | Producto: {$labels[0]}";
+    // 5) cerrar conexión antes de generar HTML
+    $conex = null;
+
+    // 6) texto de filtros y fecha
+    if (!$start && !$end && !$prodId) {
+        $filtro = 'Registro general';
+    } elseif ($start && !$end) {
+        $filtro = 'Desde '.date('d/m/Y',strtotime($start));
+    } elseif (!$start && $end) {
+        $filtro = 'Hasta '.date('d/m/Y',strtotime($end));
+    } else {
+        $filtro = 'Desde '.date('d/m/Y',strtotime($start))
+                 .' hasta '.date('d/m/Y',strtotime($end));
     }
-    $fechaGen=date('d/m/Y H:i');
+    if ($prodId && isset($labels[0])) {
+        $filtro .= " | Producto: {$labels[0]}";
+    }
+    $fechaGen = date('d/m/Y H:i');
 
-    // 5) Logo en Base64
-    $icon=__DIR__.'/../assets/img/icon.PNG';
-    $logoData=file_exists($icon)
-             ? 'data:image/png;base64,'.base64_encode(file_get_contents($icon))
-             : '';
+    // 7) logo en base64
+    $icon     = __DIR__.'/../assets/img/icon.PNG';
+    $logoData = file_exists($icon)
+              ? 'data:image/png;base64,'.base64_encode(file_get_contents($icon))
+              : '';
 
-    // 6) HTML con CSS ajustado
-    $html='<html><head><style>
-      @page{margin:120px 50px 60px 50px;}
-      body{margin:0;font-family:Arial,sans-serif;font-size:12px;}
-      header{position:fixed;top:-110px;left:0;right:0;height:110px;text-align:center;}
-      header h1{margin:0;font-size:24px;}
-      header p{margin:4px 0 0;font-size:14px;color:#555;}
-      header img.logo-icon{position:absolute;top:5px;right:5px;width:100px;height:100px;}
-      footer{position:fixed;bottom:-40px;left:0;right:0;height:40px;
-             text-align:center;font-size:10px;color:#666;}
-      table{width:100%;border-collapse:collapse;margin-top:10px;}
-      th,td{border:1px solid #000;padding:6px;text-align:center;}
-      th{background:#f36ca4;color:#fff;}
+    // 8) armar HTML
+    $html = '<html><head><style>
+      @page { margin:120px 50px 60px 50px; }
+      body { margin:0; font-family:Arial,sans-serif; font-size:12px; }
+      header {
+        position:fixed; top:-110px; left:0; right:0; height:110px;
+        text-align:center;
+      }
+      header h1 { margin:0; font-size:24px; }
+      header p  { margin:4px 0 0; font-size:14px; color:#555; }
+      header img.logo-icon {
+        position:absolute; top:5px; right:5px;
+        width:100px; height:100px;
+      }
+      footer {
+        position:fixed; bottom:-40px; left:0; right:0; height:40px;
+        text-align:center; font-size:10px; color:#666;
+      }
+      table {
+        width:100%; border-collapse:collapse; margin-top:10px;
+      }
+      th,td {
+        border:1px solid #000; padding:6px; text-align:center;
+      }
+      th {
+        background:#f36ca4; color:#fff;
+      }
     </style></head><body>'
-    // HEADER
-   .'<header>';
-    if($logoData) {
-      $html.='<img src="'.$logoData.'" class="logo-icon" alt="Logo"/>';
+    . '<header>'
+    . ($logoData? '<img src="'.$logoData.'" class="logo-icon" alt="Logo"/>' : '')
+    . '<h1>LoveMakeup</h1>'
+    . '<p>RIF: J-00000000</p>'
+    . '</header>'
+    . '<main>'
+    . '<h1>Listado de Pedidos Web</h1>'
+    . '<p><strong>Generado:</strong> '.$fechaGen.'</p>'
+    . '<p><strong>Filtro:</strong> '.$filtro.'</p>'
+    . (!empty($graf)
+        ? '<h2>Top 5 Productos Más Vendidos</h2>
+           <div style="text-align:center;"><img src="'.$graf.'" width="600"/></div>'
+        : ''
+      )
+    . '<table><thead><tr>
+         <th>Pedido</th><th>Fecha</th><th>Estado</th><th>Total</th>
+         <th>Ref. Bancaria</th><th>Teléfono</th><th>Cliente</th>
+         <th>Método Pago</th><th>Método Entrega</th>
+       </tr></thead><tbody>';
+    $estados = ['0'=>'Cancelado','1'=>'Pendiente','2'=>'Confirmado'];
+    foreach ($rows as $r) {
+        $d   = date('d/m/Y',strtotime($r['fecha']));
+        $est = $estados[$r['estado']] ?? '';
+        $tot = '$'.number_format($r['precio_total'],2);
+        $html .= "<tr>
+                    <td>{$r['id_pedido']}</td>
+                    <td>{$d}</td>
+                    <td>{$est}</td>
+                    <td>{$tot}</td>
+                    <td>".htmlspecialchars($r['referencia_bancaria'])."</td>
+                    <td>".htmlspecialchars($r['telefono_emisor'])."</td>
+                    <td>".htmlspecialchars($r['cliente'])."</td>
+                    <td>".htmlspecialchars($r['metodo_pago'])."</td>
+                    <td>".htmlspecialchars($r['metodo_entrega'])."</td>
+                  </tr>";
     }
-    $html.='<h1>LoveMakeup</h1><p>RIF: J-00000000</p></header>'
-    // MAIN
-   .'<main>'
-   .'<h1>Listado de Pedidos Web</h1>'
-   ."<p><strong>Generado:</strong> {$fechaGen}</p>"
-   ."<p><strong>Filtro:</strong> {$filtro}</p>"
-   .(!empty($graf)
-      ? '<h2>Top 5 Productos Más Vendidos</h2>
-         <div style="text-align:center;"><img src="'.$graf.'" width="600"/></div>'
-      : ''
-    )
-   .'<table><thead><tr>
-       <th>Pedido</th><th>Fecha</th><th>Estado</th><th>Total</th>
-       <th>Ref. Bancaria</th><th>Teléfono</th><th>Cliente</th>
-       <th>Método Pago</th><th>Método Entrega</th>
-     </tr></thead><tbody>';
-    $estados=['0'=>'Cancelado','1'=>'Pendiente','2'=>'Confirmado'];
-    foreach($rows as $r){
-      $d=date('d/m/Y',strtotime($r['fecha']));
-      $est=$estados[$r['estado']] ?? '';
-      $tot='$'.number_format($r['precio_total'],2);
-      $html.='<tr>'
-            ."<td>{$r['id_pedido']}</td>"
-            ."<td>{$d}</td>"
-            ."<td>{$est}</td>"
-            ."<td>{$tot}</td>"
-            .'<td>'.htmlspecialchars($r['referencia_bancaria']).'</td>'
-            .'<td>'.htmlspecialchars($r['telefono_emisor']).'</td>'
-            .'<td>'.htmlspecialchars($r['cliente']).'</td>'
-            .'<td>'.htmlspecialchars($r['metodo_pago']).'</td>'
-            .'<td>'.htmlspecialchars($r['metodo_entrega']).'</td>'
-            .'</tr>';
-    }
-    $html.='</tbody></table></main>'
-           .'<footer>Página <span class="pageNumber"></span> de <span class="totalPages"></span></footer>'
-           .'</body></html>';
+    $html .= '</tbody></table></main>'
+           . '<footer>Página <span class="pageNumber"></span> de <span class="totalPages"></span></footer>'
+           . '</body></html>';
 
-    // 7) Render y numeración
-    $opts=new \Dompdf\Options(); $opts->set('isRemoteEnabled',true);
-    $pdf=new Dompdf($opts);
+    // 9) render y numeración
+    $opts = new Options();
+    $opts->set('isRemoteEnabled', true);
+    $pdf  = new Dompdf($opts);
     $pdf->loadHtml($html);
     $pdf->setPaper('A4','portrait');
     $pdf->render();
-    $cv=$pdf->getCanvas();
-    $w=$cv->get_width(); $h=$cv->get_height();
-    $fn=$pdf->getFontMetrics()->get_font('helvetica','normal');
-    $cv->page_text($w/2-30,$h-30,"Página {PAGE_NUM} de {PAGE_COUNT}",$fn,10,[0,0,0],0,0.5);
+    $canvas = $pdf->getCanvas();
+    $w      = $canvas->get_width();
+    $h      = $canvas->get_height();
+    $fn     = $pdf->getFontMetrics()->get_font('helvetica','normal');
+    $canvas->page_text($w/2 - 30, $h - 30,
+                       "Página {PAGE_NUM} de {PAGE_COUNT}",
+                       $fn, 10, [0,0,0], 0, 0.5);
 
-    // 8) Emitir
+    // 10) emitir PDF
     $pdf->stream('Reporte_PedidosWeb.pdf',['Attachment'=>false]);
 }
 
@@ -796,7 +840,7 @@ public static function pedidoWeb($start = null, $end = null, $prodId = null): vo
 
 
 public static function countCompra($start = null, $end = null, $prodId = null): int {
-    $cnx = (new Conexion())->getConex1();
+    $conex = (new Conexion())->getConex1();
     $where  = [];
     $params = [];
 
@@ -817,7 +861,7 @@ public static function countCompra($start = null, $end = null, $prodId = null): 
       JOIN compra_detalles cd ON cd.id_compra = c.id_compra
       $w
     ";
-    $stmt = $cnx->prepare($sql);
+    $stmt = $conex->prepare($sql);
     $stmt->execute($params);
     return (int)$stmt->fetchColumn();
 }
@@ -826,7 +870,7 @@ public static function countCompra($start = null, $end = null, $prodId = null): 
 
 
 public static function countProducto($prodId = null, $provId = null, $catId = null): int {
-    $cnx = (new Conexion())->getConex1();
+    $conex = (new Conexion())->getConex1();
     $where  = ['1=1'];
     $params = [];
     $join   = '';
@@ -855,7 +899,7 @@ public static function countProducto($prodId = null, $provId = null, $catId = nu
       $join
       WHERE $w
     ";
-    $stmt = $cnx->prepare($sql);
+    $stmt = $conex->prepare($sql);
     $stmt->execute($params);
     return (int)$stmt->fetchColumn();
 }
@@ -864,7 +908,7 @@ public static function countProducto($prodId = null, $provId = null, $catId = nu
    * Devuelve el número de ventas (tipo 1) que cumplen filtros.
    */
 public static function countVenta($start = null, $end = null, $prodId = null): int {
-    $cnx = (new Conexion())->getConex1();
+    $conex = (new Conexion())->getConex1();
     $where  = ['pe.tipo = 1'];
     $params = [];
 
@@ -885,7 +929,7 @@ public static function countVenta($start = null, $end = null, $prodId = null): i
       JOIN pedido_detalles pd ON pd.id_pedido = pe.id_pedido
       $w
     ";
-    $stmt = $cnx->prepare($sql);
+    $stmt = $conex->prepare($sql);
     $stmt->execute($params);
     return (int)$stmt->fetchColumn();
   }
@@ -895,7 +939,7 @@ public static function countVenta($start = null, $end = null, $prodId = null): i
    * Devuelve el número de pedidos web (tipo 2) que cumplen filtros.
    */
   public static function countPedidoWeb($start = null, $end = null, $prodId = null): int {
-    $cnx = (new Conexion())->getConex1();
+    $conex = (new Conexion())->getConex1();
     $where  = ['p.tipo = 2'];
     $params = [];
 
@@ -916,16 +960,10 @@ public static function countVenta($start = null, $end = null, $prodId = null): i
       JOIN pedido_detalles pd ON pd.id_pedido = p.id_pedido
       $w
     ";
-    $stmt = $cnx->prepare($sql);
+    $stmt = $conex->prepare($sql);
     $stmt->execute($params);
     return (int)$stmt->fetchColumn();
   }
-
-
-
-
-
-
 
 
 }
