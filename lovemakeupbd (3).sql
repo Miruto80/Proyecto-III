@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-05-2025 a las 09:00:16
+-- Tiempo de generación: 02-07-2025 a las 05:11:11
 -- Versión del servidor: 10.4.18-MariaDB
 -- Versión de PHP: 8.0.3
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `s`
+-- Base de datos: `lovemakeupbd`
 --
 
 -- --------------------------------------------------------
@@ -61,13 +61,6 @@ CREATE TABLE `cliente` (
   `rol` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Volcado de datos para la tabla `cliente`
---
-
-INSERT INTO `cliente` (`id_persona`, `cedula`, `nombre`, `apellido`, `correo`, `telefono`, `clave`, `estatus`, `rol`) VALUES
-(1, '30665005', 'Dilmar', 'Vasquez', 'dilmar@gmail.com', '0412-1393064', 'PMnB24j7u8KxS3O3RLflx1NXZTZ2eld0WXkwZklhT3p5bm5VNlE9PQ==', 1, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -107,13 +100,6 @@ CREATE TABLE `lista_deseo` (
   `id_producto` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Volcado de datos para la tabla `lista_deseo`
---
-
-INSERT INTO `lista_deseo` (`id_lista`, `id_persona`, `id_producto`) VALUES
-(33, 2, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -134,7 +120,8 @@ CREATE TABLE `metodo_entrega` (
 INSERT INTO `metodo_entrega` (`id_entrega`, `nombre`, `descripcion`, `estatus`) VALUES
 (1, 'Delivery', 'Barquisimeto', 1),
 (2, 'MRW', 'Envió nacionales', 1),
-(3, 'ZOOM', 'Envio nacionales', 1);
+(3, 'ZOOM', 'Envio nacionales', 1),
+(4, 'Retiro en Tienda Fisica', 'Tienda Fisica', 1);
 
 -- --------------------------------------------------------
 
@@ -156,7 +143,9 @@ CREATE TABLE `metodo_pago` (
 INSERT INTO `metodo_pago` (`id_metodopago`, `nombre`, `descripcion`, `estatus`) VALUES
 (1, 'Pago Movil', 'Pago en Moneda Nacional BsD', 1),
 (2, 'Transferencia Bancaria', 'Pago por Nro de cuenta en moneda Nacional', 1),
-(3, 'Punto de Venta', 'Pago por tarjeta de debito', 1);
+(3, 'Punto de Venta', 'Pago por tarjeta de debito', 1),
+(4, 'Efectivo Bs', 'Pago en Moneda Nacional BsD', 1),
+(5, 'Divisas $', 'Pago en Moneda Extranjera $ Dolares', 1);
 
 -- --------------------------------------------------------
 
@@ -244,6 +233,15 @@ CREATE TABLE `productos` (
   `id_categoria` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Volcado de datos para la tabla `productos`
+--
+
+INSERT INTO `productos` (`id_producto`, `nombre`, `descripcion`, `marca`, `cantidad_mayor`, `precio_mayor`, `precio_detal`, `stock_disponible`, `stock_maximo`, `stock_minimo`, `imagen`, `estatus`, `id_categoria`) VALUES
+(1, 'Tinta de labios', 'Producto original ', 'Krite', 4, 1.3, 2, 0, 210, 20, 'assets/img/logo.PNG', 1, 1),
+(2, 'Blush en polvo', 'Producto original ', 'Ushas', 23, 1.5, 2, 0, 100, 2, 'assets/img/logo.PNG', 1, 1),
+(3, 'Contorno de ojos aloe Vera', 'Producto original ', 'sadoer', 10, 1.3, 2, 0, 200, 5, 'assets/img/logo.PNG', 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -277,7 +275,8 @@ INSERT INTO `proveedor` (`id_proveedor`, `numero_documento`, `tipo_documento`, `
 CREATE TABLE `reserva` (
   `id_reserva` int(11) NOT NULL,
   `fecha_apartado` date DEFAULT NULL,
-  `id_persona` int(11) DEFAULT NULL
+  `id_persona` int(11) DEFAULT NULL,
+  `estatus` int(2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -308,7 +307,10 @@ ALTER TABLE `categoria`
 -- Indices de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  ADD PRIMARY KEY (`id_persona`);
+  ADD PRIMARY KEY (`id_persona`),
+  ADD KEY `cedula` (`cedula`),
+  ADD KEY `correo` (`correo`),
+  ADD KEY `estatus` (`estatus`);
 
 --
 -- Indices de la tabla `compra`
@@ -351,7 +353,8 @@ ALTER TABLE `metodo_pago`
 --
 ALTER TABLE `notificaciones`
   ADD PRIMARY KEY (`id_notificaciones`),
-  ADD KEY `id_pedido` (`id_pedido`);
+  ADD KEY `id_pedido` (`id_pedido`),
+  ADD KEY `estado` (`estado`);
 
 --
 -- Indices de la tabla `pedido`
@@ -360,7 +363,8 @@ ALTER TABLE `pedido`
   ADD PRIMARY KEY (`id_pedido`),
   ADD KEY `id_entrega` (`id_entrega`),
   ADD KEY `id_metodopago` (`id_metodopago`),
-  ADD KEY `id_persona` (`id_persona`) USING BTREE;
+  ADD KEY `id_persona` (`id_persona`) USING BTREE,
+  ADD KEY `estado` (`estado`);
 
 --
 -- Indices de la tabla `pedido_detalles`
@@ -383,7 +387,9 @@ ALTER TABLE `preliminar`
 --
 ALTER TABLE `productos`
   ADD PRIMARY KEY (`id_producto`),
-  ADD KEY `id_categoria` (`id_categoria`);
+  ADD KEY `id_categoria` (`id_categoria`),
+  ADD KEY `nombre` (`nombre`),
+  ADD KEY `marca` (`marca`);
 
 --
 -- Indices de la tabla `proveedor`
@@ -397,7 +403,8 @@ ALTER TABLE `proveedor`
 --
 ALTER TABLE `reserva`
   ADD PRIMARY KEY (`id_reserva`),
-  ADD KEY `id_persona` (`id_persona`);
+  ADD KEY `id_persona` (`id_persona`),
+  ADD KEY `estatus` (`estatus`);
 
 --
 -- Indices de la tabla `reserva_detalles`
@@ -421,7 +428,7 @@ ALTER TABLE `categoria`
 -- AUTO_INCREMENT de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `compra`
@@ -439,19 +446,19 @@ ALTER TABLE `compra_detalles`
 -- AUTO_INCREMENT de la tabla `lista_deseo`
 --
 ALTER TABLE `lista_deseo`
-  MODIFY `id_lista` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id_lista` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `metodo_entrega`
 --
 ALTER TABLE `metodo_entrega`
-  MODIFY `id_entrega` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_entrega` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `metodo_pago`
 --
 ALTER TABLE `metodo_pago`
-  MODIFY `id_metodopago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_metodopago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
@@ -481,7 +488,7 @@ ALTER TABLE `preliminar`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedor`

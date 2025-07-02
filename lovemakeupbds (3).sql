@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-05-2025 a las 09:18:04
+-- Tiempo de generación: 02-07-2025 a las 05:22:11
 -- Versión del servidor: 10.4.18-MariaDB
 -- Versión de PHP: 8.0.3
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `2222`
+-- Base de datos: `lovemakeupbds`
 --
 
 -- --------------------------------------------------------
@@ -79,7 +79,8 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id_persona`, `cedula`, `nombre`, `apellido`, `correo`, `telefono`, `clave`, `estatus`, `id_rol`) VALUES
-(1, '10200300', 'Jefe', 'LoveMakeup', 'danielsanchez7875@gmail.com', '04240001122', 'jLuxs14MkSV4D+PZpDCcGk5qcW9HelpJNGd3UFlwMU1JVFpxdXc9PQ==', 1, 1);
+(1, '10200300', 'Jefe', 'Lovemakeup', 'danielsanchez7875@gmail.com', '0414-9739941', 'qdfT70Mbt4ejLW8906wGEDZCdWlVWmRmZG04cWVNYmI2RGFPY0E9PQ==', 1, 1),
+(2, '90010020', 'Love', 'Asesora', 'danielsanchezcev@gmail.com', '04221002030', 'TNC30iAHGX8qU19Nw8+2ojNrclRRd0g4LzU5SzB4WkhFK0ZUZFE9PQ==', 1, 2);
 
 --
 -- Índices para tablas volcadas
@@ -103,7 +104,9 @@ ALTER TABLE `rol_usuario`
 --
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`id_persona`),
-  ADD KEY `id_rol` (`id_rol`);
+  ADD UNIQUE KEY `cedula` (`cedula`),
+  ADD KEY `id_rol` (`id_rol`),
+  ADD KEY `correo` (`correo`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -119,13 +122,13 @@ ALTER TABLE `bitacora`
 -- AUTO_INCREMENT de la tabla `rol_usuario`
 --
 ALTER TABLE `rol_usuario`
-  MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas
@@ -135,7 +138,7 @@ ALTER TABLE `usuario`
 -- Filtros para la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  ADD CONSTRAINT `bitacora_ibfk_1` FOREIGN KEY (`id_persona`) REFERENCES `usuario` (`id_persona`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `bitacora_ibfk_1` FOREIGN KEY (`id_persona`) REFERENCES `usuario` (`id_persona`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `usuario`
