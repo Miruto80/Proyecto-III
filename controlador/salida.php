@@ -188,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     require_once 'vista/salida.php';
 } else {
-    require_once 'vista/seguridad/privilegio.php';
+   header("Location: ?pagina=catalogo");
 }
 
 // Si es una solicitud GET normal, mostrar la vista
@@ -200,10 +200,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $metodos_entrega = $salida->consultarMetodosEntrega();
 
     // Cargar la vista
-    if ($_SESSION["nivel_rol"] >= 2) {
+    if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
+        header("Location: ?pagina=catalogo");
+    exit();
+    }else {
         require_once 'vista/salida.php';
-    } else {
-        require_once 'vista/seguridad/privilegio.php';
     }
+
+ 
 }
 ?>

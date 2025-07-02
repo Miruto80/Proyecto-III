@@ -50,7 +50,12 @@ if(isset($_POST['actualizar'])){
         ];
         $objcliente->registrarBitacora(json_encode($bitacora));
         require_once 'vista/cliente.php';
-    }else{
+        } else if ($_SESSION["nivel_rol"] == 1) {
+
+            header("Location: ?pagina=catalogo");
+            exit();
+
+        } else {
         require_once 'vista/seguridad/privilegio.php';
     }
 

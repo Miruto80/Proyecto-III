@@ -100,6 +100,11 @@ if (isset($_POST['actualizar'])) {
             'descripcion' => 'módulo de Modificar Datos'
     ];
     $objdatos->registrarBitacora(json_encode($bitacora));
+   
+    if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
+    header("Location: ?pagina=catalogo");
+    exit();
+    }
     require_once 'vista/seguridad/datos.php';
 } 
 

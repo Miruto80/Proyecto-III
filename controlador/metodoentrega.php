@@ -20,10 +20,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
        
     } 
     exit;
-}
+} else if ($_SESSION["nivel_rol"] == 3) {
+    /*
+    $bitacora = [
+        'id_persona' => $_SESSION["id"],
+        'accion' => 'Acceso a Módulo',
+        'descripcion' => 'módulo de Metedo entrega'
+    ];
+    $objusuario->registrarBitacora(json_encode($bitacora));  */
     $metodos = $objEntrega->consultar();
-require_once __DIR__ . '/../vista/metodoentrega.php';
+    require_once __DIR__ . '/../vista/metodoentrega.php';
 
+} else if ($_SESSION["nivel_rol"] == 1) {
+
+    header("Location: ?pagina=catalogo");
+    exit();
+
+} else {
+    require_once 'vista/seguridad/privilegio.php';
+}
 
 
 ?>

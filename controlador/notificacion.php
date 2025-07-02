@@ -120,4 +120,8 @@ if ($nivel === 3) {
 }
 
 // 4) Cargar vista
+if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
+    header("Location: ?pagina=catalogo");
+    exit();
+}
 require_once 'vista/notificacion.php';

@@ -34,6 +34,11 @@
          echo json_encode($registro);
     } else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
         require_once 'vista/bitacora.php';
+    } else if ($_SESSION["nivel_rol"] == 1) {
+
+        header("Location: ?pagina=catalogo");
+        exit();
+
     } else {
         require_once 'vista/seguridad/privilegio.php';
     }

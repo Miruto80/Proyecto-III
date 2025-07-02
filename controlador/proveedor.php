@@ -66,8 +66,23 @@ if($_SERVER['REQUEST_METHOD']==='POST' && !isset($_POST['generar'])){
 if(isset($_POST['generar'])){
   $obj->generarPDF();
   exit;
-}
+} else if ($_SESSION["nivel_rol"] == 3) {
+    
+    $bitacora = [
+        'id_persona' => $_SESSION["id"],
+        'accion' => 'Acceso a Módulo',
+        'descripcion' => 'módulo de Proveedor'
+    ];
+    $objusuario->registrarBitacora(json_encode($bitacora));
 
-// vista normal
-$registro = $obj->consultar();
-require_once 'vista/proveedor.php';
+    $registro = $obj->consultar();
+    require_once 'vista/proveedor.php';
+
+} else if ($_SESSION["nivel_rol"] == 1) {
+
+    header("Location: ?pagina=catalogo");
+    exit();
+
+} else {
+    require_once 'vista/seguridad/privilegio.php';
+}

@@ -148,6 +148,10 @@ try {
         exit;
     } else {
         // Si no es una solicitud AJAX, cargar la vista
+          if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
+                header("Location: ?pagina=catalogo");
+                exit();
+        }
         require_once 'vista/reserva.php';
     }
 } catch (Exception $e) {
@@ -155,12 +159,18 @@ try {
         echo json_encode(['respuesta' => 0, 'accion' => 'error', 'mensaje' => $e->getMessage()]);
         exit;
     } else {
+        
         // Mostrar error en la interfaz
         $error_message = $e->getMessage();
          $id_persona = $_SESSION["id"];
         $accion = 'Acceso a Módulo';
         $descripcion = 'módulo de Reverva';
         $objreserva->registrarBitacora($id_persona, $accion, $descripcion);
+        
+        if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
+                header("Location: ?pagina=catalogo");
+                exit();
+        }
         require_once 'vista/reserva.php';
     }
 }

@@ -17,11 +17,10 @@ $totales = $objhome->consultarTotales();
 $pendientes=$objhome->consultarTotalesPendientes();
 
 
-if($_SESSION["nivel_rol"] == 1){
-  header("location:?pagina=catalogo");
-} else{
-  require_once 'vista/home.php';
+if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
+    header("Location: ?pagina=catalogo");
+    exit();
 }
-  
+  require_once 'vista/home.php';
 
 ?>

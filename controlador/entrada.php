@@ -316,6 +316,12 @@ if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
     ];
     $entrada->registrarBitacora(json_encode($bitacora));
     require_once 'vista/entrada.php';
+
+} else if ($_SESSION["nivel_rol"] == 1) {
+
+    header("Location: ?pagina=catalogo");
+    exit();
+
 } else {
     header("location:?pagina=home");
 }

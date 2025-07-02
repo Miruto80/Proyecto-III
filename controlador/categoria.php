@@ -38,13 +38,18 @@ if(isset($_POST['registrar'])){
         echo json_encode($result);
     }
 }   
-else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+else if($_SESSION["nivel_rol"] == 3) { 
     $id_persona = $_SESSION["id"];
     $accion = 'Acceso a Módulo';
     $descripcion = 'módulo de Categoria';
     $objcategoria->registrarBitacora($id_persona, $accion, $descripcion);
     require_once 'vista/categoria.php';
-}else{
+} else if ($_SESSION["nivel_rol"] == 1) {
+
+    header("Location: ?pagina=catalogo");
+    exit();
+
+} else {
     require_once 'vista/seguridad/privilegio.php';
 }
 

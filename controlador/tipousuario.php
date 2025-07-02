@@ -75,7 +75,13 @@ if (isset($_POST['registrar'])) {
     $descripcion = 'módulo de Tipo Usuario';
     $objtipousuario->registrarBitacora($id_persona, $accion, $descripcion);
     require_once 'vista/tipousuario.php';
-}else{
+
+} else if ($_SESSION["nivel_rol"] == 1) {
+
+    header("Location: ?pagina=catalogo");
+    exit();
+
+} else {
     require_once 'vista/seguridad/privilegio.php';
 }
 ?>
