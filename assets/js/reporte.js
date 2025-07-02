@@ -1,108 +1,155 @@
+// assets/js/reporte.js
+
 (() => {
   if (typeof moment !== 'function') {
-    return console.error('❌ moment.js no cargado');
+    console.error('moment.js no cargado');
+    return;
   }
 
-  const hasAlert = typeof muestraMensaje === 'function';
-  const forms    = document.querySelectorAll('.report-form');
+  const countMap = {
+    compra:    'countCompra',
+    producto:  'countProducto',
+    venta:     'countVenta',
+    pedidoWeb: 'countPedidoWeb'
+  };
 
-  forms.forEach(form => {
+  // 1) Validación + AJAX conteo
+  document.querySelectorAll('.report-form').forEach(form => {
     form.addEventListener('submit', e => {
       e.preventDefault();
-
-      const s   = form.querySelector('input[name="f_start"]')?.value || '';
-      const f   = form.querySelector('input[name="f_end"]')?.value   || '';
-      const fmt = d => moment(d, 'YYYY-MM-DD').format('DD/MM/YYYY');
+      const data  = new FormData(form);
+      const start = data.get('f_start') || '';
+      const end   = data.get('f_end')   || '';
+      const fmt   = d => moment(d, 'YYYY-MM-DD').format('DD/MM/YYYY');
 
       let icon, title, text;
-
-      // 1) Sin fechas (total)
-      if (!s && !f) {
-        icon  = 'success';
-        title = 'Registro general';
-        text  = 'Se generará el reporte general';
+      if (!start && !end) {
+        icon = 'success'; title = 'Registro general';
+        text = 'Se generará el reporte general';
       }
-      // 2) Sólo desde
-      else if (s && !f) {
-        icon  = 'success';
-        title = 'Rango parcial';
-        text  = `Reporte desde ${fmt(s)}`;
+      else if (start && !end) {
+        icon = 'success'; title = 'Rango parcial';
+        text = `Reporte desde ${fmt(start)}`;
       }
-      // 3) Sólo hasta
-      else if (!s && f) {
-        icon  = 'success';
-        title = 'Rango parcial';
-        text  = `Reporte hasta ${fmt(f)}`;
+      else if (!start && end) {
+        icon = 'success'; title = 'Rango parcial';
+        text = `Reporte hasta ${fmt(end)}`;
       }
-      // 4) Rango invertido → error inmediato
-      else if (moment(s).isAfter(moment(f))) {
-        return show('error', 'Rango inválido',
-                    'La fecha de inicio no puede ser mayor que la fecha de fin.');
+      else if (moment(start).isAfter(moment(end))) {
+        return Swal.fire({
+          icon:'error',
+          title:'Rango inválido',
+          text:'La fecha de inicio no puede ser mayor que la fecha de fin.',
+          confirmButtonText:'Aceptar'
+        });
       }
-      // 5) Misma fecha
-      else if (moment(s).isSame(moment(f))) {
-        icon  = 'success';
-        title = 'Fecha única';
-        text  = `Reporte del ${fmt(s)}`;
+      else if (moment(start).isSame(moment(end))) {
+        icon = 'success'; title = 'Fecha única';
+        text = `Reporte del ${fmt(start)}`;
       }
-      // 6) Rango válido
       else {
-        icon  = 'success';
-        title = 'Rango válido';
-        text  = `Desde ${fmt(s)} hasta ${fmt(f)}`;
+        icon = 'success'; title = 'Rango válido';
+        text = `Desde ${fmt(start)} hasta ${fmt(end)}`;
       }
 
-      // Pasamos al chequeo y envío
-      checkAndSubmit(form, icon, title, text);
+      // cerrar modal si aplica
+      const modalEl = form.closest('.modal');
+      if (modalEl) bootstrap.Modal.getInstance(modalEl)?.hide();
+
+      // determinar acción de conteo
+      const action      = new URL(form.action, location.origin)
+                             .searchParams.get('accion');
+      const countAction = countMap[action];
+      if (!countAction) {
+        console.error('Acción inválida:', action);
+        return;
+      }
+
+      // armar params
+      const params = new URLSearchParams();
+      for (let [k,v] of data.entries()) {
+        if (['f_start','f_end','f_id','f_prov','f_cat'].includes(k) && v) {
+          params.append(k, v);
+        }
+      }
+
+      // AJAX GET para verificar datos
+      fetch(`?pagina=reporte&accion=${countAction}&${params}`)
+        .then(r => r.json())
+        .then(json => {
+          if (json.count > 0) {
+            Swal.fire({ icon, title, text, confirmButtonText:'Aceptar' })
+              .then(() => form.submit());
+          } else {
+            Swal.fire({
+              icon:'error',
+              title:'Sin datos',
+              text:'No hay registros para generar el PDF.',
+              confirmButtonText:'Aceptar'
+            });
+          }
+        })
+        .catch(() => Swal.fire({
+          icon:'error',
+          title:'Error',
+          text:'No se pudo verificar los datos.',
+          confirmButtonText:'Aceptar'
+        }));
     });
   });
 
-  /**
-   * Realiza el AJAX de checkOnly y muestra SOLO UNA alerta:
-   * - Si hay datos: muestra el resumen (icon,title,text) y luego submit.
-   * - Si no: muestra error de "Sin datos" y NO submit.
-   */
-  function checkAndSubmit(form, icon, title, text) {
-    // ocultamos la modal antes de la alerta
-    const modalEl = form.closest('.modal');
-    if (modalEl) {
-      (bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl)).hide();
-    }
-
-    // chequeo AJAX
-    const data = new FormData(form);
-    data.append('checkOnly', '1');
-
-    fetch('?pagina=reporte', { method: 'POST', body: data })
-      .then(r => r.json())
-      .then(json => {
-        if (json.count > 0) {
-          // hay datos → muestra resumen y al cerrar dispara form.submit()
-          show(icon, title, text, () => form.submit());
-        } else {
-          // no hay datos → solo mostramos error
-          show('error', 'Sin datos',
-               'No se puede generar el PDF por falta de datos.');
+  // 2) Ayuda con Driver.js tal cual en Producto
+  $('#btnAyuda').on('click', function () {
+    const DriverClass = window.driver.js.driver;
+    const driverObj = new DriverClass({
+      nextBtnText: 'Siguiente',
+      prevBtnText: 'Anterior',
+      doneBtnText: 'Listo',
+      popoverClass: 'driverjs-theme',
+      closeBtn: false,
+      steps: [
+        {
+          element: '#cardCompra',
+          popover: {
+            title: 'Reporte de Compras',
+            description: 'Genera un PDF con un reporte sobre las compras y su estadistica de Top 10 Productos mas Comprados.',
+            side: 'bottom'
+          }
+        },
+        {
+          element: '#cardProducto',
+          popover: {
+            title: 'Reporte de Productos',
+            description: 'Genera un PDF con un listado de productos y su estadistica de Top 10 Productos por Stock.',
+            side: 'bottom'
+          }
+        },
+        {
+          element: '#cardVentas',
+          popover: {
+            title: 'Reporte de Ventas',
+            description: 'Genera un PDF con un listado de las ventas y si estadistica de Top 5 Productos Más Vendidos.',
+            side: 'bottom'
+          }
+        },
+        {
+          element: '#cardPedidoWeb',
+          popover: {
+            title: 'Reporte Web',
+            description: 'Genera un PDF con un reporte sobre las compras por pedido web y su estadistica de Top 5 Productos mas Vendidos.',
+            side: 'bottom'
+          }
+        },
+        {
+          popover: {
+            title: '¡Eso es todo!',
+            description: 'Ahora ya sabes cómo generar todos los reportes.'
+          }
         }
-      })
-      .catch(err => {
-        console.error(err);
-        show('error', 'Error',
-             'No se pudo verificar la existencia de datos.');
-      });
-  }
+      ]
+    });
 
-  /**
-   * Muestra alerta con muestraMensaje o SweetAlert fallback.
-   * cb opcional se ejecuta al cerrar la alerta.
-   */
-  function show(icon, title, text, cb) {
-    if (hasAlert) {
-      muestraMensaje(icon, 2000, title, text);
-      if (cb) setTimeout(cb, 2100);
-    } else {
-      Swal.fire({ icon, title, text, timer: 2000, showConfirmButton: false })
-         .then(() => cb && cb());
-    }
-  }
+    driverObj.drive();
+  });
+
 })();

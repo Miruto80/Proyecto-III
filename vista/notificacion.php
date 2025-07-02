@@ -64,14 +64,22 @@
     <div class="container-fluid py-4">
       <div class="card mb-4">
         <div class="card-header d-flex align-items-center justify-content-between py-3">
-          <h6 class="text-uppercase text-secondary text-xxs">Lista de notificaciones</h6>
+          <h6 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+            Lista de notificaciones
+          </h6>
           <?php if ($nivel === 3): ?>
-            <button id="vaciar-notificaciones"
-                    class="btn btn-danger btn-sm"
-                    title="Vaciar Notificaciones">
-              <i class="fa-solid fa-trash"></i>
-              Vaciar
-            </button>
+            <form id="vaciar-notificaciones-form"
+                  method="post"
+                  action="?pagina=notificacion&accion=vaciar"
+                  class="d-inline">
+              <button id="vaciar-notificaciones"
+                      type="submit"
+                      class="btn btn-danger btn-sm"
+                      title="Vaciar Notificaciones">
+                <i class="fa-solid fa-trash"></i>
+                Vaciar
+              </button>
+            </form>
           <?php endif; ?>
         </div>
 
@@ -142,27 +150,45 @@
                     </td>
                     <td class="text-center">
                       <?php if ($nivel === 3 && (int)$n['estado'] === 1): ?>
-                        <button class="btn btn-info btn-sm marcar-leer"
-                                data-id="<?= $n['id_notificaciones'] ?>"
-                                title="Marcar como leída">
-                          <i class="fa-solid fa-envelope-open"></i>
-                        </button>
+                        <form method="post"
+                              action="?pagina=notificacion&accion=marcarLeida"
+                              class="marcar-leer-form d-inline">
+                          <input type="hidden" name="id"
+                                 value="<?= $n['id_notificaciones'] ?>">
+                          <button type="submit"
+                                  class="btn btn-info btn-sm"
+                                  title="Marcar como leída">
+                            <i class="fa-solid fa-envelope-open"></i>
+                          </button>
+                        </form>
                       <?php endif; ?>
 
                       <?php if ($nivel === 2 && (int)$n['estado'] === 2): ?>
-                        <button class="btn btn-success btn-sm marcar-entregar"
-                                data-id="<?= $n['id_notificaciones'] ?>"
-                                title="Marcar como entregada">
-                          <i class="fa-solid fa-truck"></i>
-                        </button>
+                        <form method="post"
+                              action="?pagina=notificacion&accion=entregar"
+                              class="marcar-entregar-form d-inline">
+                          <input type="hidden" name="id"
+                                 value="<?= $n['id_notificaciones'] ?>">
+                          <button type="submit"
+                                  class="btn btn-success btn-sm"
+                                  title="Marcar como entregada">
+                            <i class="fa-solid fa-truck"></i>
+                          </button>
+                        </form>
                       <?php endif; ?>
 
                       <?php if ($nivel === 3): ?>
-                        <button class="btn btn-danger btn-sm btn-eliminar"
-                                data-id="<?= $n['id_notificaciones'] ?>"
-                                title="Eliminar">
-                          <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                        <form method="post"
+                              action="?pagina=notificacion&accion=eliminar"
+                              class="btn-eliminar-form d-inline">
+                          <input type="hidden" name="id"
+                                 value="<?= $n['id_notificaciones'] ?>">
+                          <button type="submit"
+                                  class="btn btn-danger btn-sm"
+                                  title="Eliminar">
+                            <i class="fa-solid fa-trash-can"></i>
+                          </button>
+                        </form>
                       <?php endif; ?>
                     </td>
                   </tr>
@@ -181,4 +207,4 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="assets/js/notificacion.js"></script>
 </body>
-</html> 
+</html>

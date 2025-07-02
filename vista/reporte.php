@@ -77,6 +77,9 @@
                   <i class="fa-solid fa-file-pdf" style="color: #f6c5b4;"></i>
                   Generar Reporte
                 </h4>
+                <button id="btnAyuda" class="btn btn-info">
+                  <i class="fas fa-info-circle"></i> Ayuda
+                </button>
               </div>
             </div>
 
@@ -86,7 +89,7 @@
         <div class="row g-4">
             <!-- Card Compras -->
             <div class="col-md-6 col-lg-3">
-                <div class="report-card h-100 d-flex flex-column">
+                <div id="cardCompra" class="report-card h-100 d-flex flex-column">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/f6c5b4/FFFFFF?text=Compra" class="card-img-top" alt="Reporte gráfico de niveles de inventario con productos de maquillaje organizados">
                     </div>
@@ -104,7 +107,7 @@
             
             <!-- Card Productos --> 
             <div class="col-md-6 col-lg-3">
-                <div class="report-card h-100 d-flex flex-column">
+                <div id="cardProducto" class="report-card h-100 d-flex flex-column">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/d67888/FFFFFF?text=Producto" class="card-img-top" alt="Vista de productos de maquillaje organizados por categorías con precios visibles">
                     </div>
@@ -122,7 +125,7 @@
             
             <!-- Card Ventas -->
             <div class="col-md-6 col-lg-3">
-                <div class="report-card h-100 d-flex flex-column">
+                <div id="cardVentas" class="report-card h-100 d-flex flex-column">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/fc91a3/000000?text=Ventas" class="card-img-top" alt="Gráfico de crecimiento de ventas de maquillaje con tendencia alcista">
                     </div>
@@ -140,7 +143,7 @@
             
             <!-- Card Pedidos Web -->
             <div class="col-md-6 col-lg-3">
-                <div class="report-card h-100 d-flex flex-column">
+                <div id="cardPedidoWeb" class="report-card h-100 d-flex flex-column">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/7f7f7f/FFFFFF?text=Pedidos+Web" class="card-img-top" alt="Dashboard digital mostrando pedidos online de productos de belleza">
                     </div>
@@ -170,18 +173,21 @@
 
  <?php $hoy = date('Y-m-d'); ?>
 <!-- Modal Compras -->
+<!-- Modal Compras -->
 <div class="modal fade" id="modalCompra" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Reporte Compras</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form class="report-form" method="post" action="?pagina=reporte" target="_blank">
-        <input type="hidden" name="reportType" value="compra">
-
+      <form
+        class="report-form"
+        method="post"
+        action="?pagina=reporte&accion=compra"
+        target="_blank"
+      >
         <div class="modal-body">
-          <!-- mini‐formulario de filtros -->
           <div class="row g-2 mb-3">
             <div class="col-6">
               <label class="form-label">Fecha Inicio</label>
@@ -189,7 +195,7 @@
                 type="date"
                 name="f_start"
                 class="form-control"
-                max="<?= $hoy ?>"
+                max="<?= date('Y-m-d') ?>"
               >
             </div>
             <div class="col-6">
@@ -198,7 +204,7 @@
                 type="date"
                 name="f_end"
                 class="form-control"
-                max="<?= $hoy ?>"
+                max="<?= date('Y-m-d') ?>"
               >
             </div>
             <div class="col-12">
@@ -213,15 +219,11 @@
               </select>
             </div>
           </div>
-          <!-- /mini‐formulario -->
-
           <p class="text-center">¿Generar listado de compras?</p>
         </div>
 
         <div class="modal-footer">
-          <button type="submit" name="generar" class="btn btn-danger">
-            GENERAR PDF
-          </button>
+          <button type="submit" class="btn btn-danger">GENERAR PDF</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             Cerrar
           </button>
@@ -230,6 +232,7 @@
     </div>
   </div>
 </div>
+
 
 
 <?php $hoy = date('Y-m-d'); ?>
@@ -241,13 +244,15 @@
         <h5 class="modal-title">Reporte Productos</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form class="report-form" method="post" action="?pagina=reporte" target="_blank">
-        <input type="hidden" name="reportType" value="producto">
-
+      <form
+        class="report-form"
+        method="post"
+        action="?pagina=reporte&accion=producto"
+        target="_blank"
+      >
+        <!-- Sin input reportType -->
         <div class="modal-body">
           <div class="row g-2 mb-3">
-
-            <!-- Filtro por Producto -->
             <div class="col-12">
               <label class="form-label">Producto (opcional)</label>
               <select name="f_id" class="form-select">
@@ -259,8 +264,6 @@
                 <?php endforeach; ?>
               </select>
             </div>
-
-            <!-- Filtro por Proveedor -->
             <div class="col-12">
               <label class="form-label">Proveedor (opcional)</label>
               <select name="f_prov" class="form-select">
@@ -272,8 +275,6 @@
                 <?php endforeach; ?>
               </select>
             </div>
-
-            <!-- Filtro por Categoría -->
             <div class="col-12">
               <label class="form-label">Categoría (opcional)</label>
               <select name="f_cat" class="form-select">
@@ -285,15 +286,12 @@
                 <?php endforeach; ?>
               </select>
             </div>
-
           </div>
           <p class="text-center">¿Generar listado de productos?</p>
         </div>
 
         <div class="modal-footer">
-          <button type="submit" name="generar" class="btn btn-danger">
-            GENERAR PDF
-          </button>
+          <button type="submit" class="btn btn-danger">GENERAR PDF</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             Cerrar
           </button>
@@ -309,18 +307,21 @@
 
 <?php $hoy = date('Y-m-d'); ?>
 <!-- Modal Ventas -->
+<!-- Modal Ventas -->
 <div class="modal fade" id="modalVenta" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Reporte Ventas</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form class="report-form" method="post" action="?pagina=reporte" target="_blank">
-        <input type="hidden" name="reportType" value="venta">
-
+      <form
+        class="report-form"
+        method="post"
+        action="?pagina=reporte&accion=venta"
+        target="_blank"
+      >
         <div class="modal-body">
-          <!-- mini‐formulario de filtros -->
           <div class="row g-2 mb-3">
             <div class="col-6">
               <label class="form-label">Fecha Inicio</label>
@@ -328,7 +329,7 @@
                 type="date"
                 name="f_start"
                 class="form-control"
-                max="<?= $hoy ?>"
+                max="<?= date('Y-m-d') ?>"
               >
             </div>
             <div class="col-6">
@@ -337,7 +338,7 @@
                 type="date"
                 name="f_end"
                 class="form-control"
-                max="<?= $hoy ?>"
+                max="<?= date('Y-m-d') ?>"
               >
             </div>
             <div class="col-12">
@@ -352,15 +353,10 @@
               </select>
             </div>
           </div>
-          <!-- /mini‐formulario -->
-
           <p class="text-center">¿Generar listado de ventas?</p>
         </div>
-
         <div class="modal-footer">
-          <button type="submit" name="generar" class="btn btn-danger">
-            GENERAR PDF
-          </button>
+          <button type="submit" class="btn btn-danger">GENERAR PDF</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             Cerrar
           </button>
@@ -369,6 +365,7 @@
     </div>
   </div>
 </div>
+
 
 
 
@@ -377,18 +374,21 @@
 
 <?php $hoy = date('Y-m-d'); ?>
  <!-- Modal Pedido Web -->
+<!-- Modal Pedido Web -->
 <div class="modal fade" id="modalPedidoWeb" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Reporte Pedido Web</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title">Reporte Pedidos Web</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form class="report-form" method="post" action="?pagina=reporte" target="_blank">
-        <input type="hidden" name="reportType" value="pedidoWeb">
-
+      <form
+        class="report-form"
+        method="post"
+        action="?pagina=reporte&accion=pedidoWeb"
+        target="_blank"
+      >
         <div class="modal-body">
-          <!-- mini‐formulario de filtros -->
           <div class="row g-2 mb-3">
             <div class="col-6">
               <label class="form-label">Fecha Inicio</label>
@@ -396,7 +396,7 @@
                 type="date"
                 name="f_start"
                 class="form-control"
-                max="<?= $hoy ?>"
+                max="<?= date('Y-m-d') ?>"
               >
             </div>
             <div class="col-6">
@@ -405,7 +405,7 @@
                 type="date"
                 name="f_end"
                 class="form-control"
-                max="<?= $hoy ?>"
+                max="<?= date('Y-m-d') ?>"
               >
             </div>
             <div class="col-12">
@@ -420,13 +420,10 @@
               </select>
             </div>
           </div>
-          <!-- /mini‐formulario -->
-
           <p class="text-center">¿Generar listado de pedidos web?</p>
         </div>
-
         <div class="modal-footer">
-          <button type="submit" name="generar" class="btn btn-danger">
+          <button type="submit" class="btn btn-danger">
             GENERAR PDF
           </button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -438,7 +435,14 @@
   </div>
 </div>
 
+ 
 
+  <!-- Cargamos Driver.js para Admin (3) y Asesora (2) -->
+  <?php if(in_array($_SESSION['nivel_rol'], [2,3], true)): ?>
+    <link   rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/driver.js@1.0.7/dist/driver.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.7/dist/driver.min.js"></script>
+  <?php endif; ?>
 
   <script src="assets/js/reporte.js"></script>
 </body>
