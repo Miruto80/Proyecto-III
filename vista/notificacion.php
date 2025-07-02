@@ -1,4 +1,3 @@
-<!-- vista/notificacion.php -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -67,12 +66,13 @@
           <h6 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
             Lista de notificaciones
           </h6>
+          <div class="d-flex align-items-center gap-2">
           <?php if ($nivel === 3): ?>
             <form id="vaciar-notificaciones-form"
                   method="post"
                   action="?pagina=notificacion&accion=vaciar"
                   class="d-inline">
-              <button id="vaciar-notificaciones"
+              <button id="vaciar-notificaciones-form"
                       type="submit"
                       class="btn btn-danger btn-sm"
                       title="Vaciar Notificaciones">
@@ -81,7 +81,13 @@
               </button>
             </form>
           <?php endif; ?>
+                        <!-- Al lado derecho del título, dentro de .card-header -->
+              <button type="button" class="btn btn-primary btn-sm" id="btnAyuda">
+                <i class="fas fa-info-circle me-1"></i> Ayuda
+              </button>
         </div>
+      </div>
+        
 
         <div class="card-body p-0">
           <div class="table-responsive">

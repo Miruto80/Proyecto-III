@@ -1,87 +1,128 @@
 <?php
- session_start();
- if (empty($_SESSION["id"])){
-   header("location:?pagina=login");
- } /*  Validacion URL  */
- 
+// controlador/tipousuario.php
+
+session_start();
+if (empty($_SESSION['id'])) {
+    header('Location:?pagina=login');
+    exit;
+}
+
 require_once 'modelo/tipousuario.php';
+$obj = new tipousuario();
 
-$objtipousuario = new Tipousuario();
+// 0) Bitácora de acceso al módulo (GET)
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $bit = [
+        'id_persona' => $_SESSION['id'],
+        'accion'     => 'Acceso a módulo',
+        'descripcion'=> 'Ingreso al módulo Tipo Usuario'
+    ];
+    $obj->registrarBitacora(json_encode($bit));
+}
 
-// Si se desea obtener la lista de tipos de usuario al cargar la página o realizar alguna acción inicial
-$registro = $objtipousuario->consultar(); // Aquí obtenemos todos los tipos de usuario
+// 1) CRUD JSON‐driven
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
 
-if (isset($_POST['registrar'])) {
-    // Si se presiona el botón para registrar un nuevo tipo de usuario
-    if (!empty($_POST['nombre']) && !empty($_POST['nivel'])) {
-        $objtipousuario->set_Nombre($_POST['nombre']);
-        $objtipousuario->set_Nivel($_POST['nivel']);
-        $objtipousuario->set_Estatus(1); // Estatus activo por defecto
-        $result = $objtipousuario->registrar();
+    // —— Registrar nuevo rol ——  
+    if (isset($_POST['registrar'])) {
+        $nombre = trim($_POST['nombre'] ?? '');
+        $nivel  = (int)($_POST['nivel'] ?? 0);
 
-       /* BITACORA */
-        if (isset($result['respuesta']) && $result['respuesta'] == 1) {
-            $id_persona = $_SESSION["id"]; // ID de la persona que realiza la acción
-            $accion = 'Registrar de tipo usuario';
-            $descripcion = 'Se registró de tipo usuario: ' . $_POST['nombre'] . ' ' . $_POST['nivel'];
-            $objtipousuario->registrarBitacora($id_persona, $accion, $descripcion);
-        } /*FIN  BITACORA */
+        $payload = [
+            'operacion'=>'registrar',
+            'datos'    => ['nombre'=>$nombre,'nivel'=>$nivel]
+        ];
+        $res = $obj->procesarTipousuario(json_encode($payload));
 
-        echo json_encode($result);
-    }
-} elseif (isset($_POST['modificar'])) {
-    // Si se presiona el botón para modificar un tipo de usuario
-    if (!empty($_POST['id_tipo']) && !empty($_POST['nombre']) && !empty($_POST['nivel'])) {
-        $objtipousuario->set_Id_tipo($_POST['id_tipo']);
-        $objtipousuario->set_Nombre($_POST['nombre']);
-        $objtipousuario->set_Nivel($_POST['nivel']);
-        $objtipousuario->set_Estatus($_POST['estatus']);
-        $result = $objtipousuario->modificar();
-
-          if (isset($result['respuesta']) && $result['respuesta'] == 1) {
-            $id_persona = $_SESSION["id"]; // ID de la persona que realiza la acción
-            $accion = 'Modificación de tipo usuario';
-            $descripcion = 'Se Modifico de tipo usuario: ' . $_POST['nombre'] . ' ' . $_POST['nivel'];
-            $objtipousuario->registrarBitacora($id_persona, $accion, $descripcion);
-        } /*FIN  BITACORA */
-
-        echo json_encode($result);
-    }
-} elseif (isset($_POST['eliminar'])) {
-    // Si se presiona el botón para eliminar un tipo de usuario
-    if (!empty($_POST['id_tipo'])) {
-
-        if($_POST['id_tipo'] == 1){
-             $res = array('respuesta' => 0, 'accion' => 'eliminar');
-             echo json_encode($res);
-             exit;
+        if ($res['respuesta'] == 1) {
+            $bit = [
+                'id_persona' => $_SESSION['id'],
+                'accion'     => 'Registrar rol',
+                'descripcion'=> sprintf(
+                    'Registró rol "%s" con nivel %d',
+                    $nombre, $nivel
+                )
+            ];
+            $obj->registrarBitacora(json_encode($bit));
         }
 
-        $objtipousuario->set_Id_tipo($_POST['id_tipo']);
-        $result = $objtipousuario->eliminar();
-
-        if (isset($result['respuesta']) && $result['respuesta'] == 1) {
-            $id_persona = $_SESSION["id"]; // ID de la persona que realiza la acción
-            $accion = 'Eliminación de tipo usuario';
-            $descripcion = 'Se eliminó de tipo usuario: ' .$_POST['id_tipo'];
-            $objtipousuario->registrarBitacora($id_persona, $accion, $descripcion);
-        } /*FIN  BITACORA */
-
-        echo json_encode($result);
+        echo json_encode($res);
+        exit;
     }
-} else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-     $id_persona = $_SESSION["id"];
-    $accion = 'Acceso a Módulo';
-    $descripcion = 'módulo de Tipo Usuario';
-    $objtipousuario->registrarBitacora($id_persona, $accion, $descripcion);
-    require_once 'vista/tipousuario.php';
 
-} else if ($_SESSION["nivel_rol"] == 1) {
+    // —— Modificar rol ——  
+    if (isset($_POST['modificar'])) {
+        $idTipo = (int)($_POST['id_tipo'] ?? 0);
+        $nombre = trim($_POST['nombre'] ?? '');
+        $nivel  = (int)($_POST['nivel'] ?? 0);
+        $estatus= (int)($_POST['estatus'] ?? 1);
 
-    header("Location: ?pagina=catalogo");
-    exit();
+        $payload = [
+            'operacion'=>'actualizar',
+            'datos'=>[
+                'id_tipo'=>$idTipo,
+                'nombre' =>$nombre,
+                'nivel'  =>$nivel,
+                'estatus'=>$estatus
+            ]
+        ];
+        $res = $obj->procesarTipousuario(json_encode($payload));
 
-} else {
-    require_once 'vista/seguridad/privilegio.php';
+        if ($res['respuesta'] == 1) {
+            $estatusText = $estatus == 1 ? 'Activo' : 'Inactivo';
+            $bit = [
+                'id_persona' => $_SESSION['id'],
+                'accion'     => 'Modificar rol',
+                'descripcion'=> sprintf(
+                    'Modificó rol "%s": nivel %d, estatus %s',
+                    $nombre, $nivel, $estatusText
+                )
+            ];
+            $obj->registrarBitacora(json_encode($bit));
+        }
+
+        echo json_encode($res);
+        exit;
+    }
+
+    // —— Eliminar (desactivar) rol ——  
+    if (isset($_POST['eliminar'])) {
+        $idTipo = (int)($_POST['id_tipo'] ?? 0);
+
+        // Obtiene nombre del rol
+        $todos   = $obj->consultar();
+        $rolNom  = 'ID '.$idTipo;
+        foreach ($todos as $r) {
+            if ((int)$r['id_rol'] === $idTipo) {
+                $rolNom = $r['nombre'];
+                break;
+            }
+        }
+
+        $payload = [
+            'operacion'=>'eliminar',
+            'datos'=>['id_tipo'=>$idTipo]
+        ];
+        $res = $obj->procesarTipousuario(json_encode($payload));
+
+        if ($res['respuesta'] == 1) {
+            $bit = [
+                'id_persona' => $_SESSION['id'],
+                'accion'     => 'Eliminar rol',
+                'descripcion'=> sprintf(
+                    'Eliminó rol "%s"',
+                    $rolNom
+                )
+            ];
+            $obj->registrarBitacora(json_encode($bit));
+        }
+
+        echo json_encode($res);
+        exit;
+    }
 }
-?>
+
+// 2) Vista normal
+$registro = $obj->consultar();
+require_once 'vista/tipousuario.php';

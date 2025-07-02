@@ -96,8 +96,4 @@ $productos_lista   = (new Producto())->consultar();
 $proveedores_lista = (new Proveedor())->consultar();
 $categorias_lista  = (new Categoria())->consultar();
 
-if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
-    header("Location: ?pagina=catalogo");
-    exit();
-}
 require_once 'vista/reporte.php';

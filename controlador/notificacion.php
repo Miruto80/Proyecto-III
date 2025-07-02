@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 if (empty($_SESSION['id'])) {
     header('Location:?pagina=login');
@@ -8,16 +9,14 @@ if (empty($_SESSION['id'])) {
 $nivel = (int)($_SESSION['nivel_rol'] ?? 0);
 
 require_once 'modelo/notificacion.php';
-$N = new Notificacion();
+require_once 'modelo/tipousuario.php';  // para bitácora
+$N    = new Notificacion();
+$Bit  = new tipousuario();
 
 // 1) AJAX GET: conteo de notificaciones nuevas para el rol activo
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['accion'] ?? '') === 'count') {
     header('Content-Type: application/json');
-
-    // regenerar pendientes
     $N->generarDePedidos();
-
-    // contar según rol
     if ($nivel === 3) {
         $count = $N->contarNuevas();
     } elseif ($nivel === 2) {
@@ -25,25 +24,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['accion'] ?? '') === 'count')
     } else {
         $count = 0;
     }
-
     echo json_encode(['count' => $count]);
     exit;
 }
 
-// 2) POST: acciones sobre notificaciones → procesar + redirect
+// 2) POST: acciones sobre notificaciones → procesar + bitácora + redirect
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
     $accion = $_GET['accion'];
     $id     = isset($_POST['id']) ? (int) $_POST['id'] : 0;
     $msg    = '';
-    
+
+    // Antes de actualizar, obtengo datos de la notificación
+    if (in_array($accion, ['marcarLeida','entregar','eliminar'])) {
+        // extraigo id_pedido y mensaje para descripción
+        $row = (new Conexion())->getConex1()
+               ->query("SELECT id_pedido, mensaje 
+                        FROM notificaciones 
+                        WHERE id_notificaciones = {$id}")
+               ->fetch(PDO::FETCH_ASSOC);
+        $pedido = $row['id_pedido'] ?? '';
+        $texto  = $row['mensaje']   ?? '';
+    }
+
     switch ($accion) {
         case 'vaciar':
             if ($nivel === 3) {
-                $res = $N->vaciarEntregadas();
+                $res     = $N->vaciarEntregadas();
                 $deleted = $res['deleted'] ?? 0;
-                $msg = $deleted
-                     ? "Se eliminaron {$deleted} notificaciones entregadas."
-                     : "No había notificaciones entregadas para vaciar.";
+                $msg     = $deleted
+                         ? "Se vaciaron todas las notificaciones entregadas."
+                         : "No había notificaciones entregadas.";
+                // bitácora
+                $Bit->registrarBitacora(json_encode([
+                    'id_persona' => $_SESSION['id'],
+                    'accion'     => 'Vaciar notificaciones',
+                    'descripcion'=> "Se vaciaron {$deleted} notificaciones entregadas"
+                ]));
             } else {
                 $msg = 'No autorizado.';
             }
@@ -51,10 +67,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
 
         case 'marcarLeida':
             if ($nivel === 3 && $id > 0) {
-                $ok = $N->marcarLeida($id);
+                $res = $N->marcarLeida($id);
+                $ok  = $res['ok'];
                 $msg = $ok
                      ? 'Notificación marcada como leída.'
                      : 'No se pudo marcar como leída.';
+                if ($ok) {
+                    $Bit->registrarBitacora(json_encode([
+                        'id_persona' => $_SESSION['id'],
+                        'accion'     => 'Leer notificación',
+                        'descripcion'=> "Se marcó como leída la notificación “{$texto}” del pedido #{$pedido}"
+                    ]));
+                }
             } else {
                 $msg = 'No autorizado.';
             }
@@ -62,10 +86,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
 
         case 'entregar':
             if ($nivel === 2 && $id > 0) {
-                $ok = $N->entregar($id);
+                $res = $N->entregar($id);
+                $ok  = $res['ok'];
                 $msg = $ok
                      ? 'Notificación marcada como entregada.'
                      : 'No se pudo marcar como entregada.';
+                if ($ok) {
+                    $Bit->registrarBitacora(json_encode([
+                        'id_persona' => $_SESSION['id'],
+                        'accion'     => 'Entregar notificación',
+                        'descripcion'=> "Se entregó la notificación “{$texto}” del pedido #{$pedido}"
+                    ]));
+                }
             } else {
                 $msg = 'No autorizado.';
             }
@@ -73,25 +105,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
 
         case 'eliminar':
             if ($nivel === 3 && $id > 0) {
-                $ok = $N->eliminar($id);
+                $res = $N->eliminar($id);
+                $ok  = $res['ok'];
                 $msg = $ok
                      ? 'Notificación eliminada.'
-                     : 'No se pudo eliminar la notificación.';
+                     : $res['error'] ?? 'No se pudo eliminar.';
+                if ($ok) {
+                    $Bit->registrarBitacora(json_encode([
+                        'id_persona' => $_SESSION['id'],
+                        'accion'     => 'Eliminar notificación',
+                        'descripcion'=> "Se eliminó la notificación “{$texto}” del pedido #{$pedido}"
+                    ]));
+                }
             } else {
                 $msg = 'No autorizado.';
             }
             break;
 
         default:
-            // acción desconocida
             header('HTTP/1.1 400 Bad Request');
             exit;
     }
 
-    // guardar mensaje en sesión
     $_SESSION['flash_notif'] = $msg;
-
-    // redirigir a la lista
     header('Location:?pagina=notificacion');
     exit;
 }
@@ -110,7 +146,7 @@ if ($nivel === 2) {
     $notificaciones = $all;
 }
 
-// conteo de nuevas (para mostrar badge en nav si lo usas en PHP)
+// conteo de nuevas (badge nav)
 if ($nivel === 3) {
     $newCount = $N->contarNuevas();
 } elseif ($nivel === 2) {
@@ -120,8 +156,4 @@ if ($nivel === 3) {
 }
 
 // 4) Cargar vista
-if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
-    header("Location: ?pagina=catalogo");
-    exit();
-}
 require_once 'vista/notificacion.php';

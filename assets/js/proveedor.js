@@ -230,4 +230,61 @@ function validarkeyup(er, etiqueta, etiquetamensaje, mensaje) {
         return 0;
     }
 }
+
+// al final de assets/js/proveedor.js
+
+// Inicializar Driver.js versión 1 (igual a Producto)
+$('#btnAyuda').on('click', function() {
+  const DriverClass = window.driver.js.driver;
+  const driverObj = new DriverClass({
+    nextBtnText: 'Siguiente',
+    prevBtnText: 'Anterior',
+    doneBtnText: 'Listo',
+    popoverClass: 'driverjs-theme',
+    closeBtn: false,
+    steps: [
+      {
+        element: '.table-color',
+        popover: {
+          title: 'Tabla de Proveedores',
+          description: 'Aquí ves la lista de proveedores activos.',
+          side: 'top'
+        }
+      },
+      {
+        element: '#btnAbrirRegistrar',
+        popover: {
+          title: 'Registrar Proveedor',
+          description: 'Abre el modal para registrar un nuevo proveedor.',
+          side: 'bottom'
+        }
+      },
+      {
+        element: '.modificar',
+        popover: {
+          title: 'Editar Proveedor',
+          description: 'Haz clic aquí para modificar los datos de un proveedor.',
+          side: 'left'
+        }
+      },
+      {
+        element: '.eliminar',
+        popover: {
+          title: 'Eliminar Proveedor',
+          description: 'Elimina un proveedor de la lista.',
+          side: 'left'
+        }
+      },
+      {
+        popover: {
+          title: '¡Eso es todo!',
+        description: 'Ahora ya sabes como funciona este modulo.'
+        }
+      }
+    ]
+  });
+
+  driverObj.drive();
+});
+
 });

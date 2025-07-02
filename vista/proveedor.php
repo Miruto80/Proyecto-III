@@ -42,12 +42,10 @@
                 <i class="fas fa-file-medical"></i> Registrar
               </button>
 
-              <form id="formGenerarPDF" method="POST" target="_blank">
-                <input type="hidden" name="nombre" value="Listado de proveedores">
-                <button type="submit" name="generar" class="btn btn-danger">
-                  <i class="fas fa-file-pdf"></i> Generar PDF
-                </button>
-              </form>
+              <button type="button" class="btn btn-info" id="btnAyuda">
+                <i class="fas fa-info-circle"></i> Ayuda
+              </button>
+              
             </div>
           </div>
     
@@ -171,10 +169,10 @@
   </div>
 </div>
 
+<?php include 'complementos/footer.php'; ?>
 
-
-    <?php include 'complementos/footer.php'; ?>
-    <script src="assets/js/proveedor.js"></script>
-  </main>
+<script src="assets/js/proveedor.js"></script>
 </body>
 </html>
+
+
