@@ -11,10 +11,10 @@ if (empty($_SESSION["id"])){
 
     $pedido = new Catalogopedido();
     $id_persona = $_SESSION["id"]; 
-    $pedidos = $pedido->consultarPedidosCompletos($id_persona);
+    $pedidos = $pedido->consultarPedidosCompletosCatalogo($id_persona);
 
     foreach ($pedidos as &$p) {
-        $p['detalles'] = $pedido->consultarDetallesPedido($p['id_pedido']);
+        $p['detalles'] = $pedido->consultarDetallesPedidoCatalogo($p['id_pedido']);
     }
 
     require_once 'vista/tienda/catalogo_pedido.php';

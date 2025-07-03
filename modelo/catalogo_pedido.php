@@ -2,17 +2,16 @@
 require_once 'conexion.php';
 
 class Catalogopedido extends Conexion{
-    
+  
    
-
-
     public function __construct() {
         parent::__construct(); // Llama al constructor de la clase padre
-      
+
+   
     }
     
     
-    public function consultarPedidosCompletos($id_persona) {
+    public function consultarPedidosCompletosCatalogo($id_persona) {
         $sql = "SELECT 
         p.id_pedido,
         p.tipo,
@@ -36,7 +35,7 @@ class Catalogopedido extends Conexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
         
-    public function consultarDetallesPedido($id_pedido) {
+    public function consultarDetallesPedidoCatalogo($id_pedido) {
         $sql = "SELECT 
                     pd.id_producto,
                     pr.nombre AS nombre_producto,
