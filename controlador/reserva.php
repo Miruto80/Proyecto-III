@@ -10,7 +10,7 @@ $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
           isset($_POST['registrar']) || isset($_POST['modificar']) || 
           isset($_POST['eliminar']) || isset($_POST['consultar_reserva']) ||
           isset($_POST['consultar_detalle']) || isset($_POST['consultar_precio']) ||
-          isset($_POST['eliminar_detalle']);
+          isset($_POST['eliminar_detalle']) || isset($_POST['cambiar_estado']);
 
 if ($is_ajax) {
     // Para solicitudes AJAX, configurar las cabeceras para JSON
@@ -49,6 +49,14 @@ try {
         exit;
     }
     
+    // Manejar cambio de estado de reserva
+    if (isset($_POST['cambiar_estado']) && !empty($_POST['id_reserva']) && isset($_POST['nuevo_estatus'])) {
+        $objreserva->set_Id_reserva($_POST['id_reserva']);
+        $result = $objreserva->cambiarEstado($_POST['nuevo_estatus']);
+        echo json_encode($result);
+        exit;
+    }
+    
     // Manejar operaciones de reserva
     if(isset($_POST['registrar'])) {
         if(!empty($_POST['fecha_apartado']) && !empty($_POST['id_persona'])) { 
@@ -56,6 +64,7 @@ try {
             // Datos de encabezado de la reserva
             $objreserva->set_Fecha_apartado($_POST['fecha_apartado']);
             $objreserva->set_Id_persona($_POST['id_persona']);
+            $objreserva->set_Estatus(1); // Activo por defecto
             
             // Datos de detalle de reserva
             $productos = isset($_POST['productos']) ? $_POST['productos'] : [];

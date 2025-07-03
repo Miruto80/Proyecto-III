@@ -3,6 +3,74 @@
 <head>
   <?php include 'complementos/head.php'; ?> 
   <title> Reservas | LoveMakeup </title> 
+  
+  <style>
+    .driver-popover.driverjs-theme {
+      color: #000;
+    }
+
+    .driver-popover.driverjs-theme .driver-popover-title {
+      font-size: 20px;
+    }
+
+    .driver-popover.driverjs-theme .driver-popover-title,
+    .driver-popover.driverjs-theme .driver-popover-description,
+    .driver-popover.driverjs-theme .driver-popover-progress-text {
+      color: #000;
+    }
+
+    .driver-popover.driverjs-theme button {
+      flex: 1;
+      text-align: center;
+      background-color: #000;
+      color: #ffffff;
+      border: 2px solid #000;
+      text-shadow: none;
+      font-size: 14px;
+      padding: 5px 8px;
+      border-radius: 6px;
+    }
+
+    .driver-popover.driverjs-theme button:hover {
+      background-color: #000;
+      color: #ffffff;
+    }
+
+    .driver-popover.driverjs-theme .driver-popover-navigation-btns {
+      justify-content: space-between;
+      gap: 3px;
+    }
+
+    .driver-popover.driverjs-theme .driver-popover-close-btn {
+      color: #fff;
+      width: 20px; /* Reducir el tamaño del botón */
+      height: 20px;
+      font-size: 16px;
+      transition: all 0.5 ease-in-out;
+    }
+
+    .driver-popover.driverjs-theme .driver-popover-close-btn:hover {
+     background-color: #fff;
+     color: #000;
+     border: #000;
+    }
+
+    .driver-popover.driverjs-theme .driver-popover-arrow-side-left.driver-popover-arrow {
+      border-left-color: #fde047;
+    }
+
+    .driver-popover.driverjs-theme .driver-popover-arrow-side-right.driver-popover-arrow {
+      border-right-color: #fde047;
+    }
+
+    .driver-popover.driverjs-theme .driver-popover-arrow-side-top.driver-popover-arrow {
+      border-top-color: #fde047;
+    }
+
+    .driver-popover.driverjs-theme .driver-popover-arrow-side-bottom.driver-popover-arrow {
+      border-bottom-color: #fde047;
+    }
+  </style>
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
@@ -36,10 +104,18 @@
                 <h4 class="mb-0">
                   <i class="fa-solid fa-calendar-check mr-2" style="color: #f6c5b4;"></i> Reservas
                 </h4>
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
-                  <span class="icon text-white"><i class="fas fa-file-medical"></i></span>
-                  <span class="text-white">Registrar</span>
-                </button>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
+                    <span class="icon text-white"><i class="fas fa-file-medical"></i></span>
+                    <span class="text-white">Registrar</span>
+                  </button>
+                  <button type="button" class="btn btn-primary" id="btnAyuda">
+                    <span class="icon text-white">
+                      <i class="fas fa-info-circle"></i>
+                    </span>
+                    <span class="text-white">Ayuda</span>
+                  </button>
+                </div>
               </div>
 
               <div class="table-responsive">
@@ -49,6 +125,7 @@
                       <th class="text-white">ID</th>
                       <th class="text-white">FECHA RESERVA</th>
                       <th class="text-white">USUARIO</th>
+                      <th class="text-white">ESTADO</th>
                       <th class="text-white">ACCIONES</th>
                     </tr>
                   </thead>
@@ -61,18 +138,40 @@
                       <td><?php echo date('d/m/Y', strtotime($dato['fecha_apartado'])); ?></td>
                       <td><?php echo $dato['nombre'] . ' ' . $dato['apellido']; ?></td>
                       <td>
+                        <?php 
+                        $estado_texto = '';
+                        $estado_class = '';
+                        switch($dato['estatus']) {
+                            case 1:
+                                $estado_texto = 'Activo';
+                                $estado_class = 'badge bg-success';
+                                break;
+                            case 0:
+                                $estado_texto = 'Inactivo';
+                                $estado_class = 'badge bg-secondary';
+                                break;
+                            case 2:
+                                $estado_texto = 'Entregado';
+                                $estado_class = 'badge bg-info';
+                                break;
+                            default:
+                                $estado_texto = 'Desconocido';
+                                $estado_class = 'badge bg-warning';
+                        }
+                        ?>
+                        <span class="<?php echo $estado_class; ?>"><?php echo $estado_texto; ?></span>
+                      </td>
+                      <td>
                         <button type="button" class="btn btn-info btn-sm ver-detalle" 
                                 onclick="verDetalles(<?php echo $dato['id_reserva']; ?>)"> 
                           <i class="fas fa-eye" title="Ver detalles"> </i> 
                         </button>
-                        <button type="button" class="btn btn-primary btn-sm modificar" 
-                                onclick="abrirModalModificar(<?php echo $dato['id_reserva']; ?>)"> 
-                          <i class="fas fa-pencil-alt" title="Editar"> </i> 
+                        <?php if($dato['estatus'] == 1): ?>
+                        <button type="button" class="btn btn-primary btn-sm editar-estado" 
+                                onclick="abrirModalEditarEstado(<?php echo $dato['id_reserva']; ?>)" title="Editar estado">
+                          <i class="fas fa-edit"></i> Editar
                         </button>
-                        <button type="button" class="btn btn-danger btn-sm eliminar" 
-                                onclick="eliminarReserva(<?php echo $dato['id_reserva']; ?>)">
-                          <i class="fas fa-trash-alt" title="Eliminar"> </i>
-                        </button>
+                        <?php endif; ?>
                       </td>
                     </tr>
                     <?php endforeach; ?>
@@ -177,53 +276,7 @@
       </div>
     </div>
 
-    <!-- Modal para modificar -->
-    <div class="modal fade" id="modificar" tabindex="-1" aria-labelledby="modificarLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header header-color">
-            <h5 class="modal-title">Modificar Reserva</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="formModificar" autocomplete="off">
-              <input type="hidden" name="id_reserva" id="id_reserva_modificar">
-              <div class="row">
-                <div class="col-md-6">
-                  <label>Fecha de reserva</label>
-                  <input type="date" class="form-control" name="fecha_apartado" id="fecha_apartado_modificar" required>
-                </div>
-                <div class="col-md-6">
-                  <label>Usuario</label>
-                  <select class="form-control" name="id_persona" id="id_persona_modificar" required>
-                    <option value="">Seleccione un usuario</option>
-                    <?php foreach ($personas as $persona): ?>
-                      <option value="<?php echo $persona['id_persona']; ?>">
-                        <?php echo $persona['nombre'] . ' ' . $persona['apellido']; ?>
-                      </option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-md-6">
-                  <label>Estatus</label>
-                  <select class="form-control" name="estatus" id="estatus_modificar" required>
-                    <option value="1">Activo</option>
-                    <option value="0">Inactivo</option>
-                  </select>
-                </div>
-              </div>
-              <br>
-              <div class="text-center">
-                <button type="button" class="btn btn-primary" id="btnModificar">Modificar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+
 
     <!-- Modal para ver detalles -->
     <div class="modal fade" id="verDetalles" tabindex="-1" aria-labelledby="verDetallesLabel" aria-hidden="true">
@@ -274,6 +327,64 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para editar estado -->
+    <div class="modal fade" id="editarEstado" tabindex="-1" aria-labelledby="editarEstadoLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header header-color">
+            <h5 class="modal-title">Editar Estado de Reserva</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+                    <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-12">
+                <strong>ID Reserva:</strong> <span id="info_id_reserva"></span>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-12">
+                <strong>Fecha de reserva:</strong> <span id="info_fecha_reserva"></span>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-12">
+                <strong>Usuario:</strong> <span id="info_cliente_reserva"></span>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-12">
+                <strong>Estado Actual:</strong> <span id="info_estado_actual"></span>
+              </div>
+            </div>
+            <hr>
+            <div class="row mb-3">
+              <div class="col-12">
+                <label for="nuevo_estado" class="form-label"><strong>Actualizar Estado:</strong></label>
+                <select class="form-control" name="nuevo_estado" id="nuevo_estado" required>
+                  <option value="">Seleccione un estado</option>
+                  <option value="1">Activo</option>
+                  <option value="0">Inactivo</option>
+                  <option value="2">Entregado</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="alert alert-warning" style="font-size: 0.85em; padding: 0.4rem;">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <strong>Nota:</strong> Una vez que una reserva se marque como "Inactiva" o "Entregada", no podrá volver a ser modificada.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="btnGuardarEstado">Guardar Cambios</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
           </div>
         </div>
       </div>

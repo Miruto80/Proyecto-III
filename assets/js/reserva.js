@@ -11,15 +11,124 @@ $(document).ready(function() {
         agregarFilaProducto();
     });
 
-    // Botón para registrar
+        // Botón para registrar
     $('#registrar').click(function() {
         registrarReserva();
     });
 
-    // Botón para modificar
-    $('#btnModificar').click(function() {
-        modificarReserva();
+    // Botón para guardar cambios de estado
+    $('#btnGuardarEstado').click(function() {
+        guardarCambioEstado();
     });
+    
+    // Función de prueba para verificar que el modal existe
+    console.log('Modal editarEstado existe:', $('#editarEstado').length > 0);
+    
+    // Evento para el botón de ayuda
+    const btnAyuda = document.getElementById('btnAyuda');
+    if (btnAyuda) {
+        btnAyuda.addEventListener('click', function() {
+            // Verificar que Driver.js esté disponible
+            if (typeof window.driver !== 'undefined' && window.driver.js && window.driver.js.driver) {
+                const driver = window.driver.js.driver;
+                const driverObj = new driver({
+                nextBtnText: 'Siguiente',
+                prevBtnText: 'Anterior',
+                doneBtnText: 'Listo',
+                popoverClass: 'driverjs-theme',
+                closeBtn: true,
+                steps: [
+                    {
+                        element: '.table-color th:nth-child(1)',
+                        popover: {
+                            title: 'ID',
+                            description: 'Identificador único de la reserva en el sistema.',
+                            side: "bottom"
+                        }
+                    },
+                    {
+                        element: '.table-color th:nth-child(2)',
+                        popover: {
+                            title: 'Fecha Reserva',
+                            description: 'Fecha en la que se realizó la reserva de productos.',
+                            side: "bottom"
+                        }
+                    },
+                    {
+                        element: '.table-color th:nth-child(3)',
+                        popover: {
+                            title: 'Usuario',
+                            description: 'Nombre del cliente que realizó la reserva.',
+                            side: "bottom"
+                        }
+                    },
+                    {
+                        element: '.table-color th:nth-child(4)',
+                        popover: {
+                            title: 'Estado',
+                            description: 'Estado actual de la reserva: Activo, Inactivo o Entregado.',
+                            side: "bottom"
+                        }
+                    },
+                    {
+                        element: '.table-color th:nth-child(5)',
+                        popover: {
+                            title: 'Acciones',
+                            description: 'Botones para ver detalles y editar el estado de la reserva.',
+                            side: "bottom"
+                        }
+                    },
+                    { 
+                        element: '#btnAyuda', 
+                        popover: { 
+                            title: 'Botón de ayuda', 
+                            description: 'Haz clic aquí para ver esta guía interactiva del módulo de reservas.', 
+                            side: "bottom", 
+                            align: 'start' 
+                        }
+                    },
+                    { 
+                        element: '.btn-success[data-bs-target="#registro"]', 
+                        popover: { 
+                            title: 'Registrar reserva', 
+                            description: 'Este botón abre el formulario para registrar una nueva reserva de productos.', 
+                            side: "bottom", 
+                            align: 'start' 
+                        }
+                    },
+                    { 
+                        element: '.btn-info', 
+                        popover: { 
+                            title: 'Ver detalles', 
+                            description: 'Haz clic aquí para ver los detalles completos de una reserva específica.', 
+                            side: "left", 
+                            align: 'start' 
+                        }
+                    },
+                    { 
+                        element: '.btn-primary.editar-estado', 
+                        popover: { 
+                            title: 'Editar estado', 
+                            description: 'Permite cambiar el estado de la reserva (solo disponible para reservas activas).', 
+                            side: "left", 
+                            align: 'start' 
+                        }
+                    },
+                    { 
+                        popover: { 
+                            title: 'Eso es todo', 
+                            description: 'Este es el fin de la guía del módulo de reservas. ¡Gracias por usar el sistema!' 
+                        } 
+                    }
+                ]
+            });
+            driverObj.drive();
+            } else {
+                console.error('Driver.js no está disponible');
+                alert('La funcionalidad de ayuda no está disponible en este momento.');
+            }
+        });
+    }
     
 });
 
@@ -190,93 +299,146 @@ function registrarReserva() {
     });
 }
 
-// Función para abrir modal de modificación
-function abrirModalModificar(idReserva) {
-    // Consultar datos de la reserva
-    $.ajax({
-        url: '?pagina=reserva',
-        type: 'POST',
-        data: {
-            consultar_reserva: true,
-            id_reserva: idReserva
-        },
-        dataType: 'json',
-        success: function(response) {
-            if (response) {
-                $('#id_reserva_modificar').val(response.id_reserva);
-                $('#fecha_apartado_modificar').val(response.fecha_apartado);
-                $('#id_persona_modificar').val(response.id_persona);
-                $('#estatus_modificar').val(response.estatus);
-                
-                // Mostrar modal
-                $('#modificar').modal('show');
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'No se encontró la reserva'
-                });
-            }
-        },
-        error: function() {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Error al consultar la reserva'
-            });
-        }
-    });
-}
 
-// Función para modificar una reserva
-function modificarReserva() {
-    const formData = $('#formModificar').serialize();
+
+// Función para abrir modal de edición de estado
+function abrirModalEditarEstado(idReserva) {
+    console.log('Abriendo modal para reserva:', idReserva);
     
-    $.ajax({
-        url: '?pagina=reserva',
-        type: 'POST',
-        data: formData + '&modificar=true',
-        dataType: 'json',
-        success: function(response) {
-            if (response.respuesta === 1) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Éxito',
-                    text: 'Reserva modificada correctamente',
-                    confirmButtonText: 'Ok'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        location.reload();
-                    }
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: response.mensaje || 'No se pudo modificar la reserva'
-                });
+    // Primero probar si el modal se abre sin datos
+    try {
+        const modalElement = document.getElementById('editarEstado');
+        if (modalElement) {
+            console.log('Modal encontrado, intentando abrir...');
+            
+            // Intentar con jQuery primero
+            try {
+                $('#editarEstado').modal('show');
+                console.log('Modal abierto con jQuery');
+            } catch (jqError) {
+                console.log('jQuery falló, intentando con Bootstrap 5...');
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+                console.log('Modal abierto con Bootstrap 5');
             }
-        },
-        error: function() {
+            
+            // Llenar datos básicos
+            $('#info_id_reserva').text(idReserva);
+            
+            // Consultar datos de la reserva después de abrir el modal
+            $.ajax({
+                url: '?pagina=reserva',
+                type: 'POST',
+                data: {
+                    consultar_reserva: true,
+                    id_reserva: idReserva
+                },
+                dataType: 'json',
+                success: function(response) {
+                    console.log('Respuesta del servidor:', response);
+                    
+                    if (response) {
+                        // Llenar información de la reserva
+                        $('#info_fecha_reserva').text(formatearFecha(response.fecha_apartado));
+                        $('#info_cliente_reserva').text(response.nombre_completo);
+                        
+                        // Mostrar estado actual
+                        let estadoTexto = '';
+                        switch(response.estatus) {
+                            case 1:
+                                estadoTexto = 'Activo';
+                                break;
+                            case 0:
+                                estadoTexto = 'Inactivo';
+                                break;
+                            case 2:
+                                estadoTexto = 'Entregado';
+                                break;
+                            default:
+                                estadoTexto = 'Desconocido';
+                        }
+                        $('#info_estado_actual').text(estadoTexto);
+                        
+                        // Configurar el select para que muestre "Seleccione un estado" por defecto
+                        $('#nuevo_estado').val('');
+                        
+                        // Deshabilitar opciones si ya está inactiva o entregada
+                        if (response.estatus == 0 || response.estatus == 2) {
+                            $('#nuevo_estado').prop('disabled', true);
+                            $('#btnGuardarEstado').prop('disabled', true);
+                        } else {
+                            $('#nuevo_estado').prop('disabled', false);
+                            $('#btnGuardarEstado').prop('disabled', false);
+                        }
+                        
+                        console.log('Datos cargados correctamente');
+                    } else {
+                        console.log('No se encontraron datos de la reserva');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error en AJAX:', xhr.responseText);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error al consultar la reserva: ' + error
+                    });
+                }
+            });
+        } else {
+            console.error('Modal no encontrado');
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Error al procesar la solicitud'
+                text: 'Modal no encontrado'
             });
         }
-    });
+    } catch (error) {
+        console.error('Error al abrir modal:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al abrir el modal: ' + error.message
+        });
+    }
 }
 
-// Función para eliminar una reserva
-function eliminarReserva(idReserva) {
+// Función para guardar el cambio de estado
+function guardarCambioEstado() {
+    const nuevoEstado = $('#nuevo_estado').val();
+    const idReserva = $('#info_id_reserva').text();
+    
+    if (!nuevoEstado) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atención',
+            text: 'Debe seleccionar un nuevo estado'
+        });
+        return;
+    }
+    
+    let confirmacion = '';
+    let icono = '';
+    
+    if (nuevoEstado == 0) {
+        confirmacion = '¿Está seguro de que desea marcar esta reserva como inactiva?';
+        icono = 'warning';
+    } else if (nuevoEstado == 2) {
+        confirmacion = '¿Está seguro de que desea marcar esta reserva como entregada?';
+        icono = 'question';
+    } else {
+        confirmacion = '¿Está seguro de que desea cambiar el estado de esta reserva?';
+        icono = 'info';
+    }
+    
     Swal.fire({
-        title: '¿Está seguro?',
-        text: "Esta acción eliminará la reserva y todos sus detalles",
-        icon: 'warning',
+        title: 'Confirmar cambio de estado',
+        text: confirmacion,
+        icon: icono,
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, eliminar',
+        confirmButtonText: 'Sí, cambiar',
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
@@ -284,19 +446,21 @@ function eliminarReserva(idReserva) {
                 url: '?pagina=reserva',
                 type: 'POST',
                 data: {
-                    eliminar: true,
-                    id_reserva: idReserva
+                    cambiar_estado: true,
+                    id_reserva: idReserva,
+                    nuevo_estatus: nuevoEstado
                 },
                 dataType: 'json',
                 success: function(response) {
                     if (response.respuesta === 1) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Eliminado',
-                            text: 'La reserva ha sido eliminada correctamente',
+                            title: 'Estado cambiado',
+                            text: response.mensaje,
                             confirmButtonText: 'Ok'
                         }).then((result) => {
                             if (result.isConfirmed) {
+                                $('#editarEstado').modal('hide');
                                 location.reload();
                             }
                         });
@@ -304,7 +468,7 @@ function eliminarReserva(idReserva) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: response.mensaje || 'No se pudo eliminar la reserva'
+                            text: response.mensaje || 'No se pudo cambiar el estado de la reserva'
                         });
                     }
                 },
@@ -319,6 +483,8 @@ function eliminarReserva(idReserva) {
         }
     });
 }
+
+
 
 // Función para ver detalles de una reserva
 function verDetalles(idReserva) {
@@ -337,7 +503,23 @@ function verDetalles(idReserva) {
                 $('#detalle_id_reserva').text(response.id_reserva);
                 $('#detalle_fecha_apartado').text(formatearFecha(response.fecha_apartado));
                 $('#detalle_persona').text(response.nombre_completo);
-                $('#detalle_estatus').text(response.estatus == 1 ? 'Activo' : 'Inactivo');
+                
+                // Mostrar estado
+                let estadoTexto = '';
+                switch(response.estatus) {
+                    case 1:
+                        estadoTexto = 'Activo';
+                        break;
+                    case 0:
+                        estadoTexto = 'Inactivo';
+                        break;
+                    case 2:
+                        estadoTexto = 'Entregado';
+                        break;
+                    default:
+                        estadoTexto = 'Desconocido';
+                }
+                $('#detalle_estatus').text(estadoTexto);
                 
                 // Consultar detalles de la reserva
                 consultarDetallesReserva(idReserva);
