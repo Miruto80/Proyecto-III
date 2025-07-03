@@ -62,14 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     exit;
 } else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-        $bitacora = [
+       /* $bitacora = [
             'id_persona' => $_SESSION["id"],
             'accion' => 'Acceso a Módulo',
             'descripcion' => 'módulo de Metodo Pago'
         ];
-        $objMetodoPago->registrarBitacora(json_encode($bitacora));
-        // Para GET o acceso normal, se carga la vista con los métodos activos
-            // Carga inicial de la vista con los métodos activos
+        $objMetodoPago->registrarBitacora(json_encode($bitacora));*/
+        
         $metodos = $objMetodoPago->consultar();
         require_once __DIR__ . '/../vista/metodopago.php';
 
