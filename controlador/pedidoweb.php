@@ -49,4 +49,16 @@ foreach ($pedidos as &$p) {
     $p['detalles'] = $objPedidoWeb->consultarDetallesPedido($p['id_pedido']);
 }
 
+
+if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
+    header("Location: ?pagina=catalogo");
+    exit();
+
+}
+/* $bitacora = [
+        'id_persona' => $_SESSION["id"],
+        'accion' => 'Acceso a Módulo',
+        'descripcion' => 'módulo de PedidoWeb'
+    ];
+    $objPedidoWeb->registrarBitacora(json_encode($bitacora));*/
 require_once 'vista/pedidoweb.php';

@@ -81,8 +81,21 @@ if (isset($_POST['eliminar'])) {
     }
     echo json_encode($res);
     exit;
-}
 
-// 4) Vista
-$categorias = $Cat->consultar();
-require_once 'vista/categoria.php';
+} else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+        $bitacora = [
+            'id_persona' => $_SESSION["id"],
+            'accion' => 'Acceso a Módulo',
+            'descripcion' => 'módulo de Categoria'
+        ];
+        $Cat->registrarBitacora(json_encode($bitacora));
+        $categorias = $Cat->consultar();
+        require_once 'vista/categoria.php';
+        } else if ($_SESSION["nivel_rol"] == 1) {
+
+            header("Location: ?pagina=catalogo");
+            exit();
+
+        } else {
+        require_once 'vista/seguridad/privilegio.php';
+    }

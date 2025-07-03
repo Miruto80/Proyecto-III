@@ -8,6 +8,7 @@ $nombreCompleto = trim($nombre . " " . $apellido);
 $sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
 
 require_once 'modelo/catalogo.php';
+require_once 'modelo/ListaDeseo.php';
 
 $catalogo = new Catalogo();
 
@@ -22,6 +23,15 @@ $categorias = $catalogo->obtenerCategorias();
     $registro = $catalogo->obtenerProductosMasVendidos();
 }
 
+
+// Inicializar array vacío
+$idsProductosFavoritos = [];
+
+if ($sesion_activa) {
+    $objListaDeseo = new ListaDeseo();
+    $lista = $objListaDeseo->obtenerListaDeseo($_SESSION['id']);
+    $idsProductosFavoritos = array_column($lista, 'id_producto');
+}
 
 
  if (isset($_POST['cerrar'])) {

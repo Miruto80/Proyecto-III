@@ -156,4 +156,24 @@ if ($nivel === 3) {
 }
 
 // 4) Cargar vista
-require_once 'vista/notificacion.php';
+
+
+if($_SESSION["nivel_rol"] >=2) { // Validacion si es administrador entra
+       /* $bitacora = [
+            'id_persona' => $_SESSION["id"],
+            'accion' => 'Acceso a Módulo',
+            'descripcion' => 'módulo de Metodo Pago'
+        ];
+        $N->registrarBitacora(json_encode($bitacora));*/
+        // Para GET o acceso normal, se carga la vista con los métodos activos
+            // Carga inicial de la vista con los métodos activos
+       require_once 'vista/notificacion.php';
+
+        } else if ($_SESSION["nivel_rol"] == 1) {
+
+            header("Location: ?pagina=catalogo");
+            exit();
+
+        } else {
+        require_once 'vista/seguridad/privilegio.php';
+    }

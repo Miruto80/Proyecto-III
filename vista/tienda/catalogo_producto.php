@@ -92,9 +92,43 @@
                             <p title="<?php echo htmlspecialchars($producto['nombre']); ?>">
                                 <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>" class="tab-image img-fluid rounded-3">
                             </p>
-                            <button class="btn btn-light position-absolute top-0 end-0 m-2" title="Añadir a favoritos">
-                                <i class="fa-solid fa-heart"></i>
-                            </button>
+
+
+                <?php if ($sesion_activa): ?>
+
+<?php if ($_SESSION["nivel_rol"] == 1): ?>
+   
+
+           <button type="button" 
+                class="btn btn-light position-absolute top-0 end-0 m-2 btn-favorito <?php echo in_array($producto['id_producto'], $idsProductosFavoritos) ? 'favorito-activo' : ''; ?>" 
+                data-id="<?php echo $producto['id_producto']; ?>">
+            <i class="fa-solid fa-heart"></i>
+        </button>
+
+<?php else: ?>
+ 
+
+    <a href="?pagina=catalogo" class="btn btn-light position-absolute top-0 end-0 m-2">
+        <i class="fa-solid fa-heart"></i>
+    </a>
+<?php endif; ?>
+
+<?php else: ?>
+
+
+        <button  href="?pagina=login" class="btn btn-light position-absolute top-0 end-0 m-2">
+            <i class="fa-solid fa-heart"></i>
+        </button>
+<?php endif; ?>
+                        
+
+<style>.btn-favorito.favorito-activo i.fa-heart {
+  color: red;
+}
+</style>
+
+
+
                         </figure>
                         <div class="d-flex flex-column text-center">
                             <h3 class="fs-5 fw-normal">
