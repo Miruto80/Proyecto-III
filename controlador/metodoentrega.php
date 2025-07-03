@@ -66,13 +66,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     exit;
 } else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-        $bitacora = [
+       /* $bitacora = [
             'id_persona' => $_SESSION["id"],
             'accion' => 'Acceso a Módulo',
             'descripcion' => 'módulo de Metodo Entrega'
         ];
-        $objEntrega->registrarBitacora(json_encode($bitacora));
-        // Para GET o acceso normal, se carga la vista con los métodos activos
+        $objEntrega->registrarBitacora(json_encode($bitacora));*/
+      
             $metodos = $objEntrega->consultar();
             require_once __DIR__ . '/../vista/metodoentrega.php';
 
