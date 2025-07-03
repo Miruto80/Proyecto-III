@@ -82,7 +82,7 @@
             </form>
           <?php endif; ?>
                         <!-- Al lado derecho del título, dentro de .card-header -->
-              <button type="button" class="btn btn-primary btn-sm" id="btnAyuda">
+              <button type="button" class="btn btn-primary btn-sm" id="btnAyudanoti">
                 <i class="fas fa-info-circle me-1"></i> Ayuda
               </button>
         </div>

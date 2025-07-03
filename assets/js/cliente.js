@@ -212,7 +212,7 @@ function enviaAjax(datos) {
     popoverClass: 'driverjs-theme',
     closeBtn:false,
     steps: [
-      { element: '.table-color', popover: { title: 'Tabla de usuario', description: 'Aqui es donde se guardaran los registros de los clientes', side: "left", }},
+      { element: '.table-color', popover: { title: 'Tabla de cliente', description: 'Aqui es donde se guardaran los registros de los clientes', side: "left", }},
       { element: '.modificar', popover: { title: 'Modificar datos del cliente', description: 'Este botón te permite editar la cedula y el correo de un cliente registrado.', side: "left", align: 'start' }},
       { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un cliente en la tabla', side: "right", align: 'start' }},
       { popover: { title: 'Eso es todo', description: 'Este es el fin de la guia espero hayas entendido'} }
