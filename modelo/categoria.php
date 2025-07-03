@@ -1,74 +1,175 @@
 <?php
-require_once 'conexion.php';
-class categoria extends Conexion {
-    private $conex1;
-    private $conex2;
-    private $nombre;
-    private $id_categoria;
-    public function __construct() {
-        parent::__construct(); // Llama al constructor de la clase padre
+require_once 'modelo/conexion.php';
 
-        // Obtener las conexiones de la clase padre
-        $this->conex1 = $this->getConex1();
-        $this->conex2 = $this->getConex2();
-    
-         // Verifica si las conexiones son exitosas
-        if (!$this->conex1) {
-            die('Error al conectar con la primera base de datos');
+class Categoria extends Conexion {
+    function __construct() {
+        parent::__construct();
+    }
+
+    // 1) Bitácora
+    public function registrarBitacora(string $jsonDatos): bool {
+        $datos = json_decode($jsonDatos, true);
+        return $this->ejecutarSentenciaBitacora($datos);
+    }
+
+    private function ejecutarSentenciaBitacora(array $datos): bool {
+        $conex = $this->getConex2();
+        try {
+            $conex->beginTransaction();
+
+            $sql = "INSERT INTO bitacora
+                      (accion, fecha_hora, descripcion, id_persona)
+                    VALUES
+                      (:accion, NOW(), :descripcion, :id_persona)";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute($datos);
+
+            $conex->commit();
+            $conex = null;
+            return true;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
         }
+    }
 
-        if (!$this->conex2) {
-            die('Error al conectar con la segunda base de datos');
+    // 2) Router JSON → CRUD
+    public function procesarCategoria(string $jsonDatos): array {
+        $payload   = json_decode($jsonDatos, true);
+        $operacion = $payload['operacion'] ?? '';
+        $d         = $payload['datos']    ?? [];
+
+        try {
+            switch ($operacion) {
+                case 'incluir':    return $this->insertar($d);
+                case 'actualizar': return $this->actualizar($d);
+                case 'eliminar':   return $this->eliminarLogico($d);
+                default:
+                    return [
+                      'respuesta'=>0,
+                      'accion'   =>$operacion,
+                      'mensaje'  =>'Operación no válida'
+                    ];
+            }
+        } catch (PDOException $e) {
+            return [
+              'respuesta'=>0,
+              'accion'   =>$operacion,
+              'mensaje'  =>$e->getMessage()
+            ];
         }
     }
-    public function registrar() {
-        $registro = "INSERT INTO categoria(nombre, estatus) VALUES (:nombre, 1)";
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':nombre', $this->nombre);
-        $resul = $strExec->execute();
-        return $resul ? ['respuesta' => 1, 'accion' => 'incluir'] : ['respuesta' => 0, 'accion' => 'incluir'];
-    }
-    public function modificar() {
-        $registro = "UPDATE categoria SET nombre = :nombre WHERE id_categoria = :id_categoria";
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':nombre', $this->nombre);
-        $strExec->bindParam(':id_categoria', $this->id_categoria);
-        $resul = $strExec->execute();
-        return $resul ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
-    }
- 
-    public function eliminar() {
-        $registro = "UPDATE categoria SET estatus = 0 WHERE id_categoria = :id_categoria";
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':id_categoria', $this->id_categoria);
-        $resul = $strExec->execute();
-        return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
+
+    // 3a) Incluir
+    private function insertar(array $d): array {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+
+            $sql  = "INSERT INTO categoria (nombre, estatus)
+                     VALUES (:nombre, 1)";
+            $stmt = $conex->prepare($sql);
+            $ok   = $stmt->execute(['nombre'=>$d['nombre']]);
+
+            if ($ok) {
+                $conex->commit();
+                $respuesta = ['respuesta'=>1,'accion'=>'incluir','mensaje'=>'Categoría creada'];
+            } else {
+                $conex->rollBack();
+                $respuesta = ['respuesta'=>0,'accion'=>'incluir','mensaje'=>'Error al crear'];
+            }
+            $conex = null;
+            return $respuesta;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
     }
 
-    public function consultar() {
-        $registro = "SELECT * FROM categoria WHERE estatus = 1 ";
-        $consulta = $this->conex1->prepare($registro);
-        $resul = $consulta->execute();
-        return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
+    // 3b) Actualizar
+    private function actualizar(array $d): array {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+
+            $sql  = "UPDATE categoria
+                     SET nombre = :nombre
+                     WHERE id_categoria = :id";
+            $stmt= $conex->prepare($sql);
+            $ok  = $stmt->execute([
+                'id'     => $d['id_categoria'],
+                'nombre' => $d['nombre']
+            ]);
+
+            if ($ok) {
+                $conex->commit();
+                $respuesta = ['respuesta'=>1,'accion'=>'actualizar','mensaje'=>'Categoría modificada'];
+            } else {
+                $conex->rollBack();
+                $respuesta = ['respuesta'=>0,'accion'=>'actualizar','mensaje'=>'Error al modificar'];
+            }
+            $conex = null;
+            return $respuesta;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
     }
 
-    public function registrarBitacora($id_persona, $accion, $descripcion) {
-    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
-    
-    $strExec = $this->conex2->prepare($consulta);
-    $strExec->bindParam(':accion', $accion);
-    $strExec->bindParam(':descripcion', $descripcion);
-    $strExec->bindParam(':id_persona', $id_persona);
-    
-    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
+    // 3c) Eliminar lógico
+    private function eliminarLogico(array $d): array {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+
+            $sql  = "UPDATE categoria
+                     SET estatus = 0
+                     WHERE id_categoria = :id";
+            $stmt= $conex->prepare($sql);
+            $ok  = $stmt->execute(['id'=>$d['id_categoria']]);
+
+            if ($ok) {
+                $conex->commit();
+                $respuesta = ['respuesta'=>1,'accion'=>'eliminar','mensaje'=>'Categoría eliminada'];
+            } else {
+                $conex->rollBack();
+                $respuesta = ['respuesta'=>0,'accion'=>'eliminar','mensaje'=>'Error al eliminar'];
+            }
+            $conex = null;
+            return $respuesta;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
     }
 
-    public function set_Nombre($nombre) {
-        $this->nombre = $nombre;
-    }
-    public function set_Id_categoria($id_categoria) {
-        $this->id_categoria = $id_categoria;
+    // 4) Consultar (listado)
+    public function consultar(): array {
+        $conex = $this->getConex1();
+        try {
+            $sql   = "SELECT id_categoria, nombre
+                      FROM categoria
+                      WHERE estatus = 1";
+            $stmt  = $conex->prepare($sql);
+            $stmt->execute();
+            $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return $datos;
+        } catch (PDOException $e) {
+            if ($conex) $conex = null;
+            throw $e;
+        }
     }
 }
-?>

@@ -1,190 +1,217 @@
-// Esperar que DOM esté listo
-document.addEventListener('DOMContentLoaded', function () {
-    // Registrar categoría
-    document.getElementById('registrar').addEventListener('click', function () {
-        if (!validarFormulario('formRegistrar')) return;
+$(function() {
+  // ————————————————————————————
+  // Helpers
+  // ————————————————————————————
+  function muestraMensaje(icon, tiempo, titulo, msg) {
+    Swal.fire({ icon, title: titulo, html: msg, timer: tiempo, showConfirmButton: false });
+  }
+  function mensajeOK(text) {
+    Swal.fire({ icon:'success', title:text, timer:1000, showConfirmButton:false })
+      .then(()=> location.reload());
+  }
+  function validarkeypress(er, e) {
+    const chr = String.fromCharCode(e.which);
+    if (!er.test(chr)) e.preventDefault();
+  }
+  function validarkeyup(er, $el, $span, msg) {
+    const v = $el.val().trim();
+    if (!v) {
+      $el.addClass('is-invalid').removeClass('is-valid');
+      $span.text('Este campo es obligatorio');
+      return false;
+    }
+    if (!er.test(v)) {
+      $el.addClass('is-invalid').removeClass('is-valid');
+      $span.text(msg);
+      return false;
+    }
+    $el.addClass('is-valid').removeClass('is-invalid');
+    $span.text('');
+    return true;
+  }
 
-        const nombre = document.getElementById('nombre').value;
-        const datos = new FormData();
-        datos.append('id_categoria', nombre);
-        datos.append('nombre', nombre);
-        datos.append('registrar', 'registrar');
-        enviaAjax(datos);
+  // ————————————————————————————
+  // Bloquear números y mostrar "No se permiten números"
+  // ————————————————————————————
+  $('#nombre')
+    .on('keypress', function(e) {
+      const chr = String.fromCharCode(e.which);
+      // solo letras y espacios
+      validarkeypress(/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]$/, e);
+      if (/\d/.test(chr)) {
+        e.preventDefault();
+        const $span = $('#snombre');
+        $span.text('No se permiten números');
+        $(this).addClass('is-invalid').removeClass('is-valid');
+        // marca el error y evita que keyup lo borre
+        $(this).data('numError', true);
+      } else {
+        $(this).data('numError', false);
+      }
+    })
+    .on('keyup', function() {
+      const $inp = $(this);
+      if ($inp.data('numError')) return;       // persiste el mensaje
+      validarkeyup(
+        /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,30}$/,
+        $inp, $('#snombre'),
+        'Solo letras, de 3 a 30 caracteres'
+      );
     });
 
-    // Modificar categoría
-    document.getElementById('btnModificar').addEventListener('click', function () {
-        if (!validarFormulario('formModificar')) return;
+  // ————————————————————————————
+  // Abrir modal Registrar
+  // ————————————————————————————
+  $('#btnAbrirRegistrar').click(()=> {
+    $('#u')[0].reset();
+    $('#u').find('.is-valid, .is-invalid').removeClass('is-valid is-invalid');
+    $('#snombre').text('');
+    $('#accion').val('registrar');
+    $('#modalTitle').text('Registrar Categoría');
+    new bootstrap.Modal($('#registro')).show();
+  });
 
-        const id_categoria = document.getElementById('id_categoria_modificar').value;
-        const nombre = document.getElementById('nombre_modificar').value;
-        const datos = new FormData();
-        datos.append('id_categoria', id_categoria);
-        datos.append('nombre', nombre);
-        datos.append('modificar', 'modificar');
-        enviaAjax(datos);
+  // ————————————————————————————
+  // Abrir modal Modificar
+  // ————————————————————————————
+  window.abrirModalModificar = function() {
+    // usa this en lugar de event.currentTarget
+    const $tr   = $(this).closest('tr');
+    const id    = $tr.data('id');
+    const nombre= $tr.find('td').eq(1).text().trim();
+
+    $('#id_categoria').val(id);
+    $('#nombre')
+      .val(nombre)
+      .removeClass('is-valid is-invalid')
+      .data('numError', false);
+    $('#snombre').text('');
+    $('#accion').val('actualizar');
+    $('#modalTitle').text('Modificar Categoría');
+    new bootstrap.Modal($('#registro')).show();
+  };
+  // mapea todos los botones
+  $('.btnModif').click(abrirModalModificar);
+
+  // ————————————————————————————
+  // Eliminar
+  // ————————————————————————————
+  $('.btnElim').click(function() {
+    const id = $(this).closest('tr').data('id');
+    Swal.fire({
+      title:'¿Eliminar categoría?',
+      text:'No podrás revertir esto.',
+      icon:'warning',
+      showCancelButton:true,
+      confirmButtonText:'Sí, eliminar'
+    }).then(({isConfirmed})=>{
+      if (!isConfirmed) return;
+      const fd = new FormData($('#u')[0]);
+      fd.set('id_categoria', id);
+      fd.set('eliminar','eliminar');
+      enviaAjax(fd);
     });
+  });
+
+  // ————————————————————————————
+  // Guardar (Registrar / Modificar)
+  // ————————————————————————————
+  $('#btnEnviar').click(()=>{
+    const $inp = $('#nombre'), $span = $('#snombre');
+    if (!validarkeyup(
+      /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,30}$/,
+      $inp, $span,
+      'Solo letras, de 3 a 30 caracteres'
+    )) {
+      muestraMensaje('error',2000,'Error','Datos inválidos');
+      return;
+    }
+    const fd = new FormData($('#u')[0]);
+    if ($('#accion').val() === 'registrar') fd.append('registrar','registrar');
+    else fd.append('modificar','modificar');
+    enviaAjax(fd);
+  });
+
+  // ————————————————————————————
+  // Envío AJAX
+  // ————————————————————————————
+  function enviaAjax(fd) {
+    $.ajax({
+      url:'?pagina=categoria',
+      type:'POST',
+      data:fd,
+      processData:false,
+      contentType:false,
+      dataType:'json'
+    })
+    .done(res=>{
+      if (res.accion==='incluir'    && res.respuesta==1) return mensajeOK('Categoría registrada');
+      if (res.accion==='actualizar' && res.respuesta==1) return mensajeOK('Categoría modificada');
+      if (res.accion==='eliminar'   && res.respuesta==1) return mensajeOK('Categoría eliminada');
+      muestraMensaje('error',2000,'Error',res.mensaje);
+    })
+    .fail(()=> muestraMensaje('error',2000,'Error','Comunicación fallida'));
+  }
+
+
+$('#btnAyuda').on('click', function() {
+  const DriverClass = window.driver?.js?.driver;
+  if (typeof DriverClass !== 'function') {
+    return console.error('Driver.js no detectado');
+  }
+
+  const steps = [
+    {
+      element: '.table-color',
+      popover: {
+        title: 'Tabla de categorías',
+        description: 'Aquí ves todas las categorías activas.',
+        side: 'left'
+      }
+    },
+    {
+      element: '#btnAbrirRegistrar',
+      popover: {
+        title: 'Registrar categoría',
+        description: 'Abre el modal para crear una nueva categoría.',
+        side: 'bottom'
+      }
+    },
+    {
+      element: '.btnModif',
+      popover: {
+        title: 'Editar categoría',
+        description: 'Haz clic aquí para modificar una categoría existente.',
+        side: 'left'
+      }
+    },
+    {
+      element: '.btnElim',
+      popover: {
+        title: 'Eliminar categoría',
+        description: 'Este botón elimina la categoría seleccionada.',
+        side: 'left'
+      }
+    },
+    {
+      popover: {
+        title: '¡Listo!',
+        description: 'Has terminado la guía de Categorías.'
+      }
+    }
+  ];
+
+  const driver = new DriverClass({
+    nextBtnText: 'Siguiente',
+    prevBtnText: 'Anterior',
+    doneBtnText: 'Listo',
+    closeBtn: false,
+    popoverClass: 'driverjs-theme',
+    steps
+  });
+
+  driver.drive();
 });
 
-// Función para abrir modal modificar y limpiar validaciones
-function abrirModalModificar(id_categoria, nombre) {
-    document.getElementById('id_categoria_modificar').value = id_categoria;
-    document.getElementById('nombre_modificar').value = nombre;
 
-    // Limpiar mensajes y clases de error/éxito
-    $('#formModificar .is-invalid, #formModificar .is-valid').removeClass('is-invalid is-valid');
-    $('#formModificar span.text-danger').text('');
-
-    $('#modificar').modal('show');
-}
-
-// Función eliminar categoría con confirmación usando SweetAlert
-function eliminarCategoria(id_categoria) {
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: "No podrás revertir esto!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, eliminarlo!',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const datos = new FormData();
-            datos.append('id_categoria', id_categoria);
-            datos.append('eliminar', 'eliminar');
-            enviaAjax(datos);
-        }
-
-    });
-}
-
-// Mostrar mensajes SweetAlert
-function muestraMensaje(icono, tiempo, titulo, mensaje) {
-    Swal.fire({
-        icon: icono,
-        timer: tiempo,
-        title: titulo,
-        html: mensaje,
-        showConfirmButton: false,
-    });
-}
-
-// Enviar AJAX y manejar respuesta
-function enviaAjax(datos) {
-    fetch('', {
-        method: 'POST',
-        body: datos,
-    })
-    .then(resp => resp.json())
-    .then(data => {
-        if (data.accion === 'incluir') {
-            if (data.respuesta === 1) {
-                document.getElementById('formRegistrar').reset();
-                limpiarFormulario('formRegistrar');
-                muestraMensaje("success", 1000, "Se ha registrado con éxito", "La categoría se ha registrado exitosamente");
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                muestraMensaje("error", 2000, "Error", "Error al registrar categoría");
-            }
-        } else if (data.accion === 'actualizar') {
-            if (data.respuesta === 1) {
-                muestraMensaje("success", 1000, "Se ha Modificado con éxito", "La categoría se ha actualizado exitosamente");
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                muestraMensaje("error", 2000, "Error", "Error al modificar categoría");
-            }
-        } else if (data.accion === 'eliminar') {
-            if (data.respuesta === 1) {
-                muestraMensaje("success", 1000, "Se ha eliminado con éxito", "La categoría se ha eliminado correctamente");
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                muestraMensaje("error", 2000, "Error", "Error al eliminar categoría");
-            }
-        }
-    })
-    .catch(error => {
-        muestraMensaje("error", 3000, "Error", "Error de comunicación: " + error);
-    });
-}
-
-// Validaciones para nombre registro y modificar con bloqueo de teclas y mensajes
-function configurarValidacionesNombre() {
-    $("#nombre, #nombre_modificar").on("keypress", function(e) {
-        validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
-    });
-    $("#nombre").on("keyup", function() {
-        validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $(this), $("#snombre"), "Solo letras entre 3 y 30 caracteres");
-    });
-    $("#nombre_modificar").on("keyup", function() {
-        validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $(this), $("#snombre_modificar"), "Solo letras entre 3 y 30 caracteres");
-    });
-}
-
-// Validar keypress aceptando solo letras, espacios, ñ, etc
-function validarkeypress(er, e) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key);
-    if (!er.test(tecla)) {
-        e.preventDefault();
-    }
-}
-
-// Validar keyup con expresión, actualizar span con mensaje o limpiarlo, retorna 1 si válido, 0 si no
-function validarkeyup(er, etiqueta, spnMensaje, mensaje) {
-    let valor = etiqueta.val();
-    if (valor.trim() === '') {
-        etiqueta.removeClass('is-valid').addClass('is-invalid');
-        spnMensaje.text("Este campo es obligatorio");
-        return 0;
-    }
-    if (er.test(valor)) {
-        spnMensaje.text('');
-        etiqueta.removeClass('is-invalid').addClass('is-valid');
-        return 1;
-    } else {
-        spnMensaje.text(mensaje);
-        etiqueta.removeClass('is-valid').addClass('is-invalid');
-        return 0;
-    }
-}
-
-// Validar formulario completo por ID y llamar validaciones específicas
-function validarFormulario(formId) {
-    const form = document.getElementById(formId);
-    const campos = form.querySelectorAll('[required]');
-    let valido = true;
-
-    campos.forEach(campo => {
-        if (!campo.value.trim()) {
-            campo.classList.add('is-invalid');
-            valido = false;
-        } else {
-            campo.classList.remove('is-invalid');
-        }
-    });
-
-    if (formId === 'formRegistrar') {
-        if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $("#nombre"), $("#snombre"), "Solo letras entre 3 y 30 caracteres") === 0) {
-            valido = false;
-        }
-    } else if (formId === 'formModificar') {
-        if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $("#nombre_modificar"), $("#snombre_modificar"), "Solo letras entre 3 y 30 caracteres") === 0) {
-            valido = false;
-        }
-    }
-
-    return valido;
-}
-
-// Limpiar clases y mensajes de validación de un formulario por su ID
-function limpiarFormulario(formId) {
-    const form = document.getElementById(formId);
-    $(form).find('.is-invalid').removeClass('is-invalid');
-    $(form).find('.is-valid').removeClass('is-valid');
-    $(form).find('span.text-danger').text('');
-}
-
-// Inicializar validaciones
-configurarValidacionesNombre();
+});
