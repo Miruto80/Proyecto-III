@@ -142,7 +142,7 @@ $(document).ready(function() {
 });
 
 
-$('#btnAyuda').on("click", function () {
+$('#btnayuda').on("click", function () {
   
   const driver = window.driver.js.driver;
   
