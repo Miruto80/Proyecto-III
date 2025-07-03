@@ -40,16 +40,31 @@ class MetodoPago extends Conexion {
   
 
     private function registrar($nombre,$descripcion) {
+        $conex = $this->getConex1();
+        try {
+                $conex->beginTransaction();
         $sql = "INSERT INTO metodo_pago(nombre, descripcion, estatus) VALUES (:nombre, :descripcion, 1)";
         $stmt = $this->getconex1()->prepare($sql);
         $result = $stmt->execute([
             'nombre'=>$nombre,
             'descripcion'=>$descripcion
         ]);
+        $conex->rollBack();
+        $conex = null;
         return $result ? ['respuesta' => 1, 'accion' => 'incluir'] : ['respuesta' => 0, 'accion' => 'incluir'];
+    }catch (PDOException $e) {
+        if ($conex) {
+            $conex->rollBack();
+            $conex = null;
+        }
+        throw $e;
+    }
     }
 
     private function modificar($id_metodopago,$nombre,$descripcion) {
+        $conex = $this->getConex1();
+        try {
+                $conex->beginTransaction();
         $sql = "UPDATE metodo_pago SET nombre = :nombre, descripcion = :descripcion WHERE id_metodopago = :id_metodopago";
         $stmt = $this->getConex1()->prepare($sql);
         $result = $stmt->execute([
@@ -57,17 +72,38 @@ class MetodoPago extends Conexion {
             'nombre'=>$nombre,
             'descripcion'=>$descripcion
         ]);
+        $conex->rollBack();
+        $conex = null;
         return $result ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
+    }catch (PDOException $e) {
+        if ($conex) {
+            $conex->rollBack();
+            $conex = null;
+        }
+        throw $e;
+    }
     }
 
 
     private function eliminar($id_metodopago) {
+        $conex = $this->getConex1();
+        try {
+                $conex->beginTransaction();
         $sql = "UPDATE metodo_pago SET estatus = 0 WHERE id_metodopago = :id_metodopago";
         $stmt = $this->getConex1()->prepare($sql);
         $result = $stmt->execute([
          'id_metodopago'=>$id_metodopago
         ]);
+        $conex->rollBack();
+        $conex = null;
         return $result ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
+    }catch (PDOException $e) {
+        if ($conex) {
+            $conex->rollBack();
+            $conex = null;
+        }
+        throw $e;
+    }
     }
 
     public function consultar() {
