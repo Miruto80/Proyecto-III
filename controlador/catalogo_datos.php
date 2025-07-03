@@ -10,7 +10,7 @@ $sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
 
 require_once 'modelo/catalogo_datos.php';
 
-$objdatos = new Datos();
+$objdatos = new Datoscliente();
 
 if (isset($_POST['actualizar'])) {
      $datosCliente = [

@@ -121,8 +121,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode($res);
         exit;
     }
-}
+} else  if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
+        $bitacora = [
+            'id_persona' => $_SESSION["id"],
+            'accion' => 'Acceso a Módulo',
+            'descripcion' => 'módulo de Tipo Usuario'
+        ];
+        $obj->registrarBitacora(json_encode($bitacora));
+        $registro = $obj->consultar();
+        require_once 'vista/tipousuario.php';
+        } else if ($_SESSION["nivel_rol"] == 1) {
 
-// 2) Vista normal
-$registro = $obj->consultar();
-require_once 'vista/tipousuario.php';
+            header("Location: ?pagina=catalogo");
+            exit();
+
+        } else {
+        require_once 'vista/seguridad/privilegio.php';
+    }
