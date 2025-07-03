@@ -1,35 +1,52 @@
 <?php  
-     session_start();
-     if (empty($_SESSION["id"])){
-       header("location:?pagina=login");
-       exit;
-     } 
-     require_once __DIR__ . '/../modelo/pedidoweb.php';
+session_start();
+if (empty($_SESSION["id"])) {
+    header("location:?pagina=login");
+    exit;
+}
 
-       $objpedido = new pedidoWeb();
+require_once __DIR__ . '/../modelo/pedidoweb.php';
 
-      
+$objPedidoWeb = new pedidoWeb();
 
-       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['accion']) && isset($_POST['id_pedido'])) {
-                $datosPeticion = [
-                    'operacion' => $_POST['accion'],
-                    'datos' => $_POST['id_pedido']
-                ];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-                $resultado = $objpedido->procesarPedidoweb(json_encode($datosPeticion));
-                echo json_encode($resultado);
+    // Confirmar pedido
+    if (isset($_POST['confirmar'])) {
+        if (!empty($_POST['id_pedido'])) {
+            $datosPeticion = [
+                'operacion' => 'confirmar',
+                'datos' => $_POST['id_pedido']
+            ];
+
+            $respuesta = $objPedidoWeb->procesarPedidoweb(json_encode($datosPeticion));
+            echo json_encode($respuesta);
+        } else {
+            echo json_encode(['respuesta' => 0, 'mensaje' => 'Falta el ID del pedido para confirmar']);
         }
-        exit;
+
+    // Eliminar pedido
+    } else if (isset($_POST['eliminar'])) {
+        if (!empty($_POST['id_pedido'])) {
+            $datosPeticion = [
+                'operacion' => 'eliminar',
+                'datos' => $_POST['id_pedido']
+            ];
+
+            $respuesta = $objPedidoWeb->procesarPedidoweb(json_encode($datosPeticion));
+            echo json_encode($respuesta);
+        } else {
+            echo json_encode(['respuesta' => 0, 'mensaje' => 'Falta el ID del pedido para eliminar']);
+        }
     }
-    
-    $pedidos = $objpedido->consultarPedidosCompletos();
-       foreach ($pedidos as &$p) {
-           $p['detalles'] = $objpedido->consultarDetallesPedido($p['id_pedido']);
-       }
 
-      require_once 'vista/pedidoweb.php';
+    exit;
+}
 
-  
+// Cargar vista con pedidos y detalles (GET)
+$pedidos = $objPedidoWeb->consultarPedidosCompletos();
+foreach ($pedidos as &$p) {
+    $p['detalles'] = $objPedidoWeb->consultarDetallesPedido($p['id_pedido']);
+}
 
-?>
+require_once 'vista/pedidoweb.php';

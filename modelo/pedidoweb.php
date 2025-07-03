@@ -34,24 +34,24 @@ class pedidoWeb extends Conexion {
 
     public function consultarPedidosCompletos() {
         $sql = "SELECT 
-        p.id_pedido,
-        p.tipo,
-        p.fecha,
-        p.estado,
-        p.precio_total,
-        p.referencia_bancaria,
-        p.telefono_emisor,
-        p.id_persona,
-        cli.nombre AS nombre,
-        me.nombre AS metodo_entrega,
-        mp.nombre AS metodo_pago
-    FROM pedido p
-    LEFT JOIN cliente cli ON p.id_persona = cli.id_persona
-    LEFT JOIN metodo_entrega me ON p.id_entrega = me.id_entrega
-    LEFT JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago
-    WHERE p.tipo = 2
-    ORDER BY p.fecha DESC";
-
+                    p.id_pedido,
+                    p.tipo,
+                    p.fecha,
+                    p.estado,
+                    p.precio_total,
+                    p.referencia_bancaria,
+                    p.telefono_emisor,
+                    p.id_persona,
+                    cli.nombre AS nombre,
+                    me.nombre AS metodo_entrega,
+                    mp.nombre AS metodo_pago
+                FROM pedido p
+                LEFT JOIN cliente cli ON p.id_persona = cli.id_persona
+                LEFT JOIN metodo_entrega me ON p.id_entrega = me.id_entrega
+                LEFT JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago
+                WHERE p.tipo = 2
+                ORDER BY p.fecha DESC";
+    
         $stmt = $this->getconex1()->prepare($sql);  
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -105,7 +105,7 @@ class pedidoWeb extends Conexion {
         $sql = "UPDATE pedido SET estado = 2 WHERE id_pedido = ?";
         $stmt = $this->getConex1()->prepare($sql);
         if ($stmt->execute([$id_pedido])) {
-            return ['respuesta' => 'ok', 'msg' => 'Pedido confirmado'];
+            return ['respuesta' => 1, 'msg' => 'Pedido confirmado'];
         } else {
             return ['respuesta' => 'error', 'msg' => 'No se pudo confirmar el pedido'];
         }

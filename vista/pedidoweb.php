@@ -98,12 +98,7 @@
     </nav>
 <!-- php barra de navegacion-->    
 <?php include 'complementos/nav.php' ?>
-<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
-  <div class="preloader-wrapper">
-    <div class="preloader">
-    </div>
-  </div> 
-<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+
 
 <div class="container-fluid py-4"> <!-- DIV CONTENIDO -->
 
@@ -129,12 +124,7 @@
     <span class="text-white">Ayuda</span>
   </button>
 
-  <form id="formGenerarPDF" method="POST" target="_blank">
-    <input type="hidden" name="nombre" value="Listado de proveedores">
-    <button type="submit" name="generar" class="btn btn-info">
-      Generar PDF
-    </button>
-  </form>
+  
 </div>
       </div>
  
