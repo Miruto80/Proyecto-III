@@ -21,8 +21,8 @@ $total = 0;
   </div>
 <!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
 
-<!-- php CARRITO--> 
-<?php include 'vista/complementos/carrito.php' ?>
+
+
 
 <!-- php ENCABEZADO LOGO, ICONO CARRITO Y LOGIN--> 
 <?php include 'vista/complementos/nav_catalogo.php' ?>
