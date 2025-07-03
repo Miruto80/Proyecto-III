@@ -77,7 +77,7 @@ class Categoria extends Conexion {
     ];
   }
 
-  public function consultarActivas(): array {
+  public function consultar(): array {
     $sql  = "SELECT id_categoria,nombre FROM categoria WHERE estatus=1";
     return $this->getConex1()->query($sql)
                 ->fetchAll(PDO::FETCH_ASSOC);

@@ -89,7 +89,7 @@ if (isset($_POST['eliminar'])) {
 }
 
 // 4) Vista normal
-$categorias = $Cat->consultarActivas();
+$categorias = $Cat->consultar();
 
 // ————————————————————————————
 // Cerrar conexiones explícitas
