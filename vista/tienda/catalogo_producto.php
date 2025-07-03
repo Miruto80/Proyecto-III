@@ -92,9 +92,7 @@
                             <p title="<?php echo htmlspecialchars($producto['nombre']); ?>">
                                 <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>" class="tab-image img-fluid rounded-3">
                             </p>
-
-
-                <?php if ($sesion_activa): ?>
+                           <?php if ($sesion_activa): ?>
 
 <?php if ($_SESSION["nivel_rol"] == 1): ?>
    
@@ -126,9 +124,6 @@
   color: red;
 }
 </style>
-
-
-
                         </figure>
                         <div class="d-flex flex-column text-center">
                             <h3 class="fs-5 fw-normal">
