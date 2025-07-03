@@ -4,6 +4,21 @@
   <?php include 'complementos/head.php'; ?> 
   <title>Método de Entrega | LoveMakeup</title>
 </head>
+
+<style>
+  .is-valid {
+    border: 2px solid #28a745 !important; /* verde */
+  }
+
+  .is-invalid {
+    border: 2px solid #dc3545 !important; /* rojo */
+  }
+
+  .text-danger {
+    color: #dc3545;
+    font-size: 0.9em;
+  }
+</style>
 <body class="g-sidenav-show bg-gray-100">
 
 <?php include 'complementos/sidebar.php'; ?>
@@ -43,15 +58,17 @@
                     </thead>
                     <tbody id="entregaTableBody">
                       <?php foreach ($metodos as $dato): ?>
-                      <tr>
+                      <tr id="fila-<?= $dato['id_entrega']; ?>">
                         <td><?= $dato['id_entrega']; ?></td>
                         <td><?= htmlspecialchars($dato['nombre']); ?></td>
                         <td><?= htmlspecialchars($dato['descripcion']); ?></td>
                         <td>
-                          <button class="btn btn-primary btn-sm"
-                                  onclick="abrirModalModificar(<?= $dato['id_entrega']; ?>, '<?= htmlspecialchars($dato['nombre']); ?>', '<?= htmlspecialchars($dato['descripcion']); ?>')">
-                            <i class="fas fa-pencil-alt"></i>
-                          </button>
+<button class="btn btn-primary btn-sm btn-editar"
+  data-id="<?= $dato['id_entrega']; ?>"
+  data-nombre="<?= htmlspecialchars($dato['nombre']); ?>"
+  data-descripcion="<?= htmlspecialchars($dato['descripcion']); ?>">
+  <i class="fas fa-pencil-alt"></i>
+</button>
                           <button class="btn btn-danger btn-sm" onclick="eliminarMetodoEntrega(<?= $dato['id_entrega']; ?>)">
                             <i class="fas fa-trash-alt"></i>
                           </button>
@@ -74,17 +91,19 @@
           <div class="modal-content">
             <div class="modal-header header-color">
               <h1 class="modal-title fs-5">Registrar Método de Entrega</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
               <form id="formRegistrar" autocomplete="off">
-                <div class="mb-3">
-                  <label for="nombre" class="form-label">Nombre</label>
+               <div class="mb-3">
+                  <label  for="nombre" class="form-label">Nombre</label>
                   <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ej: Envío express" required>
+                  <span id="snombre" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                   <label for="descripcion" class="form-label">Descripción</label>
                   <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Ej: Entrega en 24 horas" required>
+                  <span id="sdescripcion" class="text-danger"></span>
                 </div>
                 <div class="text-center mt-4">
                   <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
@@ -98,9 +117,9 @@
 
       <!-- Modal modificar -->
       <div class="modal fade" id="modificar" tabindex="-1" aria-labelledby="modificarLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
           <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header header-color">
               <h5 class="modal-title">Modificar Método de Entrega</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
@@ -110,10 +129,12 @@
                 <div class="mb-3">
                   <label for="nombre_modificar" class="form-label">Nombre</label>
                   <input type="text" class="form-control" name="nombre" id="nombre_modificar" required>
+                   <span id="snombre_modificar" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                   <label for="descripcion_modificar" class="form-label">Descripción</label>
                   <input type="text" class="form-control" name="descripcion" id="descripcion_modificar" required>
+                   <span id="sdescripcion_modificar" class="text-danger"></span>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-primary" id="btnModificar">Modificar</button>
@@ -129,23 +150,6 @@
 <script src="assets/js/metodoentrega.js"></script>
 <script src="assets/js/demo/datatables-demo.js"></script>
 
-
-<div class="modal fade" id="modalDetallesMetodo" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="tituloModal">Detalles del Producto</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <p><strong>Descripción</strong> <span id="modal-descripcion"></span></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
+</main>
 </body>
 </html>

@@ -1,193 +1,194 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Validaciones para 'nombre'
-    $("#nombre").on("keypress", function(e){
-        validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
-    });
-    $("#nombre").on("keyup", function(){
-        validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $(this), $("#snombre"), "Solo letras entre 3 y 30 caracteres");
-    });
+$(document).ready(function () {
+  // Validaciones en tiempo real para 'nombre'
+  $('#nombre').on('keypress', function (e) {
+    return validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
+  });
 
-    // Validaciones para 'descripcion'
-    $("#descripcion").on("keypress", function(e){
-        validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
-    });
-    $("#descripcion").on("keyup", function(){
-        validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $(this), $("#sdescripcion"), "Solo letras entre 3 y 30 caracteres");
-    });
+  $('#nombre').on('keyup', function () {
+    validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $(this), $('#snombre'), 'Solo letras entre 3 y 30 caracteres');
+  });
 
-    $(document).on('click', '#registrar', function () {
-        const nombre = $('#nombre').val().trim();
-        const descripcion = $('#descripcion').val().trim();
-      
-        if (!nombre || !descripcion) {
-          muestraMensaje('warning', 2000, 'Campos requeridos', 'Completa todos los campos.');
-          return;
-        }
-      
-        const datosPeticion = {
-          accion: 'incluir',
-          datos: {
-            nombre: nombre,
-            descripcion: descripcion
-          }
-        };
-      
-        $.post('controlador/metodoentrega.php', datosPeticion, function (response) {
-          try {
-            const res = JSON.parse(response);
-            const exito = res.respuesta === 1;
-      
-            muestraMensaje(exito ? 'success' : 'error', 1500,
-              exito ? 'Registrado' : 'Error',
-              exito ? 'Método registrado correctamente' : 'No se pudo registrar');
-      
-            if (exito) {
-              $('#nombre').val('');
-              $('#descripcion').val('');
-              setTimeout(() => location.reload(), 1500);
-            }
-          } catch (e) {
-            muestraMensaje('error', 2000, 'Error', 'Respuesta del servidor inválida.');
-          }
-        });
-      });
-});
-      
+  // Validaciones en tiempo real para 'descripcion'
+  $('#descripcion').on('keypress', function (e) {
+    return validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
+  });
 
-$(document).on('click', '#btnModificar', function () {
-    const id_entrega = $('#id_entrega_modificar').val().trim();
-    const nombre = $('#nombre_modificar').val().trim();
-    const descripcion = $('#descripcion_modificar').val().trim();
-  
-    if (!id_entrega || !nombre || !descripcion) {
-      muestraMensaje('warning', 2000, 'Campos requeridos', 'Completa todos los campos.');
-      return;
-    }
-  
-    const datosPeticion = {
-      accion: 'modificar',
-      datos: {
-        id_entrega: id_entrega,
+  $('#descripcion').on('keyup', function () {
+    validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $(this), $('#sdescripcion'), 'Solo letras entre 3 y 30 caracteres');
+  });
+
+  //validaciones de modificar
+
+   $('#nombre').on('keypress', function (e) {
+    return validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
+  });
+
+  $('#nombre_modificar').on('keyup', function () {
+    validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $(this), $('#snombre_modificar'), 'Solo letras entre 3 y 30 caracteres');
+  });
+
+  // Validaciones en tiempo real para 'descripcion'
+  $('#descripcion_modificar').on('keypress', function (e) {
+    return validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
+  });
+
+  $('#descripcion_modificar').on('keyup', function () {
+    validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $(this), $('#sdescripcion_modificar'), 'Solo letras entre 3 y 30 caracteres');
+  });
+
+
+
+  // Registrar método
+  $('#registrar').on('click', function () {
+    if (!validarEnvio()) return;
+
+    let nombre = $('#nombre').val();
+    let descripcion = $('#descripcion').val();
+
+    $.ajax({
+      url: 'controlador/metodoentrega.php',
+      type: 'POST',
+      data: {
+        registrar: 'registrar',
         nombre: nombre,
         descripcion: descripcion
-      }
-    };
-  
-    $.post('controlador/metodoentrega.php', datosPeticion, function (response) {
-      try {
-        const res = JSON.parse(response);
-        const exito = res.respuesta === 1;
-  
-        muestraMensaje(exito ? 'success' : 'error', 1500,
-          exito ? 'Modificado' : 'Error',
-          exito ? 'Método modificado correctamente' : 'No se pudo modificar');
-  
-        if (exito) {
-          setTimeout(() => location.reload(), 1500);
+      },
+      dataType: 'json',
+      success: function (res) {
+        if (res.respuesta == 1) {
+          Swal.fire({
+            title: 'Registrado',
+            text: 'Método registrado correctamente',
+            icon: 'success',
+            timer: 1000,
+            showConfirmButton: false
+          }).then(() => location.reload());
+        } else {
+          Swal.fire({ title: 'Error', text: res.mensaje || 'Error al registrar', icon: 'error', timer: 1500, showConfirmButton: false });
         }
-      } catch (e) {
-        muestraMensaje('error', 2000, 'Error', 'Respuesta del servidor inválida.');
+      },
+      error: function () {
+        Swal.fire({ title: 'Error', text: 'Error en la comunicación', icon: 'error', timer: 1500, showConfirmButton: false });
       }
     });
   });
-  
-  function abrirModalModificar(id_entrega, nombre, descripcion) {
-    document.getElementById('id_entrega_modificar').value = id_entrega;
-    document.getElementById('nombre_modificar').value = nombre;
-    document.getElementById('descripcion_modificar').value = descripcion;
-    $('#modificar').modal('show');
-  }
-  
-  function eliminarMetodoEntrega(id_entrega) {
+
+ $(document).on('click', '.btn-editar', function () {
+  const id = $(this).data('id');
+  const nombre = $(this).data('nombre');
+  const descripcion = $(this).data('descripcion');
+
+  $('#id_entrega_modificar').val(id);
+  $('#nombre_modificar').val(nombre);
+  $('#descripcion_modificar').val(descripcion);
+
+  // Limpiar validaciones anteriores
+  $('#nombre_modificar').removeClass('is-valid is-invalid');
+  $('#descripcion_modificar').removeClass('is-valid is-invalid');
+
+  const modal = new bootstrap.Modal(document.getElementById('modificar'));
+  modal.show();
+});
+  // Modificar método
+  $('#btnModificar').on('click', function () {
+    if (!validarModificacion()) return;
+
+    let id = $('#id_entrega_modificar').val();
+    let nombre = $('#nombre_modificar').val();
+    let descripcion = $('#descripcion_modificar').val();
+
+    $.ajax({
+      url: 'controlador/metodoentrega.php',
+      type: 'POST',
+      data: {
+        actualizar: 'actualizar',
+        id_entrega: id,
+        nombre: nombre,
+        descripcion: descripcion
+      },
+      dataType: 'json',
+      success: function (res) {
+        if (res.respuesta == 1) {
+          Swal.fire({ title: 'Modificado', text: 'Método modificado correctamente', icon: 'success', timer: 1000, showConfirmButton: false }).then(() => location.reload());
+        } else {
+          Swal.fire({ title: 'Error', text: res.mensaje || 'Error al modificar', icon: 'error', timer: 1500, showConfirmButton: false });
+        }
+      },
+      error: function () {
+        Swal.fire({ title: 'Error', text: 'Error en la comunicación', icon: 'error', timer: 1500, showConfirmButton: false });
+      }
+    });
+  });
+
+  // Función para eliminar método
+  window.eliminarMetodoEntrega = function (id) {
     Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción no se puede deshacer.',
+      title: '¿Está seguro?',
+      text: 'No podrá revertir esta acción',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        const datosPeticion = {
-          accion: 'eliminar',
-          datos: {
-            id_entrega: id_entrega
-          }
-        };
-  
-        $.post('controlador/metodoentrega.php', datosPeticion, function (response) {
-          try {
-            const res = JSON.parse(response);
-            const exito = res.respuesta === 1;
-  
-            muestraMensaje(exito ? 'success' : 'error', 1500,
-              exito ? 'Eliminado' : 'Error',
-              exito ? 'Método eliminado correctamente' : 'No se pudo eliminar');
-  
-            if (exito) {
-              setTimeout(() => location.reload(), 1500);
+        $.ajax({
+          url: 'controlador/metodoentrega.php',
+          type: 'POST',
+          data: {
+            eliminar: 'eliminar',
+            id_entrega: id
+          },
+          dataType: 'json',
+          success: function (res) {
+            if (res.respuesta == 1) {
+              Swal.fire({ title: 'Eliminado', text: 'Método eliminado correctamente', icon: 'success', timer: 1000, showConfirmButton: false }).then(() => location.reload());
+            } else {
+              Swal.fire({ title: 'Error', text: res.mensaje || 'Error al eliminar', icon: 'error', timer: 1500, showConfirmButton: false });
             }
-          } catch (e) {
-            muestraMensaje('error', 2000, 'Error', 'Respuesta del servidor inválida.');
+          },
+          error: function () {
+            Swal.fire({ title: 'Error', text: 'Error en la comunicación', icon: 'error', timer: 1500, showConfirmButton: false });
           }
         });
       }
     });
+  };
+
+  // Funciones reutilizables de validación
+  function validarkeypress(er, e) {
+    const key = e.keyCode;
+    const tecla = String.fromCharCode(key);
+    if (!er.test(tecla)) {
+      e.preventDefault();
+      return false;
+    }
+    return true;
   }
-      
-    function muestraMensaje(icono, tiempo, titulo, mensaje) {
-        Swal.fire({
-            icon: icono,
-            timer: tiempo,
-            title: titulo,
-            html: mensaje,
-            showConfirmButton: false,
-        });
-    }
-    
 
-function validarkeypress(er, e){
-    key = e.keyCode;
-    tecla = String.fromCharCode(key);
-    a = er.test(tecla);
-    if (!a) e.preventDefault();
-}
-
-function validarkeyup(er, etiqueta, etiquetamensaje, mensaje) {
-    a = er.test(etiqueta.val());
-    if (a) {
-        etiquetamensaje.text("");
-        return 1;
+  function validarkeyup(er, input, span, mensaje) {
+    const valor = input.val();
+    if (er.test(valor)) {
+      input.removeClass('is-invalid').addClass('is-valid');
+      span.text('');
+      return true;
     } else {
-        etiquetamensaje.text(mensaje);
-        return 0;
+      input.removeClass('is-valid').addClass('is-invalid');
+      span.text(mensaje);
+      return false;
     }
-}
+  }
 
-function validarenvio() {
-    if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $("#nombre"), $("#snombre"), "Solo letras entre 3 y 30 caracteres") == 0) {
-        muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo nombre");
-        return false;
-    }
+  function validarEnvio() {
+    const nombreValido = validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $('#nombre'), $('#snombre'), 'Solo letras entre 3 y 30 caracteres');
+    const descValido = validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $('#descripcion'), $('#sdescripcion'), 'Solo letras entre 3 y 30 caracteres');
+    return nombreValido && descValido;
+  }
 
-    if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $("#descripcion"), $("#sdescripcion"), "Solo letras entre 3 y 30 caracteres") == 0) {
-        muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo descripción");
-        return false;
-    }
+  function validarModificacion() {
+    const nombreValido = validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $('#nombre_modificar'), $('#snombre_modificar'), 'Solo letras entre 3 y 30 caracteres');
+    const descValido = validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $('#descripcion_modificar'), $('#sdescripcion_modificar'), 'Solo letras entre 3 y 30 caracteres');
+    return nombreValido && descValido;
+  }
 
-    return true;
-}
 
-function validarModificacion() {
-    if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $("#nombre_modificar"), $("#snombre_modificar"), "Solo letras entre 3 y 30 caracteres") == 0) {
-        muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo nombre");
-        return false;
-    }
-
-    if (validarkeyup(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]{3,30}$/, $("#descripcion_modificar"), $("#sdescripcion_modificar"), "Solo letras entre 3 y 30 caracteres") == 0) {
-        muestraMensaje("error", 2000, "Error", "Datos incorrectos en campo descripción");
-        return false;
-    }
-
-    return true;
-}
+});
