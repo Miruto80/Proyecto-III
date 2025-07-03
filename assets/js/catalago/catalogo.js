@@ -293,32 +293,64 @@ $('#btnAyuda').on("click", function () {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.body.addEventListener('click', e => {
-      const btn = e.target.closest('.btn-favorito');
-      if (!btn) return;
-  
-      const idProducto = btn.dataset.id;
-      if (!idProducto) {
-        Swal.fire('Error', 'ID de producto no válido', 'error');
-        return;
+  document.body.addEventListener('click', e => {
+    const btn = e.target.closest('.btn-favorito');
+    if (!btn) return;
+
+    const idProducto = btn.dataset.id;
+    if (!idProducto) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'ID de producto no válido',
+        timer: 1500,
+        showConfirmButton: false,
+        willClose: () => location.reload()
+      });
+      return;
+    }
+
+    fetch('?pagina=listadeseo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'accion=agregar&id_producto=' + encodeURIComponent(idProducto)
+    })
+    .then(res => res.json())
+    .then(data => {
+      let icon = 'error';
+      let title = 'Error';
+      let text = data.message || 'No se pudo agregar.';
+
+      if (data.status === 'success') {
+        icon = 'success';
+        title = '¡Agregado!';
+        text = 'Producto añadido a tu lista de deseos.';
+      } else if (data.status === 'exists') {
+        icon = 'info';
+        title = 'Aviso';
+        text = 'Este producto ya está en tu lista.';
       }
-  
-      fetch('?pagina=listadeseo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'accion=agregar&id_producto=' + encodeURIComponent(idProducto)
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === 'success') {
-          Swal.fire('¡Agregado!', 'Producto añadido a tu lista de deseos.', 'success');
-        } else if (data.status === 'exists') {
-          Swal.fire('Aviso', 'Este producto ya está en tu lista.', 'info');
-        } else {
-          Swal.fire('Error', data.message || 'No se pudo agregar.', 'error');
-        }
-      })
-      .catch(() => Swal.fire('Error', 'Error al procesar la solicitud.', 'error'));
+
+      Swal.fire({
+        icon,
+        title,
+        text,
+        timer: 1500,
+        showConfirmButton: false,
+        willClose: () => location.reload()
+      });
+    })
+    .catch(() => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error al procesar la solicitud.',
+        timer: 1500,
+        showConfirmButton: false,
+        willClose: () => location.reload()
+      });
     });
   });
+});
+
   
