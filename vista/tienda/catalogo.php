@@ -173,7 +173,7 @@
                         
 
 <style>.btn-favorito.favorito-activo i.fa-heart {
-  color: #33ff39;
+  color: red;
 }
 </style>
 
