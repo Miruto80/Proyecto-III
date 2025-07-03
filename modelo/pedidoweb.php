@@ -93,22 +93,41 @@ class pedidoWeb extends Conexion {
             $stmtEliminar->execute([$id_pedido]);
 
             $conex->commit();
+            $conex->rollBack();
+            $conex = null;
             return ['respuesta' => 1, 'msg' => 'Pedido eliminado correctamente'];
         } catch (Exception $e) {
             $conex->rollBack();
             error_log("Error al eliminar pedido: " . $e->getMessage());
             return ['respuesta' => 0, 'msg' => 'Error al eliminar el pedido'];
+            $conex = null;
+        
         }
     }
 
     private function confirmarPedido($id_pedido) {
+        $conex = $this->getConex1();
+        try {
+                $conex->beginTransaction();
         $sql = "UPDATE pedido SET estado = 2 WHERE id_pedido = ?";
         $stmt = $this->getConex1()->prepare($sql);
         if ($stmt->execute([$id_pedido])) {
+            $conex->rollBack();
+            $conex = null;
             return ['respuesta' => 1, 'msg' => 'Pedido confirmado'];
         } else {
+            $conex->rollBack();
+            $conex = null;
             return ['respuesta' => 'error', 'msg' => 'No se pudo confirmar el pedido'];
         }
+    }catch (PDOException $e) {
+        if ($conex) {
+            $conex->rollBack();
+            $conex = null;
+        }
+        throw $e;
+    }
+
         
     }
 

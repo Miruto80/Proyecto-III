@@ -91,6 +91,9 @@ class VentaWeb extends Conexion {
     
     // Métodos privados para operaciones específicas
     private function validarStockCarrito($carrito, $conex) {
+        $conex = $this->getConex1();
+        try {
+                $conex->beginTransaction();
         foreach ($carrito as $item) {
             $stmt = $conex->prepare("SELECT stock_disponible, nombre FROM productos WHERE id_producto = :id_producto");
             $stmt->execute(['id_producto' => $item['id']]);
@@ -103,10 +106,21 @@ class VentaWeb extends Conexion {
             if ($item['cantidad'] > $producto['stock_disponible']) {
                 throw new Exception("No hay suficiente stock para el producto: {$producto['nombre']} (Disponible: {$producto['stock_disponible']}, Solicitado: {$item['cantidad']})");
             }
+
         }
+    }catch (PDOException $e) {
+        if ($conex) {
+            $conex->rollBack();
+            $conex = null;
+        }
+        throw $e;
+    }
     }
     
     private function registrarPedido($datos, $conex) {
+        $conex = $this->getConex1();
+        try {
+                $conex->beginTransaction();
         $sql = "INSERT INTO pedido (
             referencia_bancaria, telefono_emisor, banco, banco_destino, direccion, 
             id_metodopago, id_entrega, id_persona, estado, precio_total, tipo
@@ -131,31 +145,69 @@ class VentaWeb extends Conexion {
         ]);
         
         return $conex->lastInsertId();
+    }catch (PDOException $e) {
+        if ($conex) {
+            $conex->rollBack();
+            $conex = null;
+        }
+        throw $e;
+    }
     }
     
     private function registrarDetalle($detalle, $conex) {
+        $conex = $this->getConex1();
+        try {
+                $conex->beginTransaction();
         $sql = "INSERT INTO pedido_detalles (id_pedido, id_producto, cantidad, precio_unitario)
                 VALUES (:id_pedido, :id_producto, :cantidad, :precio_unitario)";
         
         $stmt = $conex->prepare($sql);
         $stmt->execute($detalle);
-        
+    
         return $conex->lastInsertId();
+
+    }catch (PDOException $e) {
+        if ($conex) {
+            $conex->rollBack();
+            $conex = null;
+        }
+        throw $e;
+    }
     }
     
     private function registrarPreliminar($datos, $conex) {
+        $conex = $this->getConex1();
+        try {
+                $conex->beginTransaction();
         $sql = "INSERT INTO preliminar (id_detalle, condicion) VALUES (:id_detalle, :condicion)";
         $stmt = $conex->prepare($sql);
         return $stmt->execute($datos);
+    }catch (PDOException $e) {
+        if ($conex) {
+            $conex->rollBack();
+            $conex = null;
+        }
+        throw $e;
+    }
     }
     
     private function actualizarStock($idProducto, $cantidad, $conex) {
+        $conex = $this->getConex1();
+        try {
+                $conex->beginTransaction();
         $sql = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad WHERE id_producto = :id_producto";
         $stmt = $conex->prepare($sql);
         return $stmt->execute([
             'id_producto' => $idProducto,
             'cantidad' => $cantidad
         ]);
+    }catch (PDOException $e) {
+        if ($conex) {
+            $conex->rollBack();
+            $conex = null;
+        }
+        throw $e;
+    }
     }
 
     public function vaciarCarrito() {

@@ -2,7 +2,7 @@
 
 require_once 'conexion.php';
 
-class Datos extends Conexion{
+class Datoscliente extends Conexion{
 
     
     public function __construct() {

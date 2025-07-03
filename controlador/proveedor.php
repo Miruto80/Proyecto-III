@@ -107,8 +107,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
         echo json_encode($res);
         exit;
     }
-}
+} else if($_SESSION["nivel_rol"] >=2) { // Validacion si es administrador entra
+       $bitacora = [
+            'id_persona' => $_SESSION["id"],
+            'accion' => 'Acceso a Módulo',
+            'descripcion' => 'módulo de Proveedor'
+        ];
+        $obj->registrarBitacora(json_encode($bitacora));
+
+       $registro = $obj->consultar();
+        require_once 'vista/proveedor.php';
+
+        } else if ($_SESSION["nivel_rol"] == 1) {
+
+            header("Location: ?pagina=catalogo");
+            exit();
+
+        } else {
+        require_once 'vista/seguridad/privilegio.php';
+    }
 
 // 2) Vista normal: consultar registros y renderizar
-$registro = $obj->consultar();
-require_once 'vista/proveedor.php';
+

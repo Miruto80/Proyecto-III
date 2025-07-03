@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     blockText:         'Solo puedes eliminar notificaciones entregadas.'
   });
 
-    $('#btnAyuda').on('click', function() {
+    $('#btnAyudanoti').on('click', function() {
     const DriverClass = window.driver.js.driver;
     if (typeof DriverClass !== 'function') {
       console.error('Driver.js v1 no detectado');
