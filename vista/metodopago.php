@@ -21,12 +21,7 @@
       </nav>
 
       <?php include 'complementos/nav.php'; ?>
-<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
-  <div class="preloader-wrapper">
-    <div class="preloader">
-    </div>
-  </div> 
-<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+
       <div class="container-fluid py-4">
         <div class="row">
           <div class="col-12">
@@ -50,16 +45,18 @@
                       </tr>
                     </thead>
                     <tbody id="metodopagoTableBody">
-                      <?php foreach ($registro as $dato): ?>
-                      <tr>
+                      <?php foreach ($metodos as $dato): ?>
+                        <tr id="fila-<?= $dato['id_metodopago']; ?>">
                         <td><?= $dato['id_metodopago']; ?></td>
                         <td><?= htmlspecialchars($dato['nombre']); ?></td>
                         <td><?= htmlspecialchars($dato['descripcion']); ?></td>
                         <td>
-                          <button class="btn btn-primary btn-sm"
-                                  onclick="abrirModalModificar(<?= $dato['id_metodopago']; ?>, '<?= htmlspecialchars($dato['nombre'], ENT_QUOTES); ?>', '<?= htmlspecialchars($dato['descripcion'], ENT_QUOTES); ?>')">
-                            <i class="fas fa-pencil-alt"></i>
-                          </button>
+                        <button class="btn-editar btn btn-primary btn-sm "
+  data-id="<?= $dato['id_metodopago']; ?>"
+  data-nombre="<?= htmlspecialchars($dato['nombre']); ?>"
+  data-descripcion="<?= htmlspecialchars($dato['descripcion']); ?>">
+  <i class="fas fa-pencil-alt"></i>
+</button>
                           <button class="btn btn-danger btn-sm" onclick="eliminarMetodoPago(<?= $dato['id_metodopago']; ?>)">
                             <i class="fas fa-trash-alt"></i>
                           </button>
@@ -76,64 +73,70 @@
         </div>
       </div>
 
-      <!-- Modal registrar -->
-      <div class="modal fade" id="registro" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+       <!-- Modal registrar -->
+       <div class="modal fade" id="registro" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header header-color">
               <h1 class="modal-title fs-5">Registrar Método de Pago</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-            <form id="formRegistrar" autocomplete="off">
-    <label>Nombre</label>
-    <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ej: Tarjeta de crédito" required>
-    <small id="snombre" class="text-danger"></small> <!-- Mensaje de error aquí -->
-
-    <label class="mt-2">Descripción</label>
-    <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Ej: Visa, MasterCard, etc." required>
-    <small id="sdescripcion" class="text-danger"></small> <!-- Mensaje de error aquí -->
-
-    <div class="text-center mt-4">
-        <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
-        <button type="reset" class="btn btn-secondary">Limpiar</button>
-    </div>
-</form>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal modificar -->
-      <div class="modal fade" id="modificar" tabindex="-1" aria-labelledby="modificarLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Modificar Método de Pago</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-            <form id="formModificar" autocomplete="off">
-    <input type="hidden" name="id_metodopago" id="id_metodopago_modificar">
-    
-    <label>Nombre</label>
-    <input type="text" class="form-control" name="nombre" id="nombre_modificar" required>
-    <small id="snombre_modificar" class="text-danger"></small> <!-- Mensaje de error aquí -->
-
-    <label class="mt-2">Descripción</label>
-    <input type="text" class="form-control" name="descripcion" id="descripcion_modificar" required>
-    <small id="sdescripcion_modificar" class="text-danger"></small> <!-- Mensaje de error aquí -->
-
-    <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="btnModificar">Modificar</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-    </div>
-</form>
+              <form id="formRegistrar" autocomplete="off">
+               <div class="mb-3">
+                  <label  for="nombre" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ej: Tarjeta de credito" required>
+                  <span id="snombre" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                  <label for="descripcion" class="form-label">Descripción</label>
+                  <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Ej: Visa, MasterCard, etc." required>
+                  <span id="sdescripcion" class="text-danger"></span>
+                </div>
+                <div class="text-center mt-4">
+                  <button type="button" class="btn btn-primary" id="registrar">Registrar</button>
+                  <button type="reset" class="btn btn-secondary">Limpiar</button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
- </div>
+
+     <!-- Modal modificar -->
+<div class="modal fade" id="modificar" tabindex="-1" aria-labelledby="modificarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header header-color">
+        <h1 class="modal-title fs-5">Modificar Método de Pago</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formModificar">
+          <input type="hidden" id="id_pago_modificar">
+
+          <div class="form-group mb-3">
+            <label for="nombre_modificar">Nombre</label>
+            <input type="text" class="form-control" id="nombre_modificar" placeholder="Nombre del método">
+            <span class="text-danger" id="snombre_modificar"></span>
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="descripcion_modificar">Descripción</label>
+            <input type="text" class="form-control" id="descripcion_modificar" placeholder="Descripción del método">
+            <span class="text-danger" id="sdescripcion_modificar"></span>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">   
+         <button type="button" class="btn btn-primary" id="btnModificar">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+    
+      </div>
+    </div>
+  </div>
+</div>
 <?php include 'complementos/footer.php'; ?>
 <script src="assets/js/metodopago.js"></script>
 
