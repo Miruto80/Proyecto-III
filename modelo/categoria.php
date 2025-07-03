@@ -1,74 +1,85 @@
 <?php
 require_once 'conexion.php';
-class categoria extends Conexion {
-    private $conex1;
-    private $conex2;
-    private $nombre;
-    private $id_categoria;
-    public function __construct() {
-        parent::__construct(); // Llama al constructor de la clase padre
 
-        // Obtener las conexiones de la clase padre
-        $this->conex1 = $this->getConex1();
-        $this->conex2 = $this->getConex2();
-    
-         // Verifica si las conexiones son exitosas
-        if (!$this->conex1) {
-            die('Error al conectar con la primera base de datos');
-        }
+class Categoria extends Conexion {
+  /**
+   * Inserta un registro en la bitácora.
+   * Recibe un JSON con keys: id_persona, accion, descripcion
+   */
+  public function registrarBitacora(string $jsonDatos): bool {
+    $datos = json_decode($jsonDatos, true);
+    $sql   = "INSERT INTO bitacora
+                (accion, fecha_hora, descripcion, id_persona)
+              VALUES
+                (:accion, NOW(), :descripcion, :id_persona)";
+    $stmt = $this->getConex2()->prepare($sql);
+    return $stmt->execute([
+      'accion'      => $datos['accion']      ?? '',
+      'descripcion' => $datos['descripcion'] ?? '',
+      'id_persona'  => $datos['id_persona']  ?? 0
+    ]);
+  }
 
-        if (!$this->conex2) {
-            die('Error al conectar con la segunda base de datos');
-        }
-    }
-    public function registrar() {
-        $registro = "INSERT INTO categoria(nombre, estatus) VALUES (:nombre, 1)";
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':nombre', $this->nombre);
-        $resul = $strExec->execute();
-        return $resul ? ['respuesta' => 1, 'accion' => 'incluir'] : ['respuesta' => 0, 'accion' => 'incluir'];
-    }
-    public function modificar() {
-        $registro = "UPDATE categoria SET nombre = :nombre WHERE id_categoria = :id_categoria";
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':nombre', $this->nombre);
-        $strExec->bindParam(':id_categoria', $this->id_categoria);
-        $resul = $strExec->execute();
-        return $resul ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
-    }
- 
-    public function eliminar() {
-        $registro = "UPDATE categoria SET estatus = 0 WHERE id_categoria = :id_categoria";
-        $strExec = $this->conex1->prepare($registro);
-        $strExec->bindParam(':id_categoria', $this->id_categoria);
-        $resul = $strExec->execute();
-        return $resul ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
-    }
+  /**
+   * Procesa operaciones JSON-driven: incluir, actualizar, eliminar
+   */
+  public function procesarCategoria(string $jsonDatos): array {
+    $payload   = json_decode($jsonDatos, true);
+    $operacion = $payload['operacion'] ?? '';
+    $d         = $payload['datos']    ?? [];
 
-    public function consultar() {
-        $registro = "SELECT * FROM categoria WHERE estatus = 1 ";
-        $consulta = $this->conex1->prepare($registro);
-        $resul = $consulta->execute();
-        return $resul ? $consulta->fetchAll(PDO::FETCH_ASSOC) : [];
+    try {
+      switch ($operacion) {
+        case 'incluir':    return $this->insertar($d);
+        case 'actualizar': return $this->actualizar($d);
+        case 'eliminar':   return $this->eliminarLogico($d);
+        default:
+          return ['respuesta'=>0,'accion'=>$operacion,'mensaje'=>'Operación inválida'];
+      }
+    } catch (PDOException $e) {
+      return ['respuesta'=>0,'accion'=>$operacion,'mensaje'=>$e->getMessage()];
     }
+  }
 
-    public function registrarBitacora($id_persona, $accion, $descripcion) {
-    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
-    
-    $strExec = $this->conex2->prepare($consulta);
-    $strExec->bindParam(':accion', $accion);
-    $strExec->bindParam(':descripcion', $descripcion);
-    $strExec->bindParam(':id_persona', $id_persona);
-    
-    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
-    }
+  private function insertar(array $d): array {
+    $sql  = "INSERT INTO categoria (nombre,estatus) VALUES (:nombre,1)";
+    $stmt = $this->getConex1()->prepare($sql);
+    $ok   = $stmt->execute(['nombre'=>$d['nombre']]);
+    return [
+      'respuesta'=> $ok?1:0,
+      'accion'   =>'incluir',
+      'mensaje'  => $ok?'Categoría creada':'Error al crear'
+    ];
+  }
 
-    public function set_Nombre($nombre) {
-        $this->nombre = $nombre;
-    }
-    public function set_Id_categoria($id_categoria) {
-        $this->id_categoria = $id_categoria;
-    }
+  private function actualizar(array $d): array {
+    $sql  = "UPDATE categoria SET nombre=:nombre WHERE id_categoria=:id";
+    $stmt = $this->getConex1()->prepare($sql);
+    $ok   = $stmt->execute([
+      'id'     => $d['id_categoria'],
+      'nombre' => $d['nombre']
+    ]);
+    return [
+      'respuesta'=> $ok?1:0,
+      'accion'   =>'actualizar',
+      'mensaje'  => $ok?'Categoría actualizada':'Error al actualizar'
+    ];
+  }
+
+  private function eliminarLogico(array $d): array {
+    $sql  = "UPDATE categoria SET estatus=0 WHERE id_categoria=:id";
+    $stmt = $this->getConex1()->prepare($sql);
+    $ok   = $stmt->execute(['id'=>$d['id_categoria']]);
+    return [
+      'respuesta'=> $ok?1:0,
+      'accion'   =>'eliminar',
+      'mensaje'  => $ok?'Categoría eliminada':'Error al eliminar'
+    ];
+  }
+
+  public function consultarActivas(): array {
+    $sql  = "SELECT id_categoria,nombre FROM categoria WHERE estatus=1";
+    return $this->getConex1()->query($sql)
+                ->fetchAll(PDO::FETCH_ASSOC);
+  }
 }
-?>
