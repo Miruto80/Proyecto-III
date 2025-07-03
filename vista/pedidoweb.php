@@ -117,7 +117,7 @@
 
  <div class="d-flex gap-2">
 
-          <button type="button" class="btn btn-primary" id="btnAyuda">
+          <button type="button" class="btn btn-primary" id="btnayuda">
     <span class="icon text-white">
       <i class="fas fa-info-circle"></i>
     </span>
