@@ -178,8 +178,8 @@ $resultadoProveedores = $entrada->procesarCompra(json_encode(['operacion' => 'co
 $proveedores = $resultadoProveedores['datos'];
 
 if(isset($_POST['generar'])){
-    $entrada->generarPDF();
-    exit; // Evitar que se cargue la vista después del PDF
+    // Eliminado: $entrada->generarPDF();
+    // Eliminado: exit; // Evitar que se cargue la vista después del PDF
 }
 
 // Generar gráfico antes de cargar la vista

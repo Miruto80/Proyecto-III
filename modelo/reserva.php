@@ -7,6 +7,7 @@ class Reserva extends Conexion{
     private $id_reserva;
     private $fecha_apartado;
     private $id_persona;
+    private $estatus;
     
 function __construct() {
         parent::__construct(); // Llama al constructor de la clase padre
@@ -18,6 +19,7 @@ function __construct() {
         $this->id_reserva = 0;
         $this->fecha_apartado = '';
         $this->id_persona = 0;
+        $this->estatus = 1; // Por defecto activo
     }
     
     // Getters y Setters
@@ -45,6 +47,14 @@ function __construct() {
         $this->id_persona = $id_persona;
     }
 
+    public function get_Estatus() {
+        return $this->estatus;
+    }
+    
+    public function set_Estatus($estatus) {
+        $this->estatus = $estatus;
+    }
+
     public function registrarBitacora($id_persona, $accion, $descripcion) {
     $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
                  VALUES (:accion, NOW(), :descripcion, :id_persona)";
@@ -64,11 +74,12 @@ function __construct() {
         try {
             $this->conex1->beginTransaction();
             
-            // Insertar encabezado de reserva
-           $sql = "INSERT INTO reserva (fecha_apartado, id_persona) VALUES (?, ?)";
+            // Insertar encabezado de reserva con estatus 1 (Activo) por defecto
+           $sql = "INSERT INTO reserva (fecha_apartado, id_persona, estatus) VALUES (?, ?, ?)";
             $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->fecha_apartado);
             $stmt->bindParam(2, $this->id_persona);
+            $stmt->bindParam(3, $this->estatus);
             
             if (!$stmt->execute()) {
                 $this->conex1->rollBack();
@@ -133,9 +144,24 @@ function __construct() {
         }
     }
     
-    // Modificar reserva
+    // Modificar reserva (solo si está activa)
     public function modificar() {
         try {
+            // Verificar que la reserva esté activa antes de modificar
+            $sqlCheck = "SELECT estatus FROM reserva WHERE id_reserva = ?";
+            $stmtCheck = $this->conex1->prepare($sqlCheck);
+            $stmtCheck->bindParam(1, $this->id_reserva);
+            $stmtCheck->execute();
+            $reserva = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$reserva) {
+                return ['respuesta' => 0, 'accion' => 'actualizar', 'mensaje' => 'Reserva no encontrada'];
+            }
+            
+            if ($reserva['estatus'] != 1) {
+                return ['respuesta' => 0, 'accion' => 'actualizar', 'mensaje' => 'No se puede modificar una reserva que no está activa'];
+            }
+            
             $sql = "UPDATE reserva SET fecha_apartado = ?, id_persona = ? WHERE id_reserva = ?";
             $stmt = $this->conex1->prepare($sql);
             $stmt->bindParam(1, $this->fecha_apartado);
@@ -143,7 +169,6 @@ function __construct() {
             $stmt->bindParam(3, $this->id_reserva);
             
             if ($stmt->execute()) {
-                
                 return ['respuesta' => 1, 'accion' => 'actualizar', 'mensaje' => 'Reserva modificada correctamente'];
             } else {
                 return ['respuesta' => 0, 'accion' => 'actualizar', 'mensaje' => 'Error al modificar la reserva'];
@@ -153,9 +178,59 @@ function __construct() {
         }
     }
     
-    // Eliminar reserva y sus detalles
+    // Cambiar estado de la reserva
+    public function cambiarEstado($nuevo_estatus) {
+        try {
+            // Verificar que la reserva existe
+            $sqlCheck = "SELECT estatus FROM reserva WHERE id_reserva = ?";
+            $stmtCheck = $this->conex1->prepare($sqlCheck);
+            $stmtCheck->bindParam(1, $this->id_reserva);
+            $stmtCheck->execute();
+            $reserva = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$reserva) {
+                return ['respuesta' => 0, 'accion' => 'cambiar_estado', 'mensaje' => 'Reserva no encontrada'];
+            }
+            
+            // No permitir cambiar estado si ya está inactiva o entregada
+            if ($reserva['estatus'] == 0 || $reserva['estatus'] == 2) {
+                return ['respuesta' => 0, 'accion' => 'cambiar_estado', 'mensaje' => 'No se puede cambiar el estado de una reserva inactiva o entregada'];
+            }
+            
+            $sql = "UPDATE reserva SET estatus = ? WHERE id_reserva = ?";
+            $stmt = $this->conex1->prepare($sql);
+            $stmt->bindParam(1, $nuevo_estatus);
+            $stmt->bindParam(2, $this->id_reserva);
+            
+            if ($stmt->execute()) {
+                $estado_texto = $nuevo_estatus == 0 ? 'inactiva' : 'entregada';
+                return ['respuesta' => 1, 'accion' => 'cambiar_estado', 'mensaje' => "Reserva marcada como $estado_texto correctamente"];
+            } else {
+                return ['respuesta' => 0, 'accion' => 'cambiar_estado', 'mensaje' => 'Error al cambiar el estado de la reserva'];
+            }
+        } catch (Exception $e) {
+            return ['respuesta' => 0, 'accion' => 'cambiar_estado', 'mensaje' => 'Error: ' . $e->getMessage()];
+        }
+    }
+    
+    // Eliminar reserva y sus detalles (solo si está activa)
     public function eliminar() {
         try {
+            // Verificar que la reserva esté activa antes de eliminar
+            $sqlCheck = "SELECT estatus FROM reserva WHERE id_reserva = ?";
+            $stmtCheck = $this->conex1->prepare($sqlCheck);
+            $stmtCheck->bindParam(1, $this->id_reserva);
+            $stmtCheck->execute();
+            $reserva = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$reserva) {
+                return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Reserva no encontrada'];
+            }
+            
+            if ($reserva['estatus'] != 1) {
+                return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'No se puede eliminar una reserva que no está activa'];
+            }
+            
             $this->conex1->beginTransaction();
     
             // Obtener los productos y cantidades antes de eliminar
@@ -236,11 +311,10 @@ function __construct() {
         }
     }
     
-    //sdifsd
     // Consultar todas las reservas 
     public function consultarTodos() {
         try {
-            $sql = "SELECT r.id_reserva, r.fecha_apartado, 
+            $sql = "SELECT r.id_reserva, r.fecha_apartado, r.estatus,
                 p.nombre, p.apellido, p.id_persona 
                  FROM reserva r 
                 INNER JOIN cliente p ON r.id_persona = p.id_persona 

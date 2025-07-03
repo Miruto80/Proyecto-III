@@ -59,13 +59,6 @@
     </span>
     <span class="text-white">Ayuda</span>
   </button>
-
-  <form id="formGenerarPDF" method="POST" target="_blank">
-    <input type="hidden" name="nombre" value="Listado de proveedores">
-    <button type="submit" name="generar" class="btn btn-info">
-      Generar PDF
-    </button>
-  </form>
 </div>
       </div>
           

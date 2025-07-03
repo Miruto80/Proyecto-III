@@ -499,8 +499,9 @@ class Salida extends Conexion {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
-            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total, referencia_bancaria, telefono_emisor, banco, banco_destino, direccion, id_entrega, id_metodopago, id_persona) VALUES ('1', NOW(), '1', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total, referencia_bancaria, telefono_emisor, banco, banco_destino, direccion, id_entrega, id_metodopago, id_persona) VALUES ('1', NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $params = [
+                '1', // estado inicial
                 $datos['precio_total'],
                 $datos['referencia_bancaria'],
                 $datos['telefono_emisor'],
