@@ -38,10 +38,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             echo json_encode(['respuesta' => 0, 'mensaje' => 'Falta el ID del pedido para eliminar']);
         }
+    } else if  (!empty($_POST['id_pedido']) && isset($_POST['estado_delivery']) && isset($_POST['direccion'])) {
+        $datosPeticion = [
+            'operacion' => 'delivery',
+            'datos' => [
+                'id_pedido' => $_POST['id_pedido'],
+                'estado_delivery' => $_POST['estado_delivery'],
+                'direccion' => $_POST['direccion']
+            ]
+        
+        ];
+        $respuesta = $objPedidoWeb->procesarPedidoweb(json_encode($datosPeticion));
+        echo json_encode($respuesta);
+    } else {
+        echo json_encode(['respuesta' => 0, 'mensaje' => 'Faltan datos para actualizar delivery']);
     }
+    
 
     exit;
 }
+
+
 
 // Cargar vista con pedidos y detalles (GET)
 $pedidos = $objPedidoWeb->consultarPedidosCompletos();

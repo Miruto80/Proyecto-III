@@ -1,35 +1,39 @@
 $(document).ready(function() {
 
   // Mostrar detalles del pedido en modal
-  $('.ver-detalles').on('click', function() {
-    let detallesJSON = $(this).attr('data-detalles');
-    if (!detallesJSON) return;
+  $(document).on('click', '.ver-detalles', function () {
+    const detalles = $(this).data('detalles');
+    let html = '';
 
-    let detalles = [];
-    try {
-      detalles = JSON.parse(detallesJSON);
-    } catch (e) {
-      console.error('Error parseando detalles:', e);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo cargar los detalles del pedido',
+    if (Array.isArray(detalles) && detalles.length > 0) {
+      html += `<table class="table table-bordered table-hover">
+                <thead class="table-secondary">
+                  <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>`;
+      
+      detalles.forEach(det => {
+        html += `
+          <tr>
+            <td>${det.nombre_producto || 'Producto'}</td>
+            <td>${det.cantidad}</td>
+            <td>${det.precio}</td>
+            <td>${(det.cantidad * det.precio).toFixed(2)}$</td>
+          </tr>`;
       });
-      return;
+
+      html += `</tbody></table>`;
+    } else {
+      html = `<p class="text-center">No hay detalles disponibles para este pedido.</p>`;
     }
 
-    $('#tbody-detalles-producto').empty();
-
-    detalles.forEach(det => {
-      let fila = `<tr>
-                    <td>${det.nombre}</td>
-                    <td>${det.cantidad}</td>
-                    <td>${det.precio_unitario}</td>
-                  </tr>`;
-      $('#tbody-detalles-producto').append(fila);
-    });
-
-    $('#modalDetallesProducto').modal('show');
+    $('#contenidoDetallesPedido').html(html);
+    $('#modalDetallesPedido').modal('show');
   });
 
   // Confirmar pedido
@@ -139,6 +143,71 @@ $(document).ready(function() {
       }
     });
   });
+});
+
+  // Actualizar estado delivery y dirección
+  $(document).on('submit', '.form-delivery', function(e) {
+    e.preventDefault();
+
+    const $form = $(this);
+    const idPedido = $form.find('input[name="id_pedido"]').val();
+    const estadoDelivery = $form.find('select[name="estado_delivery"]').val();
+    const direccion = $form.find('input[name="direccion"]').val();
+
+    if (!idPedido || !estadoDelivery || !direccion) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Faltan datos',
+            text: 'Por favor completa todos los campos para actualizar delivery.'
+        });
+        return;
+    }
+
+    const postData = {
+        id_pedido: idPedido,
+        estado_delivery: estadoDelivery,
+        direccion: direccion
+    };
+
+    Swal.fire({
+        title: 'Actualizando estado delivery...',
+        html: 'Por favor espera.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    $.ajax({
+        url: 'controlador/pedidoweb.php',
+        type: 'POST',
+        data: postData,
+        dataType: 'json'
+    }).done(function(res) {
+        Swal.close();
+        if (res.respuesta == 1) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Listo!',
+                text: 'Estado de delivery actualizado correctamente',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => location.reload());
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: res.mensaje || 'No se pudo actualizar el estado delivery'
+            });
+        }
+    }).fail(function() {
+        Swal.close();
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error en la comunicación con el servidor'
+        });
+    });
 });
 
 
