@@ -84,26 +84,25 @@
               }
           
               $estatus_texto = array(
-                0 => "Rechazado",
-                1 => "Pendiente",
-                2 => "Validado",
+                '0' => 'Anulado',
+             '1' => 'Verificar pago',
+             '2' => 'Entregado',
+             '3' => 'Pendiente envío',
+             '4' => 'En camino',
+             '5' => 'Enviado',
+           
+               );
           
-              );
-          
-              $badgeClass = '';
-              switch (strtolower($pedido['estado'])) {
-                  case '2':
-                      $badgeClass = 'bg-primary';
-                      break;
-                  case '1':
-                      $badgeClass = 'bg-warning';
-                      break;
-                  case '0':
-                      $badgeClass = 'bg-danger';
-                      break;
-                  default:
-                      $badgeClass = 'bg-secondary';
-              }
+             
+    $badgeClass = '';
+    switch (strtolower($pedido['estado'])) {
+      case '0': $badgeClass = 'bg-danger'; break;
+      case '1': $badgeClass = 'bg-warning'; break;
+      case '2': $badgeClass = 'bg-primary'; break;
+      case '3': $badgeClass = 'bg-success'; break;
+      case '4': $badgeClass = 'bg-info'; break;
+      default:  $badgeClass = 'bg-secondary';
+    }
           
             
           ?>

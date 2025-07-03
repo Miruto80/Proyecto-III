@@ -1,27 +1,20 @@
-<?php 
-
+<?php
 require_once __DIR__ . '/../modelo/conexion.php';
 
-
 class metodoentrega extends Conexion {
-   
- 
-
     public function __construct() {
         parent::__construct(); 
     }
 
-
     public function procesarMetodoEntrega($jsonDatos){
         $datos = json_decode($jsonDatos, true);
-        $operacion = $datos ['operacion']?? '';
-        $datosProcesar = $datos ['datos']?? [];
+        $operacion = $datos['operacion'] ?? '';
+        $datosProcesar = $datos['datos'] ?? [];
 
-        try{
-            switch($operacion){
+        try {
+            switch ($operacion) {
                 case 'incluir':
                     return $this->registrar($datosProcesar['nombre'], $datosProcesar['descripcion']);
-        
                 case 'modificar':
                     return $this->modificar(
                         $datosProcesar['id_entrega'],
@@ -30,78 +23,62 @@ class metodoentrega extends Conexion {
                     );
                 case 'eliminar':
                     return $this->eliminar($datosProcesar['id_entrega']);
-        
-                 default:
-                 return ['respuesta' => 0, 'mensaje' => 'Operación no válida'];  
-
+                default:
+                    return ['respuesta' => 0, 'mensaje' => 'Operación no válida'];  
             }
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return ['respuesta' => 0, 'accion' => $operacion, 'error' => $e->getMessage()];
         }
     }
-   
 
-    private function registrar($nombre,$descripcion) {
-    $conex = $this->getConex1();
-    try {
+    private function registrar($nombre, $descripcion) {
+        $conex = $this->getConex1();
+        try {
             $conex->beginTransaction();
-        $sql = "INSERT INTO metodo_entrega(nombre, descripcion, estatus) VALUES (:nombre, :descripcion, 1)";
-        $stmt = $this->getConex1()->prepare($sql);
-        $result = $stmt->execute([
-            'nombre' =>$nombre,
-            'descripcion'=>$descripcion
-        ]);
-        $conex->rollBack();
-        $conex = null;
-        return $result ? ['respuesta' => 1, 'accion' => 'incluir'] : ['respuesta' => 0, 'accion' => 'incluir'];
-    }catch (PDOException $e) {
-        if ($conex) {
+            $sql = "INSERT INTO metodo_entrega(nombre, descripcion, estatus) VALUES (:nombre, :descripcion, 1)";
+            $stmt = $conex->prepare($sql);
+            $result = $stmt->execute([
+                'nombre' => $nombre,
+                'descripcion' => $descripcion
+            ]);
+            $conex->commit();
+            return $result ? ['respuesta' => 1, 'accion' => 'incluir'] : ['respuesta' => 0, 'accion' => 'incluir'];
+        } catch (PDOException $e) {
             $conex->rollBack();
-            $conex = null;
+            throw $e;
         }
-        throw $e;
-    }
     }
 
-    private function modificar($id_entrega , $nombre , $descripcion) {
-    $conex = $this->getConex1();
-    try {
-                $conex->beginTransaction();   
-        $sql = "UPDATE metodo_entrega SET nombre = :nombre, descripcion = :descripcion WHERE id_entrega = :id_entrega";
-        $stmt = $this->getConex1()->prepare($sql);
-        $result = $stmt->execute([
-           'id_entrega'=>$id_entrega ,
-           'nombre'=>$nombre,
-           'descripcion'=>$descripcion 
-        ]);
-        $conex->rollBack();
-        $conex = null;
-        return $result ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
-    } catch (PDOException $e) {
-        if ($conex) {
+    private function modificar($id_entrega, $nombre, $descripcion) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();   
+            $sql = "UPDATE metodo_entrega SET nombre = :nombre, descripcion = :descripcion WHERE id_entrega = :id_entrega";
+            $stmt = $conex->prepare($sql);
+            $result = $stmt->execute([
+                'id_entrega' => $id_entrega,
+                'nombre'     => $nombre,
+                'descripcion'=> $descripcion
+            ]);
+            $conex->commit();
+            return $result ? ['respuesta' => 1, 'accion' => 'actualizar'] : ['respuesta' => 0, 'accion' => 'actualizar'];
+        } catch (PDOException $e) {
             $conex->rollBack();
-            $conex = null;
+            throw $e;
         }
-        throw $e;
     }
-    }
-
 
     private function eliminar($id_entrega) {
         $conex = $this->getConex1();
         try {
-                    $conex->beginTransaction();   
-        $sql = "UPDATE metodo_entrega SET estatus = 0 WHERE id_entrega = :id_entrega";
-        $stmt = $this->getConex1()->prepare($sql);
-        $result = $stmt->execute(['id_entrega'=>$id_entrega]);
-        $conex->rollBack();
-        $conex = null;
-        return $result ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
-        }catch (PDOException $e) {
-            if ($conex) {
-                $conex->rollBack();
-                $conex = null;
-            }
+            $conex->beginTransaction();   
+            $sql = "UPDATE metodo_entrega SET estatus = 0 WHERE id_entrega = :id_entrega";
+            $stmt = $conex->prepare($sql);
+            $result = $stmt->execute(['id_entrega' => $id_entrega]);
+            $conex->commit();
+            return $result ? ['respuesta' => 1, 'accion' => 'eliminar'] : ['respuesta' => 0, 'accion' => 'eliminar'];
+        } catch (PDOException $e) {
+            $conex->rollBack();
             throw $e;
         }
     }
@@ -109,12 +86,8 @@ class metodoentrega extends Conexion {
     public function consultar() {
         $sql = "SELECT * FROM metodo_entrega WHERE estatus = 1";
         $stmt = $this->getConex1()->prepare($sql);
-         $stmt->execute();
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-
-
 }
-
 ?>

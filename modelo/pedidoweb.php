@@ -23,6 +23,9 @@ class pedidoWeb extends Conexion {
 
                 case 'eliminar':
                     return $this->eliminarPedido($datosProcesar);
+
+                case 'delivery':
+                        return $this->actualizarDelivery($datosProcesar);    
                 
                 default:
                     return    ['respuesta' => 0, 'mensaje' => 'Operación no válida'];
@@ -38,6 +41,7 @@ class pedidoWeb extends Conexion {
                     p.tipo,
                     p.fecha,
                     p.estado,
+                    p.direccion,
                     p.precio_total,
                     p.referencia_bancaria,
                     p.telefono_emisor,
@@ -92,8 +96,7 @@ class pedidoWeb extends Conexion {
             $stmtEliminar = $conex->prepare($sqlEliminar);
             $stmtEliminar->execute([$id_pedido]);
 
-            $conex->commit();
-            $conex->rollBack();
+         
             $conex = null;
             return ['respuesta' => 1, 'msg' => 'Pedido eliminado correctamente'];
         } catch (Exception $e) {
@@ -116,7 +119,7 @@ class pedidoWeb extends Conexion {
             $conex = null;
             return ['respuesta' => 1, 'msg' => 'Pedido confirmado'];
         } else {
-            $conex->rollBack();
+            
             $conex = null;
             return ['respuesta' => 'error', 'msg' => 'No se pudo confirmar el pedido'];
         }
@@ -130,6 +133,25 @@ class pedidoWeb extends Conexion {
 
         
     }
+
+    private function actualizarDelivery($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+    
+            $sql = "UPDATE pedido SET estado = ?, direccion = ? WHERE id_pedido = ?";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute([$datos['estado_delivery'], $datos['direccion'], $datos['id_pedido']]);
+    
+            $conex->commit();
+            return ['respuesta' => 1, 'msg' => 'Estado actualizado correctamente'];
+        } catch (Exception $e) {
+            $conex->rollBack();
+            error_log("Error al actualizar delivery: " . $e->getMessage());
+            return ['respuesta' => 0, 'msg' => 'Error al actualizar estado'];
+        }
+    }
+    
 
 
    
