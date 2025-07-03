@@ -2,409 +2,307 @@
 require_once 'conexion.php';
 
 class Reserva extends Conexion{
-    private $conex1;
-    private $conex2;
-    private $id_reserva;
-    private $fecha_apartado;
-    private $id_persona;
-    private $estatus;
-    
-function __construct() {
-        parent::__construct(); // Llama al constructor de la clase padre
-
-        // Obtener las conexiones de la clase padre
-        $this->conex1 = $this->getConex1();
-        $this->conex2 = $this->getConex2();
-
-        $this->id_reserva = 0;
-        $this->fecha_apartado = '';
-        $this->id_persona = 0;
-        $this->estatus = 1; // Por defecto activo
-    }
-    
-    // Getters y Setters
-    public function get_Id_reserva() {
-        return $this->id_reserva;
-    }
-    
-    public function set_Id_reserva($id_reserva) {
-        $this->id_reserva = $id_reserva;
-    }
-    
-    public function get_Fecha_apartado() {
-        return $this->fecha_apartado;
-    }
-    
-    public function set_Fecha_apartado($fecha_apartado) {
-        $this->fecha_apartado = $fecha_apartado;
-    }
-    
-    public function get_Id_persona() {
-        return $this->id_persona;
-    }
-    
-    public function set_Id_persona($id_persona) {
-        $this->id_persona = $id_persona;
+    public function __construct() {
+        parent::__construct();
     }
 
-    public function get_Estatus() {
-        return $this->estatus;
-    }
-    
-    public function set_Estatus($estatus) {
-        $this->estatus = $estatus;
-    }
-
-    public function registrarBitacora($id_persona, $accion, $descripcion) {
-    $consulta = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                 VALUES (:accion, NOW(), :descripcion, :id_persona)";
-    
-    $strExec = $this->conex2->prepare($consulta);
-    $strExec->bindParam(':accion', $accion);
-    $strExec->bindParam(':descripcion', $descripcion);
-    $strExec->bindParam(':id_persona', $id_persona);
-    
-    return $strExec->execute(); // Devuelve true si la inserción fue exitosa
-    }
-    
-    
-    // Métodos CRUD
-    // Registrar reserva y sus detalles
-    public function registrar($productos, $cantidades, $precios_unit) {
+    public function registrarBitacora($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
         try {
-            $this->conex1->beginTransaction();
-            
-            // Insertar encabezado de reserva con estatus 1 (Activo) por defecto
-           $sql = "INSERT INTO reserva (fecha_apartado, id_persona, estatus) VALUES (?, ?, ?)";
-            $stmt = $this->conex1->prepare($sql);
-            $stmt->bindParam(1, $this->fecha_apartado);
-            $stmt->bindParam(2, $this->id_persona);
-            $stmt->bindParam(3, $this->estatus);
-            
-            if (!$stmt->execute()) {
-                $this->conex1->rollBack();
-                return ['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Error al registrar la reserva'];
+            $conex = $this->getConex2();
+            $conex->beginTransaction();
+            $sql = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) VALUES (:accion, NOW(), :descripcion, :id_persona)";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute($datos);
+            $conex->commit();
+            $conex = null;
+            return ['respuesta' => 1, 'mensaje' => 'Registro en bitácora exitoso'];
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
             }
-            
-            $id_reserva = $this->conex1->lastInsertId();
-            $this->id_reserva = $id_reserva;
-            
-            // Insertar detalles de reserva
-            for ($i = 0; $i < count($productos); $i++) {
-                if (empty($productos[$i])) continue;
-                
-                $id_producto = $productos[$i];
-                $cantidad = $cantidades[$i];
-                $precio = $precios_unit[$i];
-
-                // Verificar stock disponible antes de insertar
-                $sqlStock = "SELECT p.stock_disponible, p.nombre FROM productos p WHERE p.id_producto = ?";
-                $stmtStock = $this->conex1->prepare($sqlStock);
-                $stmtStock->bindParam(1, $id_producto);
-                $stmtStock->execute();
-                $producto = $stmtStock->fetch(PDO::FETCH_ASSOC);
-                
-                if (!$producto || $producto['stock_disponible'] < $cantidad) {
-                    $this->conex1->rollBack();
-                    return ['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Stock insuficiente para: ' . $producto['nombre']];
-                }
-                
-                // Insertar detalle de reserva
-                $sql = "INSERT INTO reserva_detalles (cantidad, precio, id_reserva, id_producto) VALUES (?, ?, ?, ?)";
-                $stmt = $this->conex1->prepare($sql);
-                $stmt->bindParam(1, $cantidad);
-                $stmt->bindParam(2, $precio);
-                $stmt->bindParam(3, $id_reserva);
-                $stmt->bindParam(4, $id_producto);
-                
-                if (!$stmt->execute()) {
-                    $this->conex1->rollBack();
-                    return ['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Error al registrar los detalles'];
-                }
-                
-                // Actualizar el stock del producto
-                $sqlUpdate = "UPDATE productos SET stock_disponible = stock_disponible - ? WHERE id_producto = ?";
-                $stmtUpdate = $this->conex1->prepare($sqlUpdate);
-                $stmtUpdate->bindParam(1, $cantidad);
-                $stmtUpdate->bindParam(2, $id_producto);
-                
-                if (!$stmtUpdate->execute()) {
-                    $this->conex1->rollBack();
-                    return ['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Error al actualizar el stock'];
-                }
-            }
-            
-            $this->conex1->commit();
-            return ['respuesta' => 1, 'accion' => 'incluir', 'mensaje' => 'Reserva registrada correctamente', 'id_reserva' => $id_reserva];
-            
-            
-        } catch (Exception $e) {
-            $this->conex1->rollBack();
-            return ['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Error: ' . $e->getMessage()];
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
         }
     }
-    
-    // Modificar reserva (solo si está activa)
-    public function modificar() {
+
+    public function procesarReserva($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
+        $operacion = $datos['operacion'];
+        $datosProcesar = isset($datos['datos']) ? $datos['datos'] : null;
         try {
-            // Verificar que la reserva esté activa antes de modificar
-            $sqlCheck = "SELECT estatus FROM reserva WHERE id_reserva = ?";
-            $stmtCheck = $this->conex1->prepare($sqlCheck);
-            $stmtCheck->bindParam(1, $this->id_reserva);
-            $stmtCheck->execute();
-            $reserva = $stmtCheck->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$reserva) {
-                return ['respuesta' => 0, 'accion' => 'actualizar', 'mensaje' => 'Reserva no encontrada'];
-            }
-            
-            if ($reserva['estatus'] != 1) {
-                return ['respuesta' => 0, 'accion' => 'actualizar', 'mensaje' => 'No se puede modificar una reserva que no está activa'];
-            }
-            
-            $sql = "UPDATE reserva SET fecha_apartado = ?, id_persona = ? WHERE id_reserva = ?";
-            $stmt = $this->conex1->prepare($sql);
-            $stmt->bindParam(1, $this->fecha_apartado);
-            $stmt->bindParam(2, $this->id_persona);
-            $stmt->bindParam(3, $this->id_reserva);
-            
-            if ($stmt->execute()) {
-                return ['respuesta' => 1, 'accion' => 'actualizar', 'mensaje' => 'Reserva modificada correctamente'];
-            } else {
-                return ['respuesta' => 0, 'accion' => 'actualizar', 'mensaje' => 'Error al modificar la reserva'];
+            switch ($operacion) {
+                case 'registrar':
+                    return $this->ejecutarRegistroReserva($datosProcesar);
+                case 'modificar':
+                    return $this->ejecutarModificarReserva($datosProcesar);
+                case 'eliminar':
+                    return $this->ejecutarEliminarReserva($datosProcesar);
+                case 'cambiar_estado':
+                    return $this->ejecutarCambiarEstadoReserva($datosProcesar);
+                case 'consultar':
+                    return $this->ejecutarConsultarReservas();
+                case 'consultar_personas':
+                    return $this->ejecutarConsultarPersonas();
+                case 'consultar_productos':
+                    return $this->ejecutarConsultarProductos();
+                case 'consultar_reserva':
+                    return $this->ejecutarConsultarReserva($datosProcesar);
+                case 'consultar_detalle':
+                    return $this->ejecutarConsultarDetalle($datosProcesar);
+                default:
+                    return ['respuesta' => 0, 'mensaje' => 'Operación no válida'];
             }
         } catch (Exception $e) {
-            return ['respuesta' => 0, 'accion' => 'actualizar', 'mensaje' => 'Error: ' . $e->getMessage()];
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
         }
     }
-    
-    // Cambiar estado de la reserva
-    public function cambiarEstado($nuevo_estatus) {
+
+    private function ejecutarRegistroReserva($datos) {
+        $conex = $this->getConex1();
         try {
-            // Verificar que la reserva existe
-            $sqlCheck = "SELECT estatus FROM reserva WHERE id_reserva = ?";
-            $stmtCheck = $this->conex1->prepare($sqlCheck);
-            $stmtCheck->bindParam(1, $this->id_reserva);
-            $stmtCheck->execute();
-            $reserva = $stmtCheck->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$reserva) {
-                return ['respuesta' => 0, 'accion' => 'cambiar_estado', 'mensaje' => 'Reserva no encontrada'];
+            $conex->beginTransaction();
+            if (empty($datos['fecha_apartado']) || empty($datos['id_persona']) || empty($datos['productos'])) {
+                throw new Exception('Datos incompletos');
             }
-            
-            // No permitir cambiar estado si ya está inactiva o entregada
-            if ($reserva['estatus'] == 0 || $reserva['estatus'] == 2) {
-                return ['respuesta' => 0, 'accion' => 'cambiar_estado', 'mensaje' => 'No se puede cambiar el estado de una reserva inactiva o entregada'];
+            $sql = "INSERT INTO reserva (fecha_apartado, id_persona, estatus) VALUES (:fecha_apartado, :id_persona, 1)";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute([
+                'fecha_apartado' => $datos['fecha_apartado'],
+                'id_persona' => $datos['id_persona']
+            ]);
+            $id_reserva = $conex->lastInsertId();
+            foreach ($datos['productos'] as $producto) {
+                $sql = "INSERT INTO reserva_detalles (cantidad, precio, id_reserva, id_producto) VALUES (:cantidad, :precio, :id_reserva, :id_producto)";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute([
+                    'cantidad' => $producto['cantidad'],
+                    'precio' => $producto['precio'],
+                    'id_reserva' => $id_reserva,
+                    'id_producto' => $producto['id_producto']
+                ]);
+                $sql = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad WHERE id_producto = :id_producto";
+                $stmt = $conex->prepare($sql);
+                $stmt->execute([
+                    'cantidad' => $producto['cantidad'],
+                    'id_producto' => $producto['id_producto']
+                ]);
             }
-            
-            $sql = "UPDATE reserva SET estatus = ? WHERE id_reserva = ?";
-            $stmt = $this->conex1->prepare($sql);
-            $stmt->bindParam(1, $nuevo_estatus);
-            $stmt->bindParam(2, $this->id_reserva);
-            
-            if ($stmt->execute()) {
-                $estado_texto = $nuevo_estatus == 0 ? 'inactiva' : 'entregada';
-                return ['respuesta' => 1, 'accion' => 'cambiar_estado', 'mensaje' => "Reserva marcada como $estado_texto correctamente"];
-            } else {
-                return ['respuesta' => 0, 'accion' => 'cambiar_estado', 'mensaje' => 'Error al cambiar el estado de la reserva'];
-            }
+            $conex->commit();
+            $conex = null;
+            $bitacora = [
+                'id_persona' => isset($datos['id_persona']) ? $datos['id_persona'] : null,
+                'accion' => 'Registro de reserva',
+                'descripcion' => 'Se registró la reserva ID: ' . $id_reserva
+            ];
+            $this->registrarBitacora(json_encode($bitacora));
+            return ['respuesta' => 1, 'mensaje' => 'Reserva registrada correctamente', 'id_reserva' => $id_reserva];
         } catch (Exception $e) {
-            return ['respuesta' => 0, 'accion' => 'cambiar_estado', 'mensaje' => 'Error: ' . $e->getMessage()];
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
         }
     }
-    
-    // Eliminar reserva y sus detalles (solo si está activa)
-    public function eliminar() {
+
+    private function ejecutarModificarReserva($datos) {
+        $conex = $this->getConex1();
         try {
-            // Verificar que la reserva esté activa antes de eliminar
-            $sqlCheck = "SELECT estatus FROM reserva WHERE id_reserva = ?";
-            $stmtCheck = $this->conex1->prepare($sqlCheck);
-            $stmtCheck->bindParam(1, $this->id_reserva);
-            $stmtCheck->execute();
-            $reserva = $stmtCheck->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$reserva) {
-                return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Reserva no encontrada'];
+            $conex->beginTransaction();
+            if (empty($datos['id_reserva']) || empty($datos['fecha_apartado']) || empty($datos['id_persona'])) {
+                throw new Exception('Datos incompletos');
             }
-            
-            if ($reserva['estatus'] != 1) {
-                return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'No se puede eliminar una reserva que no está activa'];
+            $sql = "SELECT estatus FROM reserva WHERE id_reserva = :id_reserva";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_reserva' => $datos['id_reserva']]);
+            $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$reserva) throw new Exception('Reserva no encontrada');
+            if ($reserva['estatus'] != 1) throw new Exception('Solo se puede modificar reservas activas');
+            $sql = "UPDATE reserva SET fecha_apartado = :fecha_apartado, id_persona = :id_persona WHERE id_reserva = :id_reserva";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute([
+                'fecha_apartado' => $datos['fecha_apartado'],
+                'id_persona' => $datos['id_persona'],
+                'id_reserva' => $datos['id_reserva']
+            ]);
+            $conex->commit();
+            $conex = null;
+            $bitacora = [
+                'id_persona' => isset($datos['id_persona']) ? $datos['id_persona'] : null,
+                'accion' => 'Modificación de reserva',
+                'descripcion' => 'Se modificó la reserva ID: ' . $datos['id_reserva']
+            ];
+            $this->registrarBitacora(json_encode($bitacora));
+            return ['respuesta' => 1, 'mensaje' => 'Reserva modificada correctamente'];
+        } catch (Exception $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
             }
-            
-            $this->conex1->beginTransaction();
-    
-            // Obtener los productos y cantidades antes de eliminar
-            $sql = "SELECT id_producto, cantidad FROM reserva_detalles WHERE id_reserva = ?";
-            $stmt = $this->conex1->prepare($sql);
-            $stmt->bindParam(1, $this->id_reserva);
-            $stmt->execute();
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
+        }
+    }
+
+    private function ejecutarEliminarReserva($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            if (empty($datos['id_reserva'])) throw new Exception('ID de reserva no proporcionado');
+            $sql = "SELECT estatus FROM reserva WHERE id_reserva = :id_reserva";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_reserva' => $datos['id_reserva']]);
+            $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$reserva) throw new Exception('Reserva no encontrada');
+            if ($reserva['estatus'] != 1) throw new Exception('Solo se puede eliminar reservas activas');
+            $sql = "SELECT id_producto, cantidad FROM reserva_detalles WHERE id_reserva = :id_reserva";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_reserva' => $datos['id_reserva']]);
             $detalles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-            // Devolver al stock
             foreach ($detalles as $detalle) {
-                $sqlStock = "UPDATE productos SET stock_disponible = stock_disponible + ? WHERE id_producto = ?";
-                $stmtStock = $this->conex1->prepare($sqlStock);
-                $stmtStock->execute([$detalle['cantidad'], $detalle['id_producto']]);
+                $sqlStock = "UPDATE productos SET stock_disponible = stock_disponible + :cantidad WHERE id_producto = :id_producto";
+                $stmtStock = $conex->prepare($sqlStock);
+                $stmtStock->execute([
+                    'cantidad' => $detalle['cantidad'],
+                    'id_producto' => $detalle['id_producto']
+                ]);
             }
-    
-            // Eliminar los detalles
-            $sql = "DELETE FROM reserva_detalles WHERE id_reserva = ?";
-            $stmt = $this->conex1->prepare($sql);
-            $stmt->bindParam(1, $this->id_reserva);
-    
-            if (!$stmt->execute()) {
-                $this->conex1->rollBack();
-                return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Error al eliminar los detalles'];
-            }
-    
-            // Eliminar la reserva
-            $sql = "DELETE FROM reserva WHERE id_reserva = ?";
-            $stmt = $this->conex1->prepare($sql);
-            $stmt->bindParam(1, $this->id_reserva);
-    
-            if (!$stmt->execute()) {
-                $this->conex1->rollBack();
-                return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Error al eliminar la reserva'];
-            }
-    
-            $this->conex1->commit();
-            return ['respuesta' => 1, 'accion' => 'eliminar', 'mensaje' => 'Reserva eliminada correctamente'];
-    
+            $sql = "DELETE FROM reserva_detalles WHERE id_reserva = :id_reserva";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_reserva' => $datos['id_reserva']]);
+            $sql = "DELETE FROM reserva WHERE id_reserva = :id_reserva";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_reserva' => $datos['id_reserva']]);
+            $conex->commit();
+            $conex = null;
+            $bitacora = [
+                'id_persona' => isset($datos['id_persona']) ? $datos['id_persona'] : null,
+                'accion' => 'Eliminación de reserva',
+                'descripcion' => 'Se eliminó la reserva ID: ' . $datos['id_reserva']
+            ];
+            $this->registrarBitacora(json_encode($bitacora));
+            return ['respuesta' => 1, 'mensaje' => 'Reserva eliminada correctamente'];
         } catch (Exception $e) {
-            $this->conex1->rollBack();
-            return ['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'Error: ' . $e->getMessage()];
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
         }
     }
-    
-    
-    // Eliminar un detalle específico de la reserva
-    public function eliminarDetalle($id_detalle) {
+
+    private function ejecutarCambiarEstadoReserva($datos) {
+        $conex = $this->getConex1();
         try {
-            // Obtener el detalle antes de eliminar
-            $sql = "SELECT id_producto, cantidad FROM reserva_detalles WHERE id_detalle_reserva = ?";
-            $stmt = $this->conex1->prepare($sql);
-            $stmt->bindParam(1, $id_detalle);
-            $stmt->execute();
-            $detalle = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-            if (!$detalle) {
-                return ['respuesta' => 0, 'accion' => 'eliminar_detalle', 'mensaje' => 'Detalle no encontrado'];
-            }
-    
-            // Devolver al stock
-            $sqlStock = "UPDATE productos SET stock_disponible = stock_disponible + ? WHERE id_producto = ?";
-            $stmtStock = $this->conex1->prepare($sqlStock);
-            $stmtStock->execute([$detalle['cantidad'], $detalle['id_producto']]);
-    
-            // Eliminar el detalle
-            $sql = "DELETE FROM reserva_detalles WHERE id_detalle_reserva = ?";
-            $stmt = $this->conex1->prepare($sql);
-            $stmt->bindParam(1, $id_detalle);
-    
-            if ($stmt->execute()) {
-                return ['respuesta' => 1, 'accion' => 'eliminar_detalle', 'mensaje' => 'Detalle eliminado correctamente'];
-            } else {
-                return ['respuesta' => 0, 'accion' => 'eliminar_detalle', 'mensaje' => 'Error al eliminar el detalle'];
-            }
+            $conex->beginTransaction();
+            if (empty($datos['id_reserva']) || !isset($datos['nuevo_estatus'])) throw new Exception('Datos incompletos');
+            $sql = "SELECT estatus FROM reserva WHERE id_reserva = :id_reserva";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_reserva' => $datos['id_reserva']]);
+            $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$reserva) throw new Exception('Reserva no encontrada');
+            if ($reserva['estatus'] == 0 || $reserva['estatus'] == 2) throw new Exception('No se puede cambiar el estado de una reserva inactiva o entregada');
+            $sql = "UPDATE reserva SET estatus = :nuevo_estatus WHERE id_reserva = :id_reserva";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute([
+                'nuevo_estatus' => $datos['nuevo_estatus'],
+                'id_reserva' => $datos['id_reserva']
+            ]);
+            $conex->commit();
+            $conex = null;
+            $bitacora = [
+                'id_persona' => isset($datos['id_persona']) ? $datos['id_persona'] : null,
+                'accion' => 'Cambio de estado de reserva',
+                'descripcion' => 'Se cambió el estado de la reserva ID: ' . $datos['id_reserva']
+            ];
+            $this->registrarBitacora(json_encode($bitacora));
+            return ['respuesta' => 1, 'mensaje' => 'Estado de reserva cambiado correctamente'];
         } catch (Exception $e) {
-            return ['respuesta' => 0, 'accion' => 'eliminar_detalle', 'mensaje' => 'Error: ' . $e->getMessage()];
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
         }
     }
-    
-    // Consultar todas las reservas 
-    public function consultarTodos() {
+
+    private function ejecutarConsultarReservas() {
+        $conex = $this->getConex1();
         try {
-            $sql = "SELECT r.id_reserva, r.fecha_apartado, r.estatus,
-                p.nombre, p.apellido, p.id_persona 
-                 FROM reserva r 
-                INNER JOIN cliente p ON r.id_persona = p.id_persona 
-                ORDER BY r.id_reserva DESC";
-                $stmt = $this->conex1->prepare($sql);
+            $sql = "SELECT r.id_reserva, r.fecha_apartado, r.estatus, c.nombre, c.apellido, c.id_persona FROM reserva r INNER JOIN cliente c ON r.id_persona = c.id_persona ORDER BY r.id_reserva DESC";
+            $stmt = $conex->prepare($sql);
                 $stmt->execute();
-            
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return ['respuesta' => 1, 'datos' => $result];
         } catch (Exception $e) {
-            return [];
+            if ($conex) $conex = null;
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
         }
     }
     
-    // Consultar una reserva por ID
-    public function consultarPorId() {
+    private function ejecutarConsultarPersonas() {
+        $conex = $this->getConex1();
         try {
-            $sql = "SELECT * FROM reserva WHERE id_reserva = ?";
-            $stmt = $this->conex1->prepare($sql);
-            $stmt->bindParam(1, $this->id_reserva);
+            $sql = "SELECT id_persona, nombre, apellido, cedula FROM cliente ORDER BY nombre";
+            $stmt = $conex->prepare($sql);
             $stmt->execute();
-            
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return ['respuesta' => 1, 'datos' => $result];
+        } catch (Exception $e) {
+            if ($conex) $conex = null;
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
+        }
+    }
+    
+    private function ejecutarConsultarProductos() {
+        $conex = $this->getConex1();
+        try {
+            $sql = "SELECT id_producto, nombre, descripcion, marca, precio_detal, stock_disponible FROM productos WHERE stock_disponible > 0 ORDER BY nombre";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return ['respuesta' => 1, 'datos' => $result];
+        } catch (Exception $e) {
+            if ($conex) $conex = null;
+            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
+        }
+    }
+
+    private function ejecutarConsultarReserva($datos) {
+        $conex = $this->getConex1();
+        try {
+            $sql = "SELECT r.*, c.nombre, c.apellido FROM reserva r INNER JOIN cliente c ON r.id_persona = c.id_persona WHERE r.id_reserva = :id_reserva";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_reserva' => $datos['id_reserva']]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            
+            $conex = null;
             if ($result) {
-                return $result;
-            } else {
-                return null;
+                $result['nombre_completo'] = $result['nombre'] . ' ' . $result['apellido'];
             }
+            return $result;
         } catch (Exception $e) {
+            if ($conex) $conex = null;
             return null;
         }
     }
     
-    // Consultar los detalles de una reserva
-    public function consultarDetalle() {
+    private function ejecutarConsultarDetalle($datos) {
+        $conex = $this->getConex1();
         try {
-            $sql = "SELECT rd.id_detalle_reserva, rd.cantidad, rd.precio, rd.id_producto, 
-                   p.nombre as nombre_producto, p.descripcion, p.marca 
-                   FROM reserva_detalles rd 
-                   INNER JOIN productos p ON rd.id_producto = p.id_producto 
-                   WHERE rd.id_reserva = ?";
-            $stmt = $this->conex1->prepare($sql);
-            $stmt->bindParam(1, $this->id_reserva);
-            $stmt->execute();
-            
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-    
-    // Obtener datos del cliente asociado a la reserva
-    public function obtenerDatosCliente() {
-        try {
-            $sql = "SELECT nombre, apellido, cedula, correo, telefono FROM cliente WHERE id_persona = ?";
-            $stmt = $this->conex1->prepare($sql);
-            $stmt->bindParam(1, $this->id_persona);
-            $stmt->execute();
-            
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return null;
-        }
-    }
-    
-    // Consultar todas las personas disponibles para asociar a una reserva
-    public function consultarPersonas() {
-    try {
-        $sql = "SELECT id_persona, nombre, apellido, cedula FROM cliente ORDER BY nombre";
-        $stmt = $this->conex1->prepare($sql);
-        $stmt->execute();
-        
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $sql = "SELECT rd.id_detalle_reserva, rd.cantidad, rd.precio, rd.id_producto, p.nombre as nombre_producto, p.descripcion, p.marca FROM reserva_detalles rd INNER JOIN productos p ON rd.id_producto = p.id_producto WHERE rd.id_reserva = :id_reserva";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_reserva' => $datos['id_reserva']]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return $result;
     } catch (Exception $e) {
+            if ($conex) $conex = null;
         return [];
         }
-    }
-    
-    // Consultar todos los productos disponibles para agregar a una reserva
-   public function consultarProductos() {
-    try {
-        $sql = "SELECT id_producto, nombre, descripcion, marca, precio_detal, stock_disponible 
-               FROM productos WHERE stock_disponible > 0 ORDER BY nombre";
-        $stmt = $this->conex1->prepare($sql);
-        $stmt->execute();
-        
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (Exception $e) {
-        return [];
     }
 }
-    }
+
 // Fin de la clase Reserva

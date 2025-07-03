@@ -10,7 +10,8 @@ $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
           isset($_POST['registrar']) || isset($_POST['modificar']) || 
           isset($_POST['eliminar']) || isset($_POST['consultar_reserva']) ||
           isset($_POST['consultar_detalle']) || isset($_POST['consultar_precio']) ||
-          isset($_POST['eliminar_detalle']) || isset($_POST['cambiar_estado']);
+          isset($_POST['eliminar_detalle']) || isset($_POST['cambiar_estado']) ||
+          isset($_POST['registrar_json']) || isset($_POST['modificar_json']) || isset($_POST['eliminar_json']) || isset($_POST['cambiar_estado_json']) || isset($_POST['consultar_persona']) || isset($_POST['consultar_productos']);
 
 if ($is_ajax) {
     // Para solicitudes AJAX, configurar las cabeceras para JSON
@@ -36,6 +37,12 @@ require_once 'modelo/producto.php';
 $objreserva = new Reserva();
 
 try {
+    // Chequeo de sesión para AJAX
+    if ($is_ajax && empty($_SESSION["id"])) {
+        echo json_encode(['respuesta' => 0, 'accion' => 'error', 'mensaje' => 'Sesión expirada (AJAX)']);
+        exit;
+    }
+    
     // Manejar consultas de precio de producto para la función consultarPrecioProducto() en reserva.js
     if (isset($_POST['consultar_precio']) && !empty($_POST['id_producto'])) {
         $id_producto = $_POST['id_producto'];
@@ -58,114 +65,118 @@ try {
     }
     
     // Manejar operaciones de reserva
-    if(isset($_POST['registrar'])) {
-        if(!empty($_POST['fecha_apartado']) && !empty($_POST['id_persona'])) { 
-            
-            // Datos de encabezado de la reserva
-            $objreserva->set_Fecha_apartado($_POST['fecha_apartado']);
-            $objreserva->set_Id_persona($_POST['id_persona']);
-            $objreserva->set_Estatus(1); // Activo por defecto
-            
-            // Datos de detalle de reserva
-            $productos = isset($_POST['productos']) ? $_POST['productos'] : [];
-            $cantidades = isset($_POST['cantidades']) ? $_POST['cantidades'] : [];
-            $precios_unit = isset($_POST['precios_unit']) ? $_POST['precios_unit'] : [];
-            
-            // Validar que haya al menos un producto
-            if(count($productos) == 0) {
-                echo json_encode(['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Debe incluir al menos un producto']);
-                exit;
+    if(isset($_POST['registrar_json'])) {
+        $productos = [];
+        if (isset($_POST['productos']) && is_array($_POST['productos'])) {
+            for ($i = 0; $i < count($_POST['productos']); $i++) {
+                $productos[] = [
+                    'id_producto' => $_POST['productos'][$i],
+                    'cantidad' => $_POST['cantidades'][$i],
+                    'precio' => $_POST['precios_unit'][$i]
+                ];
             }
-            
-            $result = $objreserva->registrar($productos, $cantidades, $precios_unit);
-            echo json_encode($result);
-            exit;
-        } else {
-            echo json_encode(['respuesta' => 0, 'accion' => 'incluir', 'mensaje' => 'Campos requeridos incompletos']);
+        }
+        $datosReserva = [
+            'operacion' => 'registrar',
+            'datos' => [
+                'fecha_apartado' => $_POST['fecha_apartado'],
+                'id_persona' => $_POST['id_persona'],
+                'productos' => $productos,
+                'id_persona_bitacora' => $_SESSION['id']
+            ]
+        ];
+        $resultadoRegistro = $objreserva->procesarReserva(json_encode($datosReserva));
+        echo json_encode($resultadoRegistro);
+        exit;
+    } elseif (isset($_POST['modificar_json'])) {
+        $datosReserva = [
+            'operacion' => 'modificar',
+            'datos' => [
+                'id_reserva' => $_POST['id_reserva'],
+                'fecha_apartado' => $_POST['fecha_apartado'],
+                'id_persona' => $_POST['id_persona'],
+                'id_persona_bitacora' => $_SESSION['id']
+            ]
+        ];
+        $resultado = $objreserva->procesarReserva(json_encode($datosReserva));
+        echo json_encode($resultado);
+        exit;
+    } elseif (isset($_POST['eliminar_json'])) {
+        $datosReserva = [
+            'operacion' => 'eliminar',
+            'datos' => [
+                'id_reserva' => $_POST['id_reserva'],
+                'id_persona' => $_SESSION['id']
+            ]
+        ];
+        $resultado = $objreserva->procesarReserva(json_encode($datosReserva));
+        echo json_encode($resultado);
+        exit;
+    } elseif (isset($_POST['cambiar_estado_json'])) {
+        $datosReserva = [
+            'operacion' => 'cambiar_estado',
+            'datos' => [
+                'id_reserva' => $_POST['id_reserva'],
+                'nuevo_estatus' => $_POST['nuevo_estatus'],
+                'id_persona' => $_SESSION['id']
+            ]
+        ];
+        $resultado = $objreserva->procesarReserva(json_encode($datosReserva));
+        echo json_encode($resultado);
+        exit;
+    } elseif (isset($_POST['operacion']) && $_POST['operacion'] === 'consultar_reserva') {
+        if (empty($_SESSION["id"])) {
+            echo json_encode(['respuesta' => 0, 'accion' => 'error', 'mensaje' => 'Sesión expirada (AJAX consultar_reserva)']);
             exit;
         }
-    } elseif (isset($_POST['modificar'])) {
-        if (!empty($_POST['id_reserva']) && !empty($_POST['fecha_apartado']) && !empty($_POST['id_persona'])) {
-        $objreserva->set_Id_reserva($_POST['id_reserva']);
-        $objreserva->set_Fecha_apartado($_POST['fecha_apartado']);
-        $objreserva->set_Id_persona($_POST['id_persona']);
-    
-            $result = $objreserva->modificar();
-            echo json_encode($result);
-            exit;
-        } else {
-            echo json_encode(['respuesta' => 0, 'accion' => 'actualizar', 'mensaje' => 'Datos incompletos para actualizar la reserva']);
-            exit;
-        }
-    } elseif (isset($_POST['eliminar'])) {
-        if (!empty($_POST['id_reserva'])) {
-            $objreserva->set_Id_reserva($_POST['id_reserva']);
-            $result = $objreserva->eliminar();
-            echo json_encode($result);
-            exit;
-        } else {
-            echo json_encode(['respuesta' => 0, 'accion' => 'eliminar', 'mensaje' => 'ID no proporcionado']);
+        $datos = [
+            'operacion' => 'consultar_reserva',
+            'datos' => [
+                'id_reserva' => $_POST['datos']['id_reserva']
+            ]
+        ];
+        $resultado = $objreserva->procesarReserva(json_encode($datos));
+        echo json_encode($resultado);
+        exit;
+    } elseif (isset($_POST['operacion']) && $_POST['operacion'] === 'consultar_detalle') {
+        if (empty($_SESSION["id"])) {
+            echo json_encode(['respuesta' => 0, 'accion' => 'error', 'mensaje' => 'Sesión expirada (AJAX consultar_detalle)']);
             exit;
         }
-    } elseif (isset($_POST['consultar_reserva'])) {
-        if (!empty($_POST['id_reserva'])) {
-            $objreserva->set_Id_reserva($_POST['id_reserva']);
-            $result = $objreserva->consultarPorId();
-            
-            // Si la consulta fue exitosa, agregamos información adicional del cliente
-            if ($result) {
-                $objreserva->set_Id_persona($result['id_persona']);
-                $cliente = $objreserva->obtenerDatosCliente();
-                if ($cliente) {
-                    // Agregar el nombre completo para mostrarlo en el modal de detalles
-                    $result['nombre_completo'] = $cliente['nombre'] . ' ' . $cliente['apellido'];
-                }
-            }
-            
-            echo json_encode($result);
-            exit;
-        } else {
-            echo json_encode(['respuesta' => 0, 'accion' => 'consultar', 'mensaje' => 'ID no proporcionado']);
-            exit;
-        }
-    } elseif (isset($_POST['consultar_detalle'])) {
-        if (!empty($_POST['id_reserva'])) {
-            $objreserva->set_Id_reserva($_POST['id_reserva']);
-            $result = $objreserva->consultarDetalle();
-            echo json_encode($result);
-            exit;
-        } else {
-            echo json_encode(['respuesta' => 0, 'accion' => 'consultar_detalle', 'mensaje' => 'ID de reserva no proporcionado']);
-            exit;
-        }
-    } elseif (isset($_POST['eliminar_detalle'])) {
-        if (!empty($_POST['id_detalle'])) {
-            $result = $objreserva->eliminarDetalle($_POST['id_detalle']);
-            echo json_encode($result);
-            exit;
-        } else {
-            echo json_encode(['respuesta' => 0, 'accion' => 'eliminar_detalle', 'mensaje' => 'ID de detalle no proporcionado']);
-            exit;
-        }
+        $datos = [
+            'operacion' => 'consultar_detalle',
+            'datos' => [
+                'id_reserva' => $_POST['datos']['id_reserva']
+            ]
+        ];
+        $resultado = $objreserva->procesarReserva(json_encode($datos));
+        echo json_encode($resultado);
+        exit;
     } elseif (isset($_POST['consultar_persona'])) {
-        $result = $objreserva->consultarPersonas();
-        echo json_encode($result);
+        echo json_encode(['respuesta' => 0, 'mensaje' => 'Consulta de personas no implementada en el nuevo flujo.']);
         exit;
     } elseif (isset($_POST['consultar_productos'])) {
-        $result = $objreserva->consultarProductos();
-        echo json_encode($result);
+        echo json_encode(['respuesta' => 0, 'mensaje' => 'Consulta de productos no implementada en el nuevo flujo.']);
         exit;
     } else {
-        // Si no es una solicitud AJAX, cargar la vista
-          if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
-                header("Location: ?pagina=catalogo");
-                exit();
+        if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
+            header("Location: ?pagina=catalogo");
+            exit();
         }
+        // Consultar reservas para la vista
+        $resultado = $objreserva->procesarReserva(json_encode(['operacion' => 'consultar']));
+        $reservas = ($resultado['respuesta'] == 1) ? $resultado['datos'] : [];
+        // Consultar personas para el select
+        $resultadoPersonas = $objreserva->procesarReserva(json_encode(['operacion' => 'consultar_personas']));
+        $personas = ($resultadoPersonas['respuesta'] == 1) ? $resultadoPersonas['datos'] : [];
+        // Consultar productos para el select
+        $resultadoProductos = $objreserva->procesarReserva(json_encode(['operacion' => 'consultar_productos']));
+        $productos = ($resultadoProductos['respuesta'] == 1) ? $resultadoProductos['datos'] : [];
         require_once 'vista/reserva.php';
     }
 } catch (Exception $e) {
     if ($is_ajax) {
-        echo json_encode(['respuesta' => 0, 'accion' => 'error', 'mensaje' => $e->getMessage()]);
+        echo json_encode(['respuesta' => 0, 'accion' => 'error', 'mensaje' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
         exit;
     } else {
         
@@ -173,8 +184,12 @@ try {
         $error_message = $e->getMessage();
          $id_persona = $_SESSION["id"];
         $accion = 'Acceso a Módulo';
-        $descripcion = 'módulo de Reverva';
-        $objreserva->registrarBitacora($id_persona, $accion, $descripcion);
+        $descripcion = 'módulo de Reserva';
+        $objreserva->registrarBitacora(json_encode([
+            'id_persona' => $id_persona,
+            'accion' => $accion,
+            'descripcion' => $descripcion
+        ]));
         
         if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
                 header("Location: ?pagina=catalogo");
