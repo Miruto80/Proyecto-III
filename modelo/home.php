@@ -48,8 +48,8 @@ class home extends Conexion {
         try {
             $sql = "
                 SELECT 
-                    SUM(precio_total) AS total_ventas, 
-                    SUM(CASE WHEN tipo = '2' THEN precio_total ELSE 0 END) AS total_web, 
+                    SUM(precio_total_usd) AS total_ventas, 
+                    SUM(CASE WHEN tipo = '2' THEN precio_total_usd ELSE 0 END) AS total_web, 
                     COUNT(CASE WHEN tipo = '2' THEN id_pedido ELSE NULL END) AS cantidad_pedidos_web
                 FROM 
                     pedido
