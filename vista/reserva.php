@@ -131,7 +131,6 @@
                   </thead>
                   <tbody id="reservaTableBody">
                     <?php
-                    $reservas = $objreserva->consultarTodos();
                     foreach ($reservas as $dato): ?>
                     <tr>
                       <td><?php echo $dato['id_reserva']; ?></td>
@@ -204,7 +203,6 @@
                   <select class="form-control" name="id_persona" id="id_persona" required>
                     <option value="">Seleccione un usuario</option>
                     <?php
-                    $personas = $objreserva->consultarPersonas();
                     foreach ($personas as $persona): ?>
                       <option value="<?php echo $persona['id_persona']; ?>">
                         <?php echo $persona['nombre'] . ' ' . $persona['apellido']; ?>
@@ -232,7 +230,6 @@
                         <select class="form-control producto-select" name="productos[]" required>
                           <option value="">Seleccione un producto</option>
                           <?php
-                          $productos = $objreserva->consultarProductos();
                           foreach ($productos as $producto): ?>
                             <option value="<?php echo $producto['id_producto']; ?>" 
                                   data-precio="<?php echo $producto['precio_detal']; ?>">

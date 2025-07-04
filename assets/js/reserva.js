@@ -260,13 +260,31 @@ function registrarReserva() {
     }
 
     // Recopilar datos del formulario
-    const formData = $('#formRegistrar').serialize();
+    const productos = [];
+    $('.producto-select').each(function(i) {
+        productos.push($(this).val());
+    });
+    const cantidades = [];
+    $('.cantidad-input').each(function(i) {
+        cantidades.push($(this).val());
+    });
+    const precios_unit = [];
+    $('.precio-input').each(function(i) {
+        precios_unit.push($(this).val());
+    });
 
-    // Enviar datos al servidor
+    // Enviar datos al servidor con el nuevo flujo
     $.ajax({
         url: '?pagina=reserva',
         type: 'POST',
-        data: formData + '&registrar=true',
+        data: {
+            registrar_json: true,
+            fecha_apartado: $('#fecha_apartado').val(),
+            id_persona: $('#id_persona').val(),
+            productos: productos,
+            cantidades: cantidades,
+            precios_unit: precios_unit
+        },
         dataType: 'json',
         success: function(response) {
             if (response.respuesta === 1) {
@@ -299,8 +317,6 @@ function registrarReserva() {
     });
 }
 
-
-
 // Función para abrir modal de edición de estado
 function abrirModalEditarEstado(idReserva) {
     console.log('Abriendo modal para reserva:', idReserva);
@@ -330,8 +346,8 @@ function abrirModalEditarEstado(idReserva) {
                 url: '?pagina=reserva',
                 type: 'POST',
                 data: {
-                    consultar_reserva: true,
-                    id_reserva: idReserva
+                    operacion: 'consultar_reserva',
+                    datos: { id_reserva: idReserva }
                 },
                 dataType: 'json',
                 success: function(response) {
@@ -407,7 +423,6 @@ function abrirModalEditarEstado(idReserva) {
 function guardarCambioEstado() {
     const nuevoEstado = $('#nuevo_estado').val();
     const idReserva = $('#info_id_reserva').text();
-    
     if (!nuevoEstado) {
         Swal.fire({
             icon: 'warning',
@@ -416,10 +431,8 @@ function guardarCambioEstado() {
         });
         return;
     }
-    
     let confirmacion = '';
     let icono = '';
-    
     if (nuevoEstado == 0) {
         confirmacion = '¿Está seguro de que desea marcar esta reserva como inactiva?';
         icono = 'warning';
@@ -430,7 +443,6 @@ function guardarCambioEstado() {
         confirmacion = '¿Está seguro de que desea cambiar el estado de esta reserva?';
         icono = 'info';
     }
-    
     Swal.fire({
         title: 'Confirmar cambio de estado',
         text: confirmacion,
@@ -446,7 +458,7 @@ function guardarCambioEstado() {
                 url: '?pagina=reserva',
                 type: 'POST',
                 data: {
-                    cambiar_estado: true,
+                    cambiar_estado_json: true,
                     id_reserva: idReserva,
                     nuevo_estatus: nuevoEstado
                 },
@@ -484,8 +496,6 @@ function guardarCambioEstado() {
     });
 }
 
-
-
 // Función para ver detalles de una reserva
 function verDetalles(idReserva) {
     // Consultar datos de la reserva
@@ -493,8 +503,8 @@ function verDetalles(idReserva) {
         url: '?pagina=reserva',
         type: 'POST',
         data: {
-            consultar_reserva: true,
-            id_reserva: idReserva
+            operacion: 'consultar_reserva',
+            datos: { id_reserva: idReserva }
         },
         dataType: 'json',
         success: function(response) {
@@ -547,8 +557,8 @@ function consultarDetallesReserva(idReserva) {
         url: '?pagina=reserva',
         type: 'POST',
         data: {
-            consultar_detalle: true,
-            id_reserva: idReserva
+            operacion: 'consultar_detalle',
+            datos: { id_reserva: idReserva }
         },
         dataType: 'json',
         success: function(response) {
