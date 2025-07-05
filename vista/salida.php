@@ -337,7 +337,7 @@
                       if(isset($metodos_pago) && !empty($metodos_pago)): 
                         foreach($metodos_pago as $metodo): 
                       ?>
-                        <option value="<?php echo $metodo['id_metodopago']; ?>">
+                        <option value="<?php echo $metodo['id_metodopago']; ?>" data-nombre="<?php echo htmlspecialchars($metodo['nombre']); ?>">
                           <?php echo htmlspecialchars($metodo['nombre']); ?>
                         </option>
                       <?php 
@@ -348,10 +348,7 @@
                       <?php endif; ?>
                     </select>
                   </div>
-                  <div class="col-md-2">
-                    <input type="number" class="form-control" name="monto_metodopago[]" placeholder="Monto" step="0.01" min="0" required>
-                  </div>
-                  <div class="col-md-2">
+                  <div class="col-md-4">
                     <button type="button" class="btn btn-success btn-sm agregar-metodo-pago">
                       <i class="fas fa-plus"></i>
                     </button>
@@ -363,47 +360,140 @@
               </div>
             </div>
             
-            <!-- Campos adicionales según el método de pago seleccionado -->
-            <div class="row" id="campos_pago_adicionales" style="display: none;">
-              <div class="col-md-4">
-                <div class="mb-3">
-                  <label for="referencia_bancaria" class="form-label">Referencia Bancaria</label>
-                  <input type="number" class="form-control" name="referencia_bancaria" id="referencia_bancaria" 
-                        placeholder="Número de referencia">
+            <!-- Campos dinámicos según método de pago -->
+            <div id="campos-metodo-pago-dinamicos" style="display: none;">
+              <!-- Campos para Divisa $ -->
+              <div id="campos-divisa" class="campos-metodo" style="display: none;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en USD</label>
+                      <input type="number" class="form-control" name="monto_divisa" placeholder="Ingrese monto en USD" step="0.01" min="0">
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="col-md-4" id="campo_telefono_emisor">
-                <div class="mb-3">
-                  <label for="telefono_emisor" class="form-label">Teléfono Emisor</label>
-                  <input type="text" class="form-control" name="telefono_emisor" id="telefono_emisor" 
-                        placeholder="Teléfono del emisor">
+
+              <!-- Campos para Efectivo Bs -->
+              <div id="campos-efectivo" class="campos-metodo" style="display: none;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en USD</label>
+                      <input type="number" class="form-control" name="monto_efectivo_usd" placeholder="Monto USD" step="0.01" min="0" readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en Bs</label>
+                      <input type="number" class="form-control" name="monto_efectivo_bs" placeholder="Monto Bs" step="0.01" min="0" readonly>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="mb-3">
-                  <label for="banco" class="form-label">Banco Emisor</label>
-                  <select class="form-select" name="banco" id="banco" placeholder="Seleccione banco emisor">
-                    <option value="">Seleccione banco emisor</option>
-                    <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
-                    <option value="0105-Banco Mercantil">0105-Banco Mercantil</option>
-                    <option value="0172-Bancamiga Banco Universal,C.A">0172-Bancamiga Banco Universal,C.A</option>
-                    <option value="0114-Bancaribe">0114-Bancaribe</option>
-                    <option value="0171-Banco Activo">0171-Banco Activo</option>
-                    <option value="0166-Banco Agricola De Venezuela">0166-Banco Agricola De Venezuela</option>
-                    <option value="0128-Bancon Caroni">0128-Bancon Caroni</option>
-                    <option value="0163-Banco Del Tesoro">0163-Banco Del Tesoro</option>
-                    <option value="0175-Banco Digital De Los Trabajadores, Banco Universal">0175-Banco Digital De Los Trabajadores, Banco Universal</option>
-                  </select>
+
+              <!-- Campos para Pago Móvil -->
+              <div id="campos-pago-movil" class="campos-metodo" style="display: none;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Banco Emisor</label>
+                      <select class="form-select" name="banco_emisor_pm">
+                        <option value="">Seleccione banco emisor</option>
+                        <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
+                        <option value="0105-Banco Mercantil">0105-Banco Mercantil</option>
+                        <option value="0172-Bancamiga Banco Universal,C.A">0172-Bancamiga Banco Universal,C.A</option>
+                        <option value="0114-Bancaribe">0114-Bancaribe</option>
+                        <option value="0171-Banco Activo">0171-Banco Activo</option>
+                        <option value="0166-Banco Agricola De Venezuela">0166-Banco Agricola De Venezuela</option>
+                        <option value="0128-Bancon Caroni">0128-Bancon Caroni</option>
+                        <option value="0163-Banco Del Tesoro">0163-Banco Del Tesoro</option>
+                        <option value="0175-Banco Digital De Los Trabajadores, Banco Universal">0175-Banco Digital De Los Trabajadores, Banco Universal</option>
+                        <option value="0115-Banco Exterior">0115-Banco Exterior</option>
+                        <option value="0151-Banco Fondo Comun">0151-Banco Fondo Comun</option>
+                        <option value="0173-Banco Internacional De Desarrollo">0173-Banco Internacional De Desarrollo</option>
+                        <option value="0191-Banco Nacional De Credito">0191-Banco Nacional De Credito</option>
+                        <option value="0138-Banco Plaza">0138-Banco Plaza</option>
+                        <option value="0137-Banco Sofitasa">0137-Banco Sofitasa</option>
+                        <option value="0104-Banco Venezolano De Credito">0104-Banco Venezolano De Credito</option>
+                        <option value="0168-Bancrecer">0168-Bancrecer</option>
+                        <option value="0134-Banesco">0134-Banesco</option>
+                        <option value="0177-Banfanb">0177-Banfanb</option>
+                        <option value="0146-Bangente">0146-Bangente</option>
+                        <option value="0174-Banplus">0174-Banplus</option>
+                        <option value="0108-BBVA Provincial">0108-BBVA Provincial</option>
+                        <option value="0157-Delsur Banco Universal">0157-Delsur Banco Universal</option>
+                        <option value="0178-N58 Banco Digital Banco Microfinanciero S.A">0178-N58 Banco Digital Banco Microfinanciero S.A</option>
+                        <option value="0169-R4 Banco Microfinanciero C.A.">0169-R4 Banco Microfinanciero C.A.</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Banco Receptor</label>
+                      <select class="form-select" name="banco_receptor_pm">
+                        <option value="">Seleccione banco receptor</option>
+                        <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
+                        <option value="0105-Banco Mercantil">0105-Banco Mercantil</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label class="form-label">Referencia</label>
+                      <input type="text" class="form-control" name="referencia_pm" placeholder="4-6 dígitos" minlength="4" maxlength="6" pattern="[0-9]{4,6}">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label class="form-label">Teléfono Emisor</label>
+                      <input type="text" class="form-control" name="telefono_emisor_pm" placeholder="Ej: 04141234567" pattern="[0-9]{11}">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en Bs</label>
+                      <input type="number" class="form-control" name="monto_pm_bs" placeholder="Monto Bs" step="0.01" min="0" readonly>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="banco_destino" class="form-label">Banco Receptor</label>
-                  <select class="form-select" name="banco_destino" id="banco_destino" placeholder="Seleccione banco receptor">
-                    <option value="">Seleccione banco receptor</option>
-                    <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
-                    <option value="0105-Banco Mercantil">0105-Banco Mercantil</option>
-                  </select>
+
+              <!-- Campos para Punto de Venta -->
+              <div id="campos-punto-venta" class="campos-metodo" style="display: none;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Referencia del Punto</label>
+                      <input type="text" class="form-control" name="referencia_pv" placeholder="4-6 dígitos" minlength="4" maxlength="6" pattern="[0-9]{4,6}">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en Bs</label>
+                      <input type="number" class="form-control" name="monto_pv_bs" placeholder="Monto Bs" step="0.01" min="0" readonly>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Campos para Transferencia Bancaria -->
+              <div id="campos-transferencia" class="campos-metodo" style="display: none;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Referencia del Pago</label>
+                      <input type="text" class="form-control" name="referencia_tb" placeholder="4-6 dígitos" minlength="4" maxlength="6" pattern="[0-9]{4,6}">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en Bs</label>
+                      <input type="number" class="form-control" name="monto_tb_bs" placeholder="Monto Bs" step="0.01" min="0" readonly>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

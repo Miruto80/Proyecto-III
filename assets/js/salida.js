@@ -378,6 +378,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
+            // Validar métodos de pago
+            if (!validarCamposMetodoPago()) {
+                return;
+            }
+
             // Mostrar confirmación
             Swal.fire({
                 title: '¿Confirmar venta?',
@@ -576,6 +581,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (totalInput) {
             totalInput.value = total.toFixed(2);
         }
+        
+        // Actualizar montos en los métodos de pago cuando cambie el total
+        // Solo si hay un método de pago seleccionado, obtener la tasa y actualizar
+        const metodoSeleccionado = document.querySelector('.metodo-pago-select');
+        if (metodoSeleccionado && metodoSeleccionado.value) {
+            obtenerTasaCambio();
+        }
     }
 
     // Validación de cédula en tiempo real
@@ -722,36 +734,279 @@ document.addEventListener('DOMContentLoaded', function() {
     function inicializarEventosFilaMetodoPago(fila) {
         // Eventos para cambio de método de pago
         const select = fila.querySelector('.metodo-pago-select');
-        const montoInput = fila.querySelector('input[name="monto_metodopago[]"]');
+        const montoInput = fila.querySelector('.monto-metodopago');
         
         select.addEventListener('change', function() {
+            console.log('Cambio en select de método de pago');
+            console.log('Valor seleccionado:', this.value);
+            
             if (this.value) {
-                // Aquí puedes agregar lógica adicional si es necesario
+                const option = this.options[this.selectedIndex];
+                const nombreMetodo = option.getAttribute('data-nombre');
+                console.log('Nombre del método:', nombreMetodo);
+                
+                mostrarCamposMetodoPago(nombreMetodo);
                 validarTotalMetodosPago();
+                
+                // Actualizar montos cuando se seleccione un método
+                setTimeout(() => {
+                    actualizarMontosEnBs();
+                }, 100);
+            } else {
+                console.log('No hay método seleccionado');
+                ocultarTodosLosCamposMetodoPago();
             }
         });
         
         montoInput.addEventListener('input', function() {
             validarTotalMetodosPago();
+            // No llamar actualizarMontosEnBs() aquí ya que requiere tasa de cambio
+        });
+    }
+
+    function mostrarCamposMetodoPago(nombreMetodo) {
+        // Ocultar todos los campos primero
+        ocultarTodosLosCamposMetodoPago();
+        
+        console.log('Método seleccionado:', nombreMetodo); // Debug
+        
+        // Mostrar campos según el método seleccionado (nombres exactos de la BD)
+        if (nombreMetodo === 'Divisas $') {
+            console.log('Mostrando campos Divisa $');
+            document.getElementById('campos-divisa').style.display = 'block';
+        } else if (nombreMetodo === 'Efectivo Bs') {
+            console.log('Mostrando campos Efectivo Bs');
+            document.getElementById('campos-efectivo').style.display = 'block';
+            // Obtener tasa de cambio del API
+            obtenerTasaCambio();
+        } else if (nombreMetodo === 'Pago Movil') {
+            console.log('Mostrando campos Pago Móvil');
+            document.getElementById('campos-pago-movil').style.display = 'block';
+            obtenerTasaCambio();
+        } else if (nombreMetodo === 'Punto de Venta') {
+            console.log('Mostrando campos Punto de Venta');
+            document.getElementById('campos-punto-venta').style.display = 'block';
+            obtenerTasaCambio();
+        } else if (nombreMetodo === 'Transferencia Bancaria') {
+            console.log('Mostrando campos Transferencia Bancaria');
+            document.getElementById('campos-transferencia').style.display = 'block';
+            obtenerTasaCambio();
+        } else {
+            console.log('Método no reconocido:', nombreMetodo);
+        }
+        
+        document.getElementById('campos-metodo-pago-dinamicos').style.display = 'block';
+    }
+
+    function ocultarTodosLosCamposMetodoPago() {
+        const campos = document.querySelectorAll('.campos-metodo');
+        campos.forEach(campo => {
+            campo.style.display = 'none';
+        });
+        document.getElementById('campos-metodo-pago-dinamicos').style.display = 'none';
+    }
+
+    async function obtenerTasaCambio() {
+        try {
+            console.log('Obteniendo tasa de cambio del API...');
+            
+            // Llamada al API de dólar oficial del BCV
+            const response = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+            
+            if (!response.ok) {
+                throw new Error('Error al obtener la tasa de cambio');
+            }
+            
+            const data = await response.json();
+            
+            if (!data.promedio || data.promedio <= 0) {
+                throw new Error('No se pudo obtener una tasa de cambio válida');
+            }
+            
+            const tasaCambio = parseFloat(data.promedio);
+            
+            console.log('Tasa de cambio obtenida:', tasaCambio);
+            console.log('Fuente: BCV Oficial');
+            
+            // Calcular montos en Bs basado en el total de productos
+            actualizarMontosEnBs(tasaCambio);
+            
+        } catch (error) {
+            console.error('Error al obtener tasa de cambio:', error);
+            Swal.fire('Error', 'No se pudo obtener la tasa de cambio del dólar. Intente nuevamente.', 'error');
+            // No actualizar montos si falla el API
+        }
+    }
+
+    function actualizarMontosEnBs(tasaCambio) {
+        // Verificar que se proporcione una tasa válida
+        if (!tasaCambio || tasaCambio <= 0) {
+            console.error('Tasa de cambio no válida:', tasaCambio);
+            return;
+        }
+        
+        // Obtener el total de productos (total de la venta)
+        const totalVenta = parseFloat(document.getElementById('total-general-venta').textContent.replace('$', '')) || 0;
+        
+        console.log('Total de productos (USD):', totalVenta);
+        console.log('Tasa de cambio utilizada:', tasaCambio);
+        
+        // Calcular el monto en bolívares
+        const montosBs = totalVenta * tasaCambio;
+        console.log('Monto en Bs:', montosBs);
+        
+        // Actualizar montos en Bs para cada método que lo requiera
+        document.querySelectorAll('input[name="monto_efectivo_bs"]').forEach(input => {
+            input.value = montosBs.toFixed(2);
+        });
+        
+        document.querySelectorAll('input[name="monto_pm_bs"]').forEach(input => {
+            input.value = montosBs.toFixed(2);
+        });
+        
+        document.querySelectorAll('input[name="monto_pv_bs"]').forEach(input => {
+            input.value = montosBs.toFixed(2);
+        });
+        
+        document.querySelectorAll('input[name="monto_tb_bs"]').forEach(input => {
+            input.value = montosBs.toFixed(2);
+        });
+        
+        // Actualizar montos en USD para efectivo (total de productos)
+        document.querySelectorAll('input[name="monto_efectivo_usd"]').forEach(input => {
+            input.value = totalVenta.toFixed(2);
+        });
+        
+        // Actualizar monto en USD para divisa (total de productos)
+        document.querySelectorAll('input[name="monto_divisa"]').forEach(input => {
+            input.value = totalVenta.toFixed(2);
         });
     }
 
     function validarTotalMetodosPago() {
-        let totalMetodos = 0;
-        let totalVenta = parseFloat(document.getElementById('total-general-venta').textContent.replace('$', '')) || 0;
+        // Esta función puede ser expandida para validar que la suma de los métodos de pago
+        // coincida con el total de la venta si es necesario
+        console.log('Validando total de métodos de pago...');
+        return true;
+    }
+
+    // Validaciones específicas para cada método de pago
+    function validarCamposMetodoPago() {
+        const metodoSeleccionado = document.querySelector('.metodo-pago-select').value;
+        const option = document.querySelector('.metodo-pago-select option:checked');
+        const nombreMetodo = option ? option.getAttribute('data-nombre') : '';
         
-        document.querySelectorAll('input[name="monto_metodopago[]"]').forEach(input => {
-            totalMetodos += parseFloat(input.value) || 0;
-        });
+        if (!nombreMetodo) return true;
         
-        // Validar que el total de métodos de pago coincida con el total de la venta
-        if (totalMetodos > totalVenta) {
-            Swal.fire('Error', 'El total de métodos de pago no puede ser mayor al total de la venta', 'error');
+        // Validaciones según el método
+        if (nombreMetodo.toLowerCase().includes('pago móvil') || nombreMetodo.toLowerCase().includes('movil')) {
+            return validarPagoMovil();
+        } else if (nombreMetodo.toLowerCase().includes('punto de venta') || nombreMetodo.toLowerCase().includes('pos')) {
+            return validarPuntoVenta();
+        } else if (nombreMetodo.toLowerCase().includes('transferencia bancaria') || nombreMetodo.toLowerCase().includes('transferencia')) {
+            return validarTransferenciaBancaria();
         }
+        
+        return true;
+    }
+
+    function validarPagoMovil() {
+        const bancoEmisor = document.querySelector('select[name="banco_emisor_pm"]').value;
+        const bancoReceptor = document.querySelector('select[name="banco_receptor_pm"]').value;
+        const referencia = document.querySelector('input[name="referencia_pm"]').value;
+        const telefono = document.querySelector('input[name="telefono_emisor_pm"]').value;
+        
+        if (!bancoEmisor) {
+            Swal.fire('Error', 'Seleccione un banco emisor', 'error');
+            return false;
+        }
+        
+        if (!bancoReceptor) {
+            Swal.fire('Error', 'Seleccione un banco receptor', 'error');
+            return false;
+        }
+        
+        if (!referencia || referencia.length < 4 || referencia.length > 6 || !/^\d+$/.test(referencia)) {
+            Swal.fire('Error', 'La referencia debe tener entre 4 y 6 dígitos numéricos', 'error');
+            return false;
+        }
+        
+        if (!telefono || telefono.length !== 11 || !/^\d+$/.test(telefono)) {
+            Swal.fire('Error', 'El teléfono debe tener 11 dígitos numéricos', 'error');
+            return false;
+        }
+        
+        return true;
+    }
+
+    function validarPuntoVenta() {
+        const referencia = document.querySelector('input[name="referencia_pv"]').value;
+        
+        if (!referencia || referencia.length < 4 || referencia.length > 6 || !/^\d+$/.test(referencia)) {
+            Swal.fire('Error', 'La referencia debe tener entre 4 y 6 dígitos numéricos', 'error');
+            return false;
+        }
+        
+        return true;
+    }
+
+    function validarTransferenciaBancaria() {
+        const referencia = document.querySelector('input[name="referencia_tb"]').value;
+        
+        if (!referencia || referencia.length < 4 || referencia.length > 6 || !/^\d+$/.test(referencia)) {
+            Swal.fire('Error', 'La referencia debe tener entre 4 y 6 dígitos numéricos', 'error');
+            return false;
+        }
+        
+        return true;
     }
 
     // Inicializar eventos de métodos de pago
     inicializarEventosMetodoPago();
+
+    // Función de inicialización para debugging
+    function inicializarDebugMetodoPago() {
+        console.log('Inicializando debug de métodos de pago...');
+        
+        // Verificar que los elementos existan
+        const container = document.getElementById('metodos-pago-container');
+        const dinamicos = document.getElementById('campos-metodo-pago-dinamicos');
+        
+        console.log('Container de métodos:', container);
+        console.log('Campos dinámicos:', dinamicos);
+        
+        // Verificar que los campos específicos existan
+        const camposDivisa = document.getElementById('campos-divisa');
+        const camposEfectivo = document.getElementById('campos-efectivo');
+        const camposPagoMovil = document.getElementById('campos-pago-movil');
+        const camposPuntoVenta = document.getElementById('campos-punto-venta');
+        const camposTransferencia = document.getElementById('campos-transferencia');
+        
+        console.log('Campos Divisa:', camposDivisa);
+        console.log('Campos Efectivo:', camposEfectivo);
+        console.log('Campos Pago Móvil:', camposPagoMovil);
+        console.log('Campos Punto de Venta:', camposPuntoVenta);
+        console.log('Campos Transferencia:', camposTransferencia);
+        
+        // Verificar opciones del select
+        const select = document.querySelector('.metodo-pago-select');
+        if (select) {
+            console.log('Opciones disponibles:');
+            Array.from(select.options).forEach((option, index) => {
+                console.log(`${index}: ${option.text} (${option.value}) - data-nombre: ${option.getAttribute('data-nombre')}`);
+            });
+        }
+        
+        // Inicializar montos si hay un total disponible
+        const totalVenta = parseFloat(document.getElementById('total-general-venta')?.textContent.replace('$', '')) || 0;
+        if (totalVenta > 0) {
+            console.log('Inicializando montos con total:', totalVenta);
+            // Los montos se actualizarán cuando se seleccione un método de pago
+        }
+    }
+
+    // Ejecutar debug al cargar la página
+    inicializarDebugMetodoPago();
 
     // Evento para el botón de ayuda
     const btnAyuda = document.getElementById('btnAyuda');
