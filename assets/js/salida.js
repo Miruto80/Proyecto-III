@@ -6,15 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const apellidoInput = document.getElementById('apellido_cliente');
     const telefonoInput = document.getElementById('telefono_cliente');
     const correoInput = document.getElementById('correo_cliente');
-    const metodoPagoSelect = document.getElementById('metodo_pago');
-    const metodoEntregaSelect = document.getElementById('metodo_entrega');
-    const camposPagoAdicionales = document.getElementById('campos_pago_adicionales');
-    const campoDireccion = document.getElementById('campo_direccion');
-    const referenciaBancaria = document.getElementById('referencia_bancaria');
-    const telefonoEmisor = document.getElementById('telefono_emisor');
-    const banco = document.getElementById('banco');
-    const bancoDestino = document.getElementById('banco_destino');
-    const direccion = document.getElementById('direccion');
     
     // Referencias para el registro de cliente
     const btnRegistrarCliente = document.getElementById('registrarCliente');
@@ -37,8 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const regexSoloLetras = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/;
     const regexCorreo = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     const regexTelefono = /^0[0-9]{10}$/;
-    const regexReferencia = /^[0-9]{4,6}$/;
-    const regexTelefonoPago = /^(04|02)[0-9]{9}$/;
 
     // Funciones de utilidad
     function mostrarError(elemento, mensaje) {
@@ -367,18 +356,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Validar método de pago
-            if (!metodoPagoSelect.value) {
-                Swal.fire('Error', 'Debe seleccionar un método de pago', 'error');
-                return;
-            }
-
-            // Validar método de entrega
-            if (!metodoEntregaSelect.value) {
-                Swal.fire('Error', 'Debe seleccionar un método de entrega', 'error');
-                return;
-            }
-
             // Validar productos
             const productos = document.querySelectorAll('#productos-container-venta tr.producto-fila');
             if (productos.length === 0) {
@@ -398,50 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (productosValidos === 0) {
                 Swal.fire('Error', 'Debe seleccionar al menos un producto válido', 'error');
-                return;
-            }
-
-            // Validar datos de pago según el método seleccionado
-            if (metodoPagoSelect.value === '1') { // Pago Móvil
-                if (!referenciaBancaria.value.trim()) {
-                    mostrarError(referenciaBancaria, 'La referencia bancaria es obligatoria');
-                    return;
-                }
-                if (!telefonoEmisor.value.trim()) {
-                    mostrarError(telefonoEmisor, 'El teléfono emisor es obligatorio');
-                    return;
-                }
-                if (!banco.value) {
-                    mostrarError(banco, 'Debe seleccionar un banco emisor');
-                    return;
-                }
-                if (!bancoDestino.value) {
-                    mostrarError(bancoDestino, 'Debe seleccionar un banco receptor');
-                    return;
-                }
-            } else if (metodoPagoSelect.value === '2') { // Transferencia Bancaria
-                if (!referenciaBancaria.value.trim()) {
-                    mostrarError(referenciaBancaria, 'La referencia bancaria es obligatoria');
-                    return;
-                }
-                if (!banco.value) {
-                    mostrarError(banco, 'Debe seleccionar un banco emisor');
-                    return;
-                }
-                if (!bancoDestino.value) {
-                    mostrarError(bancoDestino, 'Debe seleccionar un banco receptor');
-                    return;
-                }
-            } else if (metodoPagoSelect.value === '3') { // Punto de Venta
-                if (!referenciaBancaria.value.trim()) {
-                    mostrarError(referenciaBancaria, 'La referencia del punto es obligatoria');
-                    return;
-                }
-            }
-
-            // Validar dirección si es delivery
-            if (metodoEntregaSelect.value === '1' && !direccion.value.trim()) {
-                mostrarError(direccion, 'Debe ingresar la dirección de entrega');
                 return;
             }
 
@@ -546,10 +479,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (e.target.classList.contains('remover-producto-venta')) {
                 const filas = contenedorProductos.querySelectorAll('tr.producto-fila');
+                const filaActual = e.target.closest('tr');
+                const esPrimeraFila = filaActual === filas[0];
+                
+                if (esPrimeraFila) {
+                    Swal.fire('Error', 'No se puede eliminar el primer producto', 'error');
+                    return;
+                }
+                
                 if (filas.length > 1) {
-                    e.target.closest('tr').remove();
+                    filaActual.remove();
                     actualizarTotalVenta();
-        } else {
+                } else {
                     Swal.fire('Error', 'Debe mantener al menos un producto', 'error');
                 }
             }
@@ -637,148 +578,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Evento para cambio en método de pago
-    if (metodoPagoSelect) {
-        metodoPagoSelect.addEventListener('change', function() {
-            // Limpiar campos y errores
-            [referenciaBancaria, telefonoEmisor, banco, bancoDestino].forEach(limpiarError);
-            referenciaBancaria.value = '';
-            telefonoEmisor.value = '';
-            banco.value = '';
-            bancoDestino.value = '';
-
-            if (this.value === '2') { // Transferencia Bancaria
-                camposPagoAdicionales.style.display = 'flex';
-                document.querySelector('label[for="referencia_bancaria"]').textContent = 'Referencia Bancaria';
-                referenciaBancaria.setAttribute('required', true);
-                banco.setAttribute('required', true);
-                bancoDestino.setAttribute('required', true);
-                
-                // Ocultar campo de teléfono y ajustar grid
-                document.getElementById('campo_telefono_emisor').style.display = 'none';
-                
-                // Ajustar el espacio de los campos visibles
-                const campos = document.querySelectorAll('#campos_pago_adicionales > div:not(#campo_telefono_emisor)');
-                campos.forEach(div => {
-                    div.className = 'col-md-4';
-                });
-                
-                telefonoEmisor.removeAttribute('required');
-                document.querySelector('[for="referencia_bancaria"]').nextElementSibling.placeholder = 'Número de referencia bancaria';
-
-                // Mostrar campos de banco
-                banco.parentElement.parentElement.style.display = 'block';
-                bancoDestino.parentElement.parentElement.style.display = 'block';
-
-                // Limpiar y configurar las opciones del banco destino
-                bancoDestino.innerHTML = `
-                    <option value="">Seleccione un banco</option>
-                    <option value="0102-Banco De Venezuela">Banco de Venezuela</option>
-                    <option value="0105-Banco Mercantil">Banco Mercantil</option>
-                `;
-            } else if (this.value === '1') { // Pago Móvil
-                camposPagoAdicionales.style.display = 'flex';
-                document.querySelector('label[for="referencia_bancaria"]').textContent = 'Referencia Bancaria';
-                referenciaBancaria.setAttribute('required', true);
-                telefonoEmisor.setAttribute('required', true);
-                banco.setAttribute('required', true);
-                bancoDestino.setAttribute('required', true);
-
-                // Mostrar campo de teléfono y restaurar grid original
-                document.getElementById('campo_telefono_emisor').style.display = 'block';
-                document.querySelectorAll('#campos_pago_adicionales > div').forEach(div => {
-                    div.className = 'col-md-3';
-                });
-
-                // Mostrar campos de banco
-                banco.parentElement.parentElement.style.display = 'block';
-                bancoDestino.parentElement.parentElement.style.display = 'block';
-                document.querySelector('[for="referencia_bancaria"]').nextElementSibling.placeholder = 'Número de referencia bancaria';
-
-                // Limpiar y configurar las opciones del banco destino
-                bancoDestino.innerHTML = `
-                    <option value="">Seleccione un banco</option>
-                    <option value="0102-Banco De Venezuela">Banco de Venezuela</option>
-                    <option value="0105-Banco Mercantil">Banco Mercantil</option>
-                `;
-            } else if (this.value === '3') { // Punto de Venta
-                camposPagoAdicionales.style.display = 'flex';
-                document.querySelector('label[for="referencia_bancaria"]').textContent = 'Referencia del Punto';
-                referenciaBancaria.setAttribute('required', true);
-                document.querySelector('[for="referencia_bancaria"]').nextElementSibling.placeholder = 'Número de referencia del punto';
-
-                // Ocultar campos innecesarios
-                document.getElementById('campo_telefono_emisor').style.display = 'none';
-                banco.parentElement.parentElement.style.display = 'none';
-                bancoDestino.parentElement.parentElement.style.display = 'none';
-
-                // Ajustar el espacio del campo de referencia
-                document.querySelector('#campos_pago_adicionales > div:first-child').className = 'col-md-12';
-                
-                // Remover required de campos ocultos
-                telefonoEmisor.removeAttribute('required');
-                banco.removeAttribute('required');
-                bancoDestino.removeAttribute('required');
-
-            } else {
-                camposPagoAdicionales.style.display = 'none';
-                referenciaBancaria.removeAttribute('required');
-                telefonoEmisor.removeAttribute('required');
-                banco.removeAttribute('required');
-                bancoDestino.removeAttribute('required');
-            }
-        });
-    }
-
-    // Evento para cambio en método de entrega
-    if (metodoEntregaSelect && campoDireccion && direccion) {
-        metodoEntregaSelect.addEventListener('change', function() {
-            // Limpiar campo y errores
-            limpiarError(direccion);
-            direccion.value = '';
-
-            if (this.value === '1') { // Delivery
-                campoDireccion.style.display = 'block';
-                document.querySelector('label[for="direccion"]').textContent = 'Dirección de Entrega';
-                direccion.setAttribute('required', true);
-                direccion.setAttribute('placeholder', 'Ingrese la dirección completa para la entrega');
-                
-                // Ajustar el espacio del campo de dirección
-                document.querySelector('#campo_direccion > div').className = 'col-md-12';
-                
-            } else if (this.value === '2') { // MRW
-                campoDireccion.style.display = 'block';
-                document.querySelector('label[for="direccion"]').textContent = 'Dirección de Oficina MRW';
-                direccion.setAttribute('required', true);
-                direccion.setAttribute('placeholder', 'Ingrese la dirección de la oficina MRW para el retiro');
-                
-                // Ajustar el espacio del campo de dirección
-                document.querySelector('#campo_direccion > div').className = 'col-md-12';
-                
-            } else if (this.value === '3') { // Zoom
-                campoDireccion.style.display = 'block';
-                document.querySelector('label[for="direccion"]').textContent = 'Dirección de Oficina Zoom';
-                direccion.setAttribute('required', true);
-                direccion.setAttribute('placeholder', 'Ingrese la dirección de la oficina Zoom para el retiro');
-                
-                // Ajustar el espacio del campo de dirección
-                document.querySelector('#campo_direccion > div').className = 'col-md-12';
-                
-            } else {
-                campoDireccion.style.display = 'none';
-                direccion.removeAttribute('required');
-            }
-        });
-    }
-
-    // Asegurarse de que los campos adicionales estén ocultos inicialmente
-    if (camposPagoAdicionales) {
-        camposPagoAdicionales.style.display = 'none';
-    }
-    if (campoDireccion) {
-        campoDireccion.style.display = 'none';
-    }
-
     // Validación de cédula en tiempo real
     cedulaInput.addEventListener('keypress', function(e) {
         // Prevenir entrada de letras y caracteres especiales
@@ -863,79 +662,96 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Validación de referencia bancaria
-    if (referenciaBancaria) {
-    referenciaBancaria.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
-        
-        if (this.value.length > 0) {
-            if (!regexReferencia.test(this.value)) {
-                mostrarError(this, 'La referencia debe tener entre 4 y 6 dígitos');
-                } else {
-                    mostrarExito(this);
-                }
-            } else {
-                limpiarError(this);
-        }
-    });
-    }
-
-    // Validación de teléfono emisor
-    if (telefonoEmisor) {
-    telefonoEmisor.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);
-        
-        if (this.value.length > 0) {
-            if (!regexTelefonoPago.test(this.value)) {
-                    mostrarError(this, 'El teléfono debe empezar con 04 o 02');
-                } else {
-                    mostrarExito(this);
-                }
-            } else {
-                limpiarError(this);
-        }
-    });
-    }
-
-    // Validación de banco
-    if (banco) {
-    banco.addEventListener('change', function() {
-            if (this.value) {
-                mostrarExito(this);
-        } else {
-            limpiarError(this);
-        }
-    });
-    }
-
-    // Validación de banco destino
-    if (bancoDestino) {
-    bancoDestino.addEventListener('change', function() {
-            if (this.value) {
-                mostrarExito(this);
-        } else {
-            limpiarError(this);
-        }
-    });
-    }
-
-    // Validación de dirección
-    if (direccion) {
-    direccion.addEventListener('input', function() {
-            if (this.value.length > 0) {
-                if (this.value.length < 10) {
-            mostrarError(this, 'La dirección debe tener al menos 10 caracteres');
-                } else {
-                    mostrarExito(this);
-                }
-        } else {
-            limpiarError(this);
-        }
-    });
-    }
-
     // Inicializar eventos de productos
     inicializarEventosProducto();
+
+    // Eventos para métodos de pago
+    function inicializarEventosMetodoPago() {
+        // Evento para agregar método de pago
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('agregar-metodo-pago')) {
+                const fila = e.target.closest('.metodo-pago-fila');
+                const nuevaFila = fila.cloneNode(true);
+                
+                // Limpiar valores de la nueva fila
+                nuevaFila.querySelector('.metodo-pago-select').value = '';
+                nuevaFila.querySelector('input[name="monto_metodopago[]"]').value = '';
+                
+                // Obtener el contenedor de botones
+                const contenedorBotones = nuevaFila.querySelector('.col-md-2:last-child');
+                
+                // Limpiar todos los botones existentes
+                contenedorBotones.innerHTML = '';
+                
+                // Agregar solo el botón de eliminar
+                const btnEliminar = document.createElement('button');
+                btnEliminar.type = 'button';
+                btnEliminar.className = 'btn btn-danger btn-sm remover-metodo-pago';
+                btnEliminar.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                contenedorBotones.appendChild(btnEliminar);
+                
+                document.getElementById('metodos-pago-container').appendChild(nuevaFila);
+                inicializarEventosFilaMetodoPago(nuevaFila);
+            }
+            
+            if (e.target.classList.contains('remover-metodo-pago')) {
+                const filas = document.querySelectorAll('.metodo-pago-fila');
+                const filaActual = e.target.closest('.metodo-pago-fila');
+                const esPrimeraFila = filaActual === filas[0];
+                
+                if (esPrimeraFila) {
+                    Swal.fire('Error', 'No se puede eliminar el primer método de pago', 'error');
+                    return;
+                }
+                
+                if (filas.length > 1) {
+                    filaActual.remove();
+                    validarTotalMetodosPago();
+                } else {
+                    Swal.fire('Error', 'Debe mantener al menos un método de pago', 'error');
+                }
+            }
+        });
+
+        // Inicializar eventos en filas existentes
+        document.querySelectorAll('.metodo-pago-fila').forEach(fila => {
+            inicializarEventosFilaMetodoPago(fila);
+        });
+    }
+
+    function inicializarEventosFilaMetodoPago(fila) {
+        // Eventos para cambio de método de pago
+        const select = fila.querySelector('.metodo-pago-select');
+        const montoInput = fila.querySelector('input[name="monto_metodopago[]"]');
+        
+        select.addEventListener('change', function() {
+            if (this.value) {
+                // Aquí puedes agregar lógica adicional si es necesario
+                validarTotalMetodosPago();
+            }
+        });
+        
+        montoInput.addEventListener('input', function() {
+            validarTotalMetodosPago();
+        });
+    }
+
+    function validarTotalMetodosPago() {
+        let totalMetodos = 0;
+        let totalVenta = parseFloat(document.getElementById('total-general-venta').textContent.replace('$', '')) || 0;
+        
+        document.querySelectorAll('input[name="monto_metodopago[]"]').forEach(input => {
+            totalMetodos += parseFloat(input.value) || 0;
+        });
+        
+        // Validar que el total de métodos de pago coincida con el total de la venta
+        if (totalMetodos > totalVenta) {
+            Swal.fire('Error', 'El total de métodos de pago no puede ser mayor al total de la venta', 'error');
+        }
+    }
+
+    // Inicializar eventos de métodos de pago
+    inicializarEventosMetodoPago();
 
     // Evento para el botón de ayuda
     const btnAyuda = document.getElementById('btnAyuda');
@@ -984,55 +800,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     {
                         element: '.table-color th:nth-child(5)',
                         popover: {
-                            title: 'Método Pago',
-                            description: 'Indica el método de pago utilizado por el cliente, por ejemplo: Pago móvil, Transferencia bancaria, Punto de venta, etc.',
-                            side: "bottom"
-                        }
-                    },
-                    {
-                        element: '.table-color th:nth-child(6)',
-                        popover: {
-                            title: 'Método Entrega',
-                            description: 'Especifica el método de entrega seleccionado para la venta, como Delivery, MRW, Zoom, etc.',
-                            side: "bottom"
-                        }
-                    },
-                    {
-                        element: '.table-color th:nth-child(7)',
-                        popover: {
                             title: 'Acción',
-                            description: 'Contiene los botones de acción para cada venta: ver detalles, gestionar delivery o actualizar el estado.',
+                            description: 'Contiene los botones de acción para cada venta: ver detalles.',
                             side: "bottom"
                         }
                     },
                     { element: '#btnAyuda', popover: { title: 'Botón de ayuda', description: 'Haz clic aquí para ver esta guía interactiva del módulo de ventas.', side: "bottom", align: 'start' }},
                     { element: '.btn-success[data-bs-target="#registroModal"]', popover: { title: 'Registrar venta', description: 'Este botón abre el formulario para registrar una nueva venta.', side: "bottom", align: 'start' }},
                     { element: '.btn-info', popover: { title: 'Ver detalles', description: 'Haz clic aquí para ver los detalles de una venta específica.', side: "left", align: 'start' }},
-                    { element: '.btn-primary[data-bs-target^="#deliveryModal"]', popover: { title: 'Gestionar delivery', description: 'Permite actualizar el estado de entrega de la venta.', side: "left", align: 'start' }},
                     { popover: { title: 'Eso es todo', description: 'Este es el fin de la guía del módulo de ventas. ¡Gracias por usar el sistema!' } }
                 ]
             });
             driverObj.drive();
         });
     }
-
-    // Eventos para editar dirección en modales de delivery
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('btnEditarDireccion')) {
-            const input = e.target.previousElementSibling;
-            const btnEditar = e.target;
-            
-            if (input.readOnly) {
-                input.readOnly = false;
-                input.style.backgroundColor = 'white';
-                btnEditar.innerHTML = '<i class="fas fa-save"></i> Guardar';
-                btnEditar.className = 'btn btn-success btn-sm btnEditarDireccion';
-            } else {
-                input.readOnly = true;
-                input.style.backgroundColor = '#e9ecef';
-                btnEditar.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
-                btnEditar.className = 'btn btn-warning btn-sm btnEditarDireccion';
-            }
-        }
-    });
 }); 
