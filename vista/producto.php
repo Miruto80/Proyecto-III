@@ -126,13 +126,14 @@
   </h4>
  
   <div class="d-flex gap-2">
+      <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(3, 'registrar')): ?>
   <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro" id="btnAbrirRegistrar">
     <span class="icon text-white">
       <i class="fas fa-file-medical"></i>
     </span>
     <span class="text-white">Registrar</span>
   </button>
-
+  <?php endif; ?>
   <button type="button" class="btn btn-primary" id="btnAyuda">
     <span class="icon text-white">
       <i class="fas fa-info-circle"></i>
@@ -170,29 +171,38 @@
                     <td><?php echo htmlspecialchars($dato['nombre']) ?></td>
                     <td><?php echo htmlspecialchars($dato['descripcion']) ?></td>
                     <td><?php echo htmlspecialchars($dato['marca']) ?></td>
-                    <td><?php echo htmlspecialchars($dato['precio_detal']) ?></td>
+                    <td> $ <?php echo htmlspecialchars($dato['precio_detal']) ?></td>
                     <td><?php echo htmlspecialchars($dato['stock_disponible']) ?></td>
                     <td><img src="<?php echo htmlspecialchars($dato['imagen']) ?>" alt="Imagen del producto" width="60" height="60"></td>
                     <td><?php echo htmlspecialchars($dato['nombre_categoria']) ?></td>
                     <td>
                       <form method="POST" action="">
+                      
+                      <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(3, 'editar')): ?>
                       <button type="button" class="btn btn-primary btn-s modificar" 
-            onclick="abrirModalModificar(this)" <?php echo ($dato['estatus'] == 2) ? 'disabled' : ''; ?>> 
-            <i class="fas fa-pencil-alt" title="Editar"></i>
-        </button>
-
+                          onclick="abrirModalModificar(this)" <?php echo ($dato['estatus'] == 2) ? 'disabled' : ''; ?>> 
+                          <i class="fas fa-pencil-alt" title="Editar"></i>
+                      </button>
+                       <?php endif; ?>
+                       
+                      <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(3, 'eliminar')): ?>
                         <button type="button" class="btn btn-danger btn-s eliminar"
-            onclick="eliminarproducto(<?php echo $dato['id_producto']; ?>)" <?php echo ($dato['estatus'] == 2) ? 'disabled' : ''; ?>>
-            <i class="fas fa-trash-alt" title="Eliminar"></i>
-        </button>
+                              onclick="eliminarproducto(<?php echo $dato['id_producto']; ?>)" <?php echo ($dato['estatus'] == 2) ? 'disabled' : ''; ?>>
+                              <i class="fas fa-trash-alt" title="Eliminar"></i>
+                          </button>
+                      <?php endif; ?>
 
                         <button type="button" class="btn btn-s btn-info ver-detalles" title="Click para ver detalles">
                           <i class="fa fa-eye"></i>
                         </button>
-                        <button type="button" class="btn btn-warning text-light btn-desactivar" 
-            onclick="cambiarEstatusProducto(<?php echo $dato['id_producto']; ?>, <?php echo $dato['estatus']; ?>)">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-        </button>
+
+                          <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(3, 'especial')): ?>
+                            <button type="button" class="btn btn-warning text-light btn-desactivar" 
+                                onclick="cambiarEstatusProducto(<?php echo $dato['id_producto']; ?>, <?php echo $dato['estatus']; ?>)">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </button>
+                        <?php endif; ?>
+
                       </form>
                     </td>
                   </tr>

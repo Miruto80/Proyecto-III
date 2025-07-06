@@ -308,21 +308,14 @@ function generarGrafico() {
 generarGrafico();
 
 // Cargamos la vista
-if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-    $bitacora = [
-        'id_persona' => $_SESSION["id"],
-        'accion' => 'Acceso a Módulo',
-        'descripcion' => 'módulo de Compra'
-    ];
-    $entrada->registrarBitacora(json_encode($bitacora));
-    require_once 'vista/entrada.php';
 
-} else if ($_SESSION["nivel_rol"] == 1) {
+if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(2, 'ver')) {
+        require_once 'vista/entrada.php';
+} else {
+        require_once 'vista/seguridad/privilegio.php';
 
+} if ($_SESSION["nivel_rol"] == 1) {
     header("Location: ?pagina=catalogo");
     exit();
-
-} else {
-    header("location:?pagina=home");
 }
 ?>

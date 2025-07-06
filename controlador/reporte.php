@@ -106,4 +106,15 @@ $productos_lista   = (new Producto())->consultar();
 $proveedores_lista = (new Proveedor())->consultar();
 $categorias_lista  = (new Categoria())->consultar();
 
-require_once 'vista/reporte.php';
+
+
+if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(1, 'ver')) {
+        require_once 'vista/reporte.php';
+} else {
+        require_once 'vista/seguridad/privilegio.php';
+
+} if ($_SESSION["nivel_rol"] == 1) {
+    header("Location: ?pagina=catalogo");
+    exit();
+}
+

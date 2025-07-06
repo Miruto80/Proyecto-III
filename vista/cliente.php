@@ -66,7 +66,9 @@
                   <th class="text-white text-center">Telefono</th>
                   <th class="text-white text-center">Correo</th>
                   <th class="text-white text-center">Estatus</th>
+                    <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(8, 'editar')): ?>
                   <th class="text-white text-center">Acción</th>
+                    <?php endif; ?>
                 </tr>
               </thead>
               <tbody>
@@ -94,7 +96,8 @@
                     <?php echo $estatus_texto[$dato['estatus']] ?>
                   </span>
                   </td>
-                
+                    
+                  <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(8, 'editar')): ?>
                   <td>
                       <form method="POST" action="?pagina=cliente" id="formestatus">
                   
@@ -109,6 +112,7 @@
                       </button>
                     </form>
                  </td>
+                     <?php endif; ?>
                 </tr>
                <?php } ?>
               </tbody>
