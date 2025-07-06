@@ -6,7 +6,7 @@ if (empty($_SESSION["id"])) {
 } /* Validacion URL */
 
 require_once 'modelo/salida.php';
-
+ require_once 'permiso.php';
 $salida = new Salida();
 
 // Generar o verificar el token CSRF

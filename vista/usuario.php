@@ -49,20 +49,22 @@
 
     
        <!-- Button que abre el Modal N1 Registro -->
+       <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'registrar')): ?>
           <button type="button" class="btn btn-success registrar" data-bs-toggle="modal" data-bs-target="#registro">
             <span class="icon text-white">
             <i class="fas fa-file-medical me-2"></i>
             </span>
             <span class="text-white" id="btnAbrirRegistrar">Registrar</span>
           </button>
-
-          
+         <?php endif; ?>
+         
   <button type="button" class="btn btn-primary" id="ayuda">
     <span class="icon text-white">
       <i class="fas fa-info-circle me-2"></i>
     </span>
     <span class="text-white">Ayuda</span>
   </button>
+
       </div>
           
   </div>  
@@ -75,7 +77,9 @@
                   <th class="text-white text-center">Nombre</th>
                   <th class="text-white text-center">Apellido</th>
                   <th class="text-white text-center">Rol</th>
+                    <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'especial')): ?>
                   <th class="text-white text-center">Permisos</th>
+                    <?php endif; ?>
                   <th class="text-white text-center">Estatus</th>
                   <th class="text-white text-center">Acción</th>
                 </tr>
@@ -104,13 +108,16 @@
                   <td><?php echo $dato['nombre']?></td>
                   <td><?php echo $dato['apellido']?></td>
                   <td><?php echo $dato['nombre_tipo']?></td>
-                  <td>
-                    <form action="?pagina=usuario" method="POST">
-                    <button type="submit" class="btn btn-warning btn-sm permisotur" name="modificar" value="<?php echo $dato['id_persona']?>">
-                        <i class="fa-solid fa-users-gear" title="Modificar Permiso"></i>
-                    </button>
-                    </form>      
+                  
+                      <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'especial')): ?>
+                    <td>
+                        <form action="?pagina=usuario" method="POST">
+                          <button type="submit" class="btn btn-warning btn-sm permisotur" name="modificar" value="<?php echo $dato['id_persona']?>">
+                              <i class="fa-solid fa-users-gear" title="Modificar Permiso"></i>
+                          </button>  
+                      </form>      
                   </td>
+                   <?php endif; ?>
                   <td>
                       <span class="<?= $estatus_classes[$dato['estatus']] ?>">
                         <?php echo $estatus_texto[$dato['estatus']] ?>
@@ -118,9 +125,9 @@
                   </td>
 
                   <td>
-                    
 
                     <form method="POST" action="?pagina=usuario">
+                   
                       <button type="button" class="btn btn-info btn-sm informacion"
                       data-bs-toggle="modal"
                       data-bs-target="#infoModal"
@@ -133,8 +140,8 @@
                     >
                       <i class="fas fa-eye" title="Ver Detalles"></i>
                     </button>
-                    
-
+                
+                      <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'editar')): ?>
                       <button type="button" class="btn btn-primary btn-sm modificar"
                       data-bs-toggle="modal"
                       data-bs-target="#editarModal"
@@ -148,13 +155,14 @@
                    
                   <i class="fas fa-pencil-alt" title="Editar"></i> 
                 </button>
-                        
+                    <?php endif; ?>
+                          <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'eliminar')): ?>
                         <button name="eliminar" class="btn btn-danger btn-sm eliminar" value="<?php echo $dato['id_persona']?>">
                           <i class="fas fa-trash-alt" title="Eliminar"> </i>
                         </button>
                         <input type="hidden" name="eliminar" value="<?php echo $dato['id_persona']?>">
                     
-                      
+                        <?php endif; ?>
 
                      </form>
                   </td>

@@ -6,7 +6,7 @@ if (empty($_SESSION["id"])) {
 }
 
 require_once __DIR__ . '/../modelo/pedidoweb.php';
-
+ require_once 'permiso.php';
 $objPedidoWeb = new pedidoWeb();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

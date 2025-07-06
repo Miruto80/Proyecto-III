@@ -9,6 +9,7 @@ require_once 'modelo/reporte.php';
 require_once 'modelo/producto.php';
 require_once 'modelo/proveedor.php';
 require_once 'modelo/categoria.php';
+require_once 'permiso.php';
 
 $objProd = new Producto();
 

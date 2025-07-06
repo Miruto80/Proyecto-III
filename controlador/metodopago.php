@@ -6,6 +6,7 @@ if (empty($_SESSION["id"])) {
 }
 
 require_once __DIR__ . '/../modelo/metodopago.php';
+ require_once 'permiso.php';
 
 $objMetodoPago = new MetodoPago();
 

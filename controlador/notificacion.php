@@ -10,6 +10,7 @@ $nivel = (int)($_SESSION['nivel_rol'] ?? 0);
 
 require_once 'modelo/notificacion.php';
 require_once 'modelo/tipousuario.php';  // para bitácora
+ require_once 'permiso.php';
 $N    = new Notificacion();
 $Bit  = new tipousuario();
 

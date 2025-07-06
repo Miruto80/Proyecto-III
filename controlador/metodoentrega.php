@@ -7,7 +7,7 @@ if (empty($_SESSION["id"])) {
 }
 
 require_once __DIR__ . '/../modelo/metodoentrega.php';
-
+require_once 'permiso.php';
 $objEntrega = new metodoentrega();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

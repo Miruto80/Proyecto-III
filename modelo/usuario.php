@@ -309,7 +309,7 @@ class Usuario extends Conexion
             ['id_modulo' => 11, 'id_persona' => $id_persona, 'accion' => 'registrar', 'estado' => '1'],
             ['id_modulo' => 11, 'id_persona' => $id_persona, 'accion' => 'editar', 'estado' => '1'],
             ['id_modulo' => 11, 'id_persona' => $id_persona, 'accion' => 'eliminar', 'estado' => '1'],
-            ['id_modulo' => 12, 'id_persona' => $id_persona, 'accion' => 'ver', 'estado' => '1'],
+            ['id_modulo' => 12, 'id_persona' => $id_persona, 'accion' => 'ver', 'estado' => '0'],
             ['id_modulo' => 13, 'id_persona' => $id_persona, 'accion' => 'ver', 'estado' => '1'],
             ['id_modulo' => 13, 'id_persona' => $id_persona, 'accion' => 'registrar', 'estado' => '1'],
             ['id_modulo' => 13, 'id_persona' => $id_persona, 'accion' => 'editar', 'estado' => '1'],

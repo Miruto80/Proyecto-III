@@ -6,7 +6,7 @@ if (empty($_SESSION["id"])) {
 } /* Validacion URL */
 
 require_once 'modelo/entrada.php';
-
+require_once 'permiso.php';
 $entrada = new Entrada();
 
 // Detectar si la solicitud es AJAX
