@@ -160,10 +160,10 @@ try {
         echo json_encode(['respuesta' => 0, 'mensaje' => 'Consulta de productos no implementada en el nuevo flujo.']);
         exit;
     } else {
-        if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
+       if ($_SESSION["nivel_rol"] == 1) {
             header("Location: ?pagina=catalogo");
             exit();
-        }
+        }           
         // Consultar reservas para la vista
         $resultado = $objreserva->procesarReserva(json_encode(['operacion' => 'consultar']));
         $reservas = ($resultado['respuesta'] == 1) ? $resultado['datos'] : [];
@@ -173,7 +173,15 @@ try {
         // Consultar productos para el select
         $resultadoProductos = $objreserva->procesarReserva(json_encode(['operacion' => 'consultar_productos']));
         $productos = ($resultadoProductos['respuesta'] == 1) ? $resultadoProductos['datos'] : [];
-        require_once 'vista/reserva.php';
+       
+       if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(5, 'ver')) {
+ 
+                 require_once 'vista/reserva.php';
+        } else {
+                require_once 'vista/seguridad/privilegio.php';
+
+        }
+
     }
 } catch (Exception $e) {
     if ($is_ajax) {
@@ -192,10 +200,20 @@ try {
             'descripcion' => $descripcion
         ]));
         
-        if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
-                header("Location: ?pagina=catalogo");
-                exit();
+        if ($_SESSION["nivel_rol"] == 1) {
+            header("Location: ?pagina=catalogo");
+            exit();
         }
-        require_once 'vista/reserva.php';
-    }
+        if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(5, 'ver')) {
+ 
+                 require_once 'vista/reserva.php';
+        } else {
+                require_once 'vista/seguridad/privilegio.php';
+
+        }
+                
+     }
 }
+
+
+

@@ -38,11 +38,13 @@
             </h4>
 
             <div class="d-flex align-items-center gap-2"> 
+                <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(6, 'registrar')): ?>
               <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro" id="btnAbrirRegistrar">
                 <i class="fas fa-file-medical"></i> Registrar
               </button>
-
-              <button type="button" class="btn btn-info" id="btnAyuda">
+              <?php endif; ?>
+              
+              <button type="button" class="btn btn-primary" id="btnAyuda">
                 <i class="fas fa-info-circle"></i> Ayuda
               </button>
               
@@ -73,14 +75,19 @@
                       <td><?php echo $dato['telefono']; ?></td>
                       <td><?php echo $dato['direccion']; ?></td>
                       <td>
+                      <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(6, 'editar')): ?>
                         <button type="button" class="btn btn-primary btn-sm modificar" 
                                 onclick="abrirModalModificar(<?php echo $dato['id_proveedor']; ?>)"> 
                           <i class="fas fa-pencil-alt" title="Editar"> </i> 
                         </button>
+                        <?php endif; ?>
+
+                       <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(6, 'eliminar')): ?>
                         <button type="button" class="btn btn-danger btn-sm eliminar" 
                                 onclick="eliminarProveedor(<?php echo $dato['id_proveedor']; ?>)">
                           <i class="fas fa-trash-alt" title="Eliminar"> </i>
                         </button>
+                        <?php endif; ?>
                       </td>
                     </tr>
                     <?php endforeach; ?>

@@ -60,12 +60,14 @@
            
        <!-- Button que abre el Modal N1 Registro -->
        <div class="d-flex gap-2"> 
+          <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(4, 'registrar')): ?>
           <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registroModal">
             <span class="icon text-white">
             <i class="fas fa-file-medical"></i>
             </span>
             <span class="text-white">Registrar Venta</span>
           </button>
+        <?php endif; ?>
 
           <button type="button" class="btn btn-primary" id="btnAyuda">
             <span class="icon text-white">
@@ -84,7 +86,9 @@
                   <th class="text-white">Cliente</th>
                   <th class="text-white">Fecha</th>
                   <th class="text-white">Total (USD)</th>
-                  <th class="text-white">Acción</th>
+                     <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(4, 'especial')): ?>
+                        <th class="text-white">Acción</th>
+                       <?php endif; ?>
                 </tr>
               </thead>
               <tbody>
@@ -98,11 +102,14 @@
                       <td><?php echo htmlspecialchars($venta['cliente']); ?></td>
                       <td><?php echo $fecha_formateada; ?></td>
                       <td><?php echo $precio_formateado; ?></td>
-                      <td class="text-center">
-                        <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#verDetallesModal<?php echo $venta['id_pedido']; ?>">
-                          <i class="fas fa-eye" title="Ver Detalles"></i>
-                        </button>
-                      </td>
+
+                          <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(4, 'especial')){ ?>
+                          <td class="text-center">
+                            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#verDetallesModal<?php echo $venta['id_pedido']; ?>">
+                              <i class="fas fa-eye" title="Ver Detalles"></i>
+                            </button>
+                          </td>
+                          <?php } ?>
                     </tr>
                   <?php endforeach; ?>
                 <?php else: ?>
