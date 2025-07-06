@@ -61,6 +61,7 @@ if (isset($_POST['registrar'])) { /* -------  */
     }
        
         $modificar = $objusuario->buscar($id_persona);
+        $nivel_usuario = $objusuario->obtenerNivelPorId($id_persona);
         require_once ("vista/seguridad/permiso.php");
 
     }else if(isset($_POST['actualizar'])){ /* -------  */
@@ -131,6 +132,15 @@ if (isset($_POST['registrar'])) { /* -------  */
     ];
    
     $resultado = $objusuario->procesarUsuario(json_encode($datosPermiso));
+
+    if ($resultado['respuesta'] == 1) {
+        $bitacora = [
+            'id_persona' => $_SESSION["id"],
+            'accion' => 'Modificar Permiso',
+            'descripcion' => 'Se Modifico los permisos del usuario con ID: '
+        ];
+        $objusuario->registrarBitacora(json_encode($bitacora));
+    }
 
     echo json_encode($resultado);
 

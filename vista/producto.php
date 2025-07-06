@@ -126,7 +126,7 @@
   </h4>
  
   <div class="d-flex gap-2">
-      <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(3, 'registrar')): ?>
+      <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(3, 'registrar')): ?>
   <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro" id="btnAbrirRegistrar">
     <span class="icon text-white">
       <i class="fas fa-file-medical"></i>
@@ -185,7 +185,7 @@
                       </button>
                        <?php endif; ?>
                        
-                      <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(3, 'eliminar')): ?>
+                      <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(3, 'eliminar')): ?>
                         <button type="button" class="btn btn-danger btn-s eliminar"
                               onclick="eliminarproducto(<?php echo $dato['id_producto']; ?>)" <?php echo ($dato['estatus'] == 2) ? 'disabled' : ''; ?>>
                               <i class="fas fa-trash-alt" title="Eliminar"></i>
@@ -196,7 +196,7 @@
                           <i class="fa fa-eye"></i>
                         </button>
 
-                          <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(3, 'especial')): ?>
+                          <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(3, 'especial')): ?>
                             <button type="button" class="btn btn-warning text-light btn-desactivar" 
                                 onclick="cambiarEstatusProducto(<?php echo $dato['id_producto']; ?>, <?php echo $dato['estatus']; ?>)">
                                 <i class="fa-solid fa-triangle-exclamation"></i>

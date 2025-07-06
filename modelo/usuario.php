@@ -446,6 +446,25 @@ private function ejecutarEliminacionPermisos($id_persona) {
         }
     }
 
+    public function obtenerNivelPorId($id_persona) {
+    $conex = $this->getConex2();
+    try {
+        $sql = "SELECT r.nivel
+                FROM usuario u
+                INNER JOIN rol_usuario r ON u.id_rol = r.id_rol
+                WHERE u.id_persona = :id_persona";
+        $stmt = $conex->prepare($sql);
+        $stmt->execute(['id_persona' => $id_persona]);
+        $nivel = $stmt->fetchColumn();
+        $conex = null;
+        return $nivel !== false ? (int)$nivel : null;
+    } catch (PDOException $e) {
+        if ($conex) $conex = null;
+        throw $e;
+    }
+}
+
+
 
     private function actualizarLotePermisos($lista) {
     $conex = $this->getConex2();
