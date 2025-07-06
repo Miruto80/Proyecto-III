@@ -68,12 +68,7 @@ foreach ($pedidos as &$p) {
 
 
 if ($_SESSION["nivel_rol"] >=2 && tieneAcceso(9, 'ver')) {
-       $bitacora = [
-        'id_persona' => $_SESSION["id"],
-        'accion' => 'Acceso a Módulo',
-        'descripcion' => 'módulo de PedidoWeb'
-    ];
-    $objPedidoWeb->registrarBitacora(json_encode($bitacora));
+     
 require_once 'vista/pedidoweb.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';
