@@ -6,7 +6,7 @@ if (empty($_SESSION["id"])) {
 } /* Validacion URL */
 
 require_once 'modelo/salida.php';
-
+ require_once 'permiso.php';
 $salida = new Salida();
 
 // Generar o verificar el token CSRF
@@ -350,7 +350,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Location: ?pagina=salida");
     exit;
     }
-} else if($_SESSION["nivel_rol"] >= 2) {
+} else if ($_SESSION["nivel_rol"] >=2 && tieneAcceso(4, 'ver')) {
     $bitacora = [
         'id_persona' => $_SESSION["id"],
         'accion' => 'Acceso a Módulo',
@@ -365,7 +365,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     require_once 'vista/salida.php';
 } else {
-   header("Location: ?pagina=catalogo");
+      require_once 'vista/seguridad/privilegio.php';
+
+}  if ($_SESSION["nivel_rol"] == 1) {
+    header("Location: ?pagina=catalogo");
+    exit();
 }
 
 // Si es una solicitud GET normal, mostrar la vista
@@ -376,11 +380,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $metodos_pago = $salida->consultarMetodosPago();
 
     // Cargar la vista
-    if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
-        header("Location: ?pagina=catalogo");
+    if ($_SESSION["nivel_rol"] == 1) {
+    header("Location: ?pagina=catalogo");
     exit();
-    }else {
-        require_once 'vista/salida.php';
+    } else if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(4, 'ver')) {
+
+            require_once 'vista/salida.php';
+    } else {
+            require_once 'vista/seguridad/privilegio.php';
+
     }
 }
+
+
 ?>

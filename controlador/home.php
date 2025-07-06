@@ -7,7 +7,7 @@
 
 
     require_once 'modelo/home.php';
-
+ require_once 'permiso.php';
 $objhome = new home();
 
 $registro = $objhome->consultarMasVendidos();

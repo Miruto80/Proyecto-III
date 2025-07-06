@@ -6,6 +6,7 @@
     
     
     require_once 'modelo/bitacora.php';
+    require_once 'permiso.php';
     $objBitacora = new Bitacora();
 
     // Función global para registrar en bitácora desde cualquier módulo
@@ -14,32 +15,21 @@
         return $objBitacora->registrarOperacion($accion, $modulo, $detalle);
     }
 
-    if (isset($_POST['entrar'])){
-         // Verifica si se ha enviado la clave
-        if (isset($_POST['clave']) && $_POST['clave'] === '1355') {
-              $registro = $objBitacora->consultar();
-              $objBitacora->registrarOperacion(
-                  Bitacora::ACCESO_MODULO,
-                  'Bitácora'
-              );
-              require 'vista/seguridad/bitacora.php';
-        } else {
-           $_SESSION['message'] = array('title' => 'Clave Inválida', 'text' => 'Por favor, verifica tus datos y vuelve a intentarlo', 'icon' => 'error');
-            header('Location: ?pagina=bitacora'); 
-            exit;
-        }
-    } else if(isset($_POST['detalles'])) {
+  if(isset($_POST['detalles'])) {
          $id_bitacora = $_POST['detalles'];
          $registro = $objBitacora->obtenerRegistro($id_bitacora);
          echo json_encode($registro);
-    } else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-        require_once 'vista/bitacora.php';
-    } else if ($_SESSION["nivel_rol"] == 1) {
+   
+   
+   
+} else if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(12, 'ver')) {
 
-        header("Location: ?pagina=catalogo");
-        exit();
-
-    } else {
+        require_once 'vista/seguridad/bitacora.php';
+} else {
         require_once 'vista/seguridad/privilegio.php';
-    }
+
+} if ($_SESSION["nivel_rol"] == 1) {
+    header("Location: ?pagina=catalogo");
+    exit();
+}
 ?>

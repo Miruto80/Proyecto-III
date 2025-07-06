@@ -6,7 +6,7 @@ if (empty($_SESSION["id"])) {
 }
 
 require_once 'modelo/producto.php';
-
+require_once 'permiso.php';
 $objproducto = new producto();
 
 $registro = $objproducto->consultar();
@@ -139,21 +139,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         echo json_encode($resultado);
     }
-} else  {
-    if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
-    header("Location: ?pagina=catalogo");
-    exit();
-    }
-
-    $bitacora = [
+} else if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(3, 'ver')) {
+        $bitacora = [
         'id_persona' => $_SESSION["id"],
         'accion' => 'Acceso a Módulo',
         'descripcion' => 'módulo de Producto'
-    ];
-    $objproducto->registrarBitacora(json_encode($bitacora));
+         ];
+        $objproducto->registrarBitacora(json_encode($bitacora));
 
-    
+        require_once 'vista/producto.php';
+        } else {
+                require_once 'vista/seguridad/privilegio.php';
 
-    require_once 'vista/producto.php';
+        } if ($_SESSION["nivel_rol"] == 1) {
+            header("Location: ?pagina=catalogo");
+            exit();
 }
+
 ?>

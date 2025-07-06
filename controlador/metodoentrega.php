@@ -7,7 +7,7 @@ if (empty($_SESSION["id"])) {
 }
 
 require_once __DIR__ . '/../modelo/metodoentrega.php';
-
+require_once 'permiso.php';
 $objEntrega = new metodoentrega();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -65,25 +65,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     exit;
-} else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-       /* $bitacora = [
+} else if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(11, 'ver')) {
+     /* $bitacora = [
             'id_persona' => $_SESSION["id"],
             'accion' => 'Acceso a Módulo',
             'descripcion' => 'módulo de Metodo Entrega'
         ];
         $objEntrega->registrarBitacora(json_encode($bitacora));*/
-      
             $metodos = $objEntrega->consultar();
             require_once __DIR__ . '/../vista/metodoentrega.php';
-
-        } else if ($_SESSION["nivel_rol"] == 1) {
-
-            header("Location: ?pagina=catalogo");
-            exit();
-
-        } else {
+} else {
         require_once 'vista/seguridad/privilegio.php';
-    }
 
-
+} if ($_SESSION["nivel_rol"] == 1) {
+    header("Location: ?pagina=catalogo");
+    exit();
+}
 ?>

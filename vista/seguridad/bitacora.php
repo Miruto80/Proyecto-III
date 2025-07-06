@@ -6,7 +6,7 @@
   <?php include 'vista/complementos/head.php' ?> 
   <title>Bitácora del Sistema | LoveMakeup</title>
   <!-- Asegurarnos que jQuery esté cargado -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ 
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
@@ -44,7 +44,7 @@
               </div>
 
               <div class="table-responsive"> <!-- comienzo div table-->
-                <table class="table table-bordered table-hover display responsive nowrap" id="tablaBitacora" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover display responsive nowrap" id="myTable" width="100%" cellspacing="0">
                   <thead class="table-color">
                     <tr>
                       <th class="text-white">Acción</th>
@@ -56,7 +56,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                  <?php foreach ($registro as $dato) { ?>
+                  <?php /* foreach ($registro as $dato) { ?>
                     <tr>
                       <td>
                         <span class="badge bg-<?php 
@@ -94,7 +94,7 @@
                         </button>
                       </td>
                     </tr>
-                  <?php } ?>
+                  <?php } */?>
                   </tbody>
                 </table>
               </div>
@@ -175,7 +175,7 @@
 <?php include 'vista/complementos/footer.php' ?>
 <script src="assets/js/demo/datatables-demo.js"></script>
 
-<!-- Script para el manejo de detalles -->
+<!-- Script para el manejo de detalles 
 <script>
 function verDetalles(id) {
     $.ajax({
@@ -227,7 +227,7 @@ function verDetalles(id) {
         }
     });
 }
-</script>
+</script> -->
 
 </body>
 </html>

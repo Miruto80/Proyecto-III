@@ -7,6 +7,34 @@ class Login extends Conexion {
         parent::__construct();
     }
 
+    public function registrarBitacora($jsonDatos) {
+        $datos = json_decode($jsonDatos, true);
+        return $this->ejecutarSentenciaBitacora($datos);
+    }
+
+    private function ejecutarSentenciaBitacora($datos) {
+        $conex = $this->getConex2();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
+                    VALUES (:accion, NOW(), :descripcion, :id_persona)";
+            
+            $stmt = $conex->prepare($sql);
+            $stmt->execute($datos);
+            
+            $conex->commit();
+            $conex = null;
+            return true;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+    
     private function encryptClave($datos) {
         $config = [
             'key' => "MotorLoveMakeup",
@@ -50,6 +78,13 @@ class Login extends Conexion {
                     return $this->registrarCliente($datosProcesar);
                 case 'validar':
                     return $this->obtenerPersonaPorCedula(['cedula' => $datosProcesar['cedula']]);
+
+                case 'activocliente':
+                    return $this->activocliente($datosProcesar);
+                    
+                case 'activousuaio':
+                    return $this->activousuario($datosProcesar);
+
                 default:
                     return ['respuesta' => 0, 'mensaje' => 'Operación no válida'];
             }
@@ -215,18 +250,66 @@ class Login extends Conexion {
         }
     }
 
-    public function registrarBitacora($jsonDatos) {
-        $datos = json_decode($jsonDatos, true);
-        return $this->ejecutarSentenciaBitacora($datos);
+
+
+     public function consultar($id_persona) {
+        $conex = $this->getConex2();
+        try {
+        $sql = "SELECT 
+                ru.id_rol, 
+                p.id_persona, 
+                permiso.*
+                FROM usuario p
+                INNER JOIN rol_usuario ru ON p.id_rol = ru.id_rol
+                INNER JOIN permiso ON p.id_persona = permiso.id_persona
+                WHERE p.id_persona = :id_persona
+                ";
+                    
+           $stmt = $conex->prepare($sql);
+             $stmt->execute(['id_persona' => $id_persona]);
+
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return $resultado;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
     }
 
-    private function ejecutarSentenciaBitacora($datos) {
+
+    private function activocliente($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+           $sql = "UPDATE cliente  SET estatus = :estatus, 
+                    WHERE id_persona = :id_persona";
+            
+            $stmt = $conex->prepare($sql);
+            $stmt->execute($datos);
+            
+            $conex->commit();
+            $conex = null;
+            return true;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    private function activousuario($datos) {
         $conex = $this->getConex2();
         try {
             $conex->beginTransaction();
             
-            $sql = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                    VALUES (:accion, NOW(), :descripcion, :id_persona)";
+                $sql = "UPDATE usuario  SET estatus = :estatus, 
+                        WHERE id_persona = :id_persona";
             
             $stmt = $conex->prepare($sql);
             $stmt->execute($datos);
