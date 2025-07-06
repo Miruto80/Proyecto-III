@@ -448,7 +448,11 @@ public static function producto($prodId = null, $provId = null, $catId = null): 
 
 
 
-public static function venta( $start = null, $end = null, $prodId = null, $catId = null): void {
+public static function venta(
+    $start   = null,
+    $end     = null,
+    $prodId  = null,
+    $catId   = null): void {
     // 1) Normalizar fechas
     $endParam = $end;
     if ($start && !$endParam) {
@@ -463,9 +467,7 @@ public static function venta( $start = null, $end = null, $prodId = null, $catId
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie3d.php';
     $conex = (new Conexion())->getConex1();
 
-    //
     // 3) Top 10 productos más vendidos (gráfico)
-    //
     $whereG  = ['p.tipo = 1'];
     $paramsG = [];
     if ($start && $end) {
@@ -474,11 +476,11 @@ public static function venta( $start = null, $end = null, $prodId = null, $catId
         $paramsG[':eG']  = "$end   23:59:59";
     }
     if ($prodId) {
-        $whereG[]        = 'pd.id_producto = :pidG';
+        $whereG[]         = 'pd.id_producto = :pidG';
         $paramsG[':pidG'] = $prodId;
     }
     if ($catId) {
-        $whereG[]        = 'pr.id_categoria = :catG';
+        $whereG[]         = 'pr.id_categoria = :catG';
         $paramsG[':catG'] = $catId;
     }
 
@@ -520,9 +522,7 @@ public static function venta( $start = null, $end = null, $prodId = null, $catId
           ? 'data:image/png;base64,'.base64_encode(file_get_contents($imgFile))
           : '';
 
-    //
-    // 4) Ventas para la tabla (inner-join para que f_cat funcione)
-    //
+    // 4) Ventas para la tabla (ordenado por total_desc)
     $whereT  = ['p.tipo = 1'];
     $paramsT = [];
     if ($start && $end) {
@@ -544,7 +544,6 @@ public static function venta( $start = null, $end = null, $prodId = null, $catId
         p.id_pedido,
         CONCAT(c.nombre,' ',c.apellido) AS cliente,
         p.fecha,
-        p.estado,
         p.precio_total_usd AS total_usd,
         GROUP_CONCAT(
           pr.nombre,' (',pd.cantidad,'u)'
@@ -553,12 +552,12 @@ public static function venta( $start = null, $end = null, $prodId = null, $catId
         ) AS productos,
         cat.nombre AS categoria
       FROM pedido p
-      JOIN cliente         c   ON c.id_persona   = p.id_persona
-      JOIN pedido_detalles pd  ON pd.id_pedido   = p.id_pedido
-      JOIN productos       pr  ON pr.id_producto = pd.id_producto
+      JOIN cliente         c   ON c.id_persona    = p.id_persona
+      JOIN pedido_detalles pd  ON pd.id_pedido    = p.id_pedido
+      JOIN productos       pr  ON pr.id_producto  = pd.id_producto
       JOIN categoria       cat ON cat.id_categoria = pr.id_categoria
       WHERE " . implode(' AND ', $whereT) . "
-      GROUP BY p.id_pedido, cliente, p.fecha, p.estado, p.precio_total_usd, cat.nombre
+      GROUP BY p.id_pedido, cliente, p.fecha, p.precio_total_usd, cat.nombre
       ORDER BY total_usd DESC
     ";
     $stmtT = $conex->prepare($sqlT);
@@ -566,15 +565,13 @@ public static function venta( $start = null, $end = null, $prodId = null, $catId
     $rows = $stmtT->fetchAll(PDO::FETCH_ASSOC);
     $conex = null;
 
-    //
     // 5) Texto de filtros
-    //
     if (!$start && !$endParam) {
         $filtro = 'Registro general';
     }
     elseif ($start && !$endParam) {
         $filtro = 'Desde '.date('d/m/Y',strtotime($start))
-                .' hasta '.date('d/m/Y').' (hoy)';
+                .' hasta '.date('d/m/Y').'';
     }
     elseif (!$start && $endParam) {
         $filtro = 'Hasta '.date('d/m/Y',strtotime($endParam));
@@ -593,7 +590,6 @@ public static function venta( $start = null, $end = null, $prodId = null, $catId
         $filtro .= ' | Producto: '.htmlspecialchars($n->fetchColumn());
     }
     if ($catId) {
-        // ya conocemos el nombre de categoría en $whereG
         $filtro .= ' | Categoría: '.htmlspecialchars($rows[0]['categoria'] ?? '');
     }
 
@@ -630,12 +626,10 @@ public static function venta( $start = null, $end = null, $prodId = null, $catId
           : '')
       . '<table><thead><tr>'
       . '<th>ID Venta</th><th>Cliente</th><th>Fecha</th>'
-      . '<th>Estado</th><th>Total (USD)</th><th>Productos</th><th>Categoría</th>'
+      . '<th>Total (USD)</th><th>Productos</th><th>Categoría</th>'
       . '</tr></thead><tbody>';
-    $estados = ['0'=>'Cancelado','1'=>'Pendiente','2'=>'Entregado','3'=>'En camino','4'=>'Enviado','5'=>'Otro'];
     foreach ($rows as $r) {
         $d    = date('d/m/Y',strtotime($r['fecha']));
-        $est  = $estados[(string)$r['estado']] ?? 'Desconocido';
         $tot  = '$'.number_format($r['total_usd'],2);
         $prods=htmlspecialchars($r['productos'] ?? '—');
         $catn =htmlspecialchars($r['categoria'] ?? '—');
@@ -644,7 +638,6 @@ public static function venta( $start = null, $end = null, $prodId = null, $catId
                     <td>{$r['id_pedido']}</td>
                     <td>{$cli}</td>
                     <td>{$d}</td>
-                    <td>{$est}</td>
                     <td>{$tot}</td>
                     <td>{$prods}</td>
                     <td>{$catn}</td>
@@ -670,6 +663,7 @@ public static function venta( $start = null, $end = null, $prodId = null, $catId
     );
     $pdf->stream('Reporte_Ventas.pdf', ['Attachment' => false]);
 }
+
 
 
 
@@ -784,7 +778,7 @@ public static function pedidoWeb($start = null, $end = null, $prodId = null): vo
     }
     elseif ($start && !$endParam) {
         $filtro = 'Desde '.date('d/m/Y',strtotime($start))
-                .' hasta '.date('d/m/Y').' (hoy)';
+                .' hasta '.date('d/m/Y').'';
     }
     elseif (!$start && $endParam) {
         $filtro = 'Hasta '.date('d/m/Y',strtotime($endParam));
