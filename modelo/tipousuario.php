@@ -128,7 +128,7 @@ class tipousuario extends Conexion {
 
     public function consultar(): array {
         $c = $this->getConex2();
-        $stmt = $c->prepare("SELECT * FROM rol_usuario WHERE estatus >= 1");
+        $stmt = $c->prepare("SELECT * FROM rol_usuario WHERE estatus >= 1 AND id_rol > 1");
         $stmt->execute();
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $c = null;
