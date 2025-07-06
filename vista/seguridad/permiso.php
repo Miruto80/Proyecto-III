@@ -51,6 +51,10 @@
        <!-- Button que abre el Modal N1 Registro -->
         <a href="?pagina=usuario" class="btn btn-primary"><i class="fa-solid fa-reply"></i> Regresar</a>
       </div>
+
+       <div class="alert alert-light" role="alert">
+      <strong><i class="fa-solid fa-user-shield me-2"></i>Permisos del Módulo:</strong> Este espacio permite asignar lo que cada usuario puede hacer: ver, registrar, editar, eliminar o usar funciones especiales en cada módulo del sistema.
+  </div>
        <form action="?pagina=usuario" method="POST" autocomplete="off" id="forpermiso">
           
           <div class="table-responsive">
