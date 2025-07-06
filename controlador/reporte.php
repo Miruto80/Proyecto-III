@@ -13,11 +13,11 @@ require_once 'modelo/categoria.php';
 $objProd = new Producto();
 
 // 1) Recoger y normalizar filtros
-$start   = $_REQUEST['f_start'] ?? null;
-$end     = $_REQUEST['f_end']   ?? null;
-$prodId  = $_REQUEST['f_id']    ?? null;
-$provId  = $_REQUEST['f_prov']  ?? null;
-$catId   = $_REQUEST['f_cat']   ?? null;
+$start   = isset($_REQUEST['f_start']) ? $_REQUEST['f_start'] : null;
+$end     = isset($_REQUEST['f_end'])   ? $_REQUEST['f_end']   : null;
+$prodId  = isset($_REQUEST['f_id'])    ? $_REQUEST['f_id']    : null;
+$provId  = isset($_REQUEST['f_prov'])  ? $_REQUEST['f_prov']  : null;
+$catId   = isset($_REQUEST['f_cat'])   ? $_REQUEST['f_cat']   : null;
 
 // Limitar fechas a hoy y corregir orden
 $today = date('Y-m-d');
@@ -28,7 +28,7 @@ if ($start && $end && $start > $end) {
 }
 
 // Acción solicitada
-$accion = $_REQUEST['accion'] ?? '';
+$accion = isset($_REQUEST['accion']) ? $_REQUEST['accion'] : '';
 
 // 2) AJAX GET → conteos JSON
 if ($_SERVER['REQUEST_METHOD'] === 'GET'
@@ -38,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET'
 
     switch ($accion) {
         case 'countCompra':
-            // ahora pasamos también $catId
             $cnt = Reporte::countCompra($start, $end, $prodId, $catId);
             break;
         case 'countProducto':
@@ -69,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
 
     switch ($accion) {
         case 'compra':
-            // aquí también le pasamos $catId
             Reporte::compra($start, $end, $prodId, $catId);
             $desc = 'Generó Reporte de Compras';
             break;
