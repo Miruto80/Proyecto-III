@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("modalco").value = correo;
     document.getElementById("modalrol").value = id_tipo;
     document.getElementById("modalrol").textContent = nombre_rol;
+    document.getElementById("rolactual").value = id_tipo;
 
     document.getElementById("modalestatus").value = estatus;
     document.getElementById("modalestatus").textContent = estatus == "1" ? "Activo - Actual" : estatus == "2" ? "Inactivo - Actual" : "Desconocido";
@@ -114,11 +115,28 @@ $('#registrar').on("click", function () {
 });
 
 
+$('#actualizar_permisos').on("click", function () {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Esto actualizará los permisos del usuario.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, actualizar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            var datos = new FormData($('#forpermiso')[0]);
+            datos.append('actualizar_permisos', 'actualizar_permisos');
+            enviaAjax(datos);
+        }
+    });
+});
+
   
   $('#actualizar').on("click", function () {
     Swal.fire({
       title: '¿Desea Cambiar estos datos del Usuario?',
-      text: '',
+      text: 'En caso de Cambiar el Rol, los permiso cambian a sus permisos Predeterminado',
       icon: 'question',
       showCancelButton: true,
       color: "#00000",
@@ -311,6 +329,15 @@ function enviaAjax(datos) {
                 } else {
                   muestraMensaje("error", 2000, lee.text,"" );
                 }
+              } else if (lee.accion == 'actualizar_permisos') {
+                if (lee.respuesta == 1) {
+                  muestraMensaje("success", 1000, "Se ha modificado los Permisos con éxito", "Los datos se han modificado correctamente ");
+                  setTimeout(function () {
+                     location = '?pagina=usuario';
+                  }, 1000);
+                } else {
+                  muestraMensaje("error", 2000, lee.text,"" );
+                }
               }
   
         } catch (e) {
@@ -343,7 +370,8 @@ function enviaAjax(datos) {
     steps: [
       { element: '.table-color', popover: { title: 'Tabla de usuario', description: 'Aqui es donde se guardaran los registros de usuario', side: "left", }},
       { element: '.registrar', popover: { title: 'Boton de registrar', description: 'Darle click aqui te llevara a un modal para poder registrar', side: "bottom", align: 'start' }},
-      { element: '.informacion', popover: { title: 'Mas informacion del Usuario', description: 'Este botón te permite ver mas información de un usuario registrado.', side: "left", align: 'start' }},
+      { element: '.informacion', popover: { title: 'Mas informacion del Usuario', description: 'Este botón te permite ver mas información de los usuario registrado.', side: "left", align: 'start' }},
+      { element: '.permisotur', popover: { title: 'Ver Permiso del Usuario', description: 'Este botón te permite ver mas información de los permiso del  usuario. Y se puede Modificar los permiso', side: "left", align: 'start' }},
       { element: '.modificar', popover: { title: 'Modificar Usuario', description: 'Este botón te permite editar la información de un usuario registrado.', side: "left", align: 'start' }},
       { element: '.eliminar', popover: { title: 'Eliminar Usuario', description: 'Usa este botón para eliminar un usuario de la lista.', side: "left", align: 'start' }},
       { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un usuario en la tabla', side: "right", align: 'start' }},

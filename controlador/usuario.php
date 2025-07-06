@@ -24,7 +24,8 @@ if (isset($_POST['registrar'])) {
                 'telefono' => $_POST['telefono'],
                 'correo' => strtolower($_POST['correo']),
                 'clave' => $_POST['clave'],
-                'id_rol' => $_POST['id_rol']
+                'id_rol' => $_POST['id_rol'],
+                'nivel' => $_POST['nivel']
             ]
         ];
 
@@ -42,7 +43,19 @@ if (isset($_POST['registrar'])) {
 
         echo json_encode($resultadoRegistro);
     }
-} else if(isset($_POST['actualizar'])){
+} else  if(isset($_POST['modificar'])){
+     $id_persona = $_POST['modificar'];    
+        
+     if ($id_persona == $_SESSION['id']) {
+                echo json_encode(['respuesta' => 0, 'accion' => 'actualizar', 'text' => 'No puedes modificar los permiso de a ti mismo']);
+                    header("location:?pagina=usuario");
+                exit;
+    }
+       
+        $modificar = $objusuario->buscar($id_persona);
+        require_once ("vista/seguridad/permiso.php");
+
+    }else if(isset($_POST['actualizar'])){
     $datosUsuario = [
         'operacion' => 'actualizar',
         'datos' => [
@@ -52,12 +65,14 @@ if (isset($_POST['registrar'])) {
             'id_rol' => $_POST['id_rol'],
             'estatus' => $_POST['estatus'],
             'cedula_actual' => $_POST['cedulaactual'],
-            'correo_actual' => $_POST['correoactual']
+            'correo_actual' => $_POST['correoactual'],
+            'rol_actual' => $_POST['rol_actual'],
+            'nivel' => $_POST['nivel']
         ]
     ]; 
 
-    if($datosUsuario['datos']['id_persona'] == 1) { 
-        if($datosUsuario['datos']['id_rol'] != 1) {
+    if($datosUsuario['datos']['id_persona'] == 2) { 
+        if($datosUsuario['datos']['id_rol'] != 2) {
             echo json_encode(['respuesta' => 0, 'accion' => 'actualizar', 'text' => 'No puedes cambiar el Rol del usuario administrador']);
             exit;
         }
@@ -82,6 +97,35 @@ if (isset($_POST['registrar'])) {
 
     echo json_encode($resultado);
 
+} else if (isset($_POST['actualizar_permisos'])) {
+    $permisosRecibidos = $_POST['permiso'] ?? [];
+    $permisosId = $_POST['permiso_id'] ?? [];
+
+    $acciones = ['ver', 'registrar', 'editar', 'eliminar', 'especial'];
+    $listaPermisos = [];
+
+    foreach ($permisosId as $modulo_id => $accionesModulo) {
+        foreach ($accionesModulo as $accion => $id_permiso) {
+            $estado = isset($permisosRecibidos[$modulo_id][$accion]) ? 1 : 0;
+
+            $listaPermisos[] = [
+                'id_permiso' => $id_permiso,
+                'id_modulo' => $modulo_id,
+                'accion' => $accion,
+                'estado' => $estado
+            ];
+        }
+    }
+
+    $datosPermiso = [
+        'operacion' => 'actualizar_permisos',
+        'datos' => $listaPermisos
+    ];
+   
+    $resultado = $objusuario->procesarUsuario(json_encode($datosPermiso));
+
+    echo json_encode($resultado);
+
 } else if(isset($_POST['eliminar'])){
     $datosUsuario = [
         'operacion' => 'eliminar',
@@ -90,7 +134,7 @@ if (isset($_POST['registrar'])) {
         ]
     ];
 
-    if ($datosUsuario['datos']['id_persona'] == 1) {
+    if ($datosUsuario['datos']['id_persona'] == 2) {
         echo json_encode(['respuesta' => 0, 'accion' => 'eliminar', 'text' => 'No se puede eliminar al usuario administrador']);
         exit;
     } 
@@ -112,7 +156,9 @@ if (isset($_POST['registrar'])) {
     }
 
     echo json_encode($resultado);
-} else if ($_SESSION["nivel_rol"] == 3) {
+} 
+
+else if ($_SESSION["nivel_rol"] == 3) {
     
     $bitacora = [
         'id_persona' => $_SESSION["id"],

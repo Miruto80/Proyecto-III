@@ -29,6 +29,11 @@ if (isset($_POST['ingresar'])) {
 
     if ((int)$resultado->estatus === 1) {
         $_SESSION["id"] = $resultado->id_persona;
+
+        $id_persona = $_SESSION["id"]; 
+        $resultadopermiso = $objlogin->consultar($id_persona);
+        $_SESSION["permisos"] = $resultadopermiso;
+
         $_SESSION["nombre"] = $resultado->nombre;
         $_SESSION["apellido"] = $resultado->apellido;
         $_SESSION["nivel_rol"] = isset($resultado->nivel) ? $resultado->nivel : 1;
@@ -41,6 +46,7 @@ if (isset($_POST['ingresar'])) {
         if ($_SESSION["nivel_rol"] == 1) {
             echo json_encode(['respuesta' => 1, 'accion' => 'ingresar']);
             exit;
+       
         } elseif ($_SESSION["nivel_rol"] == 2 || $_SESSION["nivel_rol"] == 3) {
             $bitacora = [
                 'id_persona' => $resultado->id_persona,
@@ -48,6 +54,7 @@ if (isset($_POST['ingresar'])) {
                 'descripcion' => 'El usuario ha iniciado sesión exitosamente.'
             ];
             $objlogin->registrarBitacora(json_encode($bitacora));
+            
             echo json_encode(['respuesta' => 2, 'accion' => 'ingresar']);
             exit;
         } else {

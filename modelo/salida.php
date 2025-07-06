@@ -61,14 +61,6 @@ class Salida extends Conexion {
             throw new Exception('ID de persona no válido');
         }
         
-        if (!isset($datos['id_metodopago']) || $datos['id_metodopago'] <= 0) {
-            throw new Exception('Método de pago no válido');
-        }
-        
-        if (!isset($datos['id_entrega']) || $datos['id_entrega'] <= 0) {
-            throw new Exception('Método de entrega no válido');
-        }
-        
         if (!isset($datos['precio_total']) || $datos['precio_total'] <= 0) {
             throw new Exception('Precio total no válido');
         }
@@ -80,49 +72,32 @@ class Salida extends Conexion {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
-            
-            // Insertar cabecera del pedido
-            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total, referencia_bancaria, 
-                        telefono_emisor, banco, banco_destino, direccion, id_entrega, id_metodopago, id_persona) 
-                        VALUES ('1', NOW(), '1', :precio_total, :referencia_bancaria, 
-                        :telefono_emisor, :banco, :banco_destino, :direccion, :id_entrega, :id_metodopago, :id_persona)";
-            
+            // Insertar cabecera del pedido SOLO con los campos existentes
+            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total_usd, id_persona) 
+                    VALUES ('1', NOW(), '1', :precio_total_usd, :id_persona)";
             $stmt = $conex->prepare($sql);
             $stmt->execute([
-                'precio_total' => $datos['precio_total'],
-                'referencia_bancaria' => $datos['referencia_bancaria'] ?? null,
-                'telefono_emisor' => $datos['telefono_emisor'] ?? null,
-                'banco' => $datos['banco'] ?? null,
-                'banco_destino' => $datos['banco_destino'] ?? null,
-                'direccion' => $datos['direccion'] ?? null,
-                'id_entrega' => $datos['id_entrega'],
-                'id_metodopago' => $datos['id_metodopago'],
+                'precio_total_usd' => $datos['precio_total'],
                 'id_persona' => $datos['id_persona']
             ]);
-            
             $id_pedido = $conex->lastInsertId();
-            
             // Insertar detalles
             foreach ($datos['detalles'] as $detalle) {
                 // Validar datos del detalle
                 if (!isset($detalle['id_producto']) || $detalle['id_producto'] <= 0) {
                     throw new Exception('ID de producto no válido en detalle');
                 }
-                
                 if (!isset($detalle['cantidad']) || $detalle['cantidad'] <= 0) {
                     throw new Exception('Cantidad no válida en detalle');
                 }
-                
                 if (!isset($detalle['precio_unitario']) || $detalle['precio_unitario'] <= 0) {
                     throw new Exception('Precio unitario no válido en detalle');
                 }
-                
                 // Verificar stock
                 $stock = $this->verificarStock($detalle['id_producto']);
                 if ($stock < $detalle['cantidad']) {
                     throw new Exception('Stock insuficiente para el producto ID: ' . $detalle['id_producto']);
                 }
-                
                 $sql_detalle = "INSERT INTO pedido_detalles(cantidad, precio_unitario, id_pedido, id_producto) 
                                    VALUES (:cantidad, :precio_unitario, :id_pedido, :id_producto)";
                 $stmt_detalle = $conex->prepare($sql_detalle);
@@ -132,7 +107,6 @@ class Salida extends Conexion {
                     'id_pedido' => $id_pedido,
                     'id_producto' => $detalle['id_producto']
                 ]);
-                
                 // Actualizar stock
                 $sql_stock = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad 
                                    WHERE id_producto = :id_producto";
@@ -142,11 +116,9 @@ class Salida extends Conexion {
                     'id_producto' => $detalle['id_producto']
                 ]);
             }
-            
             $conex->commit();
             $conex = null;
             return ['respuesta' => 1, 'accion' => 'incluir', 'id_pedido' => $id_pedido];
-            
         } catch (Exception $e) {
             if ($conex) {
                 $conex->rollBack();
@@ -266,16 +238,11 @@ class Salida extends Conexion {
         $conex = $this->getConex1();
         try {
             $sql = "SELECT p.id_pedido, CONCAT(per.nombre, ' ', per.apellido) as cliente, 
-                    p.fecha, p.estado, p.precio_total, mp.nombre as metodo_pago, 
-                    me.nombre as metodo_entrega, p.banco, p.banco_destino, 
-                    p.referencia_bancaria, p.direccion 
-                        FROM pedido p 
-                        JOIN cliente per ON p.id_persona = per.id_persona 
-                        JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago 
-                        JOIN metodo_entrega me ON p.id_entrega = me.id_entrega 
-                        WHERE p.tipo = '1' 
-                        ORDER BY p.id_pedido DESC";
-            
+                    p.fecha, p.estado, p.precio_total_usd as precio_total
+                    FROM pedido p 
+                    JOIN cliente per ON p.id_persona = per.id_persona 
+                    WHERE p.tipo = '1' 
+                    ORDER BY p.id_pedido DESC";
             $stmt = $conex->prepare($sql);
             $stmt->execute();
             $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -445,27 +412,6 @@ class Salida extends Conexion {
         }
     }
 
-    public function consultarMetodosEntrega() {
-        $conex = $this->getConex1();
-        try {
-            $sql = "SELECT id_entrega, nombre, descripcion 
-                     FROM metodo_entrega 
-                     WHERE estatus = 1
-                     ORDER BY nombre ASC";
-            
-            $stmt = $conex->prepare($sql);
-            $stmt->execute();
-            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $conex = null;
-            return $resultado;
-        } catch (PDOException $e) {
-            if ($conex) {
-                $conex = null;
-            }
-            throw $e;
-        }
-    }
-
     public function consultarDetallesPedido($id_pedido) {
         if (!$id_pedido || $id_pedido <= 0) {
             throw new Exception('ID de pedido no válido');
@@ -499,17 +445,9 @@ class Salida extends Conexion {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
-            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total, referencia_bancaria, telefono_emisor, banco, banco_destino, direccion, id_entrega, id_metodopago, id_persona) VALUES ('1', NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total_usd, id_persona) VALUES ('1', NOW(), '1', ?, ?)";
             $params = [
-                '1', // estado inicial
                 $datos['precio_total'],
-                $datos['referencia_bancaria'],
-                $datos['telefono_emisor'],
-                $datos['banco'],
-                $datos['banco_destino'],
-                $datos['direccion'],
-                $datos['id_entrega'],
-                $datos['id_metodopago'],
                 $datos['id_persona']
             ];
             $stmt = $conex->prepare($sql);
@@ -554,14 +492,8 @@ class Salida extends Conexion {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
-            $sql = "UPDATE pedido SET estado = ?";
-            $params = [$datos['estado']];
-            if (!empty($datos['direccion'])) {
-                $sql .= ", direccion = ?";
-                $params[] = $datos['direccion'];
-            }
-            $sql .= " WHERE id_pedido = ?";
-            $params[] = $datos['id_pedido'];
+            $sql = "UPDATE pedido SET estado = ? WHERE id_pedido = ?";
+            $params = [$datos['estado'], $datos['id_pedido']];
             $stmt = $conex->prepare($sql);
             $stmt->execute($params);
             // Bitácora
@@ -657,7 +589,7 @@ class Salida extends Conexion {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
-            $sql = "INSERT INTO cliente (cedula, nombre, apellido, telefono, correo, id_tipo, estatus) VALUES (?, ?, ?, ?, ?, 2, 1)";
+            $sql = "INSERT INTO cliente (cedula, nombre, apellido, telefono, correo, estatus) VALUES (?, ?, ?, ?, ?, 1)";
             $params = [
                 $datos['cedula'],
                 $datos['nombre'],
