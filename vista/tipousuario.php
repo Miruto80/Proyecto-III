@@ -45,6 +45,7 @@
                   <i class="fa-solid fa-user-group mr-2" style="color: #f6c5b4;"></i> Tipo Usuario
                 </h4>
                 <div class="d-flex gap-2">
+                  <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(14, 'registrar')): ?>
                   <!-- botón abrir modal registrar -->
                   <button type="button"
                           class="btn btn-success registrar"
@@ -53,6 +54,7 @@
                     <i class="fas fa-file-medical me-1"></i>
                     Registrar
                   </button>
+                  <?php endif; ?>
                   <!-- botón ayuda -->
 <!-- botón ayuda -->
 <button type="button" class="btn btn-primary" id="btnAyuda">
@@ -69,6 +71,7 @@
                     <tr>
                       <th class="text-white text-center">Nombre</th>
                       <th class="text-white text-center">Nivel</th>
+                      
                       <th class="text-white text-center">Accion</th>
                     </tr>
                   </thead>
@@ -79,6 +82,7 @@
                         <td><?= htmlspecialchars($dato['nombre']) ?></td>
                         <td><?= htmlspecialchars($dato['nivel']) ?></td>
                         <td class="text-center">
+                            <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(14, 'editar')): ?>
                           <button type="button"
                                   class="btn btn-primary btn-sm modificar"
                                   data-id="<?= $dato['id_rol'] ?>"
@@ -89,11 +93,16 @@
                                   data-bs-target="#modificar">
                             <i class="fas fa-pencil-alt"></i>
                           </button>
+                            <?php endif; ?>
+                           
+                           
+                            <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(14, 'eliminar')): ?>
                           <button type="button"
                                   class="btn btn-danger btn-sm eliminar"
                                   value="<?= $dato['id_rol'] ?>">
                             <i class="fas fa-trash-alt"></i>
                           </button>
+                            <?php endif; ?>
                         </td>
                       </tr>
                     <?php endforeach; ?>

@@ -156,7 +156,7 @@
                   <i class="fas fa-pencil-alt" title="Editar"></i> 
                 </button>
                     <?php endif; ?>
-                          <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'eliminar')): ?>
+                          <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(13, 'eliminar')): ?>
                         <button name="eliminar" class="btn btn-danger btn-sm eliminar" value="<?php echo $dato['id_persona']?>">
                           <i class="fas fa-trash-alt" title="Eliminar"> </i>
                         </button>

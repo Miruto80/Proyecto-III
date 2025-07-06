@@ -46,12 +46,14 @@
            
        <!-- Button que abre el Modal N1 Registro -->
        <div class="d-flex gap-2">
+          <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(2, 'registrar')): ?>
           <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registroModal">
             <span class="icon text-white">
             <i class="fas fa-file-medical"></i>
             </span>
             <span class="text-white">Registrar</span>
           </button>
+            <?php endif; ?>
 
           <button type="button" class="btn btn-primary" id="btnAyuda">
     <span class="icon text-white">
@@ -93,12 +95,18 @@
                       <td><?php echo date('d/m/Y', strtotime($compra['fecha_entrada'])); ?></td>
                       <td><?php echo $compra['proveedor_nombre']; ?></td>
                       <td class="text-center">
+                        
+                         <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(2, 'editar')): ?>
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editarModal<?php echo $compra['id_compra']; ?>">
                           <i class="fas fa-pencil-alt" title="Editar"></i>
                         </button>
+                          <?php endif; ?>
+
+                       
                         <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#verDetallesModal<?php echo $compra['id_compra']; ?>">
                           <i class="fas fa-eye" title="Ver detalles"></i>
                         </button>
+                          
                       </td>
                     </tr>
 
