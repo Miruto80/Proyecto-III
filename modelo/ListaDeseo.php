@@ -145,7 +145,7 @@ class ListaDeseo extends Conexion {
             throw $e;
         }
     }
-
+ 
     private function agregarProductoLista($id_persona, $id_producto) {
         $conex = $this->getConex1();
         try {

@@ -1,6 +1,14 @@
-// assets/js/reporte.js
-
 document.addEventListener('DOMContentLoaded', function() {
+  // ————————————————————————————
+  // 0) Limpiar filtros al cerrar cualquier modal
+  // ————————————————————————————
+  document.querySelectorAll('.modal').forEach(modalEl => {
+    modalEl.addEventListener('hidden.bs.modal', () => {
+      const form = modalEl.querySelector('form.report-form');
+      if (form) form.reset();
+    });
+  });
+
   // ————————————————————————————
   // 1) Validación + AJAX conteo
   // ————————————————————————————
@@ -109,7 +117,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   helpBtn.addEventListener('click', function() {
-    // Detecta la clase de Driver.js v1
     const DriverClass = window.Driver
       || (window.driver && window.driver.js && window.driver.js.driver);
 
@@ -118,59 +125,23 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    // Define dinámicamente los pasos
     const steps = [
-      {
-        element: '#cardCompra',
-        popover: {
-          title:       'Reporte de Compras',
-          description: 'Genera un PDF con un reporte de compras y Top 10 productos.',
-          side:        'bottom'
-        }
-      },
-      {
-        element: '#cardProducto',
-        popover: {
-          title:       'Reporte de Productos',
-          description: 'Genera un PDF con un listado de productos y Top 10 por stock.',
-          side:        'bottom'
-        }
-      },
-      {
-        element: '#cardVentas',
-        popover: {
-          title:       'Reporte de Ventas',
-          description: 'Genera un PDF con un listado de ventas y Top 5 productos vendidos.',
-          side:        'bottom'
-        }
-      },
-      {
-        element: '#cardPedidoWeb',
-        popover: {
-          title:       'Reporte Web',
-          description: 'Genera un PDF con un reporte de pedidos web y Top 5 productos.',
-          side:        'bottom'
-        }
-      },
-      {
-        popover: {
-          title:       '¡Eso es todo!',
-          description: 'Ahora ya sabes cómo generar todos los reportes.'
-        }
-      }
+      { element: '#cardCompra',  popover: { title:'Reporte de Compras', description:'Genera un PDF con un reporte de compras y Top 10 productos.', side:'bottom' } },
+      { element: '#cardProducto', popover: { title:'Reporte de Productos', description:'Genera un PDF con un listado de productos y Top 10 por stock.', side:'bottom' } },
+      { element: '#cardVentas',   popover: { title:'Reporte de Ventas', description:'Genera un PDF con un listado de ventas y Top 5 productos vendidos.', side:'bottom' } },
+      { element: '#cardPedidoWeb',popover: { title:'Reporte Web', description:'Genera un PDF con un reporte de pedidos web y Top 5 productos.', side:'bottom' } },
+      { popover: { title:'¡Eso es todo!', description:'Ahora ya sabes cómo generar todos los reportes.' } }
     ];
 
-    // Instancia y arranca Driver.js
     const driver = new DriverClass({
-      nextBtnText:  'Siguiente',
-      prevBtnText:  'Anterior',
-      doneBtnText:  'Listo',
-      popoverClass: 'driverjs-theme',
-      closeBtn:     false,
+      nextBtnText:'Siguiente',
+      prevBtnText:'Anterior',
+      doneBtnText:'Listo',
+      popoverClass:'driverjs-theme',
+      closeBtn:false,
       steps
     });
 
-    // Para v1
     if (typeof driver.drive === 'function') {
       driver.drive();
     } else if (typeof driver.start === 'function') {

@@ -41,18 +41,17 @@ class pedidoWeb extends Conexion {
                     p.tipo,
                     p.fecha,
                     p.estado,
-                    p.direccion,
-                    p.precio_total,
-                    p.referencia_bancaria,
-                    p.telefono_emisor,
+                    p.id_direccion,
+                    p.precio_total_bs,
+                    p.id_pago,
                     p.id_persona,
                     cli.nombre AS nombre,
-                    me.nombre AS metodo_entrega,
-                    mp.nombre AS metodo_pago
+                    d.direccion_envio AS direccion,
+                    dp.banco AS banco
                 FROM pedido p
                 LEFT JOIN cliente cli ON p.id_persona = cli.id_persona
-                LEFT JOIN metodo_entrega me ON p.id_entrega = me.id_entrega
-                LEFT JOIN metodo_pago mp ON p.id_metodopago = mp.id_metodopago
+                LEFT JOIN direccion d ON p.id_direccion = d.id_direccion
+                LEFT JOIN detalle_pago dp ON p.id_pago = dp.id_pago
                 WHERE p.tipo = 2
                 ORDER BY p.fecha DESC";
     

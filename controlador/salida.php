@@ -83,15 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $datosVenta = [
                 'id_persona' => $_POST['id_persona'],
-                'id_metodopago' => $_POST['id_metodopago'],
-                'id_entrega' => $_POST['id_entrega'],
                 'precio_total' => $_POST['precio_total'],
-                'referencia_bancaria' => $_POST['referencia_bancaria'] ?? null,
-                'telefono_emisor' => $_POST['telefono_emisor'] ?? null,
-                'banco' => $_POST['banco'] ?? null,
-                'banco_destino' => $_POST['banco_destino'] ?? null,
-                'direccion' => $_POST['direccion'] ?? null,
-                    'detalles' => []
+                'detalles' => []
             ];
             if (isset($_POST['id_producto']) && is_array($_POST['id_producto'])) {
             for ($i = 0; $i < count($_POST['id_producto']); $i++) {
@@ -119,8 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $datosVenta = [
                 'id_pedido' => $_POST['id_pedido'],
-                'estado' => $_POST['estado_pedido'],
-                'direccion' => $_POST['direccion'] ?? null
+                'estado' => $_POST['estado_pedido']
             ];
             $respuesta = $salida->actualizarVentaPublico($datosVenta);
             enviarRespuesta($respuesta);
@@ -153,8 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $datosVenta = [
                 'id_pedido' => $_POST['id_pedido'],
-                'estado' => $_POST['estado_delivery'],
-                'direccion' => $_POST['direccion'] ?? null
+                'estado' => $_POST['estado_delivery']
             ];
             $respuesta = $salida->actualizarVentaPublico($datosVenta);
             if ($respuesta['respuesta'] == 1) {
@@ -184,7 +175,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ventas = $salida->consultarVentas();
     $productos_lista = $salida->consultarProductos();
     $metodos_pago = $salida->consultarMetodosPago();
-    $metodos_entrega = $salida->consultarMetodosEntrega();
 
     require_once 'vista/salida.php';
 } else {
@@ -197,7 +187,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $ventas = $salida->consultarVentas();
     $productos_lista = $salida->consultarProductos();
     $metodos_pago = $salida->consultarMetodosPago();
-    $metodos_entrega = $salida->consultarMetodosEntrega();
 
     // Cargar la vista
     if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
@@ -206,7 +195,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }else {
         require_once 'vista/salida.php';
     }
-
- 
 }
 ?>

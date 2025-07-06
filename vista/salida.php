@@ -83,93 +83,31 @@
                 <tr>
                   <th class="text-white">Cliente</th>
                   <th class="text-white">Fecha</th>
-                  <th class="text-white">Estado</th>
-                  <th class="text-white">Total</th>
-                  <th class="text-white">Método Pago</th>
-                  <th class="text-white">Método Entrega</th>
-                  <th class="text-white">Accion</th>
+                  <th class="text-white">Total (USD)</th>
+                  <th class="text-white">Acción</th>
                 </tr>
               </thead>
               <tbody>
                 <?php if(isset($ventas) && !empty($ventas)): ?>
                   <?php foreach($ventas as $venta): ?>
                     <?php
-                    // Array para mapear estados numéricos a texto
-                    $estados_texto = array(
-                        '0' => 'Anulado',
-                        '1' => 'Verificar pago',
-                        '2' => 'Entregado',
-                        '3' => 'Pendiente envío',
-                        '4' => 'En camino',
-                        '5' => 'Enviado',
-                        
-                    );
-
-                    // Determinar el color del badge según el estado
-                    $badgeClass = '';
-                    switch ($venta['estado']) {
-                        case '0':
-                            $badgeClass = 'bg-danger'; // Cancelado
-                            break;
-                        case '1':
-                            $badgeClass = 'bg-warning'; // Pendiente
-                            break;
-                        case '2':
-                            $badgeClass = 'bg-primary'; // Entregado
-                            break;
-                        case '3':
-                            $badgeClass = 'bg-success'; // En camino
-                            break;
-                        case '4':
-                            $badgeClass = 'bg-info'; // Enviado
-                            break;
-                        case '5':
-                            $badgeClass = 'bg-info'; // Pendiente envío
-                            break;
-                        default:
-                            $badgeClass = 'bg-secondary';
-                    }
-                    
-                    // Formatear la fecha
                     $fecha_formateada = date('d/m/Y', strtotime($venta['fecha']));
-                    
-                    // Formatear el precio
                     $precio_formateado = '$' . number_format($venta['precio_total'], 2);
                     ?>
                     <tr>
                       <td><?php echo htmlspecialchars($venta['cliente']); ?></td>
                       <td><?php echo $fecha_formateada; ?></td>
-                      <td><span class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($estados_texto[$venta['estado']] ?? 'Desconocido'); ?></span></td>
                       <td><?php echo $precio_formateado; ?></td>
-                      <td><?php echo htmlspecialchars($venta['metodo_pago'] ?? 'N/A'); ?></td>
-                      <td><?php echo htmlspecialchars($venta['metodo_entrega'] ?? 'N/A'); ?></td>
                       <td class="text-center">
                         <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#verDetallesModal<?php echo $venta['id_pedido']; ?>">
                           <i class="fas fa-eye" title="Ver Detalles"></i>
                         </button>
-                        <?php
-                        $esFinal = false;
-                        if ($venta['metodo_entrega'] == 'Delivery' && $venta['estado'] == '2') {
-                            $esFinal = true; // Entregado
-                        }
-                        if (($venta['metodo_entrega'] == 'MRW' || $venta['metodo_entrega'] == 'Zoom') && $venta['estado'] == '4') {
-                            $esFinal = true; // Enviado
-                        }
-                        if ($venta['estado'] == '0') {
-                            $esFinal = true; // Cancelado
-                        }
-                        ?>
-                        <?php if(!$esFinal): ?>
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deliveryModal<?php echo $venta['id_pedido']; ?>">
-                          <i class="bi bi-box2-fill" title="Gestionar Delivery"></i>
-                        </button>
-                        <?php endif; ?>
                       </td>
                     </tr>
                   <?php endforeach; ?>
                 <?php else: ?>
                   <tr>
-                    <td colspan="7" class="text-center">No hay ventas registradas</td>
+                    <td colspan="4" class="text-center">No hay ventas registradas</td>
                   </tr>
                 <?php endif; ?>
               </tbody>
@@ -196,55 +134,49 @@
             <div class="row mb-3">
               <div class="col-md-6">
                 <h5><strong>Información del Pedido</strong></h5>
-                <p><strong>Método de Pago:</strong> <?php echo htmlspecialchars($venta['metodo_pago'] ?? 'N/A'); ?></p>
-                <?php if(!empty($venta['banco']) || !empty($venta['banco_destino'])): ?>
-                  <p><strong>Banco Emisor:</strong> <?php echo htmlspecialchars($venta['banco'] ?? 'N/A'); ?></p>
-                  <p><strong>Banco Receptor:</strong> <?php echo htmlspecialchars($venta['banco_destino'] ?? 'N/A'); ?></p>
-                <?php endif; ?>
-                <?php if(!empty($venta['referencia_bancaria'])): ?>
-                  <p><strong>Referencia:</strong> <?php echo htmlspecialchars($venta['referencia_bancaria']); ?></p>
-                <?php endif; ?>
-                <p><strong>Método de Entrega:</strong> <?php echo htmlspecialchars($venta['metodo_entrega'] ?? 'N/A'); ?></p>
-                <?php if(!empty($venta['direccion'])): ?>
-                  <p><strong>Dirección:</strong> <?php echo nl2br(htmlspecialchars($venta['direccion'])); ?></p>
-                <?php endif; ?>
-                <p><strong>Total:</strong> $<?php echo number_format($venta['precio_total'], 2); ?></p>
+                <p><strong>Total (USD):</strong> $<?php echo number_format($venta['precio_total'], 2); ?></p>
+                <p><strong>Total (Bs):</strong> <span id="total-bs-<?php echo $venta['id_pedido']; ?>">Calculando...</span></p>
               </div>
               <div class="col-md-6">
                 <h5><strong>Información del Cliente</strong></h5>
                 <p><strong>Nombre:</strong> <?php echo htmlspecialchars($venta['cliente']); ?></p>
                 <p><strong>Fecha:</strong> <?php echo date('d/m/Y', strtotime($venta['fecha'])); ?></p>
-                <p><strong>Estado:</strong> <span class="badge <?php 
-                  $badgeClass = '';
-                  switch ($venta['estado']) {
-                    case '0':
-                        $badgeClass = 'bg-danger';
-                      break;
-                    case '1':
-                        $badgeClass = 'bg-warning';
-                        break;
-                    case '2':
-                        $badgeClass = 'bg-primary';
-                        break;
-                    case '3':
-                        $badgeClass = 'bg-success';
-                        break;
-                    case '4':
-                      $badgeClass = 'bg-info';
-                        break;
-                    default:
-                        $badgeClass = 'bg-secondary';
-                  }
-                  echo $badgeClass; 
-                ?>"><?php echo htmlspecialchars($estados_texto[$venta['estado']] ?? 'Desconocido'); ?></span></p>
               </div>
             </div>
+            
+            <script>
+            // Función para obtener la tasa de cambio y calcular el monto en bolívares
+            async function calcularTotalBs(pedidoId, totalUsd) {
+                try {
+                    const respuesta = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+                    if (!respuesta.ok) {
+                        throw new Error(`Error HTTP: ${respuesta.status}`);
+                    }
+                    const datos = await respuesta.json();
+                    const tasaBCV = parseFloat(datos.promedio);
+                    const totalBs = (totalUsd * tasaBCV).toFixed(2);
+                    document.getElementById(`total-bs-${pedidoId}`).textContent = `Bs ${totalBs}`;
+                } catch (error) {
+                    document.getElementById(`total-bs-${pedidoId}`).textContent = 'Error al calcular';
+                    console.error("Error al obtener la tasa:", error);
+                }
+            }
+            
+            // Calcular el total en bolívares cuando se abre el modal
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('verDetallesModal<?php echo $venta['id_pedido']; ?>');
+                if (modal) {
+                    modal.addEventListener('show.bs.modal', function() {
+                        calcularTotalBs(<?php echo $venta['id_pedido']; ?>, <?php echo $venta['precio_total']; ?>);
+                    });
+                }
+            });
+            </script>
             
             <?php
             $detalles_venta = $salida->consultarDetallesPedido($venta['id_pedido']);
             $total = 0;
             ?>
-            
             <hr style="border-top: 2px solid #ccc;">
             <h5><strong>Detalles de la Venta</strong></h5>
             <div class="table-responsive">
@@ -282,89 +214,6 @@
         </div>
       </div>
     </div>
-  <?php endforeach; ?>
-<?php endif; ?>
-
-<!-- Modal de delivery -->
-<?php if(isset($ventas) && !empty($ventas)): ?>
-  <?php foreach($ventas as $venta): ?>
-    <?php if($venta['metodo_entrega'] == 'Delivery' || $venta['metodo_entrega'] == 'MRW' || $venta['metodo_entrega'] == 'Zoom'): ?>
-    <?php
-    $esFinal = false;
-    if ($venta['metodo_entrega'] == 'Delivery' && $venta['estado'] == '2') {
-        $esFinal = true; // Entregado
-    }
-    if (($venta['metodo_entrega'] == 'MRW' || $venta['metodo_entrega'] == 'Zoom') && $venta['estado'] == '4') {
-        $esFinal = true; // Enviado
-    }
-    if ($venta['estado'] == '0') {
-        $esFinal = true; // Cancelado
-    }
-    ?>
-    <?php if(!$esFinal): ?>
-    <div class="modal fade" id="deliveryModal<?php echo $venta['id_pedido']; ?>" tabindex="-1" aria-labelledby="deliveryModalLabel<?php echo $venta['id_pedido']; ?>" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header header-color">
-            <h5 class="modal-title" id="deliveryModalLabel<?php echo $venta['id_pedido']; ?>">Gestionar <?php echo $venta['metodo_entrega']; ?></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form method="POST" action="?pagina=salida" id="formGestionarDelivery<?php echo $venta['id_pedido']; ?>">
-              <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-              <input type="hidden" name="id_pedido" value="<?php echo $venta['id_pedido']; ?>">
-              <input type="hidden" name="actualizar_delivery" value="1">
-              
-              <!-- Estado del Delivery -->
-              <div class="mb-3">
-                <label for="estado_delivery<?php echo $venta['id_pedido']; ?>" class="form-label">Estado del Delivery</label>
-                <select class="form-select" name="estado_delivery" id="estado_delivery<?php echo $venta['id_pedido']; ?>" data-estado-anterior="<?php echo $venta['estado']; ?>" required>
-                  <?php if($venta['estado'] == '4'): ?>
-                    <option value="4" selected>Enviado</option>
-                    <option value="2">Entregado</option>
-                    <option value="0">Cancelado</option>
-                  <?php else: ?>
-                    <option value="0" <?php echo $venta['estado'] == '0' ? 'selected' : ''; ?>>Anulado</option>
-                    <option value="1" <?php echo $venta['estado'] == '1' ? 'selected' : ''; ?>>Verificar pago</option>
-                    <option value="2" <?php echo $venta['estado'] == '2' ? 'selected' : ''; ?>>Entregado</option>
-                    <option value="3" <?php echo $venta['estado'] == '3' ? 'selected' : ''; ?>>Pendiente envío</option>
-                    <option value="4" <?php echo $venta['estado'] == '4' ? 'selected' : ''; ?>>En camino</option>
-                    <option value="5" <?php echo $venta['estado'] == '5' ? 'selected' : ''; ?>>Enviado</option>
-                    
-                  <?php endif; ?>
-                </select>
-              </div>
-
-              <!-- Dirección de Entrega -->
-              <div class="mb-3">
-                <label for="direccion<?php echo $venta['id_pedido']; ?>" class="form-label">Dirección de Entrega <span class="text-danger">*</span></label>
-                <div class="d-flex align-items-center gap-2">
-                  <input type="text" 
-                         class="form-control bg-light" 
-                         name="direccion" 
-                         id="direccion<?php echo $venta['id_pedido']; ?>" 
-                         value="<?php echo htmlspecialchars($venta['direccion']); ?>" 
-                         readonly 
-                         required
-                         maxlength="300"
-                         style="background-color: #e9ecef !important;">
-                  <button type="button" class="btn btn-warning btn-sm btnEditarDireccion" title="Editar dirección">
-                    <i class="fas fa-pencil-alt"></i> Editar
-                  </button>
-                </div>
-              </div>
-
-              <div class="modal-footer">
-                <button type="submit" name="actualizar_delivery" class="btn btn-primary">Actualizar Estado</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    <?php endif; ?>
-    <?php endif; ?>
   <?php endforeach; ?>
 <?php endif; ?>
 
@@ -474,105 +323,177 @@
           <!-- Sección: Datos de la Venta -->
           <div class="mb-4 seccion-venta" style="display: none;">
             <h6>Datos de venta</h6>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="metodo_pago" class="form-label">Método de Pago *</label>
-                  <select class="form-select" name="id_metodopago" id="metodo_pago" required>
-                    <option value="">Seleccione un método de pago</option>
-                    <?php 
-                    // Consulta para obtener métodos de pago activos
-                    if(isset($metodos_pago) && !empty($metodos_pago)): 
-                      foreach($metodos_pago as $metodo): 
-                    ?>
-                      <option value="<?php echo $metodo['id_metodopago']; ?>">
-                        <?php echo htmlspecialchars($metodo['nombre']); ?>
-                      </option>
-                    <?php 
-                      endforeach; 
-                    else: 
-                    ?>
-                      <option value="" disabled>No hay métodos de pago disponibles</option>
-                    <?php endif; ?>
-                  </select>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="metodo_entrega" class="form-label">Método de Entrega *</label>
-                  <select class="form-select" name="id_entrega" id="metodo_entrega" required>
-                    <option value="">Seleccione un método de entrega</option>
-                    <?php 
-                    // Consulta para obtener métodos de entrega activos
-                    if(isset($metodos_entrega) && !empty($metodos_entrega)): 
-                      foreach($metodos_entrega as $metodo): 
-                    ?>
-                      <option value="<?php echo $metodo['id_entrega']; ?>">
-                        <?php echo htmlspecialchars($metodo['nombre']); ?>
-                      </option>
-                    <?php 
-                      endforeach; 
-                    else: 
-                    ?>
-                      <option value="" disabled>No hay métodos de entrega disponibles</option>
-                    <?php endif; ?>
-                  </select>
+            
+            <!-- Métodos de Pago -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Métodos de Pago *</label>
+              <div id="metodos-pago-container">
+                <div class="row metodo-pago-fila mb-2">
+                  <div class="col-md-8">
+                    <select class="form-select metodo-pago-select" name="id_metodopago[]" required>
+                      <option value="">Seleccione un método de pago</option>
+                      <?php 
+                      // Consulta para obtener métodos de pago activos
+                      if(isset($metodos_pago) && !empty($metodos_pago)): 
+                        foreach($metodos_pago as $metodo): 
+                      ?>
+                        <option value="<?php echo $metodo['id_metodopago']; ?>" data-nombre="<?php echo htmlspecialchars($metodo['nombre']); ?>">
+                          <?php echo htmlspecialchars($metodo['nombre']); ?>
+                        </option>
+                      <?php 
+                        endforeach; 
+                      else: 
+                      ?>
+                        <option value="" disabled>No hay métodos de pago disponibles</option>
+                      <?php endif; ?>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <button type="button" class="btn btn-success btn-sm agregar-metodo-pago">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm remover-metodo-pago">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
             
-            <!-- Campos adicionales según el método de pago seleccionado -->
-            <div class="row" id="campos_pago_adicionales" style="display: none;">
-              <div class="col-md-3">
-                <div class="mb-3">
-                  <label for="referencia_bancaria" class="form-label">Referencia Bancaria</label>
-                  <input type="number" class="form-control" name="referencia_bancaria" id="referencia_bancaria" 
-                        placeholder="Número de referencia">
+            <!-- Campos dinámicos según método de pago -->
+            <div id="campos-metodo-pago-dinamicos" style="display: none;">
+              <!-- Campos para Divisa $ -->
+              <div id="campos-divisa" class="campos-metodo" style="display: none;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en USD</label>
+                      <input type="number" class="form-control" name="monto_divisa" placeholder="Ingrese monto en USD" step="0.01" min="0">
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="col-md-3" id="campo_telefono_emisor">
-                <div class="mb-3">
-                  <label for="telefono_emisor" class="form-label">Teléfono Emisor</label>
-                  <input type="text" class="form-control" name="telefono_emisor" id="telefono_emisor" 
-                        placeholder="Teléfono del emisor">
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="mb-3">
-                  <label for="banco" class="form-label">Banco Emisor</label>
-                  <select class="form-select" name="banco" id="banco" placeholder="Seleccione banco emisor">
-                    <option value="">Seleccione banco emisor</option>
-                    <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
-                    <option value="0105-Banco Mercantil">0105-Banco Mercantil</option>
-                    <option value="0172-Bancamiga Banco Universal,C.A">0172-Bancamiga Banco Universal,C.A</option>
-                    <option value="0114-Bancaribe">0114-Bancaribe</option>
-                    <option value="0171-Banco Activo">0171-Banco Activo</option>
-                    <option value="0166-Banco Agricola De Venezuela">0166-Banco Agricola De Venezuela</option>
-                    <option value="0128-Bancon Caroni">0128-Bancon Caroni</option>
-                    <option value="0163-Banco Del Tesoro">0163-Banco Del Tesoro</option>
-                    <option value="0175-Banco Digital De Los Trabajadores, Banco Universal">0175-Banco Digital De Los Trabajadores, Banco Universal</option>
-                  </select>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="mb-3">
-                  <label for="banco_destino" class="form-label">Banco Receptor</label>
-                  <select class="form-select" name="banco_destino" id="banco_destino" placeholder="Seleccione banco receptor">
-                    <option value="">Seleccione banco receptor</option>
-                    <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
-                    <option value="0105-Banco Mercantil">0105-Banco Mercantil</option>
-                  </select>
-                </div>
-              </div>
-            </div>
 
-            <!-- Campo de dirección para delivery -->
-            <div class="row" id="campo_direccion" style="display: none;">
-              <div class="col-md-12">
-                <div class="mb-3">
-                  <label for="direccion" class="form-label">Dirección de Entrega</label>
-                  <textarea class="form-control" name="direccion" id="direccion" 
-                           placeholder="Ingrese la dirección de entrega completa" rows="3"></textarea>
+              <!-- Campos para Efectivo Bs -->
+              <div id="campos-efectivo" class="campos-metodo" style="display: none;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en USD</label>
+                      <input type="number" class="form-control" name="monto_efectivo_usd" placeholder="Monto USD" step="0.01" min="0" readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en Bs</label>
+                      <input type="number" class="form-control" name="monto_efectivo_bs" placeholder="Monto Bs" step="0.01" min="0" readonly>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Campos para Pago Móvil -->
+              <div id="campos-pago-movil" class="campos-metodo" style="display: none;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Banco Emisor</label>
+                      <select class="form-select" name="banco_emisor_pm">
+                        <option value="">Seleccione banco emisor</option>
+                        <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
+                        <option value="0105-Banco Mercantil">0105-Banco Mercantil</option>
+                        <option value="0172-Bancamiga Banco Universal,C.A">0172-Bancamiga Banco Universal,C.A</option>
+                        <option value="0114-Bancaribe">0114-Bancaribe</option>
+                        <option value="0171-Banco Activo">0171-Banco Activo</option>
+                        <option value="0166-Banco Agricola De Venezuela">0166-Banco Agricola De Venezuela</option>
+                        <option value="0128-Bancon Caroni">0128-Bancon Caroni</option>
+                        <option value="0163-Banco Del Tesoro">0163-Banco Del Tesoro</option>
+                        <option value="0175-Banco Digital De Los Trabajadores, Banco Universal">0175-Banco Digital De Los Trabajadores, Banco Universal</option>
+                        <option value="0115-Banco Exterior">0115-Banco Exterior</option>
+                        <option value="0151-Banco Fondo Comun">0151-Banco Fondo Comun</option>
+                        <option value="0173-Banco Internacional De Desarrollo">0173-Banco Internacional De Desarrollo</option>
+                        <option value="0191-Banco Nacional De Credito">0191-Banco Nacional De Credito</option>
+                        <option value="0138-Banco Plaza">0138-Banco Plaza</option>
+                        <option value="0137-Banco Sofitasa">0137-Banco Sofitasa</option>
+                        <option value="0104-Banco Venezolano De Credito">0104-Banco Venezolano De Credito</option>
+                        <option value="0168-Bancrecer">0168-Bancrecer</option>
+                        <option value="0134-Banesco">0134-Banesco</option>
+                        <option value="0177-Banfanb">0177-Banfanb</option>
+                        <option value="0146-Bangente">0146-Bangente</option>
+                        <option value="0174-Banplus">0174-Banplus</option>
+                        <option value="0108-BBVA Provincial">0108-BBVA Provincial</option>
+                        <option value="0157-Delsur Banco Universal">0157-Delsur Banco Universal</option>
+                        <option value="0178-N58 Banco Digital Banco Microfinanciero S.A">0178-N58 Banco Digital Banco Microfinanciero S.A</option>
+                        <option value="0169-R4 Banco Microfinanciero C.A.">0169-R4 Banco Microfinanciero C.A.</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Banco Receptor</label>
+                      <select class="form-select" name="banco_receptor_pm">
+                        <option value="">Seleccione banco receptor</option>
+                        <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
+                        <option value="0105-Banco Mercantil">0105-Banco Mercantil</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label class="form-label">Referencia</label>
+                      <input type="text" class="form-control" name="referencia_pm" placeholder="4-6 dígitos" minlength="4" maxlength="6" pattern="[0-9]{4,6}">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label class="form-label">Teléfono Emisor</label>
+                      <input type="text" class="form-control" name="telefono_emisor_pm" placeholder="Ej: 04141234567" pattern="[0-9]{11}">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en Bs</label>
+                      <input type="number" class="form-control" name="monto_pm_bs" placeholder="Monto Bs" step="0.01" min="0" readonly>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Campos para Punto de Venta -->
+              <div id="campos-punto-venta" class="campos-metodo" style="display: none;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Referencia del Punto</label>
+                      <input type="text" class="form-control" name="referencia_pv" placeholder="4-6 dígitos" minlength="4" maxlength="6" pattern="[0-9]{4,6}">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en Bs</label>
+                      <input type="number" class="form-control" name="monto_pv_bs" placeholder="Monto Bs" step="0.01" min="0" readonly>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Campos para Transferencia Bancaria -->
+              <div id="campos-transferencia" class="campos-metodo" style="display: none;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Referencia del Pago</label>
+                      <input type="text" class="form-control" name="referencia_tb" placeholder="4-6 dígitos" minlength="4" maxlength="6" pattern="[0-9]{4,6}">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Monto en Bs</label>
+                      <input type="number" class="form-control" name="monto_tb_bs" placeholder="Monto Bs" step="0.01" min="0" readonly>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

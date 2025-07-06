@@ -173,7 +173,6 @@
 
  <?php $hoy = date('Y-m-d'); ?>
 <!-- Modal Compras -->
-<!-- Modal Compras -->
 <div class="modal fade" id="modalCompra" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
@@ -218,6 +217,17 @@
                 <?php endforeach; ?>
               </select>
             </div>
+            <div class="col-12">
+              <label class="form-label">Categoría (opcional)</label>
+              <select name="f_cat" class="form-select">
+                <option value="">— Todas —</option>
+                <?php foreach($categorias_lista as $c): ?>
+                  <option value="<?= $c['id_categoria'] ?>">
+                    <?= htmlspecialchars($c['nombre']) ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
           </div>
           <p class="text-center">¿Generar listado de compras?</p>
         </div>
@@ -232,6 +242,7 @@
     </div>
   </div>
 </div>
+
 
 
 
@@ -307,7 +318,6 @@
 
 <?php $hoy = date('Y-m-d'); ?>
 <!-- Modal Ventas -->
-<!-- Modal Ventas -->
 <div class="modal fade" id="modalVenta" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
@@ -352,6 +362,17 @@
                 <?php endforeach; ?>
               </select>
             </div>
+<div class="col-12">
+  <label class="form-label">Categoría (opcional)</label>
+  <select name="f_cat" class="form-select">
+    <option value="">— Todas —</option>
+    <?php foreach($categorias_lista as $c): ?>
+      <option value="<?= $c['id_categoria'] ?>">
+        <?= htmlspecialchars($c['nombre']) ?>
+      </option>
+    <?php endforeach; ?>
+  </select>
+</div>
           </div>
           <p class="text-center">¿Generar listado de ventas?</p>
         </div>
