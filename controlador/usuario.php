@@ -164,18 +164,34 @@ if (isset($_POST['registrar'])) {
     echo json_encode($resultado);
 } 
 
-else if ($_SESSION["nivel_rol"] == 3) {
-    
-    $bitacora = [
-        'id_persona' => $_SESSION["id"],
-        'accion' => 'Acceso a Módulo',
-        'descripcion' => 'módulo de Usuario'
-    ];
-    $objusuario->registrarBitacora(json_encode($bitacora));
-    require_once 'vista/usuario.php';
+else if ($_SESSION["nivel_rol"] == 3 && !empty($_SESSION['permisos'])) {
+    $mostrar_usuario = false;
+
+    foreach ($_SESSION['permisos'] as $permiso) {
+        if (
+            $permiso['id_modulo'] == 13 &&
+            $permiso['accion'] === 'ver' &&
+            $permiso['estado'] == 1
+        ) {
+            $mostrar_usuario = true;
+            break;
+        }
+    }
+
+    if ($mostrar_usuario) {
+        $bitacora = [
+            'id_persona' => $_SESSION["id"],
+            'accion' => 'Acceso a Módulo',
+            'descripcion' => 'módulo de Usuario'
+        ];
+        $objusuario->registrarBitacora(json_encode($bitacora));
+
+        require_once 'vista/usuario.php';
+    } else {
+        require_once 'vista/seguridad/privilegio.php';
+    }
 
 } else if ($_SESSION["nivel_rol"] == 1) {
-
     header("Location: ?pagina=catalogo");
     exit();
 
@@ -183,7 +199,5 @@ else if ($_SESSION["nivel_rol"] == 3) {
     require_once 'vista/seguridad/privilegio.php';
 }
 
-       
-
-
+    
 ?>

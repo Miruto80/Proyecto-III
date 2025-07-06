@@ -49,13 +49,30 @@
 
     
        <!-- Button que abre el Modal N1 Registro -->
+      <?php
+          $re_usuario = false;
+          if ($_SESSION["nivel_rol"] == 3 && !empty($_SESSION['permisos'])) {
+              foreach ($_SESSION['permisos'] as $permiso) {
+                  if (
+                      $permiso['id_modulo'] == 13 &&
+                      $permiso['accion'] === 'registrar' &&
+                      $permiso['estado'] == 1
+                  ) {
+                      $re_usuario = true;
+                      break;
+                  }
+              }
+          }
+
+          if ($re_usuario) {
+          ?>
           <button type="button" class="btn btn-success registrar" data-bs-toggle="modal" data-bs-target="#registro">
             <span class="icon text-white">
             <i class="fas fa-file-medical me-2"></i>
             </span>
             <span class="text-white" id="btnAbrirRegistrar">Registrar</span>
           </button>
-
+        <?php } ?>
           
   <button type="button" class="btn btn-primary" id="ayuda">
     <span class="icon text-white">
@@ -75,7 +92,25 @@
                   <th class="text-white text-center">Nombre</th>
                   <th class="text-white text-center">Apellido</th>
                   <th class="text-white text-center">Rol</th>
+                     <?php
+                          $ess_usuario = false;
+                          if ($_SESSION["nivel_rol"] == 3 && !empty($_SESSION['permisos'])) {
+                              foreach ($_SESSION['permisos'] as $permiso) {
+                                  if (
+                                      $permiso['id_modulo'] == 13 &&
+                                      $permiso['accion'] === 'especial' &&
+                                      $permiso['estado'] == 1
+                                  ) {
+                                      $ess_usuario = true;
+                                      break;
+                                  }
+                              }
+                          }
+
+                          if ($ess_usuario) {
+                          ?>
                   <th class="text-white text-center">Permisos</th>
+                      <?php } ?>
                   <th class="text-white text-center">Estatus</th>
                   <th class="text-white text-center">Acción</th>
                 </tr>
@@ -104,13 +139,33 @@
                   <td><?php echo $dato['nombre']?></td>
                   <td><?php echo $dato['apellido']?></td>
                   <td><?php echo $dato['nombre_tipo']?></td>
-                  <td>
-                    <form action="?pagina=usuario" method="POST">
+                  
+                      <?php
+                          $es_usuario = false;
+                          if ($_SESSION["nivel_rol"] == 3 && !empty($_SESSION['permisos'])) {
+                              foreach ($_SESSION['permisos'] as $permiso) {
+                                  if (
+                                      $permiso['id_modulo'] == 13 &&
+                                      $permiso['accion'] === 'especial' &&
+                                      $permiso['estado'] == 1
+                                  ) {
+                                      $es_usuario = true;
+                                      break;
+                                  }
+                              }
+                          }
+
+                          if ($es_usuario) {
+                          ?>
+                    <td>
+                      <form action="?pagina=usuario" method="POST">
                     <button type="submit" class="btn btn-warning btn-sm permisotur" name="modificar" value="<?php echo $dato['id_persona']?>">
                         <i class="fa-solid fa-users-gear" title="Modificar Permiso"></i>
                     </button>
+                        
                     </form>      
                   </td>
+                   <?php } ?>
                   <td>
                       <span class="<?= $estatus_classes[$dato['estatus']] ?>">
                         <?php echo $estatus_texto[$dato['estatus']] ?>
@@ -121,6 +176,7 @@
                     
 
                     <form method="POST" action="?pagina=usuario">
+                   
                       <button type="button" class="btn btn-info btn-sm informacion"
                       data-bs-toggle="modal"
                       data-bs-target="#infoModal"
@@ -133,8 +189,25 @@
                     >
                       <i class="fas fa-eye" title="Ver Detalles"></i>
                     </button>
-                    
+                 
 
+                     <?php
+                          $ed_usuario = false;
+                          if ($_SESSION["nivel_rol"] == 3 && !empty($_SESSION['permisos'])) {
+                              foreach ($_SESSION['permisos'] as $permiso) {
+                                  if (
+                                      $permiso['id_modulo'] == 13 &&
+                                      $permiso['accion'] === 'editar' &&
+                                      $permiso['estado'] == 1
+                                  ) {
+                                      $ed_usuario = true;
+                                      break;
+                                  }
+                              }
+                          }
+
+                          if ($ed_usuario) {
+                          ?>
                       <button type="button" class="btn btn-primary btn-sm modificar"
                       data-bs-toggle="modal"
                       data-bs-target="#editarModal"
@@ -148,13 +221,30 @@
                    
                   <i class="fas fa-pencil-alt" title="Editar"></i> 
                 </button>
-                        
+                         <?php } ?>
+                          <?php
+                          $el_usuario = false;
+                          if ($_SESSION["nivel_rol"] == 3 && !empty($_SESSION['permisos'])) {
+                              foreach ($_SESSION['permisos'] as $permiso) {
+                                  if (
+                                      $permiso['id_modulo'] == 13 &&
+                                      $permiso['accion'] === 'eliminar' &&
+                                      $permiso['estado'] == 1
+                                  ) {
+                                      $el_usuario = true;
+                                      break;
+                                  }
+                              }
+                          }
+
+                          if ($el_usuario) {
+                          ?>
                         <button name="eliminar" class="btn btn-danger btn-sm eliminar" value="<?php echo $dato['id_persona']?>">
                           <i class="fas fa-trash-alt" title="Eliminar"> </i>
                         </button>
                         <input type="hidden" name="eliminar" value="<?php echo $dato['id_persona']?>">
                     
-                      
+                        <?php } ?>
 
                      </form>
                   </td>
