@@ -5,14 +5,16 @@
     } /*  Validacion URL  */
     
    require_once 'modelo/usuario.php';
-
+   require_once 'permiso.php';
     $objusuario = new Usuario();
     
     $rol = $objusuario->obtenerRol();
     $roll = $objusuario->obtenerRol();
     $registro = $objusuario->consultar();
 
-if (isset($_POST['registrar'])) {
+ 
+
+if (isset($_POST['registrar'])) { /* -------  */
     if (!empty($_POST['nombre']) && !empty($_POST['apellido']) && !empty($_POST['cedula']) && !empty($_POST['telefono']) && !empty($_POST['correo']) && !empty($_POST['id_rol']) && !empty($_POST['clave'])) {
 
         $datosUsuario = [
@@ -43,7 +45,7 @@ if (isset($_POST['registrar'])) {
 
         echo json_encode($resultadoRegistro);
     }
-} else  if(isset($_POST['modificar'])){
+} else  if(isset($_POST['modificar'])){ /* -------  */
      $id_persona = $_POST['modificar'];    
         
      if ($id_persona == $_SESSION['id']) {
@@ -52,16 +54,16 @@ if (isset($_POST['registrar'])) {
                 exit;
     }
 
-     if ($id_persona === 2) {
-                echo json_encode(['respuesta' => 0, 'accion' => 'actualizar', 'text' => 'No puedes modificar los permiso de a ti mismo']);
-                    header("location:?pagina=usuario");
-                exit;
+     if ($id_persona == 2) {
+      echo json_encode(['respuesta' => 0, 'accion' => 'actualizar', 'text' => 'No puedes modificar los permiso de a ti mismo']);
+         header("location:?pagina=usuario");
+     exit;
     }
        
         $modificar = $objusuario->buscar($id_persona);
         require_once ("vista/seguridad/permiso.php");
 
-    }else if(isset($_POST['actualizar'])){
+    }else if(isset($_POST['actualizar'])){ /* -------  */
     $datosUsuario = [
         'operacion' => 'actualizar',
         'datos' => [
@@ -103,7 +105,7 @@ if (isset($_POST['registrar'])) {
 
     echo json_encode($resultado);
 
-} else if (isset($_POST['actualizar_permisos'])) {
+} else if (isset($_POST['actualizar_permisos'])) { /* -------  */
     $permisosRecibidos = $_POST['permiso'] ?? [];
     $permisosId = $_POST['permiso_id'] ?? [];
 
@@ -132,7 +134,7 @@ if (isset($_POST['registrar'])) {
 
     echo json_encode($resultado);
 
-} else if(isset($_POST['eliminar'])){
+} else if(isset($_POST['eliminar'])){ /* -------  */
     $datosUsuario = [
         'operacion' => 'eliminar',
         'datos' => [
@@ -162,23 +164,8 @@ if (isset($_POST['registrar'])) {
     }
 
     echo json_encode($resultado);
-} 
 
-else if ($_SESSION["nivel_rol"] == 3 && !empty($_SESSION['permisos'])) {
-    $mostrar_usuario = false;
-
-    foreach ($_SESSION['permisos'] as $permiso) {
-        if (
-            $permiso['id_modulo'] == 13 &&
-            $permiso['accion'] === 'ver' &&
-            $permiso['estado'] == 1
-        ) {
-            $mostrar_usuario = true;
-            break;
-        }
-    }
-
-    if ($mostrar_usuario) {
+} else if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(13, 'ver')) {
         $bitacora = [
             'id_persona' => $_SESSION["id"],
             'accion' => 'Acceso a Módulo',
@@ -187,16 +174,12 @@ else if ($_SESSION["nivel_rol"] == 3 && !empty($_SESSION['permisos'])) {
         $objusuario->registrarBitacora(json_encode($bitacora));
 
         require_once 'vista/usuario.php';
-    } else {
+} else {
         require_once 'vista/seguridad/privilegio.php';
-    }
 
-} else if ($_SESSION["nivel_rol"] == 1) {
+} if ($_SESSION["nivel_rol"] == 1) {
     header("Location: ?pagina=catalogo");
     exit();
-
-} else {
-    require_once 'vista/seguridad/privilegio.php';
 }
 
     

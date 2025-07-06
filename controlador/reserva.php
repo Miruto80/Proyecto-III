@@ -33,6 +33,7 @@ if (empty($_SESSION["id"])) {
 
 require_once 'modelo/reserva.php';
 require_once 'modelo/producto.php';
+ require_once 'permiso.php';
 
 $objreserva = new Reserva();
 

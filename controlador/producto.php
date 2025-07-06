@@ -6,7 +6,7 @@ if (empty($_SESSION["id"])) {
 }
 
 require_once 'modelo/producto.php';
-
+require_once 'permiso.php';
 $objproducto = new producto();
 
 $registro = $objproducto->consultar();

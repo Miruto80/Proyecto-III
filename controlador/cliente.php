@@ -5,7 +5,7 @@ if (empty($_SESSION["id"])){
 } /*  Validacion URL  */
 
 require_once 'modelo/cliente.php';
-
+require_once 'permiso.php';
 $objcliente = new Cliente();
 
 

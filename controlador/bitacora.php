@@ -6,6 +6,7 @@
     
     
     require_once 'modelo/bitacora.php';
+    require_once 'permiso.php';
     $objBitacora = new Bitacora();
 
     // Función global para registrar en bitácora desde cualquier módulo
@@ -21,32 +22,14 @@
    
    
    
-} else if ($_SESSION["nivel_rol"] == 3 && !empty($_SESSION['permisos'])) {
-    $mostrar_bitacora = false;
-
-    foreach ($_SESSION['permisos'] as $permiso) {
-        if (
-            $permiso['id_modulo'] == 12 &&
-            $permiso['accion'] === 'ver' &&
-            $permiso['estado'] == 1
-        ) {
-            $mostrar_bitacora = true;
-            break;
-        }
-    }
-
-    if ($mostrar_bitacora) {
+} else if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(12, 'ver')) {
 
         require_once 'vista/seguridad/bitacora.php';
-    } else {
+} else {
         require_once 'vista/seguridad/privilegio.php';
-    }
 
-} else if ($_SESSION["nivel_rol"] == 1) {
+} if ($_SESSION["nivel_rol"] == 1) {
     header("Location: ?pagina=catalogo");
     exit();
-
-} else {
-    require_once 'vista/seguridad/privilegio.php';
 }
 ?>

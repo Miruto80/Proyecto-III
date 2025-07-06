@@ -6,6 +6,7 @@ if (empty($_SESSION['id'])) {
 }
 
 require_once 'modelo/categoria.php';
+require_once 'permiso.php';
 $Cat = new Categoria();
 
 // 0) GET → acceso + bitácora
