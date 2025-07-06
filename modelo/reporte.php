@@ -684,16 +684,6 @@ public static function venta(
 
 
 
-/**
- * Genera y emite PDF con reporte de pedidos web,
- * mostrando “Desde X hasta HOY” si solo hay inicio,
- * o “Desde X hasta Y” si hay ambas fechas.
- *
- * @param string|null $start  Fecha inicio (YYYY-MM-DD)
- * @param string|null $end    Fecha fin    (YYYY-MM-DD)
- * @param int|null    $prodId ID de producto (opcional)
- * @throws \Throwable
- */
 public static function pedidoWeb(
     $start   = null,
     $end     = null,
