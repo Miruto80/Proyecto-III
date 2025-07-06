@@ -41,10 +41,28 @@
                   Categoria
                 </h4>
 <!-- Dentro de .d-sm-flex, justo después de btnAbrirRegistrar -->
+ 
                 <div class="d-flex gap-2">
+                    <?php
+                  $accion_1 = false;
+                if ( ($_SESSION["nivel_rol"] == 2 || $_SESSION["nivel_rol"] == 3) && !empty($_SESSION['permisos'])) {
+                      foreach ($_SESSION['permisos'] as $permiso) {
+                          if (
+                              $permiso['id_modulo'] == 7 &&
+                              $permiso['accion'] === 'registrar' &&
+                              $permiso['estado'] == 1
+                          ) {
+                              $accion_1 = true;
+                              break;
+                          }
+                      }
+                  }
+                  if ($accion_1) {
+                  ?> 
                   <button id="btnAbrirRegistrar" class="btn btn-success">
                     <i class="fas fa-file-medical"></i> Registrar
                   </button>
+                     <?php } ?>
                   <button id="btnAyuda" type="button" class="btn btn-primary">
                     <i class="fas fa-info-circle"></i> Ayuda
                   </button>

@@ -73,7 +73,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <?php foreach ($registro as $dato): ?>
+                    <?php foreach ($registro as $dato):
+                     ?>
                       <tr>
                         <td><?= htmlspecialchars($dato['nombre']) ?></td>
                         <td><?= htmlspecialchars($dato['nivel']) ?></td>
