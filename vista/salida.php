@@ -411,7 +411,7 @@
           
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+          <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
                   <th class="text-white">Cliente</th>
@@ -1182,6 +1182,9 @@
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
+
+<!-- Script para inicializar DataTable -->
+<script src="assets/js/demo/datatables-demo.js"></script>
 
 <!-- Script para el cálculo de precios en ventas -->
 <script src="assets/js/salida.js"></script>
