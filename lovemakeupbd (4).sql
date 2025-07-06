@@ -118,8 +118,7 @@ CREATE TABLE `direccion` (
   `id_metodoentrega` int(11) DEFAULT NULL,
   `id_persona` int(11) DEFAULT NULL,
   `direccion_envio` varchar(300) COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
-  `sucursal_envio` varchar(300) COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
-  `telefono` varchar(15) COLLATE utf8mb4_spanish2_ci DEFAULT NULL
+  `sucursal_envio` varchar(300) COLLATE utf8mb4_spanish2_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
 
 -- --------------------------------------------------------

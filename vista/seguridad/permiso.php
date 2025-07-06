@@ -51,6 +51,10 @@
        <!-- Button que abre el Modal N1 Registro -->
         <a href="?pagina=usuario" class="btn btn-primary"><i class="fa-solid fa-reply"></i> Regresar</a>
       </div>
+
+       <div class="alert alert-light" role="alert">
+      <strong><i class="fa-solid fa-user-shield me-2"></i>Permisos del Módulo:</strong> Este espacio permite asignar lo que cada usuario puede hacer: ver, registrar, editar, eliminar o usar funciones especiales en cada módulo del sistema.
+  </div>
        <form action="?pagina=usuario" method="POST" autocomplete="off" id="forpermiso">
           
           <div class="table-responsive">
@@ -68,8 +72,7 @@
   </thead>
   <tbody>
     <?php
-   
-      $modulos_nivel_2 = [1, 3, 4, 5, 9]; // Define los módulos válidos para nivel 2
+      $modulos_nivel_2 = [1, 3, 4, 5, 9];
 
       $permisos_por_modulo = [];
 
@@ -113,7 +116,6 @@
       foreach ($permisos_por_modulo as $modulo_id => $info):
         $acciones_validas = $acciones_por_modulo[$modulo_id] ?? [];
 
-        // ✅ FILTRO SEGÚN NIVEL
         if ($nivel_usuario == 2 && !in_array($modulo_id, $modulos_nivel_2)) {
           continue;
         }
@@ -159,47 +161,12 @@
 
 <!-- php barra de navegacion-->
 <?php include 'vista/complementos/footer.php' ?>
+<script src="assets/js/permiso.js"></script>
 <script src="assets/js/usuario.js"></script>
 
 
-
 <script>
-  $(window).on('load', function() {
- $(document).ready(function() {
-  $('input[name^="permiso"]').each(function() {
-    const input = $(this);
-    const name = input.attr('name');
 
-    if (name.includes('[ver]')) {
-      const moduloId = name.split('[')[1].split(']')[0];
-
-      input.on('change', function() {
-        const isChecked = $(this).is(':checked');
-
-        const acciones = ['registrar', 'editar', 'eliminar', 'especial'];
-
-        acciones.forEach(function(accion) {
-          const selector = `input[name="permiso[${moduloId}][${accion}]"]`;
-          const checkbox = $(selector);
-
-          checkbox.prop('disabled', !isChecked);
-          if (!isChecked) {
-            checkbox.prop('checked', false);
-          }
-        });
-      });
-    }
-  });
-});
-
-if (!isChecked) {
-  Swal.fire({
-    icon: 'info',
-    title: 'Acceso limitado',
-    text: 'Para activar otras acciones, primero debes permitir "ver".'
-  });
-}
-});
 
 </script>
 

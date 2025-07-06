@@ -64,11 +64,11 @@ class Usuario extends Conexion
         try {
             switch ($operacion) {
                 case 'registrar':
-                    if ($this->verificarExistencia('cedula', $datosProcesar['cedula'])) {
-                        return ['respuesta' => 0, 'mensaje' => 'La cédula ya está registrada'];
+                    if ($this->verificarExistencia(['campo' => 'cedula', 'valor' => $datosProcesar['cedula']])) {
+                        return ['respuesta' => 0, 'accion' => 'incluir', 'text' => 'La cédula ya está registrada'];
                     }
-                    if ($this->verificarExistencia('correo', $datosProcesar['correo'])) {
-                        return ['respuesta' => 0, 'mensaje' => 'El correo ya está registrado'];
+                    if ($this->verificarExistencia(['campo' => 'correo', 'valor' => $datosProcesar['correo']])) {
+                        return ['respuesta' => 0, 'accion' => 'incluir', 'text' => 'El correo electrónico ya está registrado'];
                     }
                     $datosProcesar['clave'] = $this->encryptClave($datosProcesar['clave']);
                     return $this->ejecutarRegistro($datosProcesar);
@@ -227,19 +227,30 @@ class Usuario extends Conexion
         }
     }
 
-    private function verificarExistencia($campo, $valor) {
-        $conex = $this->getConex2();
+    private function verificarExistencia($datos) {
+        $conex1 = $this->getConex1();
+        $conex2 = $this->getConex2();
         try {
-            $sql = "SELECT COUNT(*) FROM usuario WHERE $campo = :valor";
-            $stmt = $conex->prepare($sql);
-            $stmt->execute(['valor' => $valor]);
-            $resultado = $stmt->fetchColumn() > 0;
-            $conex = null;
-            return $resultado;
-        } catch (PDOException $e) {
-            if ($conex) {
-                $conex = null;
+            // Verificar en clientes
+            $sql = "SELECT COUNT(*) FROM cliente WHERE {$datos['campo']} = :valor AND estatus >= 1";
+            $stmt = $conex1->prepare($sql);
+            $stmt->execute(['valor' => $datos['valor']]);
+            $existe = $stmt->fetchColumn() > 0;
+            
+            if (!$existe) {
+                // Si no existe en clientes, verificar en usuarios
+                $sql = "SELECT COUNT(*) FROM usuario WHERE {$datos['campo']} = :valor AND estatus >= 1";
+                $stmt = $conex2->prepare($sql);
+                $stmt->execute(['valor' => $datos['valor']]);
+                $existe = $stmt->fetchColumn() > 0;
             }
+            
+            $conex1 = null;
+            $conex2 = null;
+            return $existe;
+        } catch (PDOException $e) {
+            if ($conex1) $conex1 = null;
+            if ($conex2) $conex2 = null;
             throw $e;
         }
     }

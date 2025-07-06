@@ -250,8 +250,6 @@ class Login extends Conexion {
         }
     }
 
-
-
      public function consultar($id_persona) {
         $conex = $this->getConex2();
         try {
@@ -280,49 +278,5 @@ class Login extends Conexion {
     }
 
 
-    private function activocliente($datos) {
-        $conex = $this->getConex1();
-        try {
-            $conex->beginTransaction();
-            
-           $sql = "UPDATE cliente  SET estatus = :estatus, 
-                    WHERE id_persona = :id_persona";
-            
-            $stmt = $conex->prepare($sql);
-            $stmt->execute($datos);
-            
-            $conex->commit();
-            $conex = null;
-            return true;
-        } catch (PDOException $e) {
-            if ($conex) {
-                $conex->rollBack();
-                $conex = null;
-            }
-            throw $e;
-        }
-    }
 
-    private function activousuario($datos) {
-        $conex = $this->getConex2();
-        try {
-            $conex->beginTransaction();
-            
-                $sql = "UPDATE usuario  SET estatus = :estatus, 
-                        WHERE id_persona = :id_persona";
-            
-            $stmt = $conex->prepare($sql);
-            $stmt->execute($datos);
-            
-            $conex->commit();
-            $conex = null;
-            return true;
-        } catch (PDOException $e) {
-            if ($conex) {
-                $conex->rollBack();
-                $conex = null;
-            }
-            throw $e;
-        }
-    }
 }
