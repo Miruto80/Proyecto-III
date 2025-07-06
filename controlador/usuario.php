@@ -51,6 +51,12 @@ if (isset($_POST['registrar'])) {
                     header("location:?pagina=usuario");
                 exit;
     }
+
+     if ($id_persona === 2) {
+                echo json_encode(['respuesta' => 0, 'accion' => 'actualizar', 'text' => 'No puedes modificar los permiso de a ti mismo']);
+                    header("location:?pagina=usuario");
+                exit;
+    }
        
         $modificar = $objusuario->buscar($id_persona);
         require_once ("vista/seguridad/permiso.php");
