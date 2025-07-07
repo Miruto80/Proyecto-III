@@ -170,6 +170,7 @@ $carritoVacio = empty($_SESSION['carrito']);
     <span class="enlace-compra-disabled">2 Detalles de Compra</span>
   <?php else: ?>
     <a href="?pagina=verpedidoweb" class="enlace-compra">Continuar con la Compra <i class="fa-solid fa-share"></i> </a>
+     <a href="?pagina=reserva_cliente" class="enlace-compra">Reservar producto <i class="fa-solid fa-share"></i> </a>
   <?php endif; ?>
 </div>
 
