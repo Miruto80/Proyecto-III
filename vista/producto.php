@@ -171,7 +171,7 @@
                     <td><?php echo htmlspecialchars($dato['nombre']) ?></td>
                     <td><?php echo htmlspecialchars($dato['descripcion']) ?></td>
                     <td><?php echo htmlspecialchars($dato['marca']) ?></td>
-                    <td> $ <?php echo htmlspecialchars($dato['precio_detal']) ?></td>
+                    <td><?php echo htmlspecialchars($dato['precio_detal']) ?></td>
                     <td><?php echo htmlspecialchars($dato['stock_disponible']) ?></td>
                     <td><img src="<?php echo htmlspecialchars($dato['imagen']) ?>" alt="Imagen del producto" width="60" height="60"></td>
                     <td><?php echo htmlspecialchars($dato['nombre_categoria']) ?></td>
