@@ -10,32 +10,57 @@ $nivel = (int)($_SESSION['nivel_rol'] ?? 0);
 require_once 'modelo/notificacion.php';
 require_once 'modelo/tipousuario.php';  // para bitácora
 require_once 'permiso.php';
+
 $N   = new Notificacion();
 $Bit = new tipousuario();
 
-// 1) AJAX GET: conteo de notificaciones nuevas para el rol activo
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['accion'] ?? '') === 'count') {
+// 1) AJAX GET → sólo devuelvo el conteo (badge)
+if ($_SERVER['REQUEST_METHOD'] === 'GET'
+    && ($_GET['accion'] ?? '') === 'count')
+{
     header('Content-Type: application/json');
     $N->generarDePedidos();
+
     if ($nivel === 3) {
-        $count = $N->contarNuevas();
+        // Admin cuenta estados 1 y 4
+        $count = $N->contarParaAdmin();
     } elseif ($nivel === 2) {
-        $count = $N->contarParaAsesora();
+        // Asesora cuenta solo estado 1
+        $count = $N->contarNuevas();
     } else {
         $count = 0;
     }
+
     echo json_encode(['count' => $count]);
     exit;
 }
 
-// 2) POST: acciones sobre notificaciones → procesar + bitácora + redirect
+// 2) AJAX GET → nuevos pedidos/reservas
+if ($_SERVER['REQUEST_METHOD'] === 'GET'
+    && ($_GET['accion'] ?? '') === 'nuevos')
+{
+    header('Content-Type: application/json');
+    // Asegura notificaciones antes de listar
+    $N->generarDePedidos();
+
+    $lastId = (int)($_GET['lastId'] ?? 0);
+    $nuevos = $N->getNuevosPedidos($lastId);
+
+    echo json_encode([
+      'count'   => count($nuevos),
+      'pedidos' => $nuevos
+    ]);
+    exit;
+}
+
+// 3) POST → acciones sobre notificaciones
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
     $accion = $_GET['accion'];
     $id     = isset($_POST['id']) ? (int)$_POST['id'] : 0;
     $msg    = '';
 
-    // Antes de actualizar, obtengo id_pedido y mensaje para la bitácora
-    if (in_array($accion, ['marcarLeida','entregar','eliminar'], true)) {
+    // Preparo datos para bitácora si aplica
+    if (in_array($accion, ['marcarLeida','marcarLeidaAsesora','entregar','eliminar'], true)) {
         $row = (new Conexion())->getConex1()
                ->query("SELECT id_pedido, mensaje 
                          FROM notificaciones 
@@ -48,7 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
     switch ($accion) {
         case 'vaciar':
             if ($nivel === 3) {
-                // ahora devuelve int
                 $deleted = $N->vaciarEntregadas();
                 $msg = $deleted
                      ? "Se vaciaron todas las notificaciones entregadas."
@@ -65,8 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
             break;
 
         case 'marcarLeida':
+            // Admin global (1|4 → 2)
             if ($nivel === 3 && $id > 0) {
-                // ahora devuelve bool
                 $ok  = $N->marcarLeida($id);
                 $msg = $ok
                      ? 'Notificación marcada como leída.'
@@ -78,6 +102,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
                         'descripcion'=> "Se marcó como leída la notificación “{$texto}” del pedido #{$pedido}"
                     ]));
                 }
+            } else {
+                $msg = 'No autorizado.';
+            }
+            break;
+
+        case 'marcarLeidaAsesora':
+            // Asesora solo para ella (1 → 4)
+            if ($nivel === 2 && $id > 0) {
+                $ok  = $N->marcarLeidaAsesora($id);
+                $msg = $ok
+                     ? 'Notificación marcada como leída para ti.'
+                     : 'No se pudo marcar como leída.';
             } else {
                 $msg = 'No autorizado.';
             }
@@ -129,30 +165,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
     exit;
 }
 
-// 3) GET normal: regenerar y listar
+// 4) GET normal: regenerar y listar
 $N->generarDePedidos();
-// getAll() ya devuelve un array simple
 $all = $N->getAll();
 
-// filtrar según rol
-if ($nivel === 2) {
-    $notificaciones = array_values(
-        array_filter($all, fn($n) => intval($n['estado']) === 2)
+// FILTRADO según rol:
+//  - Admin ve estados 1 (nuevas) y 4 (leídas solo por asesora)
+//  - Asesora ve solo estado 1
+if ($nivel === 3) {
+    $notificaciones = array_filter(
+      $all,
+      fn($n) => in_array((int)$n['estado'], [1,4])
     );
-} else {
-    $notificaciones = $all;
+}
+elseif ($nivel === 2) {
+    $notificaciones = array_filter(
+      $all,
+      fn($n) => (int)$n['estado'] === 1
+    );
+}
+else {
+    $notificaciones = [];
 }
 
-// conteo de nuevas (badge nav)
+// Conteo para badge nav
 if ($nivel === 3) {
+    $newCount = $N->contarParaAdmin();
+}
+elseif ($nivel === 2) {
     $newCount = $N->contarNuevas();
-} elseif ($nivel === 2) {
-    $newCount = $N->contarParaAsesora();
-} else {
+}
+else {
     $newCount = 0;
 }
 
-// 4) Cargar vista
+// 5) Cargar vista
 if ($nivel >= 2) {
     require_once 'vista/notificacion.php';
 } elseif ($nivel === 1) {
@@ -161,4 +208,3 @@ if ($nivel >= 2) {
 } else {
     require_once 'vista/seguridad/privilegio.php';
 }
-
