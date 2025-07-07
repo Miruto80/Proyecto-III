@@ -264,15 +264,6 @@ public static function compra(
 }
 
 
-
-
-
-
-
-
-
-
-
 public static function producto(
     $prodId = null,
     $provId = null,
@@ -726,6 +717,82 @@ public static function venta(
         // cerrar conexión
         $conex = null;
     }
+}
+
+
+/**
+ * Genera la gráfica de Top 5 productos más vendidos
+ * y devuelve la ruta relativa al PNG para incrustar en <img>.
+ */
+/**
+ * Genera la gráfica Top 5 de productos vendidos (mismo WHERE que venta())
+ * la guarda en disco y devuelve la ruta web para incrustarla en <img>.
+ */
+public static function graficaVentaTop5(): string
+{
+    // 1) Dependencias y conexión
+    require_once 'modelo/conexion.php';
+    require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph.php';
+    require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie.php';
+    require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie3d.php';
+
+    $conex = (new Conexion())->getConex1();
+
+    // 2) Consulta Top 5 (igual que en venta())
+    $sql = "
+      SELECT pr.nombre AS producto,
+             SUM(pd.cantidad) AS total
+        FROM pedido pe
+        JOIN pedido_detalles pd ON pd.id_pedido = pe.id_pedido
+        JOIN productos       pr ON pr.id_producto = pd.id_producto
+       WHERE pe.tipo = 1
+         AND pe.estado = 2
+      GROUP BY pr.id_producto
+      ORDER BY total DESC
+      LIMIT 5
+    ";
+    $stmt = $conex->prepare($sql);
+    $stmt->execute();
+
+    $labels = [];
+    $data   = [];
+    while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $labels[] = htmlspecialchars($r['producto']);
+        $data[]   = (int)$r['total'];
+    }
+    $conex = null;
+
+    // 3) Si no hay datos, devolvemos cadena vacía
+    if (empty($data)) {
+        return '';
+    }
+
+    // 4) Directorio y archivo destino
+    $imgDir  = __DIR__ . '/../assets/img/grafica_home/';
+    $imgFile = $imgDir . 'grafico_ventas_home_top5.png';
+
+    if (!is_dir($imgDir)) {
+        mkdir($imgDir, 0777, true);
+    }
+    // Limpia viejos
+    if (file_exists($imgFile)) {
+        unlink($imgFile);
+    }
+
+    // 5) Generar y guardar PNG en disco
+    $graph = new \PieGraph(900, 500);
+    $pie   = new \PiePlot3D($data);
+    $pie->SetLegends($labels);
+    $pie->SetCenter(0.5, 0.5);
+    $pie->ExplodeSlice(1);
+    $graph->Add($pie);
+    $graph->Stroke($imgFile);
+
+    // 6) Devolver la ruta web (con timestamp para cache-busting)
+    $webPath = 'assets/img/grafica_home/grafico_ventas_home_top5.png';
+    return file_exists($imgFile)
+         ? $webPath . '?t=' . time()
+         : '';
 }
 
 

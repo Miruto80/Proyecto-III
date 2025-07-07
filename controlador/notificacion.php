@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 if (empty($_SESSION['id'])) {
     header('Location:?pagina=login');
@@ -10,9 +9,9 @@ $nivel = (int)($_SESSION['nivel_rol'] ?? 0);
 
 require_once 'modelo/notificacion.php';
 require_once 'modelo/tipousuario.php';  // para bitácora
- require_once 'permiso.php';
-$N    = new Notificacion();
-$Bit  = new tipousuario();
+require_once 'permiso.php';
+$N   = new Notificacion();
+$Bit = new tipousuario();
 
 // 1) AJAX GET: conteo de notificaciones nuevas para el rol activo
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['accion'] ?? '') === 'count') {
@@ -32,16 +31,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['accion'] ?? '') === 'count')
 // 2) POST: acciones sobre notificaciones → procesar + bitácora + redirect
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
     $accion = $_GET['accion'];
-    $id     = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+    $id     = isset($_POST['id']) ? (int)$_POST['id'] : 0;
     $msg    = '';
 
-    // Antes de actualizar, obtengo datos de la notificación
-    if (in_array($accion, ['marcarLeida','entregar','eliminar'])) {
-        // extraigo id_pedido y mensaje para descripción
+    // Antes de actualizar, obtengo id_pedido y mensaje para la bitácora
+    if (in_array($accion, ['marcarLeida','entregar','eliminar'], true)) {
         $row = (new Conexion())->getConex1()
                ->query("SELECT id_pedido, mensaje 
-                        FROM notificaciones 
-                        WHERE id_notificaciones = {$id}")
+                         FROM notificaciones 
+                        WHERE id_notificacion = {$id}")
                ->fetch(PDO::FETCH_ASSOC);
         $pedido = $row['id_pedido'] ?? '';
         $texto  = $row['mensaje']   ?? '';
@@ -50,12 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
     switch ($accion) {
         case 'vaciar':
             if ($nivel === 3) {
-                $res     = $N->vaciarEntregadas();
-                $deleted = $res['deleted'] ?? 0;
-                $msg     = $deleted
-                         ? "Se vaciaron todas las notificaciones entregadas."
-                         : "No había notificaciones entregadas.";
-                // bitácora
+                // ahora devuelve int
+                $deleted = $N->vaciarEntregadas();
+                $msg = $deleted
+                     ? "Se vaciaron todas las notificaciones entregadas."
+                     : "No había notificaciones entregadas.";
+
                 $Bit->registrarBitacora(json_encode([
                     'id_persona' => $_SESSION['id'],
                     'accion'     => 'Vaciar notificaciones',
@@ -68,8 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
 
         case 'marcarLeida':
             if ($nivel === 3 && $id > 0) {
-                $res = $N->marcarLeida($id);
-                $ok  = $res['ok'];
+                // ahora devuelve bool
+                $ok  = $N->marcarLeida($id);
                 $msg = $ok
                      ? 'Notificación marcada como leída.'
                      : 'No se pudo marcar como leída.';
@@ -87,8 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
 
         case 'entregar':
             if ($nivel === 2 && $id > 0) {
-                $res = $N->entregar($id);
-                $ok  = $res['ok'];
+                $ok  = $N->entregar($id);
                 $msg = $ok
                      ? 'Notificación marcada como entregada.'
                      : 'No se pudo marcar como entregada.';
@@ -106,11 +103,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
 
         case 'eliminar':
             if ($nivel === 3 && $id > 0) {
-                $res = $N->eliminar($id);
-                $ok  = $res['ok'];
+                $ok  = $N->eliminar($id);
                 $msg = $ok
                      ? 'Notificación eliminada.'
-                     : $res['error'] ?? 'No se pudo eliminar.';
+                     : 'Solo se pueden borrar notificaciones entregadas.';
                 if ($ok) {
                     $Bit->registrarBitacora(json_encode([
                         'id_persona' => $_SESSION['id'],
@@ -135,8 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
 
 // 3) GET normal: regenerar y listar
 $N->generarDePedidos();
-$res = $N->getAll();
-$all = $res['ok'] ? $res['data'] : [];
+// getAll() ya devuelve un array simple
+$all = $N->getAll();
 
 // filtrar según rol
 if ($nivel === 2) {
@@ -157,24 +153,12 @@ if ($nivel === 3) {
 }
 
 // 4) Cargar vista
+if ($nivel >= 2) {
+    require_once 'vista/notificacion.php';
+} elseif ($nivel === 1) {
+    header("Location: ?pagina=catalogo");
+    exit();
+} else {
+    require_once 'vista/seguridad/privilegio.php';
+}
 
-
-if($_SESSION["nivel_rol"] >=2) { // Validacion si es administrador entra
-       /* $bitacora = [
-            'id_persona' => $_SESSION["id"],
-            'accion' => 'Acceso a Módulo',
-            'descripcion' => 'módulo de Metodo Pago'
-        ];
-        $N->registrarBitacora(json_encode($bitacora));*/
-        // Para GET o acceso normal, se carga la vista con los métodos activos
-            // Carga inicial de la vista con los métodos activos
-       require_once 'vista/notificacion.php';
-
-        } else if ($_SESSION["nivel_rol"] == 1) {
-
-            header("Location: ?pagina=catalogo");
-            exit();
-
-        } else {
-        require_once 'vista/seguridad/privilegio.php';
-    }

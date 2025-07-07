@@ -178,13 +178,29 @@
         </div>
     </div>
 
-    <div class="col-lg-5 col-md-5 col-12"> <!-- Imagen (40%) -->
-        <div class="card">
-            <div class="card-body text-center">
-                <img src="assets/img/D3.png" alt="Ejemplo Imagen" class="img-fluid border-radius-lg">
-            </div>
-        </div>
+<div class="col-lg-5 col-md-5 col-12">
+  <div class="card">
+    <div class="card-body text-center">
+      
+<?php if ($graficaHome): ?>
+  <img
+    src="<?= $graficaHome ?>"
+    alt="Top 5 productos más vendidos"
+    class="img-fluid border-radius-lg"
+  >
+<?php else: ?>
+  <p class="text-muted">No hay datos para la gráfica.</p>
+<?php endif; ?>
+
+
+
     </div>
+  </div>
+</div>
+
+
+
+
 </div>
 
 
