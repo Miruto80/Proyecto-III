@@ -69,6 +69,7 @@ $(document).ready(function() {
         const errores = [];
       
         // Siempre validamos estos
+      
         if (!validarReferenciaBancaria($('#referencia_bancaria'))) errores.push('ref');
         if (!validarTelefonoEmisor($('#telefono_emisor')))    errores.push('tel');
         if (!validarSelect($('#metodopago'), "Seleccione un método de pago")) errores.push('mp');
@@ -348,7 +349,8 @@ $(document).ready(function() {
       });
         
     // Validación en tiempo real
-    
+    $('#nomSu').on('input', ()=>validarnomSu($('#nomSu')));
+    $('#codigoSu').on('input', ()=>validarCodigoSu($('#codigoSu')));
     $('#referencia_bancaria').on('input', ()=>validarReferenciaBancaria($('#referencia_bancaria')));
     $('#telefono_emisor').on('input', ()=>validarTelefonoEmisor($('#telefono_emisor')));
     $('#direccion').on('input', ()=>validarDireccion($('#direccion')));
