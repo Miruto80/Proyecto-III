@@ -184,14 +184,13 @@
       
 <?php if ($graficaHome): ?>
   <img
-    src="<?= $graficaHome ?>"
-    alt="Top 5 productos más vendidos"
+    src="<?php echo htmlspecialchars($graficaHome, ENT_QUOTES); ?>"
+    alt="Top 5 productos"
     class="img-fluid border-radius-lg"
   >
 <?php else: ?>
   <p class="text-muted">No hay datos para la gráfica.</p>
 <?php endif; ?>
-
 
 
     </div>

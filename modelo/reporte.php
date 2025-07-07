@@ -746,7 +746,7 @@ public static function graficaVentaTop5(): string
         JOIN pedido_detalles pd ON pd.id_pedido = pe.id_pedido
         JOIN productos       pr ON pr.id_producto = pd.id_producto
        WHERE pe.tipo = 1
-         AND pe.estado = 2
+         AND pe.estado = 1
       GROUP BY pr.id_producto
       ORDER BY total DESC
       LIMIT 5
@@ -768,7 +768,7 @@ public static function graficaVentaTop5(): string
     }
 
     // 4) Directorio y archivo destino
-    $imgDir  = __DIR__ . '/../assets/img/grafica_home/';
+    $imgDir  = __DIR__ . '/../assets/img/grafica_reportes/';
     $imgFile = $imgDir . 'grafico_ventas_home_top5.png';
 
     if (!is_dir($imgDir)) {
@@ -787,9 +787,12 @@ public static function graficaVentaTop5(): string
     $pie->ExplodeSlice(1);
     $graph->Add($pie);
     $graph->Stroke($imgFile);
+    error_log("JpGraph generó: $imgFile");
+
+
 
     // 6) Devolver la ruta web (con timestamp para cache-busting)
-    $webPath = 'assets/img/grafica_home/grafico_ventas_home_top5.png';
+    $webPath = 'assets/img/grafica_reportes/grafico_ventas_home_top5.png';
     return file_exists($imgFile)
          ? $webPath . '?t=' . time()
          : '';
