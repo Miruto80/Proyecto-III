@@ -203,11 +203,13 @@
     <button class="btn btn-info " data-bs-toggle="modal" 
     data-bs-target="#verDetallesModal<?= $pedido['id_pedido']; ?>">
  <i class="fa fa-eye"></i> 
+
+ <?php if (!in_array($pedido['estado'], [0])): ?>
 </button>
 <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(9, 'especial')): ?>
 <button type="button" class="btn  btn-primary" data-bs-toggle="modal" data-bs-target="#modalTracking<?php echo $pedido['id_pedido']; ?>"><i class="fa-regular fa-envelope"></i>
-
 </button>
+<?php endif; ?>
 
 <!-- <?php if (!in_array($pedido['estado'], [0,1])): ?>
   <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deliveryModal<?php echo $pedido['id_pedido']; ?>">
