@@ -337,7 +337,7 @@ $(document).ready(function() {
         .done(function(res) {
           if (res.success) {
             muestraMensaje('success',2000,'¡Pedido registrado!',res.message);
-            setTimeout(()=> window.location.href='?pagina=catalogo',2000);
+            setTimeout(()=> window.location.href='?pagina=catalogo_pedido',2000);
           } else {
             muestraMensaje('error',3000,'Error',res.message);
           }
