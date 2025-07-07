@@ -62,8 +62,8 @@
                 <table class="table table-bordered table-hover display responsive nowrap" id="myTable" width="100%" cellspacing="0">
                   <thead class="table-color">
                     <tr>
-                      <th class="text-white">Acción</th>
                       <th class="text-white">Fecha y Hora</th>
+                      <th class="text-white">Acción</th>
                       <th class="text-white">Descripción</th>
                       <th class="text-white">Usuario</th>
                       <th class="text-white">Rol</th>
@@ -76,13 +76,14 @@
                     if ($registro && is_array($registro)) {
                       foreach ($registro as $dato) { ?>
                         <tr>
+                          <td><?php echo date('d/m/Y H:i:s', strtotime($dato['fecha_hora']))?></td>
                           <td>
                             <span class="badge bg-<?php 
                               switch($dato['accion']) {
                                 case 'CREAR': echo 'success'; break;
                                 case 'MODIFICAR': echo 'primary'; break;
                                 case 'ELIMINAR': echo 'danger'; break;
-                                case 'ACCESO A MÓDULO': echo 'info'; break;
+                                case 'ACCESO A MÓDULO': echo 'secondary'; break;
                                 case 'CAMBIO_ESTADO': echo 'warning'; break;
                                 default: echo 'secondary';
                               }
@@ -90,7 +91,6 @@
                               <?php echo $dato['accion']?>
                             </span>
                           </td>
-                          <td><?php echo date('d/m/Y H:i:s', strtotime($dato['fecha_hora']))?></td>
                           <td>
                             <?php 
                               $desc = $dato['descripcion'];
@@ -230,7 +230,7 @@ function verDetalles(id) {
                 case 'CREAR': badgeClass = 'bg-success'; break;
                 case 'MODIFICAR': badgeClass = 'bg-primary'; break;
                 case 'ELIMINAR': badgeClass = 'bg-danger'; break;
-                case 'ACCESO A MÓDULO': badgeClass = 'bg-info'; break;
+                case 'ACCESO A MÓDULO': badgeClass = 'bg-secondary'; break;
                 case 'CAMBIO_ESTADO': badgeClass = 'bg-warning'; break;
                 default: badgeClass = 'bg-secondary';
             }
