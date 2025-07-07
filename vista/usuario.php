@@ -199,7 +199,7 @@
           <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
           <input type="text" class="form-control" name="nombre" id="nombre" placeholder="nombre: juan">
         </div>
-        <span id="textonombre" class="alert-text"></span>
+        <span id="textonombre" class="alert-text text-danger"></span>
       </div>
 
       <div class="col-md-6">
@@ -208,7 +208,7 @@
           <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
           <input type="text" class="form-control" name="apellido" id="apellido" placeholder="apellido: perez">
         </div>
-        <span id="textoapellido" class="alert-text"></span>
+        <span id="textoapellido" class="alert-text text-danger"></span>
       </div>
 
       <!-- F2: Cédula y Rol -->
@@ -218,7 +218,7 @@
           <span class="input-group-text"><i class="fa-solid fa-id-card"></i></span>
           <input type="text" class="form-control" name="cedula" id="cedula" placeholder="cedula: 11222333">
         </div>
-        <span id="textocedula" class="alert-text"></span>
+        <span id="textocedula" class="alert-text text-danger"></span>
       </div>
 
       <div class="col-md-6">
@@ -234,6 +234,7 @@
             <?php } ?>
           </select>
         </div>
+         <span id="textorol" class="alert-text text-danger"></span>
         <input type="hidden" id="nivelHidden" name="nivel">
       </div>
 
@@ -244,7 +245,7 @@
           <span class="input-group-text"><i class="fa-solid fa-mobile-screen-button"></i></span>
           <input type="text" class="form-control" name="telefono" id="telefono" placeholder="Telefono: 04240001122">
         </div>
-        <span id="textotelefono" class="alert-text"></span>
+        <span id="textotelefono" class="alert-text text-danger"></span>
       </div>
 
       <div class="col-md-6 ">
@@ -253,7 +254,7 @@
           <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
           <input type="text" class="form-control" name="correo" id="correo" placeholder="Correo: tucorreo@dominio.com">
         </div>
-        <span id="textocorreo" class="alert-text"></span>
+        <span id="textocorreo" class="alert-text text-danger"></span>
       </div>
 
       <!-- F4: Contraseña -->
@@ -261,26 +262,26 @@
         <label for="clave">CONTRASEÑA</label>
         <div class="input-group">
           <span class="input-group-text"><i class="fa-solid fa-unlock"></i></span>
-          <input type="password" class="form-control" name="clave" id="clave" placeholder="Contraseña:">
+          <input type="text" class="form-control" name="clave" id="clave" placeholder="Contraseña:">
         </div>
-        <span id="textoclave" class="alert-text"></span>
+        <span id="textoclave" class="alert-text text-danger"></span>
       </div>
 
       <div class="col-md-6">
         <label for="confirmar_clave">CONFIRMAR CONTRASEÑA</label>
         <div class="input-group">
           <span class="input-group-text"><i class="fa-solid fa-unlock-keyhole"></i></span>
-          <input type="password" class="form-control" name="confirmar_clave" id="confirmar_clave" placeholder="Confirmar contraseña:">
+          <input type="text" class="form-control" id="confirmar_clave" placeholder="Confirmar contraseña:">
         </div>
-        <span id="textoconfirmar" class="alert-text mb-5"></span>
+        <span id="textoconfirmar" class="alert-text text-danger mb-5"></span>
       </div>
 <hr class="bg-primary">
       <!-- Botones -->
       <div class="col-12 text-center ">
-        <button type="button" class="btn btn-success me-2" id="registrar">
+        <button type="button" class="btn btn-primary me-2" id="registrar">
           <i class="fa-solid fa-floppy-disk"></i> Registrar
         </button>
-        <button type="reset" class="btn btn-primary">
+        <button type="reset" class="btn btn-secondary">
           <i class="fa-solid fa-eraser"></i> Limpiar
         </button>
       </div>
