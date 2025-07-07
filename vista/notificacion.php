@@ -97,7 +97,7 @@
     <tr>
       <td colspan="5" class="text-center py-3">
         <?php if ($nivel === 2): ?>
-          Esperando a que el administrador lea las nuevas notificaciones.
+          Esperando nuevas notificaciones.
         <?php else: ?>
           No hay notificaciones registradas.
         <?php endif; ?>
@@ -116,18 +116,18 @@
         </p>
       </td>
       <td class="text-sm mb-0">
-        <?php switch((int)$n['estado']):
+        <?php switch ((int)$n['estado']): 
           case 1: ?>
             <span class="text-danger text-sm">No leída</span>
-            <?php break;
+            <?php break; 
           case 2: ?>
             <span class="text-secondary text-sm">Leída</span>
-            <?php break;
+            <?php break; 
           case 3: ?>
             <span class="text-success text-sm">
-              <?= $nivel===3 ? 'Leída y entregada' : 'Entregada' ?>
+              <?= $nivel === 3 ? 'Leída y entregada' : 'Entregada' ?>
             </span>
-            <?php break;
+            <?php break; 
         endswitch; ?>
       </td>
       <td class="text-sm mb-0">
@@ -136,7 +136,7 @@
         </span>
       </td>
       <td class="text-center">
-        <?php if ($nivel === 3 && (int)$n['estado'] === 1): ?>
+        <?php if ($nivel === 3 && in_array((int)$n['estado'], [1, 4])): ?>
           <form method="post"
                 action="?pagina=notificacion&accion=marcarLeida"
                 class="marcar-leer-form d-inline">
@@ -148,11 +148,32 @@
               <i class="fa-solid fa-envelope-open"></i>
             </button>
           </form>
+        <?php elseif ($nivel === 2 && (int)$n['estado'] === 1): ?>
+          <form method="post"
+                action="?pagina=notificacion&accion=marcarLeidaAsesora"
+                class="marcar-leer-asesora-form d-inline">
+            <input type="hidden" name="id"
+                   value="<?= $n['id_notificacion'] ?>">
+            <button type="submit"
+                    class="btn btn-secondary btn-sm"
+                    title="Leer (solo para mí)">
+              <i class="fa-solid fa-envelope-open"></i>
+            </button>
+          </form>
         <?php endif; ?>
       </td>
     </tr>
-  <?php endforeach; endif; ?>
-</tbody>
+    <?php endforeach; endif; ?>
+  </tbody>
+  </table>
+  </div>
+  </div>
+
+  </div>
+ </div>
+
+  <?php include 'complementos/footer.php'; ?>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="assets/js/notificacion.js"></script>

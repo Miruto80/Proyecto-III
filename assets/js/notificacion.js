@@ -1,4 +1,49 @@
-// assets/js/notificacion.js
+document.addEventListener('DOMContentLoaded', () => {
+  const bellBtn = document.querySelector('.notification-icon');
+  let lastId = Number(localStorage.getItem('lastPedidoId') || 0);
+
+  async function pollPedidos() {
+    try {
+      const res = await fetch(`?pagina=notificacion&accion=nuevos&lastId=${lastId}`);
+      const { count, pedidos } = await res.json();
+
+      if (count > 0) {
+        pedidos.forEach(p => {
+          const isReserva = p.tipo === 3;
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'info',
+            title: isReserva
+              ? `Nueva reserva #${p.id_pedido}`
+              : `Nuevo pedido #${p.id_pedido} – Total: ${p.total} BS`,
+            showConfirmButton: false,
+            timer: 4000
+          });
+        });
+
+        // Insertar el “puntito” si no existe
+        if (!bellBtn.querySelector('.notif-dot')) {
+          bellBtn.insertAdjacentHTML('beforeend', '<span class="notif-dot"></span>');
+        }
+
+        // Actualizar lastId y guardarlo
+        lastId = pedidos[pedidos.length - 1].id_pedido;
+        localStorage.setItem('lastPedidoId', lastId);
+      }
+    } catch (e) {
+      console.error('Error al obtener nuevos pedidos:', e);
+    }
+  }
+
+  // Primera ejecución al cargar
+  pollPedidos();
+
+  // Luego cada 30 segundos
+  setInterval(pollPedidos, 30000);
+});
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
   // 0) Mostrar alerta de éxito si flashNotif fue inyectado en la vista
@@ -12,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.flashNotif = null;
   }
 
-  // 1) Puntito rosa: micro‐API count
   const baseURL = '?pagina=notificacion';
   const bellBtn = document.querySelector('.notification-icon');
 
