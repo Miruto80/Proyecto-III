@@ -18,7 +18,8 @@ async function obtenerTasaDolarApi() {
         const tasaBCV = parseFloat(datos.promedio).toFixed(2); 
         var totalBs = <?php echo $total; ?>;
         var resultadoBs = (totalBs * tasaBCV).toFixed(2); 
-        document.getElementById("bs").textContent = "Resultado: " + resultadoBs + " Bs";    
+        document.getElementById("bs").textContent = "Resultado: " + resultadoBs + " Bs";  
+        document.getElementById("precio_total_bs").value = resultadoBs ;  
     } catch (error) {
         document.getElementById("bs").textContent = "Error al cargar el total";
         console.error("Error al obtener la tasa:", error);
@@ -384,14 +385,148 @@ $carritoVacio = empty($_SESSION['carrito']);
   </div>
 
                             </div>
-                        <form class="form row " id="formPedido" >
+                        <form class="form row " id="formPedido" enctype="multipart/form-data" >
                             <input type="hidden"  name="id_pedido" id="id_pedido"> 
                               <input type="hidden" name="id_persona" id="id_persona" value="<?php echo $usuario['id']; ?>">
                              <input type="hidden" name="estado" id="estado" value="1">
-                             <input type="hidden" name="precio_total" id="precio_total" value="<?= $total ?> ">
+                             <input type="hidden" name="precio_total_usd" id="precio_total_usd" value="<?= $total ?> ">
+                             <input type="hidden" name ="precio_total_bs" id="precio_total_bs" value="">
                              <input type="hidden" name="tipo" id="tipo" value="2">
 
-                             <div class="col-6">
+                           
+
+                              <div class="col-6" style="margin-left: 200px;"><span>Metodo de Entrega:</span>
+                                
+                                <select class="form-select text-gray-900" name="id_metodoentrega" id="metodoentrega" required>
+                               
+                                   <?php foreach ($metodos_entrega as $me): ?>
+                                  <option value="<?= $me['id_entrega'] ?>"><?= $me['nombre'] ?></option>
+                                  <?php endforeach; ?>
+                                   </select>
+                              </div>
+                      <div class="row" id="divdelivery">
+                                  <div class="col-4">            
+                              <label for="zona" class="labeldel">Zona:</label>
+                              <select class="form-select text-gray-900" id="zona">
+                                <option value="">-- Selecciona una zona --</option>
+                                <option value="norte">Norte</option>
+                                <option value="sur">Sur</option>
+                                <option value="este">Este</option>
+                                <option value="oeste">Oeste</option>
+                                <option value="centro">Centro</option>
+                              </select>
+                              </div>
+
+                              <div class="col-4">
+                              <label for="parroquia" class="labeldel">Parroquia:</label>
+                              <select class="form-select text-gray-900" id="parroquia">
+                                <option value="">-- Selecciona una parroquia --</option>
+                              </select>
+                              </div>
+                              
+                              <div class="col-4">
+                              <label for="sector" class="labeldel">Sector:</label>
+                              <select class="form-select text-gray-900" id="sector">
+                                <option value="">-- Selecciona un sector --</option>
+                              </select>
+                            </div>
+
+                            <div class="col-12" >
+                              <span class="labeldel">Direccion de Entrega:</span>
+                                    <input class="form-control" type="text" id="direccion" name="direccion" placeholder="--Ingrese la Direccion a Detalle--">
+                               </div>
+
+                       </div>
+
+
+                       <div class="row" id="divEnvio" style="display: none;">
+
+                               <div class="col-md-6  text-gray-900"> 
+                                  <span> Codigo de Sucursal:</span> 
+                                <input type="text" class="form-control m-1" name="" id="codigoSu" placeholder="------">
+                                </div>
+
+                                <div class="col-md-6  text-gray-900"> 
+                                  <span> Nombre Sucursal:</span> 
+                                <input type="text" class="form-control m-1" name="" id="nomSu" placeholder="------">
+                                </div>
+                       </div>
+
+         <!--             <div class="row" id="divAdomicilio" style="display: ;">
+                        <div class="col-3">
+                                  <label for="estado" class="labeldel">Estado:</label>
+                                  <select id="estado_loc" class="form-select text-gray-900">
+                                    <option value="">-- Selecciona un estado --</option>
+                                    <option value="Lara">Lara</option>
+                                    <option value="Zulia">Zulia</option>
+                                    <option value="Miranda">Miranda</option>
+                                   
+                                  </select>
+                         </div>
+                           <div class="col-3">
+                                  <label for="ciudad" class="labeldel">Ciudad:</label>
+                                  <select id="ciudad_loc" class="form-select text-gray-900" disabled>
+                                    <option value="">-- Selecciona una ciudad --</option>
+                                  </select>
+                                </div>
+                            </div>
+
+                            
+                            <div class="row" id="divdelivery">
+                                <div class="col-4">
+                                  <label for="zona" class="labeldel">Zona:</label>
+                                  <select id="zona_loc" class="form-select text-gray-900" disabled>
+                                    <option value="">-- Selecciona una zona --</option>
+                                  </select>
+                             </div>
+                              <div class="col-4">
+                                  <label for="parroquia" class="labeldel">Parroquia:</label>
+                                  <select id="parroquia_loc" class="form-select text-gray-900" disabled>
+                                    <option value="">-- Selecciona una parroquia --</option>
+                                  </select>
+                                </div>
+                                <div class="col-4">
+                                  <label for="sector" class="labeldel">Sector:</label>
+                                  <select id="sector_loc" class="form-select text-gray-900" disabled>
+                                    <option value="">-- Selecciona un sector --</option>
+                                  </select>
+                                </div>
+                                
+                      </div> -->
+                            
+                               <input type="hidden" name="direccion_completa" id="direccion_completa">
+                                    <input id="direccion_input" name="direccion_envio" type="hidden" value="">
+                                
+                               <div class="col-6"><span>Metodo de Pago:</span>
+                                
+                
+                                <select class="form-select text-gray-900" name="id_metodopago" id="metodopago" required>
+                                   <option disabled selected>--Seleccione un Metodo de pago--</option>
+                                              <?php foreach ($metodos_pago as $mp): ?>
+                                    <option value="<?= $mp['id_metodopago'] ?>"><?= $mp['nombre'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+
+
+                                </div>
+                               
+                                <div class="col-md-6  text-gray-900"> 
+                                  <span> Referencia Bancaria:</span> 
+                                <input type="text" class="form-control m-1" name="referencia_bancaria" id="referencia_bancaria" placeholder="--0456--">
+                                </div>
+
+                               
+                                 
+                             
+                               
+                               <div class="col-md-4  text-gray-900">   
+                                <span class="col-6" name="">Telefono Emisor:</span>
+                                <input type="text" class="form-control m-1" name="telefono_emisor" id="telefono_emisor" placeholder="--424--">
+                                </div>
+
+                                <div class="col-4">
+
+
                                         <span>Banco de Origen:</span>
                                 
                                        <select class="form-select" id="banco" name="banco"  required>
@@ -427,7 +562,8 @@ $carritoVacio = empty($_SESSION['carrito']);
 
                                     </div>
 
-                                    <div class="col-6">
+                                    
+                                    <div class="col-4">
                                         <span>Banco de Destino:</span>
                                        <select class="form-select" id="banco_destino" name="banco_destino"  required>
                                        <option value="0102-Banco De Venezuela">0102-Banco De Venezuela</option>
@@ -437,47 +573,41 @@ $carritoVacio = empty($_SESSION['carrito']);
 
                                     </div>
 
-                                <span  class="col-6" name="referencia_bancaria">Referencia Bancaria:</span> 
-                                <span class="col-6" name="telefono_emisor">Telefono Emisor:</span>
-                                <div class="col-md-6">
-                                <input type="text" class="form-control m-1" name="referencia_bancaria" id="referencia_bancaria" placeholder="Ejem: 0456">
-                                </div>
-                               <div class="col-md-6">
-                                <input type="text" class="form-control m-1" name="telefono_emisor" id="telefono_emisor" placeholder="Ejem: 424">
-                                </div>
-                                <div class="row">
 
+                                    <div class="mb-3">
+    <span>Subir comprobante:</span>
+    <input class="form-control" type="file" id="imagen" name="imagen" accept="image/*" required>
+  </div>
 
+<!-- Switch empresa (solo aparece en MRW/Zoom) -->
+<div id="entregaTipoContainer" style="display:none;">
+  <label><input type="radio" name="entregaTipo" value="sucursal" checked> Sucursal</label>
+  <label><input type="radio" name="entregaTipo" value="domicilio"> Domicilio</label>
+</div>
 
-                                    <div class="col-6"><span>Metodo de Pago:</span>
-                                
-                
-                                    <select class="form-select text-gray-900" name="id_metodopago" id="metodopago" required>
-                                       <option disabled selected>Seleccione un Metodo de pago</option>
-                                                  <?php foreach ($metodos_pago as $mp): ?>
-                                        <option value="<?= $mp['id_metodopago'] ?>"><?= $mp['nombre'] ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
+<!-- Reusa tu bloque zona/parroquia/sector/dirección para domicilio -->
+<div id="domicilioFields" style="display:none;">
+  <!-- ya existentes selects de zona/parroquia/sector y campo dirección -->
+</div>
 
+<!-- Sucursal interna de MRW/Zoom -->
+<div id="sucursalFields" style="display:none;">
+  <label for="sucursal">Seleccione sucursal:</label>
+  <select id="sucursal" name="sucursal_envio" class="form-select">
+    <option value="">-- Selecciona--</option>
+    <option value="Central">Central</option>
+    <option value="Norte">Norte</option>
+    <!-- etc -->
+  </select>
+</div>
 
-                                    </div>
-                                    <div class="col-6"><span>Metodo de Entrega:</span>
-                                
-                                      <select class="form-select text-gray-900" name="id_entrega" id="metodoentrega" required>
-                                      <option disabled selected>Seleccione un Metodo de Entrega</option>
-                                         <?php foreach ($metodos_entrega as $me): ?>
-                                        <option value="<?= $me['id_entrega'] ?>"><?= $me['nombre'] ?></option>
-                                        <?php endforeach; ?>
-                                         </select>
-                                    </div>
-
-                             <div class="col-12"><span>Direccion de Entrega:</span>
-                                    <input class="form-control" type="text" id="direccion" name="direccion" placeholder="Ingrese la Direccion a Detalle">
-                               </div>
-
-
-</p>
-                                </div>
+<!-- Inputs específicos de empresa externa -->
+<div id="empresaFields" style="display:none;">
+  <label for="empresa">Compañía:</label>
+  <input type="text" id="empresa" name="empresa_envio" class="form-control" placeholder="MRW o Zoom">
+  <label for="tracking">Número de guía:</label>
+  <input type="text" id="tracking" name="tracking" class="form-control" placeholder="1234567890">
+</div>
 
                                
                         </form> <!-- fin del formulario -->
@@ -530,9 +660,7 @@ $carritoVacio = empty($_SESSION['carrito']);
            
         </div>
 
-        <input type="hidden" id="id_detalle">
-     <input type="hidden" id="id_detalle_reserva">
-         <input type="hidden" id="condicion" value="Sin Validar">
+    
       
      </div>
             </div>
