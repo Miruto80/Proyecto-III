@@ -1,7 +1,7 @@
 <?php
-require_once 'conexion.php';
-require_once 'metodoentrega.php';
-require_once 'metodopago.php';
+require_once __DIR__ . '/../modelo/conexion.php';
+require_once __DIR__ . '/../modelo/metodoentrega.php';
+require_once __DIR__ . '/../modelo/metodopago.php';
 
 class VentaWeb extends Conexion {
     private $objmetodoentrega;
