@@ -35,11 +35,24 @@ public static function compra(
 
         // — Gráfico Top 10 productos comprados —
         $whereG = []; $paramsG = [];
-        if ($start && $end) {
+
+        // a) Sólo inicio
+        if ($origStart && !$origEnd) {
+            $whereG[]       = 'c.fecha_entrada >= :sG';
+            $paramsG[':sG'] = "$start 00:00:00";
+        }
+        // b) Sólo fin
+        elseif (!$origStart && $origEnd) {
+            $whereG[]       = 'c.fecha_entrada <= :eG';
+            $paramsG[':eG'] = "$end   23:59:59";
+        }
+        // c) Ambas fechas
+        elseif ($origStart && $origEnd) {
             $whereG[]       = 'c.fecha_entrada BETWEEN :sG AND :eG';
             $paramsG[':sG'] = "$start 00:00:00";
             $paramsG[':eG'] = "$end   23:59:59";
         }
+
         if ($prodId) {
             $whereG[]         = 'cd.id_producto = :pidG';
             $paramsG[':pidG'] = $prodId;
@@ -48,6 +61,7 @@ public static function compra(
             $whereG[]         = 'p.id_categoria = :catG';
             $paramsG[':catG'] = $catId;
         }
+
         $sqlG = "
           SELECT p.nombre AS producto, SUM(cd.cantidad) AS total
             FROM compra_detalles cd
@@ -90,23 +104,35 @@ public static function compra(
 
         // — Tabla de compras con categoría —
         $whereT = []; $paramsT = [];
-        if ($start && $end) {
+
+        // a) Sólo inicio
+        if ($origStart && !$origEnd) {
+            $whereT[]        = 'c.fecha_entrada >= :sT';
+            $paramsT[':sT']  = "$start 00:00:00";
+        }
+        // b) Sólo fin
+        elseif (!$origStart && $origEnd) {
+            $whereT[]        = 'c.fecha_entrada <= :eT';
+            $paramsT[':eT']  = "$end   23:59:59";
+        }
+        // c) Ambas fechas
+        elseif ($origStart && $origEnd) {
             $whereT[]        = 'c.fecha_entrada BETWEEN :sT AND :eT';
             $paramsT[':sT']  = "$start 00:00:00";
             $paramsT[':eT']  = "$end   23:59:59";
         }
+
         if ($prodId) {
-            $whereT[]         = 'cd.id_producto = :pidT';
+            $whereT[]        = 'cd.id_producto = :pidT';
             $paramsT[':pidT']= $prodId;
         }
         if ($catId) {
-            $whereT[]         = 'p.id_categoria = :catT';
+            $whereT[]        = 'p.id_categoria = :catT';
             $paramsT[':catT']= $catId;
         }
 
         $sqlT = "
           SELECT
-            c.id_compra,
             c.fecha_entrada,
             pr.nombre AS proveedor,
             GROUP_CONCAT(
@@ -127,7 +153,7 @@ public static function compra(
                  ? 'WHERE '.implode(' AND ', $whereT)
                  : ''
            ) . "
-          GROUP BY c.id_compra, c.fecha_entrada, pr.nombre
+          GROUP BY c.fecha_entrada, pr.nombre
           ORDER BY total DESC
         ";
         $stmtT = $conex->prepare($sqlT);
@@ -188,7 +214,7 @@ public static function compra(
         </style></head><body>'
           . '<header>'
           . ($logoData?'<img src="'.$logoData.'" class="logo-icon"/>':'')
-          . '<h1>LoveMakeup</h1><p>RIF: J-00000000</p>'
+          . '<h1>LoveMakeup</h1><p>RIF: J-505434403</p>'
           . '</header><main>'
           . '<h1>Listado de Compras</h1>'
           . "<p><strong>Generado:</strong> {$fechaGen}</p>"
@@ -198,7 +224,6 @@ public static function compra(
                  <div style="text-align:center"><img src="'.$graf.'" width="600"/></div>'
               : '')
           . '<table><thead><tr>'
-          . '<th>ID Compra</th>'
           . '<th>Fecha</th>'
           . '<th>Proveedor</th>'
           . '<th>Productos</th>'
@@ -209,7 +234,6 @@ public static function compra(
             $d = date('d/m/Y',strtotime($r['fecha_entrada']));
             $t = '$'.number_format($r['total'],2);
             $html .= "<tr>
-                        <td>{$r['id_compra']}</td>
                         <td>{$d}</td>
                         <td>".htmlspecialchars($r['proveedor'])."</td>
                         <td>".htmlspecialchars($r['productos'])."</td>
@@ -238,6 +262,8 @@ public static function compra(
         $conex = null;
     }
 }
+
+
 
 
 
@@ -400,7 +426,7 @@ public static function producto(
         </style></head><body>'
           . '<header>'
           . ($logoData?'<img src="'.$logoData.'" class="logo-icon"/>':'')
-          . '<h1>LoveMakeup</h1><p>RIF: J-00000000</p>'
+          . '<h1>LoveMakeup</h1><p>RIF: J-505434403</p>'
           . '</header><main>'
           . '<h1>Listado de Productos</h1>'
           . "<p><strong>Generado:</strong> {$fechaGen}</p>"
@@ -454,7 +480,6 @@ public static function producto(
 
 
 
-
 public static function venta(
     $start   = null,
     $end     = null,
@@ -485,11 +510,24 @@ public static function venta(
         // — Top 10 productos más vendidos (gráfico) —
         $whereG  = ['pe.tipo = 1'];
         $paramsG = [];
-        if ($start && $end) {
-            $whereG[]        = 'pe.fecha BETWEEN :sG AND :eG';
-            $paramsG[':sG']  = "$start 00:00:00";
-            $paramsG[':eG']  = "$end   23:59:59";
+
+        // a) Sólo inicio
+        if ($origStart && !$origEnd) {
+            $whereG[]       = 'pe.fecha >= :sG';
+            $paramsG[':sG'] = "$start 00:00:00";
         }
+        // b) Sólo fin
+        elseif (!$origStart && $origEnd) {
+            $whereG[]       = 'pe.fecha <= :eG';
+            $paramsG[':eG'] = "$end   23:59:59";
+        }
+        // c) Ambas fechas
+        elseif ($origStart && $origEnd) {
+            $whereG[]       = 'pe.fecha BETWEEN :sG AND :eG';
+            $paramsG[':sG'] = "$start 00:00:00";
+            $paramsG[':eG'] = "$end   23:59:59";
+        }
+
         if ($prodId) {
             $whereG[]         = 'pd.id_producto = :pidG';
             $paramsG[':pidG'] = $prodId;
@@ -501,10 +539,10 @@ public static function venta(
 
         $sqlG = "
           SELECT pr.nombre AS producto,
-                 SUM(pd.cantidad)    AS total
+                 SUM(pd.cantidad) AS total
             FROM pedido pe
-            JOIN pedido_detalles pd ON pd.id_pedido    = pe.id_pedido
-            JOIN productos       pr ON pr.id_producto  = pd.id_producto
+            JOIN pedido_detalles pd ON pd.id_pedido = pe.id_pedido
+            JOIN productos       pr ON pr.id_producto = pd.id_producto
            WHERE " . implode(' AND ', $whereG) . "
           GROUP BY pr.id_producto
           ORDER BY total DESC
@@ -541,11 +579,24 @@ public static function venta(
         // — Tabla de ventas con categoría —
         $whereT  = ['pe.tipo = 1'];
         $paramsT = [];
-        if ($start && $end) {
+
+        // a) Sólo inicio
+        if ($origStart && !$origEnd) {
+            $whereT[]        = 'pe.fecha >= :sT';
+            $paramsT[':sT']  = "$start 00:00:00";
+        }
+        // b) Sólo fin
+        elseif (!$origStart && $origEnd) {
+            $whereT[]        = 'pe.fecha <= :eT';
+            $paramsT[':eT']  = "$end   23:59:59";
+        }
+        // c) Ambas fechas
+        elseif ($origStart && $origEnd) {
             $whereT[]        = 'pe.fecha BETWEEN :sT AND :eT';
             $paramsT[':sT']  = "$start 00:00:00";
             $paramsT[':eT']  = "$end   23:59:59";
         }
+
         if ($prodId) {
             $whereT[]         = 'pd.id_producto = :pidT';
             $paramsT[':pidT'] = $prodId;
@@ -557,7 +608,6 @@ public static function venta(
 
         $sqlT = "
           SELECT
-            pe.id_pedido,
             CONCAT(c.nombre,' ',c.apellido) AS cliente,
             pe.fecha,
             pe.precio_total_usd             AS total_usd,
@@ -573,7 +623,7 @@ public static function venta(
           JOIN productos       pr  ON pr.id_producto   = pd.id_producto
           JOIN categoria       cat ON cat.id_categoria = pr.id_categoria
          WHERE " . implode(' AND ', $whereT) . "
-        GROUP BY pe.id_pedido, cliente, pe.fecha, total_usd, cat.nombre
+        GROUP BY cliente, pe.fecha, total_usd, cat.nombre
         ORDER BY total_usd DESC
         ";
         $stmtT = $conex->prepare($sqlT);
@@ -630,7 +680,7 @@ public static function venta(
         </style></head><body>'
           . '<header>'
           . ($logoData?'<img src="'.$logoData.'" class="logo-icon"/>':'')
-          . '<h1>LoveMakeup</h1><p>RIF: J-00000000</p>'
+          . '<h1>LoveMakeup</h1><p>RIF: J-505434403</p>'
           . '</header><main>'
           . '<h1>Listado de Ventas</h1>'
           . "<p><strong>Generado:</strong> {$fechaGen}</p>"
@@ -640,8 +690,7 @@ public static function venta(
                  <div style="text-align:center"><img src="'.$graf.'" width="600"/></div>'
               : '')
           . '<table><thead><tr>'
-          . '<th>ID Venta</th><th>Cliente</th><th>Fecha</th>'
-          . '<th>Total (USD)</th><th>Productos</th><th>Categoría</th>'
+          . '<th>Cliente</th><th>Fecha</th><th>Total (USD)</th><th>Productos</th><th>Categoría</th>'
           . '</tr></thead><tbody>';
         foreach ($rows as $r) {
             $d    = date('d/m/Y',strtotime($r['fecha']));
@@ -650,7 +699,6 @@ public static function venta(
             $prods= htmlspecialchars($r['productos'] ?? '—');
             $catn = htmlspecialchars($r['categoria'] ?? '—');
             $html .= "<tr>
-                        <td>{$r['id_pedido']}</td>
                         <td>{$cli}</td>
                         <td>{$d}</td>
                         <td>{$tot}</td>
@@ -679,6 +727,7 @@ public static function venta(
         $conex = null;
     }
 }
+
 
 
 
@@ -845,7 +894,7 @@ public static function pedidoWeb(
         </style></head><body>'
           . '<header>'
           . ($logoData?'<img src="'.$logoData.'" class="logo-icon"/>':'')
-          . '<h1>LoveMakeup</h1><p>RIF: J-00000000</p>'
+          . '<h1>LoveMakeup</h1><p>RIF: J-505434403</p>'
           . '</header><main>'
           . '<h1>Reporte de Pedidos Web</h1>'
           . "<p><strong>Generado:</strong> {$fechaGen}</p>"
@@ -909,40 +958,65 @@ public static function pedidoWeb(
 
 
 
-// modelo/reporte.php
-public static function countCompra($start=null, $end=null, $prodId=null, $catId=null): int {
-    $conex = (new Conexion())->getConex1();
+public static function countCompra($start = null, $end = null, $prodId = null, $catId = null): int {
+    $conex     = (new Conexion())->getConex1();
+    $origStart = $start;
+    $origEnd   = $end;
+
+    // Si sólo hay inicio → fin = hoy
+    if ($origStart && !$origEnd) {
+        $end = date('Y-m-d');
+    }
+
     $where  = [];
     $params = [];
-    if ($start && $end) {
+
+    // a) Sólo inicio
+    if ($origStart && !$origEnd) {
+        $where[]      = 'c.fecha_entrada >= :s';
+        $params[':s'] = $origStart . ' 00:00:00';
+    }
+    // b) Sólo fin
+    elseif (!$origStart && $origEnd) {
+        $where[]      = 'c.fecha_entrada <= :e';
+        $params[':e'] = $origEnd   . ' 23:59:59';
+    }
+    // c) Ambas fechas
+    elseif ($origStart && $origEnd) {
         $where[]      = 'c.fecha_entrada BETWEEN :s AND :e';
-        $params[':s'] = $start . ' 00:00:00';
-        $params[':e'] = $end   . ' 23:59:59';
+        $params[':s'] = $origStart . ' 00:00:00';
+        $params[':e'] = $origEnd   . ' 23:59:59';
     }
+
     if ($prodId) {
-        $where[]        = 'cd.id_producto = :pid';
-        $params[':pid']= $prodId;
+        $where[]       = 'cd.id_producto = :pid';
+        $params[':pid'] = $prodId;
     }
+
     if ($catId) {
         // unimos productos para poder filtrar categoría
-        $where[]         = 'p.id_categoria = :cid';
-        $params[':cid']  = $catId;
+        $where[]       = 'p.id_categoria = :cid';
+        $params[':cid'] = $catId;
     }
+
     $join = '';
     if ($catId) {
         $join = 'JOIN productos p ON p.id_producto = cd.id_producto';
     }
+
     $sql = "
-      SELECT COUNT(DISTINCT c.id_compra) 
-      FROM compra c
-      JOIN compra_detalles cd ON cd.id_compra = c.id_compra
-      $join
-      ".($where? 'WHERE '.implode(' AND ',$where):'')."
+      SELECT COUNT(DISTINCT c.id_compra)
+        FROM compra c
+        JOIN compra_detalles cd ON cd.id_compra = c.id_compra
+        {$join}
+        " . ($where ? 'WHERE ' . implode(' AND ', $where) : '') . "
     ";
+
     $stmt = $conex->prepare($sql);
     $stmt->execute($params);
-    return (int)$stmt->fetchColumn();
+    return (int) $stmt->fetchColumn();
 }
+
 
 
 
@@ -983,27 +1057,46 @@ public static function countProducto($prodId = null, $provId = null, $catId = nu
     return (int)$stmt->fetchColumn();
 }
 
-  /**
-   * Devuelve el número de ventas (tipo 1) que cumplen filtros.
-   */
+
 public static function countVenta(
-    $start    = null,
-    $end      = null,
-    $prodId   = null,
-    $metodoId = null,
-    $catId    = null): int {
-    $conex  = (new Conexion())->getConex1();
+    $start      = null,
+    $end        = null,
+    $prodId     = null,
+    $metodoId   = null,
+    $catId      = null
+): int {
+    $conex     = (new Conexion())->getConex1();
+    $origStart = $start;
+    $origEnd   = $end;
+
+    // si sólo hay inicio → fin = hoy
+    if ($origStart && !$origEnd) {
+        $end = date('Y-m-d');
+    }
+
     $where  = ['pe.tipo = 1'];
     $params = [];
 
-    if ($start && $end) {
-        $where[]         = 'pe.fecha BETWEEN :s AND :e';
-        $params[':s']    = $start . ' 00:00:00';
-        $params[':e']    = $end   . ' 23:59:59';
+    // a) Sólo inicio
+    if ($origStart && !$origEnd) {
+        $where[]      = 'pe.fecha >= :s';
+        $params[':s'] = $origStart . ' 00:00:00';
     }
+    // b) Sólo fin
+    elseif (!$origStart && $origEnd) {
+        $where[]      = 'pe.fecha <= :e';
+        $params[':e'] = $origEnd   . ' 23:59:59';
+    }
+    // c) Ambas fechas
+    elseif ($origStart && $origEnd) {
+        $where[]      = 'pe.fecha BETWEEN :s AND :e';
+        $params[':s'] = $origStart . ' 00:00:00';
+        $params[':e'] = $origEnd   . ' 23:59:59';
+    }
+
     if ($prodId) {
-        $where[]         = 'pd.id_producto = :pid';
-        $params[':pid']  = $prodId;
+        $where[]        = 'pd.id_producto = :pid';
+        $params[':pid'] = $prodId;
     }
     if ($metodoId) {
         $where[]         = 'pe.id_metodopago = :mp';
@@ -1014,27 +1107,26 @@ public static function countVenta(
     $join = 'JOIN pedido_detalles pd ON pd.id_pedido = pe.id_pedido';
 
     if ($catId) {
-        $join .= ' JOIN productos pr ON pr.id_producto = pd.id_producto ';
-        $where[] = 'pr.id_categoria = :cat';
+        $join    .= ' JOIN productos pr ON pr.id_producto = pd.id_producto ';
+        $where[]  = 'pr.id_categoria = :cat';
         $params[':cat'] = $catId;
     }
 
     $sql = "
       SELECT COUNT(DISTINCT pe.id_pedido) AS cnt
       FROM pedido pe
-      $join
+      {$join}
       WHERE " . implode(' AND ', $where) . "
     ";
     $stmt = $conex->prepare($sql);
     $stmt->execute($params);
-    return (int)$stmt->fetchColumn();
+    return (int) $stmt->fetchColumn();
 }
 
 
 
-  /**
-   * Devuelve el número de pedidos web (tipo 2) que cumplen filtros.
-   */
+
+
   public static function countPedidoWeb($start = null, $end = null, $prodId = null): int {
     $conex = (new Conexion())->getConex1();
     $where  = ['p.tipo = 2'];
