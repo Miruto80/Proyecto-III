@@ -43,7 +43,7 @@ if (!empty($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
             'datos' => [
               
                 'tipo'                => $_POST['tipo'] ?? '',
-                'fecha'               => $_POST['fecha'] ?? date('Y-m-d H:i:s'),
+                'fecha'               => $_POST['fecha'] ?? date('Y-m-d h:i A'),
                 'estado'              => $_POST['estado'] ?? 'pendiente',
                 'precio_total_usd'    => $_POST['precio_total_usd'] ?? '',
                 'precio_total_bs'     => $_POST['precio_total_bs'] ?? '',
