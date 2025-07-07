@@ -23,6 +23,31 @@ deleteButtons.forEach(function (button) {
     });
   });
 });
+function validarCampo(campo, regex, textoError, mensaje) {
+  const valor = campo.val();
+
+  if (campo.is("select")) {
+   
+    if (valor === "") {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    } else {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    }
+  } else {
+   
+    if (regex.test(valor)) {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    } else {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    }
+  }
+}
+
+
 
 document.addEventListener("DOMContentLoaded", function() {
   var editarModal = document.getElementById("editarModal");
@@ -78,33 +103,44 @@ mensaje){
 $(document).ready(function() {
 
 
- function validarCampos() {
+function validarCampos() {
     let cedulaValida = /^[0-9]{7,8}$/.test($("#cedula").val());
-    let telefonoValido = /^[0-9]{4}[-]{1}[0-9]{7}$/.test($("#telefono").val());
+    let telefonoValido = /^[0-9]{4}-[0-9]{7}$/.test($("#telefono").val());
     let correoValido = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/.test($("#correo").val());
-    let nombreValido = /^[a-zA-Z]{3,50}$/.test($("#nombre").val());
-    let apellidoValido = /^[a-zA-Z]{3,50}$/.test($("#apellido").val());
+    let nombreValido = /^[a-zA-Z]{3,30}$/.test($("#nombre").val());
+    let apellidoValido = /^[a-zA-Z]{3,30}$/.test($("#apellido").val());
     let claveValida = /^.{8,16}$/.test($("#clave").val());
 
-    function aplicarEstado(input, valido, feedback) {
+    let confirmarClave = $("#confirmar_clave").val();
+    let confirmarValida = /^.{8,16}$/.test(confirmarClave) && confirmarClave === $("#clave").val();
+
+    let rolValido = $("#rolSelect").val() !== "";
+
+    function aplicarEstado(input, valido, feedback, mensaje = "") {
         if (valido) {
             $(input).removeClass("is-invalid").addClass("is-valid");
             $(feedback).hide();
         } else {
             $(input).removeClass("is-valid").addClass("is-invalid");
-            $(feedback).show();
+            $(feedback).text(mensaje).show();
         }
     }
 
-    aplicarEstado("#cedula", cedulaValida, "#textocedula");
-    aplicarEstado("#telefono", telefonoValido, "#textotelefono");
-    aplicarEstado("#correo", correoValido, "#textocorreo");
-    aplicarEstado("#nombre", nombreValido, "#textonombre");
-    aplicarEstado("#apellido", apellidoValido, "#textoapellido");
-    aplicarEstado("#clave", claveValida, "#textoclave");
+    aplicarEstado("#cedula", cedulaValida, "#textocedula", "Formato: entre 7 y 8 dígitos.");
+    aplicarEstado("#telefono", telefonoValido, "#textotelefono", "Formato: 0000-0000000");
+    aplicarEstado("#correo", correoValido, "#textocorreo", "Debe incluir @ y ser válido.");
+    aplicarEstado("#nombre", nombreValido, "#textonombre", "Solo letras (3 a 50 caracteres)");
+    aplicarEstado("#apellido", apellidoValido, "#textoapellido", "Solo letras (3 a 50 caracteres)");
+    aplicarEstado("#clave", claveValida, "#textoclave", "la clave es entre 8 y 16 caracteres");
+    aplicarEstado("#confirmar_clave", confirmarValida, "#textoconfirmar", "Las contraseñas no coinciden o no cumplen con el formato");
+    aplicarEstado("#rolSelect", rolValido, "#textorol", "Por favor, seleccione un rol válido.");
 
-    return cedulaValida && telefonoValido && correoValido && nombreValido && apellidoValido && claveValida;
+    return cedulaValida && telefonoValido && correoValido &&
+           nombreValido && apellidoValido && claveValida &&
+           confirmarValida && rolValido;
 }
+
+
 
 $('#registrar').on("click", function () {
     if (validarCampos()) {
@@ -176,14 +212,16 @@ $('#actualizar_permisos').on("click", function () {
     });
  });
 
-
+  $("#rolSelect").on("change", function () {
+    validarCampo($(this), null, $("#textorol"), "Por favor, seleccione un rol válido.");
+  });
 
   $("#cedula").on("keypress",function(e){
     validarkeypress(/^[0-9\b]*$/,e);
   });
   
-  $("#cedula").on("keyup",function(){
-    validarkeyup(/^[0-9]{7,8}$/,$(this),
+  $("#cedula").on("keyup", function () {
+    validarCampo($(this),/^[0-9]{7,8}$/,
     $("#textocedula"),"El formato debe ser 1222333");
   });
 
@@ -191,10 +229,10 @@ $('#actualizar_permisos').on("click", function () {
    $("#telefono").on("keypress", function (e) {
       validarkeypress(/^[0-9-\-]*$/, e);
     });
-  
+
     $("#telefono").on("keyup", function () {
-      validarkeyup(/^[0-9]{4}[-]{1}[0-9]{7}$/, $(this),
-        $("#textotelefono"), "El formato debe ser 0000-0000000");
+      validarCampo($(this),/^[0-9]{4}[-]{1}[0-9]{7}$/,
+      $("#textotelefono"), "El formato debe ser 0000-0000000");
     });
   
     $("#telefono").on("input", function () {
@@ -211,8 +249,7 @@ $('#actualizar_permisos').on("click", function () {
     });
 
     $("#correo").on("keyup", function () {
-        validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $(this),
-          $("#textocorreo"), "El formato debe incluir @ y ser válido.");
+      validarCampo($(this), /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $("#textocorreo"), "El formato debe incluir @ y ser válido.");
     });
 
     $("#nombre").on("keypress", function (e) {
@@ -220,7 +257,7 @@ $('#actualizar_permisos').on("click", function () {
     });
 
     $("#nombre").on("keyup", function () {
-      validarkeyup(/^[a-zA-Z]{3,50}$/, $(this),
+      validarCampo($(this),/^[a-zA-Z]{3,30}$/,
       $("#textonombre"), "El formato debe ser solo letras");
     });
 
@@ -229,16 +266,27 @@ $('#actualizar_permisos').on("click", function () {
     });
 
     $("#apellido").on("keyup", function () {
-       validarkeyup(/^[a-z-A-Z]{3,50}$/, $(this),
+      validarCampo($(this),/^[a-z-A-Z]{3,30}$/,
       $("#textoapellido"), "El formato debe ser solo letras");
     });
+
 
     $("#clave").on("keypress", function(e) {
        validarkeyup(/^.{8,16}$/, e);
     });
     
+
     $("#clave").on("keyup", function() {
-      validarkeyup(/^.{8,16}$/, $(this), $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+      validarCampo($(this),/^.{8,16}$/, $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+    });
+
+     $("#confirmar_clave").on("keypress", function(e) {
+       validarkeyup(/^.{8,16}$/, e);
+    });
+    
+
+    $("#confirmar_clave").on("keyup", function() {
+      validarCampo($(this),/^.{8,16}$/, $("#textoconfirmar"), "El formato debe ser entre 8 y 16 caracteres");
     });
 
 

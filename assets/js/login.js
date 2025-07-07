@@ -218,19 +218,15 @@ $(document).ready(function() {
 //|||||| ENVIO REGISTRO CLIENTE FORM
 $(document).ready(function() {
     $('#registrar').on("click", function(event) {
-        event.preventDefault(); // Evita la recarga de la página
+        event.preventDefault();
 
         if (validarFormulario()) {
             var datos = new FormData($('#registrocliente')[0]);
             datos.append('registrar', 'registrar');
             
-        // Agregar loader al botón
+      
         $('#registrar').prop("disabled", true).html('<i class="fa fa-spinner fa-spin"></i> Cargando...');
-
-        // Enviar los datos solo si todas las validaciones son correctas
         enviaAjax(datos).always(function() {
-        
-         // Restaurar botón después de completar el proceso
         $('#registrar').prop("disabled", false).html('<i class="fa-solid fa-user-plus"></i> Registrar');
           });
        
