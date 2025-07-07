@@ -25,22 +25,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
     
     try {
+
+        $rutaImagen = null;
+if (!empty($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+    $ext = pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION);
+    $nuevoNombre = uniqid('img_') . ".$ext";
+    $destino = __DIR__ . '/../assets/img/captures/' . $nuevoNombre;
+    if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $destino)) {
+        die(json_encode(['success'=>false,'message'=>'Error al guardar la imagen.']));
+    }
+    $rutaImagen = 'assets/img/captures/' . $nuevoNombre;
+}
+
         // Preparar datos del pedido
         $datosPedido = [
             'operacion' => 'registrar_pedido',
             'datos' => [
+              
+                'tipo'                => $_POST['tipo'] ?? '',
+                'fecha'               => $_POST['fecha'] ?? date('Y-m-d h:i A'),
+                'estado'              => $_POST['estado'] ?? 'pendiente',
+                'precio_total_usd'    => $_POST['precio_total_usd'] ?? '',
+                'precio_total_bs'     => $_POST['precio_total_bs'] ?? '',
+                'id_persona'          => $_POST['id_persona'] ?? '',
+            
+                // **Pago**
+                'id_metodopago'       => $_POST['id_metodopago'] ?? '',
                 'referencia_bancaria' => $_POST['referencia_bancaria'] ?? '',
-                'telefono_emisor' => $_POST['telefono_emisor'] ?? '',
-                'banco' => $_POST['banco'] ?? '',
-                'banco_destino' => $_POST['banco_destino'] ?? '',
-                'id_metodopago' => $_POST['id_metodopago'] ?? '',
-                'id_entrega' => $_POST['id_entrega'] ?? '',
-                'direccion' => $_POST['direccion'] ?? '',
-                'id_persona' => $_SESSION['id'],
-                'estado' => $_POST['estado'] ?? '1',
-                'precio_total' => $_POST['precio_total'] ?? '0',
-                'tipo' => $_POST['tipo'] ?? '2',
-                'carrito' => $_SESSION['carrito'] ?? []
+                'telefono_emisor'     => $_POST['telefono_emisor'] ?? '',
+                'banco_destino'       => $_POST['banco_destino'] ?? '',
+                'banco'               => $_POST['banco'] ?? '',
+                'monto'               => $_POST['monto'] ?? '',
+                'monto_usd'           => $_POST['monto_usd'] ?? '',
+                'imagen'            =>$rutaImagen,
+            
+                // **Dirección**
+                'direccion_envio'     => $_POST['direccion_envio'] ?? '',
+                'sucursal_envio'      => $_POST['sucursal_envio'] ?? '',
+                'id_metodoentrega'    => $_POST['id_metodoentrega'] ?? '',
+            
+                // Carrito
+                'carrito'             => $_SESSION['carrito'] ?? []
             ]
         ];
 

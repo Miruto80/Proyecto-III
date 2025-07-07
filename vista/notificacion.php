@@ -11,12 +11,6 @@
       padding: .4rem .6rem;
       vertical-align: middle;
     }
-    /* Botón “Vaciar” más pequeño y desplazado */
-    #vaciar-notificaciones {
-      padding: .3rem .6rem;
-      font-size: .8rem;
-      margin-top: 4px;
-    }
     /* Título cabecera */
     .card-header.d-flex h6 {
       margin: 0;
@@ -67,26 +61,12 @@
             Lista de notificaciones
           </h6>
           <div class="d-flex align-items-center gap-2">
-          <?php if ($nivel === 3): ?>
-            <form id="vaciar-notificaciones-form"
-                  method="post"
-                  action="?pagina=notificacion&accion=vaciar"
-                  class="d-inline">
-              <button id="vaciar-notificaciones-form"
-                      type="submit"
-                      class="btn btn-danger btn-sm"
-                      title="Vaciar Notificaciones">
-                <i class="fa-solid fa-trash"></i>
-                Vaciar
-              </button>
-            </form>
-          <?php endif; ?>
-                        <!-- Al lado derecho del título, dentro de .card-header -->
-              <button type="button" class="btn btn-primary btn-sm" id="btnAyudanoti">
-                <i class="fas fa-info-circle me-1"></i> Ayuda
-              </button>
+            <!-- Al lado derecho del título, dentro de .card-header -->
+            <button type="button" class="btn btn-primary btn-sm" id="btnAyudanoti">
+              <i class="fas fa-info-circle me-1"></i> Ayuda
+            </button>
+          </div>
         </div>
-      </div>
         
 
         <div class="card-body p-0">
@@ -111,103 +91,88 @@
                   </th>
                 </tr>
               </thead>
-              <tbody id="notif-body">
-                <?php if (empty($notificaciones)): ?>
-                  <tr>
-                    <td colspan="5" class="text-center py-3">
-                      <?php if ($nivel === 2): ?>
-                        Esperando a que el administrador lea las nuevas notificaciones.
-                      <?php else: ?>
-                        No hay notificaciones registradas.
-                      <?php endif; ?>
-                    </td>
-                  </tr>
-                <?php else: foreach ($notificaciones as $n): ?>
-                  <tr id="notif-<?= $n['id_notificaciones'] ?>">
-                    <td>
-                      <p class="text-sm font-weight-normal mb-0">
-                        <?= htmlspecialchars($n['titulo']) ?>
-                      </p>
-                    </td>
-                    <td>
-                      <p class="text-sm font-weight-normal mb-0">
-                        <?= htmlspecialchars($n['mensaje']) ?>
-                      </p>
-                    </td>
-                    <td class="text-sm mb-0">
-                      <?php switch((int)$n['estado']):
-                        case 1: ?>
-                          <span class="text-danger text-sm">No leída</span>
-                          <?php break;
-                        case 2: ?>
-                          <span class="text-secondary text-sm">Leída</span>
-                          <?php break;
-                        case 3: ?>
-                          <span class="text-success text-sm">
-                            <?= $nivel===3 ? 'Leída y entregada' : 'Entregada' ?>
-                          </span>
-                          <?php break;
-                      endswitch; ?>
-                    </td>
-                    <td class="text-sm mb-0">
-                      <span class="text-secondary text-sm">
-                        <?= date('d-m-Y h:i a', strtotime($n['fecha'])) ?>
-                      </span>
-                    </td>
-                    <td class="text-center">
-                      <?php if ($nivel === 3 && (int)$n['estado'] === 1): ?>
-                        <form method="post"
-                              action="?pagina=notificacion&accion=marcarLeida"
-                              class="marcar-leer-form d-inline">
-                          <input type="hidden" name="id"
-                                 value="<?= $n['id_notificaciones'] ?>">
-                          <button type="submit"
-                                  class="btn btn-info btn-sm"
-                                  title="Marcar como leída">
-                            <i class="fa-solid fa-envelope-open"></i>
-                          </button>
-                        </form>
-                      <?php endif; ?>
 
-                      <?php if ($nivel === 2 && (int)$n['estado'] === 2): ?>
-                        <form method="post"
-                              action="?pagina=notificacion&accion=entregar"
-                              class="marcar-entregar-form d-inline">
-                          <input type="hidden" name="id"
-                                 value="<?= $n['id_notificaciones'] ?>">
-                          <button type="submit"
-                                  class="btn btn-success btn-sm"
-                                  title="Marcar como entregada">
-                            <i class="fa-solid fa-truck"></i>
-                          </button>
-                        </form>
-                      <?php endif; ?>
+<tbody id="notif-body">
+  <?php if (empty($notificaciones)): ?>
+    <tr>
+      <td colspan="5" class="text-center py-3">
+        <?php if ($nivel === 2): ?>
+          Esperando nuevas notificaciones.
+        <?php else: ?>
+          No hay notificaciones registradas.
+        <?php endif; ?>
+      </td>
+    </tr>
+  <?php else: foreach ($notificaciones as $n): ?>
+    <tr id="notif-<?= $n['id_notificacion'] ?>">
+      <td>
+        <p class="text-sm font-weight-normal mb-0">
+          <?= htmlspecialchars($n['titulo']) ?>
+        </p>
+      </td>
+      <td>
+        <p class="text-sm font-weight-normal mb-0">
+          <?= htmlspecialchars($n['mensaje']) ?>
+        </p>
+      </td>
+      <td class="text-sm mb-0">
+        <?php switch ((int)$n['estado']): 
+          case 1: ?>
+            <span class="text-danger text-sm">No leída</span>
+            <?php break; 
+          case 2: ?>
+            <span class="text-secondary text-sm">Leída</span>
+            <?php break; 
+          case 3: ?>
+            <span class="text-success text-sm">
+              <?= $nivel === 3 ? 'Leída y entregada' : 'Entregada' ?>
+            </span>
+            <?php break; 
+        endswitch; ?>
+      </td>
+      <td class="text-sm mb-0">
+        <span class="text-secondary text-sm">
+          <?= date('d-m-Y h:i a', strtotime($n['fecha'])) ?>
+        </span>
+      </td>
+      <td class="text-center">
+        <?php if ($nivel === 3 && in_array((int)$n['estado'], [1, 4])): ?>
+          <form method="post"
+                action="?pagina=notificacion&accion=marcarLeida"
+                class="marcar-leer-form d-inline">
+            <input type="hidden" name="id"
+                   value="<?= $n['id_notificacion'] ?>">
+            <button type="submit"
+                    class="btn btn-info btn-sm"
+                    title="Marcar como leída">
+              <i class="fa-solid fa-envelope-open"></i>
+            </button>
+          </form>
+        <?php elseif ($nivel === 2 && (int)$n['estado'] === 1): ?>
+          <form method="post"
+                action="?pagina=notificacion&accion=marcarLeidaAsesora"
+                class="marcar-leer-asesora-form d-inline">
+            <input type="hidden" name="id"
+                   value="<?= $n['id_notificacion'] ?>">
+            <button type="submit"
+                    class="btn btn-secondary btn-sm"
+                    title="Leer (solo para mí)">
+              <i class="fa-solid fa-envelope-open"></i>
+            </button>
+          </form>
+        <?php endif; ?>
+      </td>
+    </tr>
+    <?php endforeach; endif; ?>
+  </tbody>
+  </table>
+  </div>
+  </div>
 
-                      <?php if ($nivel === 3): ?>
-                        <form method="post"
-                              action="?pagina=notificacion&accion=eliminar"
-                              class="btn-eliminar-form d-inline">
-                          <input type="hidden" name="id"
-                                 value="<?= $n['id_notificaciones'] ?>">
-                          <button type="submit"
-                                  class="btn btn-danger btn-sm"
-                                  title="Eliminar">
-                            <i class="fa-solid fa-trash-can"></i>
-                          </button>
-                        </form>
-                      <?php endif; ?>
-                    </td>
-                  </tr>
-                <?php endforeach; endif; ?>
-              </tbody>
-            </table>
-          </div>
-        </div>
+  </div>
+ </div>
 
-      </div>
-    </div>
-
-    <?php include 'complementos/footer.php'; ?>
+  <?php include 'complementos/footer.php'; ?>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

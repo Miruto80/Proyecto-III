@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 if (empty($_SESSION['id'])) {
     header('Location:?pagina=login');
@@ -10,38 +9,62 @@ $nivel = (int)($_SESSION['nivel_rol'] ?? 0);
 
 require_once 'modelo/notificacion.php';
 require_once 'modelo/tipousuario.php';  // para bitácora
- require_once 'permiso.php';
-$N    = new Notificacion();
-$Bit  = new tipousuario();
+require_once 'permiso.php';
 
-// 1) AJAX GET: conteo de notificaciones nuevas para el rol activo
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['accion'] ?? '') === 'count') {
+$N   = new Notificacion();
+$Bit = new tipousuario();
+
+// 1) AJAX GET → sólo devuelvo el conteo (badge)
+if ($_SERVER['REQUEST_METHOD'] === 'GET'
+    && ($_GET['accion'] ?? '') === 'count')
+{
     header('Content-Type: application/json');
     $N->generarDePedidos();
+
     if ($nivel === 3) {
-        $count = $N->contarNuevas();
+        // Admin cuenta estados 1 y 4
+        $count = $N->contarParaAdmin();
     } elseif ($nivel === 2) {
-        $count = $N->contarParaAsesora();
+        // Asesora cuenta solo estado 1
+        $count = $N->contarNuevas();
     } else {
         $count = 0;
     }
+
     echo json_encode(['count' => $count]);
     exit;
 }
 
-// 2) POST: acciones sobre notificaciones → procesar + bitácora + redirect
+// 2) AJAX GET → nuevos pedidos/reservas
+if ($_SERVER['REQUEST_METHOD'] === 'GET'
+    && ($_GET['accion'] ?? '') === 'nuevos')
+{
+    header('Content-Type: application/json');
+    // Asegura notificaciones antes de listar
+    $N->generarDePedidos();
+
+    $lastId = (int)($_GET['lastId'] ?? 0);
+    $nuevos = $N->getNuevosPedidos($lastId);
+
+    echo json_encode([
+      'count'   => count($nuevos),
+      'pedidos' => $nuevos
+    ]);
+    exit;
+}
+
+// 3) POST → acciones sobre notificaciones
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
     $accion = $_GET['accion'];
-    $id     = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+    $id     = isset($_POST['id']) ? (int)$_POST['id'] : 0;
     $msg    = '';
 
-    // Antes de actualizar, obtengo datos de la notificación
-    if (in_array($accion, ['marcarLeida','entregar','eliminar'])) {
-        // extraigo id_pedido y mensaje para descripción
+    // Preparo datos para bitácora si aplica
+    if (in_array($accion, ['marcarLeida','marcarLeidaAsesora','entregar','eliminar'], true)) {
         $row = (new Conexion())->getConex1()
                ->query("SELECT id_pedido, mensaje 
-                        FROM notificaciones 
-                        WHERE id_notificaciones = {$id}")
+                         FROM notificaciones 
+                        WHERE id_notificacion = {$id}")
                ->fetch(PDO::FETCH_ASSOC);
         $pedido = $row['id_pedido'] ?? '';
         $texto  = $row['mensaje']   ?? '';
@@ -50,12 +73,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
     switch ($accion) {
         case 'vaciar':
             if ($nivel === 3) {
-                $res     = $N->vaciarEntregadas();
-                $deleted = $res['deleted'] ?? 0;
-                $msg     = $deleted
-                         ? "Se vaciaron todas las notificaciones entregadas."
-                         : "No había notificaciones entregadas.";
-                // bitácora
+                $deleted = $N->vaciarEntregadas();
+                $msg = $deleted
+                     ? "Se vaciaron todas las notificaciones entregadas."
+                     : "No había notificaciones entregadas.";
+
                 $Bit->registrarBitacora(json_encode([
                     'id_persona' => $_SESSION['id'],
                     'accion'     => 'Vaciar notificaciones',
@@ -67,9 +89,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
             break;
 
         case 'marcarLeida':
+            // Admin global (1|4 → 2)
             if ($nivel === 3 && $id > 0) {
-                $res = $N->marcarLeida($id);
-                $ok  = $res['ok'];
+                $ok  = $N->marcarLeida($id);
                 $msg = $ok
                      ? 'Notificación marcada como leída.'
                      : 'No se pudo marcar como leída.';
@@ -85,10 +107,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
             }
             break;
 
+        case 'marcarLeidaAsesora':
+            // Asesora solo para ella (1 → 4)
+            if ($nivel === 2 && $id > 0) {
+                $ok  = $N->marcarLeidaAsesora($id);
+                $msg = $ok
+                     ? 'Notificación marcada como leída para ti.'
+                     : 'No se pudo marcar como leída.';
+            } else {
+                $msg = 'No autorizado.';
+            }
+            break;
+
         case 'entregar':
             if ($nivel === 2 && $id > 0) {
-                $res = $N->entregar($id);
-                $ok  = $res['ok'];
+                $ok  = $N->entregar($id);
                 $msg = $ok
                      ? 'Notificación marcada como entregada.'
                      : 'No se pudo marcar como entregada.';
@@ -106,11 +139,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
 
         case 'eliminar':
             if ($nivel === 3 && $id > 0) {
-                $res = $N->eliminar($id);
-                $ok  = $res['ok'];
+                $ok  = $N->eliminar($id);
                 $msg = $ok
                      ? 'Notificación eliminada.'
-                     : $res['error'] ?? 'No se pudo eliminar.';
+                     : 'Solo se pueden borrar notificaciones entregadas.';
                 if ($ok) {
                     $Bit->registrarBitacora(json_encode([
                         'id_persona' => $_SESSION['id'],
@@ -133,48 +165,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
     exit;
 }
 
-// 3) GET normal: regenerar y listar
+// 4) GET normal: regenerar y listar
 $N->generarDePedidos();
-$res = $N->getAll();
-$all = $res['ok'] ? $res['data'] : [];
+$all = $N->getAll();
 
-// filtrar según rol
-if ($nivel === 2) {
-    $notificaciones = array_values(
-        array_filter($all, fn($n) => intval($n['estado']) === 2)
+// FILTRADO según rol:
+//  - Admin ve estados 1 (nuevas) y 4 (leídas solo por asesora)
+//  - Asesora ve solo estado 1
+if ($nivel === 3) {
+    $notificaciones = array_filter(
+      $all,
+      fn($n) => in_array((int)$n['estado'], [1,4])
     );
-} else {
-    $notificaciones = $all;
+}
+elseif ($nivel === 2) {
+    $notificaciones = array_filter(
+      $all,
+      fn($n) => (int)$n['estado'] === 1
+    );
+}
+else {
+    $notificaciones = [];
 }
 
-// conteo de nuevas (badge nav)
+// Conteo para badge nav
 if ($nivel === 3) {
+    $newCount = $N->contarParaAdmin();
+}
+elseif ($nivel === 2) {
     $newCount = $N->contarNuevas();
-} elseif ($nivel === 2) {
-    $newCount = $N->contarParaAsesora();
-} else {
+}
+else {
     $newCount = 0;
 }
 
-// 4) Cargar vista
-
-
-if($_SESSION["nivel_rol"] >=2) { // Validacion si es administrador entra
-       /* $bitacora = [
-            'id_persona' => $_SESSION["id"],
-            'accion' => 'Acceso a Módulo',
-            'descripcion' => 'módulo de Metodo Pago'
-        ];
-        $N->registrarBitacora(json_encode($bitacora));*/
-        // Para GET o acceso normal, se carga la vista con los métodos activos
-            // Carga inicial de la vista con los métodos activos
-       require_once 'vista/notificacion.php';
-
-        } else if ($_SESSION["nivel_rol"] == 1) {
-
-            header("Location: ?pagina=catalogo");
-            exit();
-
-        } else {
-        require_once 'vista/seguridad/privilegio.php';
-    }
+// 5) Cargar vista
+if ($nivel >= 2) {
+    require_once 'vista/notificacion.php';
+} elseif ($nivel === 1) {
+    header("Location: ?pagina=catalogo");
+    exit();
+} else {
+    require_once 'vista/seguridad/privilegio.php';
+}
