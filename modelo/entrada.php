@@ -140,6 +140,7 @@ class Entrada extends Conexion {
             
             $conex->commit();
             $conex = null;
+            
             return ['respuesta' => 1, 'mensaje' => 'Compra registrada exitosamente', 'id_compra' => $id_compra];
             
         } catch (PDOException $e) {
@@ -340,6 +341,7 @@ class Entrada extends Conexion {
             $stmt = $conex->prepare($sql);
             $stmt->execute();
             $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
             $conex = null;
             return ['respuesta' => 1, 'datos' => $resultado];
         } catch (PDOException $e) {
