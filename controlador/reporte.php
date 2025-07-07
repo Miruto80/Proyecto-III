@@ -13,12 +13,19 @@ require_once 'permiso.php';
 
 $objProd = new Producto();
 
-// 1) Recoger y normalizar filtros
-$start   = isset($_REQUEST['f_start']) ? $_REQUEST['f_start'] : null;
-$end     = isset($_REQUEST['f_end'])   ? $_REQUEST['f_end']   : null;
-$prodId  = isset($_REQUEST['f_id'])    ? $_REQUEST['f_id']    : null;
-$provId  = isset($_REQUEST['f_prov'])  ? $_REQUEST['f_prov']  : null;
-$catId   = isset($_REQUEST['f_cat'])   ? $_REQUEST['f_cat']   : null;
+// 1) Recoger valores “raw” (pueden venir como string vacíos)
+$startRaw = $_REQUEST['f_start'] ?? '';
+$endRaw   = $_REQUEST['f_end']   ?? '';
+$prodRaw  = $_REQUEST['f_id']    ?? '';
+$provRaw  = $_REQUEST['f_prov']  ?? '';
+$catRaw   = $_REQUEST['f_cat']   ?? '';
+
+// 2) Normalizar para que sean null o int
+$start  = $startRaw ?: null;
+$end    = $endRaw   ?: null;
+$prodId = is_numeric($prodRaw) ? (int)$prodRaw : null;
+$provId = is_numeric($provRaw) ? (int)$provRaw : null;
+$catId  = is_numeric($catRaw)  ? (int)$catRaw  : null;
 
 // Limitar fechas a hoy y corregir orden
 $today = date('Y-m-d');
