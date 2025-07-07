@@ -1720,25 +1720,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Validaciones específicas para cada método de pago
     function validarCamposMetodoPago() {
-        const metodoSeleccionado = document.querySelector('.metodo-pago-select').value;
-        const option = document.querySelector('.metodo-pago-select option:checked');
-        const nombreMetodo = option ? option.getAttribute('data-nombre') : '';
+        // Obtener todas las filas de métodos de pago
+        const filasMetodosPago = document.querySelectorAll('.metodo-pago-fila');
         
-        if (!nombreMetodo) return true;
-        
-        // Validaciones según el método
-        if (nombreMetodo.toLowerCase().includes('pago móvil') || nombreMetodo.toLowerCase().includes('movil')) {
-            return validarPagoMovil();
-        } else if (nombreMetodo.toLowerCase().includes('punto de venta') || nombreMetodo.toLowerCase().includes('pos')) {
-            return validarPuntoVenta();
-        } else if (nombreMetodo.toLowerCase().includes('transferencia bancaria') || nombreMetodo.toLowerCase().includes('transferencia')) {
-            return validarTransferenciaBancaria();
+        for (let i = 0; i < filasMetodosPago.length; i++) {
+            const fila = filasMetodosPago[i];
+            const select = fila.querySelector('.metodo-pago-select');
+            const montoInput = fila.querySelector('input[name="monto_metodopago[]"]');
+            const option = select ? select.options[select.selectedIndex] : null;
+            const nombreMetodo = option ? option.getAttribute('data-nombre') : '';
+            const monto = montoInput ? parseFloat(montoInput.value) : 0;
+            
+            // Solo validar si hay un método seleccionado Y un monto válido en esta fila
+            if (!nombreMetodo || monto <= 0) continue;
+            
+            // Validaciones según el método específico de esta fila
+            if (nombreMetodo.toLowerCase().includes('pago móvil') || nombreMetodo.toLowerCase().includes('movil')) {
+                if (!validarPagoMovil()) {
+                    return false;
+                }
+            } else if (nombreMetodo.toLowerCase().includes('punto de venta') || nombreMetodo.toLowerCase().includes('pos')) {
+                if (!validarPuntoVenta()) {
+                    return false;
+                }
+            } else if (nombreMetodo.toLowerCase().includes('transferencia bancaria') || nombreMetodo.toLowerCase().includes('transferencia')) {
+                if (!validarTransferenciaBancaria()) {
+                    return false;
+                }
+            }
         }
         
         return true;
     }
 
     function validarPagoMovil() {
+        // Verificar si los campos de pago móvil están visibles
+        const camposPagoMovil = document.getElementById('campos-pago-movil');
+        if (!camposPagoMovil || camposPagoMovil.style.display === 'none') {
+            return true; // Si los campos no están visibles, no hay nada que validar
+        }
+        
         const bancoEmisor = document.querySelector('select[name="banco_emisor_pm"]').value;
         const bancoReceptor = document.querySelector('select[name="banco_receptor_pm"]').value;
         const referencia = document.querySelector('input[name="referencia_pm"]').value;
@@ -1768,6 +1789,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function validarPuntoVenta() {
+        // Verificar si los campos de punto de venta están visibles
+        const camposPuntoVenta = document.getElementById('campos-punto-venta');
+        if (!camposPuntoVenta || camposPuntoVenta.style.display === 'none') {
+            return true; // Si los campos no están visibles, no hay nada que validar
+        }
+        
         const referencia = document.querySelector('input[name="referencia_pv"]').value;
         
         if (!referencia || referencia.length < 4 || referencia.length > 6 || !/^\d+$/.test(referencia)) {
@@ -1779,6 +1806,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function validarTransferenciaBancaria() {
+        // Verificar si los campos de transferencia bancaria están visibles
+        const camposTransferencia = document.getElementById('campos-transferencia');
+        if (!camposTransferencia || camposTransferencia.style.display === 'none') {
+            return true; // Si los campos no están visibles, no hay nada que validar
+        }
+        
         const referencia = document.querySelector('input[name="referencia_tb"]').value;
         
         if (!referencia || referencia.length < 4 || referencia.length > 6 || !/^\d+$/.test(referencia)) {
