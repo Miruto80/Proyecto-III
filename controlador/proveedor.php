@@ -127,5 +127,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
 }
    
 
-// 2) Vista normal: consultar registros y renderizar
 
