@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
         element: '#cardVentas',
         popover: {
           title: 'Reporte de Ventas',
-          description: 'Genera un PDF con un listado de ventas y Top 5 productos vendidos.',
+          description: 'Genera un PDF con un listado de ventas y Top 10 productos vendidos.',
           side: 'bottom'
         }
       },
