@@ -61,6 +61,12 @@
 <?php include 'complementos/sidebar.php' ?>
 
 <main class="main-content position-relative border-radius-lg ">
+<?php if (isset($_SESSION['message'])): ?>
+  <div class="alert alert-<?php echo $_SESSION['message']['icon'] === 'success' ? 'success' : ($_SESSION['message']['icon'] === 'error' ? 'danger' : ($_SESSION['message']['icon'] === 'warning' ? 'warning' : 'info')); ?> text-center" role="alert" style="display:none;">
+    <?php echo htmlspecialchars($_SESSION['message']['text']); ?>
+  </div>
+  <?php unset($_SESSION['message']); ?>
+<?php endif; ?>
 <!-- ||| Navbar ||-->
 <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
   <div class="container-fluid py-1 px-3">

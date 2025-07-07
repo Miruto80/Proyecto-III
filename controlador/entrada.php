@@ -65,6 +65,7 @@ if (isset($_POST['registrar_compra'])) {
                 'text' => $resultadoRegistro['mensaje'],
                 'icon' => ($resultadoRegistro['respuesta'] == 1) ? 'success' : 'error'
             ];
+            
             header("Location: ?pagina=entrada");
             exit;
         }
