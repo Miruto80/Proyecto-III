@@ -154,8 +154,16 @@ function verDetalles(id) {
     },
     success: function(response) {
       Swal.close();
+      
+      // Verificar si hay error en la respuesta
       if(response.error) {
         Swal.fire('Error', response.error, 'error');
+        return;
+      }
+      
+      // Verificar que la respuesta tenga los campos necesarios
+      if(!response.nombre || !response.apellido || !response.nombre_usuario) {
+        Swal.fire('Error', 'Datos incompletos en la respuesta', 'error');
         return;
       }
       
@@ -164,7 +172,7 @@ function verDetalles(id) {
       $('#detalle-rol').text(response.nombre_usuario);
       
       // Información del Evento
-      $('#detalle-fecha').text(response.fecha_hora);
+      $('#detalle-fecha').text(response.fecha_hora || 'No disponible');
       
       // Tipo de Acción con badge
       let badgeClass = '';
@@ -176,10 +184,10 @@ function verDetalles(id) {
         case 'CAMBIO_ESTADO': badgeClass = 'bg-warning'; break;
         default: badgeClass = 'bg-secondary';
       }
-      $('#detalle-accion').html(`<span class="badge ${badgeClass}">${response.accion}</span>`);
+      $('#detalle-accion').html(`<span class="badge ${badgeClass}">${response.accion || 'N/A'}</span>`);
       
       // Descripción con formato
-      let desc = response.descripcion;
+      let desc = response.descripcion || 'Sin descripción';
       if (desc.match(/\[(.*?)\]$/)) {
         let partes = desc.split(/\[(.*?)\]$/);
         $('#detalle-descripcion').html(`
@@ -192,9 +200,31 @@ function verDetalles(id) {
       
       $('#detallesModal').modal('show');
     },
-    error: function() {
+    error: function(xhr, status, error) {
       Swal.close();
-      Swal.fire('Error', 'No se pudieron cargar los detalles', 'error');
+      console.error('Error AJAX:', xhr.responseText);
+      
+      // Intentar parsear la respuesta para obtener más detalles del error
+      let errorMessage = 'No se pudieron cargar los detalles';
+      try {
+        if (xhr.responseText) {
+          // Si la respuesta contiene HTML, mostrar un mensaje genérico
+          if (xhr.responseText.includes('<html') || xhr.responseText.includes('<br />')) {
+            errorMessage = 'Error del servidor. Verifique la conexión.';
+          } else {
+            // Intentar parsear como JSON
+            const errorResponse = JSON.parse(xhr.responseText);
+            if (errorResponse.error) {
+              errorMessage = errorResponse.error;
+            }
+          }
+        }
+      } catch (e) {
+        // Si no se puede parsear, usar el mensaje por defecto
+        errorMessage = 'Error de conexión con el servidor';
+      }
+      
+      Swal.fire('Error', errorMessage, 'error');
     }
   });
 }
