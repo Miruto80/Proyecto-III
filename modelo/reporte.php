@@ -812,16 +812,16 @@ public static function pedidoWeb(
     $where  = ['p.tipo = 2'];
     $params = [];
     if ($origStart && !$origEnd) {
-        $where[]        = 'p.fecha >= :s AND p.fecha <= :e';
-        $params[':s']   = "{$start} 00:00:00";
-        $params[':e']   = "{$end}   23:59:59";
+        $where[]      = 'p.fecha >= :s AND p.fecha <= :e';
+        $params[':s'] = "{$start} 00:00:00";
+        $params[':e'] = "{$end}   23:59:59";
     } elseif (!$origStart && $origEnd) {
-        $where[]        = 'p.fecha <= :e';
-        $params[':e']   = "{$end}   23:59:59";
+        $where[]      = 'p.fecha <= :e';
+        $params[':e'] = "{$end}   23:59:59";
     } elseif ($origStart && $origEnd) {
-        $where[]        = 'p.fecha BETWEEN :s AND :e';
-        $params[':s']   = "{$start} 00:00:00";
-        $params[':e']   = "{$end}   23:59:59";
+        $where[]      = 'p.fecha BETWEEN :s AND :e';
+        $params[':s'] = "{$start} 00:00:00";
+        $params[':e'] = "{$end}   23:59:59";
     }
     if ($prodId) {
         $where[]        = 'pd.id_producto = :pid';
@@ -840,7 +840,7 @@ public static function pedidoWeb(
     try {
         $conex->beginTransaction();
 
-        // ——— Gráfico Top 5 Productos ———
+        // — Gráfico Top 5 Productos — (sin cambios) —
         $sqlG = "
           SELECT pr.nombre AS producto, SUM(pd.cantidad) AS total
             FROM pedido p
@@ -853,15 +853,11 @@ public static function pedidoWeb(
         ";
         $stmtG = $conex->prepare($sqlG);
         $stmtG->execute($params);
-
-        $labels = [];
-        $data   = [];
+        $labels = []; $data = [];
         while ($r = $stmtG->fetch(PDO::FETCH_ASSOC)) {
             $labels[] = htmlspecialchars($r['producto']);
             $data[]   = (int)$r['total'];
         }
-
-        // Crear PNG y codificar en base64
         $imgDir  = __DIR__ . '/../assets/img/grafica_reportes/';
         $imgFile = $imgDir . 'grafico_pedidoweb.png';
         if (!is_dir($imgDir)) mkdir($imgDir, 0777, true);
@@ -879,26 +875,29 @@ public static function pedidoWeb(
               ? 'data:image/png;base64,'.base64_encode(file_get_contents($imgFile))
               : '';
 
-        // ——— Tabla de Pedidos Web ———
+        // — Tabla de Pedidos Web, ahora con columna PRODUCTOS —
         $sqlT = "
           SELECT
-            DATE_FORMAT(p.fecha, '%d/%m/%Y')         AS fecha,
-            p.estado                                AS estado,
-            p.precio_total_bs                       AS total,
-            p.tracking                              AS referencia,
-            CONCAT(c.nombre,' ',c.apellido)         AS usuario,
-            d.telefono                              AS telefono
+            DATE_FORMAT(p.fecha, '%d/%m/%Y')        AS fecha,
+            p.estado                               AS estado,
+            p.precio_total_bs                      AS total,
+            GROUP_CONCAT(
+              DISTINCT pr.nombre
+              ORDER BY pr.nombre
+              SEPARATOR ', '
+            )                                      AS productos,
+            CONCAT(c.nombre,' ',c.apellido)        AS usuario
           FROM pedido p
           LEFT JOIN pedido_detalles pd ON pd.id_pedido   = p.id_pedido
-          LEFT JOIN cliente          c  ON c.id_persona  = p.id_persona
-          LEFT JOIN direccion        d  ON d.id_direccion = p.id_direccion
+          LEFT JOIN productos       pr ON pr.id_producto  = pd.id_producto
+          LEFT JOIN cliente         c  ON c.id_persona   = p.id_persona
           WHERE {$whereSql}
           GROUP BY p.id_pedido
           ORDER BY p.precio_total_bs DESC
         ";
         $stmtT = $conex->prepare($sqlT);
         $stmtT->execute($params);
-        $rows  = $stmtT->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmtT->fetchAll(PDO::FETCH_ASSOC);
 
         // Mapeo de estados
         $estados = [
@@ -906,7 +905,7 @@ public static function pedidoWeb(
           '3'=>'Pendiente envío','4'=>'En camino','5'=>'Enviado'
         ];
 
-        // Texto de filtro
+        // Texto de filtro (igual que antes)
         if (!$origStart && !$origEnd) {
             $filtro = 'Todos los pedidos web';
         } elseif ($origStart && !$origEnd) {
@@ -957,7 +956,7 @@ public static function pedidoWeb(
               : '')
           . '<table><thead><tr>'
           . '<th>Fecha</th><th>Estado</th><th>Total (Bs.)</th>'
-          . '<th>Referencia</th><th>Usuario</th><th>Teléfono</th>'
+          . '<th>Productos</th><th>Usuario</th>'
           . '</tr></thead><tbody>';
         foreach ($rows as $r) {
             $e   = $estados[(string)$r['estado']] ?? 'Desconocido';
@@ -966,9 +965,8 @@ public static function pedidoWeb(
                         <td>{$r['fecha']}</td>
                         <td>{$e}</td>
                         <td>{$tot}</td>
-                        <td>".htmlspecialchars($r['referencia'])."</td>
+                        <td>".htmlspecialchars($r['productos'])."</td>
                         <td>".htmlspecialchars($r['usuario'])."</td>
-                        <td>".htmlspecialchars($r['telefono'])."</td>
                       </tr>";
         }
         $html .= '</tbody></table></main>'
@@ -991,6 +989,7 @@ public static function pedidoWeb(
         $conex = null;
     }
 }
+
 
 
 
