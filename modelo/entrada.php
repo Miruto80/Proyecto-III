@@ -140,6 +140,7 @@ class Entrada extends Conexion {
             
             $conex->commit();
             $conex = null;
+            
             return ['respuesta' => 1, 'mensaje' => 'Compra registrada exitosamente', 'id_compra' => $id_compra];
             
         } catch (PDOException $e) {
@@ -333,13 +334,14 @@ class Entrada extends Conexion {
     private function ejecutarConsulta() {
         $conex = $this->getConex1();
         try {
-            $sql = "SELECT c.id_compra, c.fecha_entrada, p.nombre as proveedor_nombre, p.id_proveedor 
+            $sql = "SELECT c.id_compra, c.fecha_entrada, p.nombre as proveedor_nombre, p.telefono as proveedor_telefono, p.id_proveedor 
                    FROM compra c 
                    JOIN proveedor p ON c.id_proveedor = p.id_proveedor 
                    ORDER BY c.id_compra DESC";
             $stmt = $conex->prepare($sql);
             $stmt->execute();
             $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
             $conex = null;
             return ['respuesta' => 1, 'datos' => $resultado];
         } catch (PDOException $e) {

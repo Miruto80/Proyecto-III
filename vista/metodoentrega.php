@@ -42,9 +42,11 @@
               <div class="card-header pb-0">  
                 <div class="d-sm-flex align-items-center justify-content-between mb-5">
                   <h4 class="mb-0"><i class="fa-solid fa-truck mr-2" style="color: #f6c5b4;"></i> Método de Entrega</h4>
+                   <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(11, 'registrar')): ?>  
                   <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
                     <i class="fas fa-file-medical"></i> Registrar
                   </button>
+                  <?php endif; ?>
                 </div>
                 <div class="table-responsive">
                   <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
@@ -63,15 +65,20 @@
                         <td><?= htmlspecialchars($dato['nombre']); ?></td>
                         <td><?= htmlspecialchars($dato['descripcion']); ?></td>
                         <td>
-<button class="btn btn-primary btn-sm btn-editar"
-  data-id="<?= $dato['id_entrega']; ?>"
-  data-nombre="<?= htmlspecialchars($dato['nombre']); ?>"
-  data-descripcion="<?= htmlspecialchars($dato['descripcion']); ?>">
-  <i class="fas fa-pencil-alt"></i>
-</button>
+                           <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(11, 'editar')): ?>  
+                            <button class="btn btn-primary btn-sm btn-editar"
+                              data-id="<?= $dato['id_entrega']; ?>"
+                              data-nombre="<?= htmlspecialchars($dato['nombre']); ?>"
+                              data-descripcion="<?= htmlspecialchars($dato['descripcion']); ?>">
+                              <i class="fas fa-pencil-alt"></i>
+                            </button>
+                          <?php endif; ?>
+
+                             <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(11, 'eliminar')): ?>  
                           <button class="btn btn-danger btn-sm" onclick="eliminarMetodoEntrega(<?= $dato['id_entrega']; ?>)">
                             <i class="fas fa-trash-alt"></i>
                           </button>
+                            <?php endif; ?>
                         </td>
                       </tr>
                       <?php endforeach; ?>

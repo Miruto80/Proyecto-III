@@ -6,6 +6,7 @@ if (empty($_SESSION['id'])) {
 }
 
 require_once 'modelo/categoria.php';
+require_once 'permiso.php';
 $Cat = new Categoria();
 
 // 0) GET → acceso + bitácora
@@ -82,8 +83,8 @@ if (isset($_POST['eliminar'])) {
     echo json_encode($res);
     exit;
 
-} else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-        $bitacora = [
+} else if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(7, 'ver')) {
+         $bitacora = [
             'id_persona' => $_SESSION["id"],
             'accion' => 'Acceso a Módulo',
             'descripcion' => 'módulo de Categoria'
@@ -91,11 +92,10 @@ if (isset($_POST['eliminar'])) {
         $Cat->registrarBitacora(json_encode($bitacora));
         $categorias = $Cat->consultar();
         require_once 'vista/categoria.php';
-        } else if ($_SESSION["nivel_rol"] == 1) {
-
-            header("Location: ?pagina=catalogo");
-            exit();
-
-        } else {
+} else {
         require_once 'vista/seguridad/privilegio.php';
-    }
+
+} if ($_SESSION["nivel_rol"] == 1) {
+    header("Location: ?pagina=catalogo");
+    exit();
+}

@@ -6,6 +6,7 @@ if (empty($_SESSION["id"])) {
 } /* Validacion URL */
 
 require_once 'modelo/datos.php';
+require_once 'permiso.php';
 
 $objdatos = new Datos();
 

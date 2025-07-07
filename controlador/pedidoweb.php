@@ -6,7 +6,7 @@ if (empty($_SESSION["id"])) {
 }
 
 require_once __DIR__ . '/../modelo/pedidoweb.php';
-
+ require_once 'permiso.php';
 $objPedidoWeb = new pedidoWeb();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -67,15 +67,14 @@ foreach ($pedidos as &$p) {
 }
 
 
-if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
+if ($_SESSION["nivel_rol"] >=2 && tieneAcceso(9, 'ver')) {
+     
+require_once 'vista/pedidoweb.php';
+} else {
+        require_once 'vista/seguridad/privilegio.php';
+
+} if ($_SESSION["nivel_rol"] == 1) {
     header("Location: ?pagina=catalogo");
     exit();
-
 }
-/* $bitacora = [
-        'id_persona' => $_SESSION["id"],
-        'accion' => 'Acceso a Módulo',
-        'descripcion' => 'módulo de PedidoWeb'
-    ];
-    $objPedidoWeb->registrarBitacora(json_encode($bitacora));*/
-require_once 'vista/pedidoweb.php';
+

@@ -231,9 +231,18 @@ function validarkeyup(er, etiqueta, etiquetamensaje, mensaje) {
     }
 }
 
-// al final de assets/js/proveedor.js
+// 7) Toggle collapse icons (agrega esto al final de tu $(function(){…}))
+document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(el => {
+  el.addEventListener('click', function() {
+    const icon = this.querySelector('.fas.fa-chevron-down, .fas.fa-chevron-up');
+    if (!icon) return;
+    icon.classList.toggle('fa-chevron-down');
+    icon.classList.toggle('fa-chevron-up');
+  });
+});
 
-// Inicializar Driver.js versión 1 (igual a Producto)
+
+// al final de assets/js/proveedor.js, dentro de tu $('#btnAyuda').on('click', …)
 $('#btnAyuda').on('click', function() {
   const DriverClass = window.driver.js.driver;
   const driverObj = new DriverClass({
@@ -245,46 +254,37 @@ $('#btnAyuda').on('click', function() {
     steps: [
       {
         element: '.table-color',
-        popover: {
-          title: 'Tabla de Proveedores',
-          description: 'Aquí ves la lista de proveedores activos.',
-          side: 'top'
-        }
+        popover: { title: 'Tabla de Proveedores', description: 'Aquí ves la lista de proveedores registrados.', side: 'top' }
       },
       {
         element: '#btnAbrirRegistrar',
+        popover: { title: 'Registrar Proveedor', description: 'Abre el modal para registrar un nuevo proveedor.', side: 'bottom' }
+      },
+      {
+        // NUEVO PASO para el botón Ver Detalles
+        element: 'button[data-bs-target^="#verDetallesModal"]',
         popover: {
-          title: 'Registrar Proveedor',
-          description: 'Abre el modal para registrar un nuevo proveedor.',
-          side: 'bottom'
+          title: 'Ver Detalles',
+          description: 'Haz clic aquí para observar toda la información del proveedor.',
+          side: 'left'
         }
       },
       {
         element: '.modificar',
-        popover: {
-          title: 'Editar Proveedor',
-          description: 'Haz clic aquí para modificar los datos de un proveedor.',
-          side: 'left'
-        }
+        popover: { title: 'Editar Proveedor', description: 'Haz clic aquí para modificar los datos de un proveedor.', side: 'left' }
       },
       {
         element: '.eliminar',
-        popover: {
-          title: 'Eliminar Proveedor',
-          description: 'Elimina un proveedor de la lista.',
-          side: 'left'
-        }
+        popover: { title: 'Eliminar Proveedor', description: 'Elimina un proveedor de la lista.', side: 'left' }
       },
       {
-        popover: {
-          title: '¡Eso es todo!',
-        description: 'Ahora ya sabes como funciona este modulo.'
-        }
+        popover: { title: '¡Eso es todo!', description: 'Ahora ya sabes cómo funciona este módulo.' }
       }
     ]
   });
-
   driverObj.drive();
 });
+
+
 
 });

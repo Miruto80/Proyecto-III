@@ -305,12 +305,18 @@ class Salida extends Conexion {
             throw new Exception('Formato de correo no válido');
         }
 
+        // Verificar si la cédula ya existe
+        if ($this->existeCedula($datos)) {
+            throw new Exception('La cédula ya está registrada');
+        }
+
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
             
-            $sql = "INSERT INTO cliente (cedula, nombre, apellido, telefono, correo, id_tipo, estatus) 
-                    VALUES (:cedula, :nombre, :apellido, :telefono, :correo, 2, 1)";
+            // Corregir la consulta para que coincida con la estructura de la tabla cliente
+            $sql = "INSERT INTO cliente (cedula, nombre, apellido, telefono, correo, estatus) 
+                    VALUES (:cedula, :nombre, :apellido, :telefono, :correo, 1)";
             
             $stmt = $conex->prepare($sql);
             $stmt->execute($datos);
@@ -437,14 +443,91 @@ class Salida extends Conexion {
         }
     }
 
+    public function consultarClienteDetalle($id_pedido) {
+        if (!$id_pedido || $id_pedido <= 0) {
+            throw new Exception('ID de pedido no válido');
+        }
+
+        $conex = $this->getConex1();
+        try {
+            $sql = "SELECT c.cedula, c.nombre, c.apellido, c.telefono, c.correo 
+                     FROM cliente c 
+                     JOIN pedido p ON c.id_persona = p.id_persona 
+                     WHERE p.id_pedido = :id_pedido";
+            
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_pedido' => $id_pedido]);
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            $conex = null;
+            return $resultado;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    public function consultarMetodosPagoVenta($id_pedido) {
+        if (!$id_pedido || $id_pedido <= 0) {
+            throw new Exception('ID de pedido no válido');
+        }
+
+        $conex = $this->getConex1();
+        try {
+            // Consulta para obtener métodos de pago de la venta usando la tabla detalle_pago existente
+            $sql = "SELECT mp.nombre as nombre_metodo, dp.monto_usd, dp.monto as monto_bs, 
+                           dp.referencia_bancaria as referencia, dp.banco as banco_emisor, 
+                           dp.banco_destino as banco_receptor, dp.telefono_emisor
+                    FROM detalle_pago dp 
+                    JOIN metodo_pago mp ON dp.id_metodopago = mp.id_metodopago 
+                    WHERE dp.id_pedido = :id_pedido";
+            
+            $stmt = $conex->prepare($sql);
+            $stmt->execute(['id_pedido' => $id_pedido]);
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return $resultado;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            return [];
+        }
+    }
+
     // NUEVOS MÉTODOS PÚBLICOS PARA CONTROLADOR
     public function registrarVentaPublico($datos) {
         return $this->registrarVentaPrivado($datos);
     }
     private function registrarVentaPrivado($datos) {
+        // Validaciones previas
+        if (!isset($datos['id_persona']) || $datos['id_persona'] <= 0) {
+            throw new Exception('ID de persona no válido');
+        }
+        
+        if (!isset($datos['precio_total']) || $datos['precio_total'] <= 0) {
+            throw new Exception('Precio total no válido');
+        }
+        
+        if (!isset($datos['detalles']) || empty($datos['detalles'])) {
+            throw new Exception('No hay productos en la venta');
+        }
+
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
+            
+            // Verificar que el cliente existe
+            $sql_verificar_cliente = "SELECT id_persona FROM cliente WHERE id_persona = ? AND estatus = 1";
+            $stmt_verificar_cliente = $conex->prepare($sql_verificar_cliente);
+            $stmt_verificar_cliente->execute([$datos['id_persona']]);
+            
+            if (!$stmt_verificar_cliente->fetch()) {
+                throw new Exception('El cliente no existe o está inactivo');
+            }
+
+            // Insertar cabecera del pedido
             $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total_usd, id_persona) VALUES ('1', NOW(), '1', ?, ?)";
             $params = [
                 $datos['precio_total'],
@@ -453,7 +536,35 @@ class Salida extends Conexion {
             $stmt = $conex->prepare($sql);
             $stmt->execute($params);
             $id_pedido = $conex->lastInsertId();
+
+            // Procesar detalles de productos
             foreach ($datos['detalles'] as $detalle) {
+                // Validar datos del detalle
+                if (!isset($detalle['id_producto']) || $detalle['id_producto'] <= 0) {
+                    throw new Exception('ID de producto no válido en detalle');
+                }
+                if (!isset($detalle['cantidad']) || $detalle['cantidad'] <= 0) {
+                    throw new Exception('Cantidad no válida en detalle');
+                }
+                if (!isset($detalle['precio_unitario']) || $detalle['precio_unitario'] <= 0) {
+                    throw new Exception('Precio unitario no válido en detalle');
+                }
+
+                // Verificar que el producto existe y tiene stock
+                $sql_verificar_producto = "SELECT stock_disponible, nombre FROM productos WHERE id_producto = ? AND estatus = 1";
+                $stmt_verificar_producto = $conex->prepare($sql_verificar_producto);
+                $stmt_verificar_producto->execute([$detalle['id_producto']]);
+                $producto = $stmt_verificar_producto->fetch(PDO::FETCH_ASSOC);
+                
+                if (!$producto) {
+                    throw new Exception('El producto no existe o está inactivo');
+                }
+                
+                if ($producto['stock_disponible'] < $detalle['cantidad']) {
+                    throw new Exception('Stock insuficiente para el producto: ' . $producto['nombre']);
+                }
+
+                // Insertar detalle
                 $sql_det = "INSERT INTO pedido_detalles(cantidad, precio_unitario, id_pedido, id_producto) VALUES (?, ?, ?, ?)";
                 $params_det = [
                     $detalle['cantidad'],
@@ -463,10 +574,18 @@ class Salida extends Conexion {
                 ];
                 $stmt_det = $conex->prepare($sql_det);
                 $stmt_det->execute($params_det);
+
+                // Actualizar stock
                 $sql_stock = "UPDATE productos SET stock_disponible = stock_disponible - ? WHERE id_producto = ?";
                 $stmt_stock = $conex->prepare($sql_stock);
                 $stmt_stock->execute([$detalle['cantidad'], $detalle['id_producto']]);
             }
+
+            // Registrar métodos de pago si existen
+            if (isset($datos['metodos_pago']) && !empty($datos['metodos_pago'])) {
+                $this->registrarMetodosPagoVenta($id_pedido, $datos['metodos_pago'], $conex);
+            }
+
             // Bitácora
             $bitacora = [
                 'id_persona' => $datos['id_persona'],
@@ -474,6 +593,7 @@ class Salida extends Conexion {
                 'descripcion' => 'Se registró una nueva venta con ID: ' . $id_pedido
             ];
             $this->registrarBitacora(json_encode($bitacora));
+            
             $conex->commit();
             $conex = null;
             return ['respuesta' => 1, 'id_pedido' => $id_pedido];
@@ -485,6 +605,41 @@ class Salida extends Conexion {
             return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
         }
     }
+
+    // Método para registrar los métodos de pago de una venta
+    private function registrarMetodosPagoVenta($id_pedido, $metodos_pago, $conex) {
+        foreach ($metodos_pago as $metodo) {
+            // Validar datos del método de pago
+            if (!isset($metodo['id_metodopago']) || $metodo['id_metodopago'] <= 0) {
+                throw new Exception('ID de método de pago no válido');
+            }
+            
+            if (!isset($metodo['monto_usd']) || $metodo['monto_usd'] <= 0) {
+                throw new Exception('Monto USD no válido para método de pago');
+            }
+
+            // Insertar método de pago usando la tabla detalle_pago existente
+            $sql = "INSERT INTO detalle_pago (
+                id_pedido, id_metodopago, monto_usd, monto, 
+                referencia_bancaria, telefono_emisor, banco_destino, banco
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            
+            $params = [
+                $id_pedido,
+                $metodo['id_metodopago'],
+                $metodo['monto_usd'],
+                $metodo['monto_bs'] ?? 0.00,
+                $metodo['referencia'] ?? null,
+                $metodo['telefono_emisor'] ?? null,
+                $metodo['banco_receptor'] ?? null,
+                $metodo['banco_emisor'] ?? null
+            ];
+            
+            $stmt = $conex->prepare($sql);
+            $stmt->execute($params);
+        }
+    }
+
     public function actualizarVentaPublico($datos) {
         return $this->actualizarVentaPrivado($datos);
     }
@@ -586,9 +741,42 @@ class Salida extends Conexion {
         return $this->registrarClientePrivado($datos);
     }
     private function registrarClientePrivado($datos) {
+        // Validar datos de entrada
+        $campos_requeridos = ['cedula', 'nombre', 'apellido', 'telefono', 'correo'];
+        foreach ($campos_requeridos as $campo) {
+            if (!isset($datos[$campo]) || empty($datos[$campo])) {
+                throw new Exception("Campo {$campo} es obligatorio");
+            }
+        }
+
+        // Validar formato de cédula
+        if (!preg_match('/^[0-9]{7,8}$/', $datos['cedula'])) {
+            throw new Exception('Formato de cédula no válido');
+        }
+
+        // Validar formato de teléfono
+        if (!preg_match('/^0[0-9]{10}$/', $datos['telefono'])) {
+            throw new Exception('Formato de teléfono no válido');
+        }
+
+        // Validar formato de correo
+        if (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
+            throw new Exception('Formato de correo no válido');
+        }
+
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
+            
+            // Verificar si la cédula ya existe
+            $sql_verificar = "SELECT cedula FROM cliente WHERE cedula = ?";
+            $stmt_verificar = $conex->prepare($sql_verificar);
+            $stmt_verificar->execute([$datos['cedula']]);
+            
+            if ($stmt_verificar->fetch()) {
+                throw new Exception('La cédula ya está registrada');
+            }
+            
             $sql = "INSERT INTO cliente (cedula, nombre, apellido, telefono, correo, estatus) VALUES (?, ?, ?, ?, ?, 1)";
             $params = [
                 $datos['cedula'],
@@ -600,6 +788,7 @@ class Salida extends Conexion {
             $stmt = $conex->prepare($sql);
             $stmt->execute($params);
             $id_cliente = $conex->lastInsertId();
+            
             // Bitácora
             $bitacora = [
                 'id_persona' => $_SESSION['id'] ?? null,

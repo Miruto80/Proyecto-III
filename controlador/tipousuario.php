@@ -8,6 +8,7 @@ if (empty($_SESSION['id'])) {
 }
 
 require_once 'modelo/tipousuario.php';
+ require_once 'permiso.php';
 $obj = new tipousuario();
 
 // 0) Bitácora de acceso al módulo (GET)
@@ -121,20 +122,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode($res);
         exit;
     }
-} else  if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-        $bitacora = [
-            'id_persona' => $_SESSION["id"],
-            'accion' => 'Acceso a Módulo',
-            'descripcion' => 'módulo de Tipo Usuario'
-        ];
-        $obj->registrarBitacora(json_encode($bitacora));
+} if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(14, 'ver')) {
+      
         $registro = $obj->consultar();
         require_once 'vista/tipousuario.php';
-        } else if ($_SESSION["nivel_rol"] == 1) {
-
-            header("Location: ?pagina=catalogo");
-            exit();
-
-        } else {
+} else {
         require_once 'vista/seguridad/privilegio.php';
-    }
+
+} if ($_SESSION["nivel_rol"] == 1) {
+    header("Location: ?pagina=catalogo");
+    exit();
+}

@@ -23,6 +23,31 @@ deleteButtons.forEach(function (button) {
     });
   });
 });
+function validarCampo(campo, regex, textoError, mensaje) {
+  const valor = campo.val();
+
+  if (campo.is("select")) {
+   
+    if (valor === "") {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    } else {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    }
+  } else {
+   
+    if (regex.test(valor)) {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    } else {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    }
+  }
+}
+
+
 
 document.addEventListener("DOMContentLoaded", function() {
   var editarModal = document.getElementById("editarModal");
@@ -43,6 +68,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("modalco").value = correo;
     document.getElementById("modalrol").value = id_tipo;
     document.getElementById("modalrol").textContent = nombre_rol;
+    document.getElementById("rolactual").value = id_tipo;
 
     document.getElementById("modalestatus").value = estatus;
     document.getElementById("modalestatus").textContent = estatus == "1" ? "Activo - Actual" : estatus == "2" ? "Inactivo - Actual" : "Desconocido";
@@ -77,33 +103,44 @@ mensaje){
 $(document).ready(function() {
 
 
- function validarCampos() {
+function validarCampos() {
     let cedulaValida = /^[0-9]{7,8}$/.test($("#cedula").val());
-    let telefonoValido = /^[0-9]{4}[-]{1}[0-9]{7}$/.test($("#telefono").val());
+    let telefonoValido = /^[0-9]{4}-[0-9]{7}$/.test($("#telefono").val());
     let correoValido = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/.test($("#correo").val());
-    let nombreValido = /^[a-zA-Z]{3,50}$/.test($("#nombre").val());
-    let apellidoValido = /^[a-zA-Z]{3,50}$/.test($("#apellido").val());
+    let nombreValido = /^[a-zA-Z]{3,30}$/.test($("#nombre").val());
+    let apellidoValido = /^[a-zA-Z]{3,30}$/.test($("#apellido").val());
     let claveValida = /^.{8,16}$/.test($("#clave").val());
 
-    function aplicarEstado(input, valido, feedback) {
+    let confirmarClave = $("#confirmar_clave").val();
+    let confirmarValida = /^.{8,16}$/.test(confirmarClave) && confirmarClave === $("#clave").val();
+
+    let rolValido = $("#rolSelect").val() !== "";
+
+    function aplicarEstado(input, valido, feedback, mensaje = "") {
         if (valido) {
             $(input).removeClass("is-invalid").addClass("is-valid");
             $(feedback).hide();
         } else {
             $(input).removeClass("is-valid").addClass("is-invalid");
-            $(feedback).show();
+            $(feedback).text(mensaje).show();
         }
     }
 
-    aplicarEstado("#cedula", cedulaValida, "#textocedula");
-    aplicarEstado("#telefono", telefonoValido, "#textotelefono");
-    aplicarEstado("#correo", correoValido, "#textocorreo");
-    aplicarEstado("#nombre", nombreValido, "#textonombre");
-    aplicarEstado("#apellido", apellidoValido, "#textoapellido");
-    aplicarEstado("#clave", claveValida, "#textoclave");
+    aplicarEstado("#cedula", cedulaValida, "#textocedula", "Formato: entre 7 y 8 dígitos.");
+    aplicarEstado("#telefono", telefonoValido, "#textotelefono", "Formato: 0000-0000000");
+    aplicarEstado("#correo", correoValido, "#textocorreo", "Debe incluir @ y ser válido.");
+    aplicarEstado("#nombre", nombreValido, "#textonombre", "Solo letras (3 a 50 caracteres)");
+    aplicarEstado("#apellido", apellidoValido, "#textoapellido", "Solo letras (3 a 50 caracteres)");
+    aplicarEstado("#clave", claveValida, "#textoclave", "la clave es entre 8 y 16 caracteres");
+    aplicarEstado("#confirmar_clave", confirmarValida, "#textoconfirmar", "Las contraseñas no coinciden o no cumplen con el formato");
+    aplicarEstado("#rolSelect", rolValido, "#textorol", "Por favor, seleccione un rol válido.");
 
-    return cedulaValida && telefonoValido && correoValido && nombreValido && apellidoValido && claveValida;
+    return cedulaValida && telefonoValido && correoValido &&
+           nombreValido && apellidoValido && claveValida &&
+           confirmarValida && rolValido;
 }
+
+
 
 $('#registrar').on("click", function () {
     if (validarCampos()) {
@@ -114,11 +151,28 @@ $('#registrar').on("click", function () {
 });
 
 
+$('#actualizar_permisos').on("click", function () {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Esto actualizará los permisos del usuario.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, actualizar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            var datos = new FormData($('#forpermiso')[0]);
+            datos.append('actualizar_permisos', 'actualizar_permisos');
+            enviaAjax(datos);
+        }
+    });
+});
+
   
   $('#actualizar').on("click", function () {
     Swal.fire({
       title: '¿Desea Cambiar estos datos del Usuario?',
-      text: '',
+      text: 'En caso de Cambiar el Rol, los permiso cambian a sus permisos Predeterminado',
       icon: 'question',
       showCancelButton: true,
       color: "#00000",
@@ -158,14 +212,16 @@ $('#registrar').on("click", function () {
     });
  });
 
-
+  $("#rolSelect").on("change", function () {
+    validarCampo($(this), null, $("#textorol"), "Por favor, seleccione un rol válido.");
+  });
 
   $("#cedula").on("keypress",function(e){
     validarkeypress(/^[0-9\b]*$/,e);
   });
   
-  $("#cedula").on("keyup",function(){
-    validarkeyup(/^[0-9]{7,8}$/,$(this),
+  $("#cedula").on("keyup", function () {
+    validarCampo($(this),/^[0-9]{7,8}$/,
     $("#textocedula"),"El formato debe ser 1222333");
   });
 
@@ -173,10 +229,10 @@ $('#registrar').on("click", function () {
    $("#telefono").on("keypress", function (e) {
       validarkeypress(/^[0-9-\-]*$/, e);
     });
-  
+
     $("#telefono").on("keyup", function () {
-      validarkeyup(/^[0-9]{4}[-]{1}[0-9]{7}$/, $(this),
-        $("#textotelefono"), "El formato debe ser 0000-0000000");
+      validarCampo($(this),/^[0-9]{4}[-]{1}[0-9]{7}$/,
+      $("#textotelefono"), "El formato debe ser 0000-0000000");
     });
   
     $("#telefono").on("input", function () {
@@ -193,8 +249,7 @@ $('#registrar').on("click", function () {
     });
 
     $("#correo").on("keyup", function () {
-        validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $(this),
-          $("#textocorreo"), "El formato debe incluir @ y ser válido.");
+      validarCampo($(this), /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $("#textocorreo"), "El formato debe incluir @ y ser válido.");
     });
 
     $("#nombre").on("keypress", function (e) {
@@ -202,7 +257,7 @@ $('#registrar').on("click", function () {
     });
 
     $("#nombre").on("keyup", function () {
-      validarkeyup(/^[a-zA-Z]{3,50}$/, $(this),
+      validarCampo($(this),/^[a-zA-Z]{3,30}$/,
       $("#textonombre"), "El formato debe ser solo letras");
     });
 
@@ -211,16 +266,27 @@ $('#registrar').on("click", function () {
     });
 
     $("#apellido").on("keyup", function () {
-       validarkeyup(/^[a-z-A-Z]{3,50}$/, $(this),
+      validarCampo($(this),/^[a-z-A-Z]{3,30}$/,
       $("#textoapellido"), "El formato debe ser solo letras");
     });
+
 
     $("#clave").on("keypress", function(e) {
        validarkeyup(/^.{8,16}$/, e);
     });
     
+
     $("#clave").on("keyup", function() {
-      validarkeyup(/^.{8,16}$/, $(this), $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+      validarCampo($(this),/^.{8,16}$/, $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+    });
+
+     $("#confirmar_clave").on("keypress", function(e) {
+       validarkeyup(/^.{8,16}$/, e);
+    });
+    
+
+    $("#confirmar_clave").on("keyup", function() {
+      validarCampo($(this),/^.{8,16}$/, $("#textoconfirmar"), "El formato debe ser entre 8 y 16 caracteres");
     });
 
 
@@ -311,6 +377,15 @@ function enviaAjax(datos) {
                 } else {
                   muestraMensaje("error", 2000, lee.text,"" );
                 }
+              } else if (lee.accion == 'actualizar_permisos') {
+                if (lee.respuesta == 1) {
+                  muestraMensaje("success", 1000, "Se ha modificado los Permisos con éxito", "Los datos se han modificado correctamente ");
+                  setTimeout(function () {
+                     location = '?pagina=usuario';
+                  }, 1000);
+                } else {
+                  muestraMensaje("error", 2000, lee.text,"" );
+                }
               }
   
         } catch (e) {
@@ -343,7 +418,8 @@ function enviaAjax(datos) {
     steps: [
       { element: '.table-color', popover: { title: 'Tabla de usuario', description: 'Aqui es donde se guardaran los registros de usuario', side: "left", }},
       { element: '.registrar', popover: { title: 'Boton de registrar', description: 'Darle click aqui te llevara a un modal para poder registrar', side: "bottom", align: 'start' }},
-      { element: '.informacion', popover: { title: 'Mas informacion del Usuario', description: 'Este botón te permite ver mas información de un usuario registrado.', side: "left", align: 'start' }},
+      { element: '.informacion', popover: { title: 'Mas informacion del Usuario', description: 'Este botón te permite ver mas información de los usuario registrado.', side: "left", align: 'start' }},
+      { element: '.permisotur', popover: { title: 'Ver Permiso del Usuario', description: 'Este botón te permite ver mas información de los permiso del  usuario. Y se puede Modificar los permiso', side: "left", align: 'start' }},
       { element: '.modificar', popover: { title: 'Modificar Usuario', description: 'Este botón te permite editar la información de un usuario registrado.', side: "left", align: 'start' }},
       { element: '.eliminar', popover: { title: 'Eliminar Usuario', description: 'Usa este botón para eliminar un usuario de la lista.', side: "left", align: 'start' }},
       { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un usuario en la tabla', side: "right", align: 'start' }},

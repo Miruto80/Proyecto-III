@@ -49,20 +49,22 @@
 
     
        <!-- Button que abre el Modal N1 Registro -->
+       <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'registrar')): ?>
           <button type="button" class="btn btn-success registrar" data-bs-toggle="modal" data-bs-target="#registro">
             <span class="icon text-white">
             <i class="fas fa-file-medical me-2"></i>
             </span>
             <span class="text-white" id="btnAbrirRegistrar">Registrar</span>
           </button>
-
-          
+         <?php endif; ?>
+         
   <button type="button" class="btn btn-primary" id="ayuda">
     <span class="icon text-white">
       <i class="fas fa-info-circle me-2"></i>
     </span>
     <span class="text-white">Ayuda</span>
   </button>
+
       </div>
           
   </div>  
@@ -75,6 +77,9 @@
                   <th class="text-white text-center">Nombre</th>
                   <th class="text-white text-center">Apellido</th>
                   <th class="text-white text-center">Rol</th>
+                    <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'especial')): ?>
+                  <th class="text-white text-center">Permisos</th>
+                    <?php endif; ?>
                   <th class="text-white text-center">Estatus</th>
                   <th class="text-white text-center">Acción</th>
                 </tr>
@@ -83,21 +88,36 @@
               <?php
                 $estatus_texto = array(
                     1 => "Activo",
-                    2 => "Inactivo"
+                    2 => "Inactivo",
+                    3 => "Online"
                   );
               
                   $estatus_classes = array(
                     1 =>  'badge bg-success',
-                    2 =>  'badge bg-warning text-dark'
+                    2 =>  'badge bg-warning',
+                    3 =>  'badge bg-primary'
                   );
 
                   foreach ($registro as $dato){
+                    if ($dato['id_persona'] == 1) {
+                    continue;
+                     }
                 ?>
                 <tr>
                   <td><?php echo $dato['cedula']?></td>
                   <td><?php echo $dato['nombre']?></td>
                   <td><?php echo $dato['apellido']?></td>
                   <td><?php echo $dato['nombre_tipo']?></td>
+                  
+                      <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'especial')): ?>
+                    <td>
+                        <form action="?pagina=usuario" method="POST">
+                          <button type="submit" class="btn btn-warning btn-sm permisotur" name="modificar" value="<?php echo $dato['id_persona']?>">
+                              <i class="fa-solid fa-users-gear" title="Modificar Permiso"></i>
+                          </button>  
+                      </form>      
+                  </td>
+                   <?php endif; ?>
                   <td>
                       <span class="<?= $estatus_classes[$dato['estatus']] ?>">
                         <?php echo $estatus_texto[$dato['estatus']] ?>
@@ -105,9 +125,9 @@
                   </td>
 
                   <td>
-                    
 
                     <form method="POST" action="?pagina=usuario">
+                   
                       <button type="button" class="btn btn-info btn-sm informacion"
                       data-bs-toggle="modal"
                       data-bs-target="#infoModal"
@@ -120,7 +140,8 @@
                     >
                       <i class="fas fa-eye" title="Ver Detalles"></i>
                     </button>
-
+                
+                      <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'editar')): ?>
                       <button type="button" class="btn btn-primary btn-sm modificar"
                       data-bs-toggle="modal"
                       data-bs-target="#editarModal"
@@ -134,11 +155,15 @@
                    
                   <i class="fas fa-pencil-alt" title="Editar"></i> 
                 </button>
-                        
+                    <?php endif; ?>
+                          <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(13, 'eliminar')): ?>
                         <button name="eliminar" class="btn btn-danger btn-sm eliminar" value="<?php echo $dato['id_persona']?>">
                           <i class="fas fa-trash-alt" title="Eliminar"> </i>
                         </button>
                         <input type="hidden" name="eliminar" value="<?php echo $dato['id_persona']?>">
+                    
+                        <?php endif; ?>
+
                      </form>
                   </td>
                 </tr>
@@ -164,100 +189,106 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <div class="modal-body"> <!-- Modal contenido -->
-      
-      <form action="?pagina=usuario" method="POST" id="u" autocomplete="off">
-
-
-        <div class="row">  <!-- F1 -->
-          <div class="col">
-            <label>NOMBRE</label>
-              <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user"></i></span>
-                  <input type="text" class="form-control "name="nombre"  id="nombre" placeholder="nombre: juan">
-              </div>
-               <span id="textonombre" class="alert-text"></span>
-          </div>
-
-          <div class="col">
-             <label>APELLIDO</label>
-               <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user"></i></span>
-                   <input type="text" class="form-control "name="apellido"  id="apellido" placeholder="apellido: perez">
-              </div>
-               <span id="textoapellido" class="alert-text"></span>
-          </div>
+      <div class="modal-body">
+  <form action="?pagina=usuario" method="POST" id="u" autocomplete="off">
+    <div class="row g-3">
+      <!-- F1: Nombre y Apellido -->
+      <div class="col-md-6">
+        <label for="nombre">NOMBRE</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+          <input type="text" class="form-control" name="nombre" id="nombre" placeholder="nombre: juan">
         </div>
+        <span id="textonombre" class="alert-text text-danger"></span>
+      </div>
 
-          <div class="row">  <!-- F2 -->
-          <div class="col">
-             <label>N° DE CEDULA</label>
-                 <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-id-card"></i></span>
-                  <input type="text" class="form-control "name="cedula"  id="cedula" placeholder="cedula: 11222333">
-              </div>
-         
-               <span id="textocedula" class="alert-text"></span>
-          </div>
-          <div class="col">
-             <label>ROL</label>
-              <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user-tag"></i></span>
-                    <select class="form-select" name="id_rol" required>
-                      <option value="">Seleccione una Rol:</option>
-                        <?php foreach($rol as $item) {?>
-                      <option value="<?php echo $item['id_rol'];?>"> <?php echo $item['nombre']." - Nivel ".$item['nivel'];?> </option>
-                        <?php } ?>
-                    </select>
-              </div>
-             
-          </div>
+      <div class="col-md-6">
+        <label for="apellido">APELLIDO</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+          <input type="text" class="form-control" name="apellido" id="apellido" placeholder="apellido: perez">
         </div>
+        <span id="textoapellido" class="alert-text text-danger"></span>
+      </div>
 
-          <div class="row">  <!-- F3 -->
-          <div class="col">
-              <label>TELEFONO</label>
-                <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-mobile-screen-button"></i></span>
-                  <input type="text" class="form-control "name="telefono"  id="telefono" placeholder="Telefono: 04240001122">
-              </div>  
-               <span id="textotelefono" class="alert-text"></span>
-          </div>
-          <div class="col">
-              <label>CORREO</label>
-              <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-envelope"></i></span>
-                  <input type="text" class="form-control "name="correo"  id="correo" placeholder="Correo: tucorreo@dominio.com">
-              </div>  
-              <span id="textocorreo" class="alert-text"></span>
-          </div>
+      <!-- F2: Cédula y Rol -->
+      <div class="col-md-6">
+        <label for="cedula">N° DE CÉDULA</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-id-card"></i></span>
+          <input type="text" class="form-control" name="cedula" id="cedula" placeholder="cedula: 11222333">
         </div>
+        <span id="textocedula" class="alert-text text-danger"></span>
+      </div>
 
-          <div class="row">  <!-- F4 -->
-          <div class="col">
-             <label>CONSTRASEÑA</label>
-              <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-unlock"></i></span>
-                  <input type="text" class="form-control "name="clave"  id="clave" placeholder="Constraseña:">
-              </div>  
-              <span id="textoclave" class="alert-text"></span>
-          </div>
-        
+      <div class="col-md-6">
+        <label for="rolSelect">ROL</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-user-tag"></i></span>
+          <select class="form-select" name="id_rol" id="rolSelect" required>
+            <option value="">Seleccione un Rol:</option>
+            <?php foreach($rol as $item) {?>
+            <option value="<?php echo $item['id_rol'];?>" data-nivel="<?php echo $item['nivel'];?>">
+              <?php echo $item['nombre']." - Nivel ".$item['nivel'];?>
+            </option>
+            <?php } ?>
+          </select>
         </div>
+         <span id="textorol" class="alert-text text-danger"></span>
+        <input type="hidden" id="nivelHidden" name="nivel">
+      </div>
 
-
-      <br>
-
-      <div class="text-center">
-        <button type="button" class="btn btn-success" id="registrar"> <i class="fa-solid fa-floppy-disk"></i> Registrar</button>
-        <button type="reset" class="btn btn-primary"> <i class="fa-solid fa-eraser"></i>  Limpiar</button>
+      <!-- F3: Teléfono y Correo -->
+      <div class="col-md-6">
+        <label for="telefono">TELÉFONO</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-mobile-screen-button"></i></span>
+          <input type="text" class="form-control" name="telefono" id="telefono" placeholder="Telefono: 04240001122">
         </div>
+        <span id="textotelefono" class="alert-text text-danger"></span>
+      </div>
 
+      <div class="col-md-6 ">
+        <label for="correo">CORREO</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+          <input type="text" class="form-control" name="correo" id="correo" placeholder="Correo: tucorreo@dominio.com">
+        </div>
+        <span id="textocorreo" class="alert-text text-danger"></span>
+      </div>
 
+      <!-- F4: Contraseña -->
+      <div class="col-md-6">
+        <label for="clave">CONTRASEÑA</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-unlock"></i></span>
+          <input type="text" class="form-control" name="clave" id="clave" placeholder="Contraseña:">
+        </div>
+        <span id="textoclave" class="alert-text text-danger"></span>
+      </div>
 
-      </form>
+      <div class="col-md-6">
+        <label for="confirmar_clave">CONFIRMAR CONTRASEÑA</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-unlock-keyhole"></i></span>
+          <input type="text" class="form-control" id="confirmar_clave" placeholder="Confirmar contraseña:">
+        </div>
+        <span id="textoconfirmar" class="alert-text text-danger mb-5"></span>
+      </div>
+<hr class="bg-primary">
+      <!-- Botones -->
+      <div class="col-12 text-center ">
+        <button type="button" class="btn btn-primary me-2" id="registrar">
+          <i class="fa-solid fa-floppy-disk"></i> Registrar
+        </button>
+        <button type="reset" class="btn btn-secondary">
+          <i class="fa-solid fa-eraser"></i> Limpiar
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
 
-      </div> <!-- FIN Modal contenido -->
       
     </div>
   </div>
@@ -294,13 +325,18 @@
              <label for="rol" class="form-label text-g">Rol</label>
                  <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user-tag"></i></span>
-                    <select class="form-select" name="id_rol">
+                    <select class="form-select" name="id_rol" id="rolSelectedit">
                       <option id="modalrol"> </option>
                         <?php foreach($roll as $item) {?>
-                          <option value="<?php echo $item['id_rol'];?>"> <?php echo $item['nombre']." - Nivel ".$item['nivel'];?> </option>
+                          <option value="<?php echo $item['id_rol'];?>" data-nivel="<?php echo $item['nivel'];?>"> <?php echo $item['nombre']." - Nivel ".$item['nivel'];?> </option>
                         <?php } ?>
                     </select>
+
+                    <input type="hidden" name="rol_actual" id="rolactual">
+                    <input type="hidden" name="nivel" id="idnivel">
               </div> 
+              
+
               <div class="mb-3">
              <label for="rol" class="form-label text-g">Estatus</label>
                  <div class="input-group mb-3">
@@ -378,12 +414,14 @@
 
     const estatusTexto = {
       1: 'Activo',
-      2: 'Inactivo'
+      2: 'Inactivo',
+      3: 'El usuario esta adentro del sistema'
     };
 
     const estatusClase = {
       1: 'badge bg-success',
-      2: 'badge bg-warning text-dark'
+      2: 'badge bg-warning',
+      3: 'badge bg-primary'
     };
 
     document.getElementById('modalNombreCompleto').textContent = `${nombre} ${apellido}`;
@@ -393,7 +431,90 @@
     document.getElementById('modalEstatus').innerHTML = `<span class="${estatusClase[estatus]}">${estatusTexto[estatus]}</span>`;
   });
 </script>
+<div class="modal fade" id="permisosModal" tabindex="-1" aria-labelledby="permisosModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="permisosModalLabel">Permisos por Módulo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered text-center align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Módulo</th>
+                <th>Ver</th>
+                <th>Crear</th>
+                <th>Actualizar</th>
+                <th>Eliminar</th>
+                <th>Especial</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Ejemplo de fila -->
+              <tr>
+                <td>1</td>
+                <td>Dashboard</td>
+                <td><div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="">
+                   
+                    </div></td>
+              <td><center><div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="">
+                    
+                    </div></center></td>
+              <td><div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="">
+                   
+                    </div></td>
+              <td><div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="">
+                    
+                    </div></td>
+              <td><div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="">
+                    
+                    </div></td>                  
+              
+              </tr>
+              <!-- Agrega más filas según los módulos -->
+              <tr>
+                <td>2</td>
+                <td>Usuarios</td>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td><input type="checkbox" class="form-check-input"></td>
+              </tr>
+              <!-- ... -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Salir</button>
+      </div>
+    </div>
+  </div>
+</div>
 
+<script>
+document.getElementById('rolSelect').addEventListener('change', function() {
+  const selectedOption = this.options[this.selectedIndex];
+  const nivel = selectedOption.getAttribute('data-nivel');
+  document.getElementById('nivelHidden').value = nivel;
+});
+
+document.getElementById('rolSelectedit').addEventListener('change', function() {
+  const selectedOption = this.options[this.selectedIndex];
+  const nivel = selectedOption.getAttribute('data-nivel');
+  document.getElementById('idnivel').value = nivel;
+});
+</script>
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>

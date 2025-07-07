@@ -5,7 +5,7 @@ if (empty($_SESSION["id"])){
 } /*  Validacion URL  */
 
 require_once 'modelo/cliente.php';
-
+require_once 'permiso.php';
 $objcliente = new Cliente();
 
 
@@ -42,21 +42,20 @@ if(isset($_POST['actualizar'])){
     echo json_encode($resultado);
 
       
-    } else if($_SESSION["nivel_rol"] == 3) { // Validacion si es administrador entra
-        $bitacora = [
+    } else if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(8, 'ver')) {
+         $bitacora = [
             'id_persona' => $_SESSION["id"],
             'accion' => 'Acceso a Módulo',
             'descripcion' => 'módulo de Cliente'
         ];
         $objcliente->registrarBitacora(json_encode($bitacora));
         require_once 'vista/cliente.php';
-        } else if ($_SESSION["nivel_rol"] == 1) {
-
-            header("Location: ?pagina=catalogo");
-            exit();
-
-        } else {
+} else {
         require_once 'vista/seguridad/privilegio.php';
-    }
+
+} if ($_SESSION["nivel_rol"] == 1) {
+    header("Location: ?pagina=catalogo");
+    exit();
+}
 
 ?>

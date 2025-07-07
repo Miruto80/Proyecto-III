@@ -29,9 +29,11 @@
               <div class="card-header pb-0">
                 <div class="d-sm-flex align-items-center justify-content-between mb-5">
                   <h4 class="mb-0"><i class="fa-solid fa-credit-card mr-2" style="color: #f6c5b4;"></i> Método de Pago</h4>
+                  <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(10, 'registrar')): ?>  
                   <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
                     <i class="fas fa-file-medical"></i> Registrar
                   </button>
+                <?php endif; ?>
                 </div>
 
                 <div class="table-responsive">
@@ -51,15 +53,20 @@
                         <td><?= htmlspecialchars($dato['nombre']); ?></td>
                         <td><?= htmlspecialchars($dato['descripcion']); ?></td>
                         <td>
+                         <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(10, 'editar')): ?>
                         <button class="btn-editar btn btn-primary btn-sm "
-  data-id="<?= $dato['id_metodopago']; ?>"
-  data-nombre="<?= htmlspecialchars($dato['nombre']); ?>"
-  data-descripcion="<?= htmlspecialchars($dato['descripcion']); ?>">
-  <i class="fas fa-pencil-alt"></i>
-</button>
+                          data-id="<?= $dato['id_metodopago']; ?>"
+                          data-nombre="<?= htmlspecialchars($dato['nombre']); ?>"
+                          data-descripcion="<?= htmlspecialchars($dato['descripcion']); ?>">
+                          <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <?php endif; ?>
+
+                          <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(10, 'eliminar')): ?>
                           <button class="btn btn-danger btn-sm" onclick="eliminarMetodoPago(<?= $dato['id_metodopago']; ?>)">
                             <i class="fas fa-trash-alt"></i>
                           </button>
+                          <?php endif; ?>
                         </td>
                       </tr>
                       <?php endforeach; ?>

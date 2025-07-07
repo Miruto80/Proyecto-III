@@ -41,10 +41,13 @@
                   Categoria
                 </h4>
 <!-- Dentro de .d-sm-flex, justo después de btnAbrirRegistrar -->
+ 
                 <div class="d-flex gap-2">
+                    <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(7, 'registrar')): ?>
                   <button id="btnAbrirRegistrar" class="btn btn-success">
                     <i class="fas fa-file-medical"></i> Registrar
                   </button>
+                       <?php endif; ?>
                   <button id="btnAyuda" type="button" class="btn btn-primary">
                     <i class="fas fa-info-circle"></i> Ayuda
                   </button>
@@ -67,14 +70,20 @@
                       <tr data-id="<?= $dato['id_categoria'] ?>">
                         <td><?= $dato['id_categoria'] ?></td>
                         <td><?= htmlspecialchars($dato['nombre']) ?></td>
+
                         <td class="text-center">
                           <div class="d-flex justify-content-center gap-2">
+                              <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(7, 'editar')): ?>
                              <button class="btn btn-primary btn-sm btnModif">
                               <i class="fas fa-pencil-alt"></i>
                              </button>
+                              <?php endif; ?>
+
+                              <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(7, 'eliminar')): ?>
                              <button class="btn btn-danger btn-sm btnElim">
                               <i class="fas fa-trash-alt"></i>
                              </button>
+                              <?php endif; ?>
                             </div>
                           </td>
                         </tr>

@@ -33,6 +33,23 @@
   </div> 
 <!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
 
+<style>
+    .cardhome:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease-in-out;
+}
+
+.cardhome .icon-sha {
+    transition: transform 0.3s ease;
+}
+
+.cardhome:hover .icon-sha {
+    transform: rotate(5deg) scale(1.1);
+}
+
+</style>
+
 <div class="container-fluid py-4"> <!-- DIV CONTENIDO-->
 
     <div class="row"> <!-- CARD PRINCIPAL-->  
@@ -42,16 +59,16 @@
 
             <div class="row">
     <div class="col-lg-3 col-md-6 col-12">
-        <div class="card">
+        <div class="card cardhome">
             <span class="mask bg-card01 opacity-10 border-radius-lg"></span>
             <div class="card-body p-3 position-relative">
                 <div class="row">
                     <div class="col-8 text-start">
-                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
+                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl icon-sha">
                             <i class="fa-solid fa-comments-dollar" style="color:black;"> </i>
                         </div>
                         <h5 class="font-weight-bolder mb-0 mt-3" style="color:black;">
-                        $<?php echo number_format($totales['total_ventas'], 2); ?>
+                        $ <?php echo number_format($totales['total_ventas'], 2); ?>
                     </h5>
                         <span class="text-sm" style="color:black;"><b>Ventas totales</b></span>
                     </div>
@@ -63,16 +80,16 @@
 
 
     <div class="col-lg-3 col-md-6 col-12 mt-4 mt-md-0">
-        <div class="card">
+        <div class="card cardhome">
             <span class="mask bg-card02 opacity-10 border-radius-lg"></span>
             <div class="card-body p-3 position-relative">
                 <div class="row">
                     <div class="col-8 text-start">
-                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
+                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl icon-sha">
                                 <i class="fa-solid fa-circle-dollar-to-slot" style="color:black;"></i>
                         </div>
                         <h5 class="text-white font-weight-bolder mb-0 mt-3">
-                        $<?php echo number_format($totales['total_web'], 2); ?>
+                        $ <?php echo number_format($totales['total_web'], 2); ?>
                     </h5>
                         <span class="text-white text-sm"><b>Venta Por Web</b></span>
                     </div>
@@ -84,12 +101,12 @@
 
 
     <div class="col-lg-3 col-md-6 col-12 mt-4 mt-md-0">
-        <div class="card">
+        <div class="card cardhome">
             <span class="mask bg-card03 opacity-10 border-radius-lg"></span>
             <div class="card-body p-3 position-relative">
                 <div class="row">
                     <div class="col-8 text-start">
-                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
+                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl icon-sha">
                              <i class="fa-solid fa-laptop-file" style="color:black;"></i>
                         </div>
                         <h5 class="text-white font-weight-bolder mb-0 mt-3">
@@ -105,12 +122,12 @@
 
 
     <div class="col-lg-3 col-md-6 col-12 mt-4 mt-md-0">
-        <div class="card">
+        <div class="card cardhome">
             <span class="mask bg-card04 opacity-10 border-radius-lg"></span>
             <div class="card-body p-3 position-relative">
                 <div class="row">
                     <div class="col-8 text-start">
-                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
+                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl icon-sha">
                         <i class="fa-solid fa-file-invoice-dollar" style="color:black;"></i>
                         </div>
                         <h5 class="text-white font-weight-bolder mb-0 mt-3">
@@ -161,13 +178,29 @@
         </div>
     </div>
 
-    <div class="col-lg-5 col-md-5 col-12"> <!-- Imagen (40%) -->
-        <div class="card">
-            <div class="card-body text-center">
-                <img src="assets/img/D3.png" alt="Ejemplo Imagen" class="img-fluid border-radius-lg">
-            </div>
-        </div>
+<div class="col-lg-5 col-md-5 col-12">
+  <div class="card">
+    <div class="card-body text-center">
+      
+<?php if ($graficaHome): ?>
+  <img
+    src="<?= $graficaHome ?>"
+    alt="Top 5 productos más vendidos"
+    class="img-fluid border-radius-lg"
+  >
+<?php else: ?>
+  <p class="text-muted">No hay datos para la gráfica.</p>
+<?php endif; ?>
+
+
+
     </div>
+  </div>
+</div>
+
+
+
+
 </div>
 
 
