@@ -305,6 +305,28 @@ class Bitacora extends Conexion {
         }
     }
 
+    public function limpiarBitacoraAntigua($dias = 90) {
+        try {
+            $fecha_limite = date('Y-m-d H:i:s', strtotime("-{$dias} days"));
+            $registro = "DELETE FROM bitacora WHERE fecha_hora < :fecha_limite";
+            $strExec = $this->conex2->prepare($registro);
+            $strExec->bindParam(':fecha_limite', $fecha_limite);
+            $result = $strExec->execute();
+            
+            if ($result) {
+                $filas_eliminadas = $strExec->rowCount();
+                return array(
+                    'success' => true, 
+                    'message' => "Se eliminaron {$filas_eliminadas} registros de más de {$dias} días"
+                );
+            } else {
+                return array('success' => false, 'message' => 'Error al limpiar la bitácora');
+            }
+        } catch (PDOException $e) {
+            return array('success' => false, 'message' => 'Error: ' . $e->getMessage());
+        }
+    }
+
     // Getters y Setters
     public function get_Idbitacora() {
         return $this->id_bitacora;
