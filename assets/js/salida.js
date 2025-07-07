@@ -523,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.respuesta === 1) {
                     Swal.fire({
                         title: '¡Venta registrada exitosamente!',
-                        text: `La venta ha sido registrada con ID: ${data.id_pedido}`,
+                        text: 'La venta ha sido registrada correctamente en el sistema.',
                         icon: 'success',
                         confirmButtonText: 'Aceptar'
                     }).then(() => {
