@@ -107,6 +107,11 @@ $(document).ready(function() {
       let v = this.value.replace(/\D/g, '').slice(0,11);
       $(this).val(v);
     });
+
+    $('#codigoSu').on('input', function() {
+      let v = this.value.replace(/\D/g, '').slice(0,6);
+      $(this).val(v);
+    });
   
     // — Poblado dinámico de selects zona → parroquia → sector —
     const parroquiasPorZonaloc = {
