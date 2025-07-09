@@ -6,22 +6,7 @@
             <i class="fa-solid fa-circle-question" style="color: #004adf;"></i>
           </a>
 
-          <?php
-          require_once 'modelo/notificacion.php';
-          $N      = new Notificacion();
-          $nivel  = intval($_SESSION['nivel_rol'] ?? 0);
-          if ($nivel === 3) {
-            // GERENTE: las no leídas
-            $newCount = $N->contarNuevas();
-          }
-          elseif ($nivel === 2) {
-              // ASESORA: las entregables (estado=2)
-              $newCount = $N->contarParaAsesora();
-          }
-          else {
-              $newCount = 0;
-          }
-          ?>
+     
           <!-- … -->
           <a href="?pagina=notificacion" class="notification-icon me-2" style="background:white; padding:8px; border-radius:12px; text-decoration:none;">
           <i class="fa-solid fa-bell" style="color:black;"></i>
