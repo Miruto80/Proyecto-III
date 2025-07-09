@@ -10,9 +10,10 @@
           <!-- … -->
           <a href="?pagina=notificacion" class="notification-icon me-2" style="background:white; padding:8px; border-radius:12px; text-decoration:none;">
           <i class="fa-solid fa-bell" style="color:black;"></i>
-          <?php if ($newCount > 0): ?>
-            <span class="notif-dot"></span>
-            <?php endif; ?>
+          <?php /*if ($newCount > 0): ?>
+           
+            <?php endif; */?>
+        <span class="notif-dot"></span>
           </a>
   
         <div class="input-group">
