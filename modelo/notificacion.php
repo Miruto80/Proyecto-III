@@ -1,7 +1,7 @@
 <?php
 // modelo/Notificacion.php
 
-require_once 'modelo/Conexion.php';
+require_once __DIR__ . '/Conexion.php';
 
 class Notificacion extends Conexion
 {
@@ -104,7 +104,6 @@ public function contarParaAdmin(): int
                      ->query($sql)
                      ->fetchColumn();
 }
-
 /**
  * Marca una notificación como leída sólo por la asesora (1 → 4)
  */

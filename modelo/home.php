@@ -73,14 +73,16 @@ class home extends Conexion {
     public function consultarTotalesPendientes() {
         $conex = $this->getConex1();
         try {
-            $sql = "
-                SELECT 
-                    COUNT(id_pedido) AS cantidad_pedidos_pendientes
-                FROM 
-                    pedido
-                WHERE 
-                    estado = 1
-            ";
+           $sql = "
+         SELECT 
+        COUNT(id_pedido) AS cantidad_pedidos_pendientes
+         FROM 
+        pedido
+         WHERE 
+        estado = 1
+        AND tipo IN (2, 3)
+";
+
 
             $stmt = $conex->prepare($sql);
             $stmt->execute();

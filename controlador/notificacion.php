@@ -7,9 +7,11 @@ if (empty($_SESSION['id'])) {
 
 $nivel = (int)($_SESSION['nivel_rol'] ?? 0);
 
-require_once 'modelo/notificacion.php';
+require_once __DIR__ . '/../modelo/Notificacion.php';
+
 require_once 'modelo/tipousuario.php';  // para bitácora
 require_once 'permiso.php';
+
 
 $N   = new Notificacion();
 $Bit = new tipousuario();
@@ -201,7 +203,8 @@ else {
 
 // 5) Cargar vista
 if ($nivel >= 2) {
-    require_once 'vista/notificacion.php';
+    require_once __DIR__ . '/../vista/Notificacion.php';
+
 } elseif ($nivel === 1) {
     header("Location: ?pagina=catalogo");
     exit();

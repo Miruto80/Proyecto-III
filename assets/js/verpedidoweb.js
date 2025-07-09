@@ -69,6 +69,7 @@ $(document).ready(function() {
         const errores = [];
       
         // Siempre validamos estos
+      
         if (!validarReferenciaBancaria($('#referencia_bancaria'))) errores.push('ref');
         if (!validarTelefonoEmisor($('#telefono_emisor')))    errores.push('tel');
         if (!validarSelect($('#metodopago'), "Seleccione un método de pago")) errores.push('mp');
@@ -104,6 +105,11 @@ $(document).ready(function() {
     });
     $('#telefono_emisor').on('input', function() {
       let v = this.value.replace(/\D/g, '').slice(0,11);
+      $(this).val(v);
+    });
+
+    $('#codigoSu').on('input', function() {
+      let v = this.value.replace(/\D/g, '').slice(0,6);
       $(this).val(v);
     });
   
@@ -337,7 +343,7 @@ $(document).ready(function() {
         .done(function(res) {
           if (res.success) {
             muestraMensaje('success',2000,'¡Pedido registrado!',res.message);
-            setTimeout(()=> window.location.href='?pagina=catalogo_pedido',2000);
+            setTimeout(()=> window.location.href='?pagina=catalogo',2000);
           } else {
             muestraMensaje('error',3000,'Error',res.message);
           }
@@ -348,7 +354,8 @@ $(document).ready(function() {
       });
         
     // Validación en tiempo real
-    
+    $('#nomSu').on('input', ()=>validarnomSu($('#nomSu')));
+    $('#codigoSu').on('input', ()=>validarCodigoSu($('#codigoSu')));
     $('#referencia_bancaria').on('input', ()=>validarReferenciaBancaria($('#referencia_bancaria')));
     $('#telefono_emisor').on('input', ()=>validarTelefonoEmisor($('#telefono_emisor')));
     $('#direccion').on('input', ()=>validarDireccion($('#direccion')));
