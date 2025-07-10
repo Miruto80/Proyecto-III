@@ -131,11 +131,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     icon: "success",
                     title: "Su reserva fue realizada",
                     html: "Recuerde que debe retirarlo en el local.",
-                    timer: 3000,
+                    timer: 1500,
                     showConfirmButton: false,
                     timerProgressBar: true
                 });
-                setTimeout(() => window.location.href = "?pagina=catalogo", 3000);
+                setTimeout(() => window.location.href = "?pagina=catalogo", 1500);
                 return;
             }
 
