@@ -960,7 +960,7 @@ public static function pedidoWeb(
           . '</tr></thead><tbody>';
         foreach ($rows as $r) {
             $e   = $estados[(string)$r['estado']] ?? 'Desconocido';
-            $tot = '$'.number_format($r['total'],2);
+            $tot = 'Bs '.number_format($r['total'],2);
             $html .= "<tr>
                         <td>{$r['fecha']}</td>
                         <td>{$e}</td>
