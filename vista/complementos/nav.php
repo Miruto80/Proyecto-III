@@ -7,14 +7,12 @@
           </a>
 
      
-          <!-- … -->
-          <a href="?pagina=notificacion" class="notification-icon me-2" style="background:white; padding:8px; border-radius:12px; text-decoration:none;">
-          <i class="fa-solid fa-bell" style="color:black;"></i>
-          <?php /*if ($newCount > 0): ?>
-           
-            <?php endif; */?>
-        <span class="notif-dot"></span>
-          </a>
+<a href="?pagina=notificacion"
+   class="notification-icon me-2"
+   style="background:white; padding:8px; border-radius:12px; text-decoration:none;">
+  <i class="fa-solid fa-bell" style="color:black;"></i>
+</a>
+
   
         <div class="input-group">
           <span class="input-group-text text-body dropdown-toggle" id="dropdownIcon" aria-expanded="false" style="cursor: pointer; padding: 12px;">

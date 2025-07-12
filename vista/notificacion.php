@@ -92,17 +92,21 @@
                 </tr>
               </thead>
 
-<tbody id="notif-body">
+<tbody
+  id="notif-body"
+  data-empty-msg="<?= $nivel === 2
+        ? 'Esperando nuevas notificaciones.'
+        : 'No hay notificaciones registradas.' ?>">
+  
   <?php if (empty($notificaciones)): ?>
     <tr>
       <td colspan="5" class="text-center py-3">
-        <?php if ($nivel === 2): ?>
-          Esperando nuevas notificaciones.
-        <?php else: ?>
-          No hay notificaciones registradas.
-        <?php endif; ?>
+        <?= $nivel === 2
+            ? 'Esperando nuevas notificaciones.'
+            : 'No hay notificaciones registradas.'; ?>
       </td>
     </tr>
+  
   <?php else: foreach ($notificaciones as $n): ?>
     <tr id="notif-<?= $n['id_notificacion'] ?>">
       <td>
@@ -116,18 +120,18 @@
         </p>
       </td>
       <td class="text-sm mb-0">
-        <?php switch ((int)$n['estado']): 
+        <?php switch ((int)$n['estado']):
           case 1: ?>
             <span class="text-danger text-sm">No leída</span>
-            <?php break; 
+          <?php break;
           case 2: ?>
             <span class="text-secondary text-sm">Leída</span>
-            <?php break; 
+          <?php break;
           case 3: ?>
             <span class="text-success text-sm">
               <?= $nivel === 3 ? 'Leída y entregada' : 'Entregada' ?>
             </span>
-            <?php break; 
+          <?php break;
         endswitch; ?>
       </td>
       <td class="text-sm mb-0">
@@ -137,33 +141,28 @@
       </td>
       <td class="text-center">
         <?php if ($nivel === 3 && in_array((int)$n['estado'], [1, 4])): ?>
-          <form method="post"
-                action="?pagina=notificacion&accion=marcarLeida"
-                class="marcar-leer-form d-inline">
-            <input type="hidden" name="id"
-                   value="<?= $n['id_notificacion'] ?>">
-            <button type="submit"
-                    class="btn btn-info btn-sm"
-                    title="Marcar como leída">
-              <i class="fa-solid fa-envelope-open"></i>
-            </button>
-          </form>
+          <button
+            type="button"
+            class="btn btn-info btn-sm btn-action"
+            data-id="<?= $n['id_notificacion'] ?>"
+            data-accion="marcarLeida"
+            title="Marcar como leída">
+            <i class="fa-solid fa-envelope-open"></i>
+          </button>
         <?php elseif ($nivel === 2 && (int)$n['estado'] === 1): ?>
-          <form method="post"
-                action="?pagina=notificacion&accion=marcarLeidaAsesora"
-                class="marcar-leer-asesora-form d-inline">
-            <input type="hidden" name="id"
-                   value="<?= $n['id_notificacion'] ?>">
-            <button type="submit"
-                    class="btn btn-secondary btn-sm"
-                    title="Leer (solo para mí)">
-              <i class="fa-solid fa-envelope-open"></i>
-            </button>
-          </form>
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm btn-action"
+            data-id="<?= $n['id_notificacion'] ?>"
+            data-accion="marcarLeidaAsesora"
+            title="Leer (solo para mí)">
+            <i class="fa-solid fa-envelope-open"></i>
+          </button>
         <?php endif; ?>
       </td>
     </tr>
-    <?php endforeach; endif; ?>
+  <?php endforeach; endif; ?>
+
   </tbody>
   </table>
   </div>

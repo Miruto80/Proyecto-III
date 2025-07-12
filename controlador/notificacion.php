@@ -55,117 +55,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET'
     exit;
 }
 
-// 3) POST → acciones sobre notificaciones
+// 3) POST → solo ‘leer’ y siempre respondo JSON
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['accion'])) {
+    header('Content-Type: application/json');
+
     $accion = $_GET['accion'];
-    $id     = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-    $msg    = '';
+    $id     = (int)($_POST['id'] ?? 0);
+    $success = false;
+    $mensaje = '';
 
-    // Preparo datos para bitácora si aplica
-    if (in_array($accion, ['marcarLeida','marcarLeidaAsesora','entregar','eliminar'], true)) {
-        $row = (new Conexion())->getConex1()
-               ->query("SELECT id_pedido, mensaje 
-                         FROM notificaciones 
-                        WHERE id_notificacion = {$id}")
-               ->fetch(PDO::FETCH_ASSOC);
-        $pedido = $row['id_pedido'] ?? '';
-        $texto  = $row['mensaje']   ?? '';
+    // Admin
+    if ($accion === 'marcarLeida' && $nivel === 3 && $id > 0) {
+        $success = $N->marcarLeida($id);
+        $mensaje = $success
+            ? 'Notificación marcada como leída.'
+            : 'Error al marcar como leída.';
+    }
+    // Asesora
+    elseif ($accion === 'marcarLeidaAsesora' && $nivel === 2 && $id > 0) {
+        $success = $N->marcarLeidaAsesora($id);
+        $mensaje = $success
+            ? 'Notificación marcada como leída para ti.'
+            : 'Error al marcar como leída.';
+    }
+    else {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'mensaje' => 'Acción inválida o no autorizada.']);
+        exit;
     }
 
-    switch ($accion) {
-        case 'vaciar':
-            if ($nivel === 3) {
-                $deleted = $N->vaciarEntregadas();
-                $msg = $deleted
-                     ? "Se vaciaron todas las notificaciones entregadas."
-                     : "No había notificaciones entregadas.";
-
-                $Bit->registrarBitacora(json_encode([
-                    'id_persona' => $_SESSION['id'],
-                    'accion'     => 'Vaciar notificaciones',
-                    'descripcion'=> "Se vaciaron {$deleted} notificaciones entregadas"
-                ]));
-            } else {
-                $msg = 'No autorizado.';
-            }
-            break;
-
-        case 'marcarLeida':
-            // Admin global (1|4 → 2)
-            if ($nivel === 3 && $id > 0) {
-                $ok  = $N->marcarLeida($id);
-                $msg = $ok
-                     ? 'Notificación marcada como leída.'
-                     : 'No se pudo marcar como leída.';
-                if ($ok) {
-                    $Bit->registrarBitacora(json_encode([
-                        'id_persona' => $_SESSION['id'],
-                        'accion'     => 'Leer notificación',
-                        'descripcion'=> "Se marcó como leída la notificación “{$texto}” del pedido #{$pedido}"
-                    ]));
-                }
-            } else {
-                $msg = 'No autorizado.';
-            }
-            break;
-
-        case 'marcarLeidaAsesora':
-            // Asesora solo para ella (1 → 4)
-            if ($nivel === 2 && $id > 0) {
-                $ok  = $N->marcarLeidaAsesora($id);
-                $msg = $ok
-                     ? 'Notificación marcada como leída para ti.'
-                     : 'No se pudo marcar como leída.';
-            } else {
-                $msg = 'No autorizado.';
-            }
-            break;
-
-        case 'entregar':
-            if ($nivel === 2 && $id > 0) {
-                $ok  = $N->entregar($id);
-                $msg = $ok
-                     ? 'Notificación marcada como entregada.'
-                     : 'No se pudo marcar como entregada.';
-                if ($ok) {
-                    $Bit->registrarBitacora(json_encode([
-                        'id_persona' => $_SESSION['id'],
-                        'accion'     => 'Entregar notificación',
-                        'descripcion'=> "Se entregó la notificación “{$texto}” del pedido #{$pedido}"
-                    ]));
-                }
-            } else {
-                $msg = 'No autorizado.';
-            }
-            break;
-
-        case 'eliminar':
-            if ($nivel === 3 && $id > 0) {
-                $ok  = $N->eliminar($id);
-                $msg = $ok
-                     ? 'Notificación eliminada.'
-                     : 'Solo se pueden borrar notificaciones entregadas.';
-                if ($ok) {
-                    $Bit->registrarBitacora(json_encode([
-                        'id_persona' => $_SESSION['id'],
-                        'accion'     => 'Eliminar notificación',
-                        'descripcion'=> "Se eliminó la notificación “{$texto}” del pedido #{$pedido}"
-                    ]));
-                }
-            } else {
-                $msg = 'No autorizado.';
-            }
-            break;
-
-        default:
-            header('HTTP/1.1 400 Bad Request');
-            exit;
-    }
-
-    $_SESSION['flash_notif'] = $msg;
-    header('Location:?pagina=notificacion');
+    // Respondo siempre JSON y salgo
+    echo json_encode(['success' => $success, 'mensaje' => $mensaje]);
     exit;
 }
+
 
 // 4) GET normal: regenerar y listar
 $N->generarDePedidos();

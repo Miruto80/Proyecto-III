@@ -180,24 +180,6 @@ public function getNuevosPedidos(int $lastId): array
 
 
 
-    /**
-     * 5) Soft‐delete si estado = 3 (3 → 0)
-     */
-    public function eliminar(int $idNoti): bool
-    {
-        $conex = $this->getConex1();
-        $sql = "
-            UPDATE notificaciones
-               SET estado = 0
-             WHERE id_notificacion = :id
-               AND estado = 3
-        ";
-        $stmt = $conex->prepare($sql);
-        $stmt->execute(['id' => $idNoti]);
-        return $stmt->rowCount() > 0;
-    }
-
-
 
     /**
      * 7) Contar nuevas (estado = 1)
