@@ -78,7 +78,7 @@ nav {
             <?php 
               $pagina = $_GET['pagina'] ?? '';
               $paginasPermitidas = ['catalogo', 'catalogo_producto', 'vercarrito', 'verpedidoweb'];
-              $paginasOcultas = ['vercarrito', 'verpedidoweb'];
+              $paginasOcultas = ['vercarrito', 'verpedidoweb','Pedidoentrega','Pedidopago','Pedidoconfirmar'];
             ?>
           <?php if (in_array($pagina,$paginasPermitidas)): ?>
             <li>
