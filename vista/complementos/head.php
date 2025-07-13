@@ -39,4 +39,4 @@
 <script src="assets/js/loader.js"></script>
 
 <!-- Tu módulo de notificaciones -->
-<script src="assets/js/notificacion.js" defer></script>
+<script src="assets/js/Notificacion.js" defer></script>
