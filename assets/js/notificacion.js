@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const BASE    = '?pagina=Notificacion';
+  const BASE    = '?pagina=notificacion';
   const bellBtn = document.querySelector('.notification-icon');
   const tbody   = document.getElementById('notif-body');
   const helpBtn = document.getElementById('btnAyudanoti');
