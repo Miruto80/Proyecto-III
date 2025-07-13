@@ -1,17 +1,18 @@
 $(document).ready(function () {
   let productosStockBajo = [];
 
-  $('tbody tr').each(function () {
-      const fila = $(this);
-      const nombreProducto = fila.find('td').eq(0).text().trim();
-      const stockDisponible = parseInt(fila.find('td').eq(4).text().trim(), 10);
-      const stockMinimo = parseInt(fila.data('stock-minimo'), 10);
+  const tabla = $('#myTable').DataTable();
 
-      // Verificar si el stock está cerca o ha alcanzado el mínimo
-      if (stockDisponible <= stockMinimo || stockDisponible <= stockMinimo + (stockMinimo * 0.1)) {
-          productosStockBajo.push(`"${nombreProducto}"`);
-          fila.find('td').eq(4).html('<i class="fa-solid fa-triangle-exclamation" style="color: red;"></i> ' + stockDisponible);
-      }
+  tabla.rows().every(function () {
+    const fila = $(this.node());
+    const nombreProducto = fila.find('td').eq(0).text().trim();
+    const stockDisponible = parseInt(fila.find('td').eq(4).text().trim(), 10);
+    const stockMinimo = parseInt(fila.data('stock-minimo'), 10);
+
+    if (stockDisponible <= stockMinimo || stockDisponible <= stockMinimo + (stockMinimo * 0.1)) {
+        productosStockBajo.push(`"${nombreProducto}"`);
+        fila.find('td').eq(4).html('<i class="fa-solid fa-triangle-exclamation" style="color: red;"></i> ' + stockDisponible);
+    }
   });
 
   if (productosStockBajo.length > 0) {
@@ -28,9 +29,10 @@ $(document).ready(function () {
           toast.onmouseenter = Swal.stopTimer;
           toast.onmouseleave = Swal.resumeTimer;
       }
-  });
+    });
   }
 });
+
 
 $('#btnLimpiar').on("click", function () {
   $('#nombre, #descripcion, #marca, #cantidad_mayor, #precio_mayor, #precio_detal, #stock_maximo, #stock_minimo, #categoria').val('').removeClass('is-valid is-invalid');
@@ -115,7 +117,6 @@ $(document).on('click', '.ver-detalles', function () {
     const descripcion = fila.find('td').eq(1).text().trim();
     const marca = fila.find('td').eq(2).text().trim();
     const precioDetal = fila.find('td').eq(3).text().trim();
-    const stockDisponible = fila.find('td').eq(4).text().trim();
     const imagenSrc = fila.find('td').eq(5).find('img').attr('src');
     const categoriaTexto = fila.find('td').eq(6).text().trim();
 
