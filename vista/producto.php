@@ -363,7 +363,7 @@
                     <td><?php echo htmlspecialchars($dato['nombre']) ?></td>
                     <td><?php echo htmlspecialchars($dato['descripcion']) ?></td>
                     <td><?php echo htmlspecialchars($dato['marca']) ?></td>
-                    <td><?php echo htmlspecialchars($dato['precio_detal']) ?></td>
+                    <td><?php echo htmlspecialchars($dato['precio_detal']) ?> <i class="fa-solid fa-dollar-sign"></i></td>
                     <td><?php echo htmlspecialchars($dato['stock_disponible']) ?></td>
                     <td><img src="<?php echo htmlspecialchars($dato['imagen']) ?>" alt="Imagen del producto" width="60" height="60"></td>
                     <td><?php echo htmlspecialchars($dato['nombre_categoria']) ?></td>
@@ -417,7 +417,7 @@
             <i class="fas fa-pump-soap"></i>
             Registrar Producto
           </h5>
-          <button type="button" class="btn-close text-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <div class="modal-body">
