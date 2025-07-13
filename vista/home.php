@@ -57,92 +57,76 @@
           <div class="card mb-4">
             <div class="card-header pb-0">  <!-- CARD N-1 -->  
 
-            <div class="row">
-    <div class="col-lg-3 col-md-6 col-12">
-        <div class="card cardhome">
-            <span class="mask bg-card01 opacity-10 border-radius-lg"></span>
-            <div class="card-body p-3 position-relative">
-                <div class="row">
-                    <div class="col-8 text-start">
-                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl icon-sha">
-                            <i class="fa-solid fa-comments-dollar" style="color:black;"> </i>
-                        </div>
-                        <h5 class="font-weight-bolder mb-0 mt-3" style="color:black;">
-                        $ <?php echo number_format($totales['total_ventas'], 2); ?>
-                    </h5>
-                        <span class="text-sm" style="color:black;"><b>Ventas totales</b></span>
-                    </div>
-                    
-                </div>
-            </div>
+          <div class="row">
+  <!-- Ventas Totales -->
+  <div class="col-lg-3 col-md-6 col-12 mt-4 mt-md-0">
+    <div class="card cardhome text-center p-3 d-flex align-items-center justify-content-center position-relative" style="min-height: 160px; background-color: #ED73B1;">
+      <div class="position-relative w-100">
+        <div class="d-flex align-items-center justify-content-center mb-2">
+          <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #e6f0ff;">
+            <i class="fa-solid fa-comments-dollar"></i>
+          </div>
         </div>
-    </div>
-
-
-    <div class="col-lg-3 col-md-6 col-12 mt-4 mt-md-0">
-        <div class="card cardhome">
-            <span class="mask bg-card02 opacity-10 border-radius-lg"></span>
-            <div class="card-body p-3 position-relative">
-                <div class="row">
-                    <div class="col-8 text-start">
-                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl icon-sha">
-                                <i class="fa-solid fa-circle-dollar-to-slot" style="color:black;"></i>
-                        </div>
-                        <h5 class="text-white font-weight-bolder mb-0 mt-3">
-                        $ <?php echo number_format($totales['total_web'], 2); ?>
-                    </h5>
-                        <span class="text-white text-sm"><b>Venta Por Web</b></span>
-                    </div>
-                   
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="col-lg-3 col-md-6 col-12 mt-4 mt-md-0">
-        <div class="card cardhome">
-            <span class="mask bg-card03 opacity-10 border-radius-lg"></span>
-            <div class="card-body p-3 position-relative">
-                <div class="row">
-                    <div class="col-8 text-start">
-                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl icon-sha">
-                             <i class="fa-solid fa-laptop-file" style="color:black;"></i>
-                        </div>
-                        <h5 class="text-white font-weight-bolder mb-0 mt-3">
-                        <?php echo $totales['cantidad_pedidos_web']; ?>
-                    </h5>
-                        <span class="text-white text-sm"><b>Pedidos por Web</b></span>
-                    </div>
-                   
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="col-lg-3 col-md-6 col-12 mt-4 mt-md-0">
-        <div class="card cardhome">
-            <span class="mask bg-card04 opacity-10 border-radius-lg"></span>
-            <div class="card-body p-3 position-relative">
-                <div class="row">
-                    <div class="col-8 text-start">
-                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl icon-sha">
-                        <i class="fa-solid fa-file-invoice-dollar" style="color:black;"></i>
-                        </div>
-                        <h5 class="text-white font-weight-bolder mb-0 mt-3">
-                        <?php echo $pendientes['cantidad_pedidos_pendientes']; ?>
-                        </h5>
-                        <span class="text-white text-sm"><b>Pagos Pendientes</b></span>
-                    </div>
-                   
-                </div>
-            </div>
-        </div>
+        <h3 class="fw-bold mb-0 text-white">
+          $ <?php echo number_format($totales['total_ventas'], 2); ?>
+        </h3>
+        <span class="text-white">Ventas Totales</span>
+      </div>
     </div>
   </div>
 
-            </div><!-- FIN CARD N-1 -->  
+  <!-- Venta por Web -->
+  <div class="col-lg-3 col-md-6 col-12 mt-4 mt-md-0">
+    <div class="card cardhome text-center p-3 d-flex align-items-center justify-content-center position-relative" style="min-height: 160px; background-color: #D67888">
+      <div class="position-relative w-100">
+        <div class="d-flex align-items-center justify-content-center mb-2">
+          <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #e6f0ff;">
+            <i class="fa-solid fa-circle-dollar-to-slot"></i>
+          </div>
+        </div>
+        <h3 class="fw-bold mb-0 text-white">
+          $ <?php echo number_format($totales['total_web'], 2); ?>
+        </h3>
+        <span class="text-white">Venta por Web</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pedidos Web -->
+  <div class="col-lg-3 col-md-6 col-12 mt-4 mt-md-0">
+    <div class="card cardhome text-center p-3 d-flex align-items-center justify-content-center position-relative" style="min-height: 160px; background-color: #FC91A3;">
+      <div class="position-relative w-100">
+        <div class="d-flex align-items-center justify-content-center mb-2">
+          <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #e6f0ff;">
+            <i class="fa-solid fa-laptop-file"></i>
+          </div>
+        </div>
+        <h3 class="fw-bold mb-0 text-white">
+          <?php echo $totales['cantidad_pedidos_web']; ?>
+        </h3>
+        <span class="text-white">Pedidos por Web</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Por Confirmar -->
+  <div class="col-lg-3 col-md-6 col-12 mt-4 mt-md-0">
+    <div class="card cardhome text-center p-3 d-flex align-items-center justify-content-center position-relative" style="min-height: 160px; background-color: #7F7F7F;">
+      <div class="position-relative w-100">
+        <div class="d-flex align-items-center justify-content-center mb-2">
+          <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #e6f0ff;">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+        </div>
+        <h3 class="fw-bold mb-0 text-white">
+          <?php echo $pendientes['cantidad_pedidos_pendientes']; ?>
+        </h3>
+        <span class="text-white">Pagos por confirmar</span>
+      </div>
+    </div>
+  </div>
+</div> <!-- cierre -->
+
           
             <div class="row mt-4">
     <div class="col-lg-7 col-md-7 col-12"> <!-- Tabla (60%) -->
