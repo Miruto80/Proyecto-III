@@ -145,6 +145,10 @@ class Salida extends Conexion {
             $sql = "UPDATE pedido SET estado = :estado";
             $params = ['estado' => $datos['estado']];
             
+            if ($datos['estado'] == '2') {
+                $sql .= ", tipo = '2'";
+            }
+            
             if (!empty($datos['direccion'])) {
                 $sql .= ", direccion = :direccion";
                 $params['direccion'] = $datos['direccion'];
@@ -647,15 +651,23 @@ class Salida extends Conexion {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
-            $sql = "UPDATE pedido SET estado = ? WHERE id_pedido = ?";
+            
+            // Si el estado es 2 (vendido), cambiar el tipo a 2 también
+            if ($datos['estado'] == '2') {
+                $sql = "UPDATE pedido SET estado = ?, tipo = '2' WHERE id_pedido = ?";
+            } else {
+                $sql = "UPDATE pedido SET estado = ? WHERE id_pedido = ?";
+            }
+            
             $params = [$datos['estado'], $datos['id_pedido']];
             $stmt = $conex->prepare($sql);
             $stmt->execute($params);
+            
             // Bitácora
             $bitacora = [
                 'id_persona' => $_SESSION['id'] ?? null,
                 'accion' => 'Actualización de venta',
-                'descripcion' => 'Se actualizó la venta con ID: ' . $datos['id_pedido']
+                'descripcion' => 'Se actualizó la venta con ID: ' . $datos['id_pedido'] . ' - Estado: ' . $datos['estado']
             ];
             $this->registrarBitacora(json_encode($bitacora));
             $conex->commit();
