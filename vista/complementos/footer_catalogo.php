@@ -10,7 +10,7 @@
 
         <div class="col-md-3 col-sm-6">
           <div class="footer-menu">
-            <img src="assets/img/logo.png" width="120" height="120" alt="logo">
+            <img src="./assets/img/logo.png" width="120" height="120" alt="logo">
             <div class="social-links mt-3">
               <ul class="d-flex list-unstyled gap-3">
                 

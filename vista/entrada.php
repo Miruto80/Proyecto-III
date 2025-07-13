@@ -323,7 +323,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form method="POST" action="">
+            <form method="POST" action="" name="editar_compra">
               <input type="hidden" name="id_compra" value="<?php echo $compra['id_compra']; ?>">
               
               <div class="row mb-3">
@@ -418,7 +418,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form method="POST" action="">
+        <form method="POST" action="" name="registrar_compra">
           <div class="row mb-3">
             <div class="col-md-6">
               <label for="fecha_entrada_reg" class="form-label">Fecha de Entrada</label>
