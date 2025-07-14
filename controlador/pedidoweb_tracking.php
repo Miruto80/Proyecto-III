@@ -1,7 +1,7 @@
 <?php
-require '../assets/phpmailer/src/Exception.php';
-require '../assets/phpmailer/src/PHPMailer.php';
-require '../assets/phpmailer/src/SMTP.php';
+require_once __DIR__ . '/../assets/phpmailer/src/Exception.php';
+require_once __DIR__ . '/../assets/phpmailer/src/PHPMailer.php';
+require_once __DIR__ . '/../assets/phpmailer/src/SMTP.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
