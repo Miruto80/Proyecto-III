@@ -12,7 +12,7 @@ use PHPMailer\PHPMailer\Exception;
 
 header('Content-Type: application/json');
 
-require_once '/home/u417714339/domains/lovemakeuptienda.com/public_html/modelo/pedidoWeb.php';
+require_once 'modelo/pedidoWeb.php';
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
