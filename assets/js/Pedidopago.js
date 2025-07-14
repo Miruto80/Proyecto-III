@@ -91,7 +91,7 @@ $(document).ready(function() {
   
         const fd = new FormData($('#formPago')[0]);
         $.ajax({
-          url: 'controlador/PedidoPago.php',
+          url: 'controlador/Pedidopago.php',
           type: 'POST',
           data: fd,
           processData: false,
