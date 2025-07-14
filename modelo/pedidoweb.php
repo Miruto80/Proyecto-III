@@ -206,10 +206,8 @@ public function consultarDetallesPedido($id_pedido) {
 
 
     private function enviarCorreoTracking($correo, $tracking, $nombre_cliente) {
-       
-    
-        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
         try {
+            $mail = new PHPMailer\PHPMailer\PHPMailer(true);
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
@@ -256,7 +254,8 @@ public function consultarDetallesPedido($id_pedido) {
     
             $mail->send();
         } catch (Exception $e) {
-            error_log("Error al enviar correo tracking: " . $mail->ErrorInfo);
+            error_log("Error al enviar correo tracking: " . $e->getMessage());
+            // Nunca interrumpas el flujo por esto
         }
     }
 

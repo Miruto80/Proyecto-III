@@ -148,7 +148,7 @@
                   <th class="text-white">usuario</th>
                  <th class="text-white">Teléfono</th>
                   <th class="text-white">Método Entrega</th>
-                 <th style="" class="text-white">Método Pago</th>
+                 <th class="text-white">Método Pago</th>
                  <th class="text-white">Acción</th>
                 </tr>
               </thead>
