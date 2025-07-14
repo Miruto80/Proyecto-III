@@ -322,11 +322,14 @@ $carritoVacio = empty($_SESSION['carrito']);
     </tr>
   </thead>
   <tbody>
+
     <?php foreach ($carrito as $item):
       $id = $item['id'];
       $cantidad = $item['cantidad'];
       $precioUnitario = $cantidad >= $item['cantidad_mayor'] ? $item['precio_mayor'] : $item['precio_detal'];
       $subtotal = $cantidad * $precioUnitario;
+      $total += $subtotal;
+     
     ?>
     <tr data-id="<?= $id ?>">
       <td>
@@ -343,6 +346,7 @@ $carritoVacio = empty($_SESSION['carrito']);
         </div>
       </td>
       <td class="subtotal">$<?= number_format($subtotal, 2) ?></td>
+   
     </tr>
     <?php endforeach; ?>
   </tbody>
@@ -351,6 +355,7 @@ $carritoVacio = empty($_SESSION['carrito']);
         </div>
 
         <div class="mt-3 text-end">
+         
             <h4>Total: $<span id="total-carrito" class="total-general"><?= number_format($total, 2) ?></span></h4>
         </div>
     <?php endif; ?>
