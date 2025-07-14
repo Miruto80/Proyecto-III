@@ -148,7 +148,7 @@
                   <th class="text-white">usuario</th>
                  <th class="text-white">Teléfono</th>
                   <th class="text-white">Método Entrega</th>
-                 <th style="" class="text-white">Método Pago</th>
+                 <th class="text-white">Método Pago</th>
                  <th class="text-white">Acción</th>
                 </tr>
               </thead>
@@ -450,41 +450,35 @@
     document.querySelectorAll('.tracking-form').forEach(function(form) {
       form.addEventListener('submit', function(e) {
         e.preventDefault();
-        var formData = new FormData(form);
+        const formData = new FormData(form);
+
         console.log('Enviando tracking al correo:', formData.get('correo_cliente'));
 
-        fetch('controlador/pedidoweb_tracking.php', {
-          method: 'POST',
-          body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Tracking enviado',
-              text: data.message,
-              confirmButtonText: 'OK'
-            }).then(() => {
-              location.reload();
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error al enviar',
-              text: data.message,
-              confirmButtonText: 'Cerrar'
-            });
+        $.ajax({
+          url: 'controlador/pedidoweb_tracking.php',
+          type: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+          dataType: 'json',
+                    success: function (data) {
+                      console.log('Respuesta del servidor:', data);
+            if (data.success) {  // <-- aquí cambias 'respuesta' por 'success'
+              Swal.fire({
+                icon: 'success',
+                title: 'Tracking enviado',
+                text: data.message, // también cambia 'msg' por 'message'
+                confirmButtonText: 'OK'
+              }).then(() => location.reload());
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error al enviar',
+                text: data.message,
+                confirmButtonText: 'Cerrar'
+              });
+            }
           }
-        })
-        .catch(err => {
-          console.error(err);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ocurrió un error en la solicitud.',
-            confirmButtonText: 'Cerrar'
-          });
         });
       });
     });
