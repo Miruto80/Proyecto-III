@@ -462,6 +462,7 @@
           contentType: false,
           dataType: 'json',
                     success: function (data) {
+                      console.log('Respuesta del servidor:', data);
             if (data.success) {  // <-- aquí cambias 'respuesta' por 'success'
               Swal.fire({
                 icon: 'success',
