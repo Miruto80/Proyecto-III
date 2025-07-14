@@ -9,8 +9,8 @@ $nivel = (int)($_SESSION['nivel_rol'] ?? 0);
 
 
 require_once __DIR__ . '/../modelo/notificacion.php';
-require_once __DIR__ . '/../modelo/tipousuario.php';  // antes: 'modelo/tipousuario.php'
-require_once __DIR__ . '/permiso.php';               // antes: 'permiso.php'
+require_once __DIR__ . '/../modelo/tipousuario.php';  
+require_once __DIR__ . '/permiso.php';               
 
 
 
