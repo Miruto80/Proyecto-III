@@ -217,6 +217,8 @@
   </button>
 <?php endif; ?> -->
 
+<button type="button" class="btn btn-secundary .btn-eliminar btn-success"  data-id="<?= $pedido['id_pedido'] ?>">
+
 <?php if (!in_array($pedido['estado'], [0,2,3,4,5])): ?>
 <button type="button" class="btn btn-secundary btn-validar btn-success"  data-id="<?= $pedido['id_pedido'] ?>">
 <i class="fa-solid fa-check"></i>
