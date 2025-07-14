@@ -461,12 +461,12 @@
           processData: false,
           contentType: false,
           dataType: 'json',
-          success: function (data) {
-            if (data.success) {
+                    success: function (data) {
+            if (data.success) {  // <-- aquí cambias 'respuesta' por 'success'
               Swal.fire({
                 icon: 'success',
                 title: 'Tracking enviado',
-                text: data.message,
+                text: data.message, // también cambia 'msg' por 'message'
                 confirmButtonText: 'OK'
               }).then(() => location.reload());
             } else {
@@ -477,15 +477,6 @@
                 confirmButtonText: 'Cerrar'
               });
             }
-          },
-          error: function (xhr, status, error) {
-            console.error('AJAX Error:', status, error);
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Ocurrió un error en la solicitud AJAX.',
-              confirmButtonText: 'Cerrar'
-            });
           }
         });
       });

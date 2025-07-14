@@ -10,8 +10,6 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../modelo/pedidoWeb.php';
 
-echo json_encode(['test' => 'ok']); 
-exit;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_pedido = $_POST['id_pedido'] ?? null;
