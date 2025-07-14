@@ -348,7 +348,7 @@
                       <?php if (!empty($pedido['direccion'])): ?>
                         <p><strong>Dirección:</strong><br><?php echo nl2br(htmlspecialchars($pedido['direccion'])); ?></p>
                       <?php endif; ?>
-                      <p><strong>Total Bs:</strong> $<?php echo number_format($pedido['precio_total_bs'], 2); ?></p>
+                      <p><strong>Total Bs:</strong> <?php echo number_format($pedido['precio_total_bs'], 2); ?></p>
                     </div>
                   </div>
                 </div>
