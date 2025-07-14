@@ -194,7 +194,7 @@ public function consultarDetallesPedido($id_pedido) {
             $conex->commit();
     
             // Enviar correo al cliente
-          //  $this->enviarCorreoTracking($datos['correo_cliente'], $datos['tracking'], $datos['nombre_cliente']);
+            $this->enviarCorreoTracking($datos['correo_cliente'], $datos['tracking'], $datos['nombre_cliente']);
     
             return ['respuesta' => 1, 'msg' => 'Tracking actualizado y correo enviado'];
         } catch (Exception $e) {
