@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // Ocultar loader al cargar la página
+  const loader = document.querySelector('.preloader-wrapper');
+  if (loader) {
+    loader.style.display = 'none';
+  }
+
   // Establecer la fecha máxima como hoy para todos los campos de fecha
   const fechaHoy = new Date().toISOString().split('T')[0];
   document.querySelectorAll('input[type="date"]').forEach(input => {
@@ -58,7 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Validar cantidades y precios de los productos seleccionados
     let productosValidos = true;
-    form.querySelectorAll('.producto-fila').forEach(fila => {
+    const filas = form.querySelectorAll('.producto-fila');
+    
+    for (let i = 0; i < filas.length; i++) {
+      const fila = filas[i];
       const productoSelect = fila.querySelector('.producto-select');
       const cantidad = fila.querySelector('.cantidad-input');
       const precio = fila.querySelector('.precio-input');
@@ -72,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!cantidad || !cantidad.value || parseFloat(cantidad.value) <= 0) {
           muestraMensaje("warning", 3000, "Cantidad inválida", "La cantidad debe ser mayor a cero");
           productosValidos = false;
-          return;
+          break;
         }
 
         // Validar que no supere el stock máximo
@@ -82,25 +91,34 @@ document.addEventListener('DOMContentLoaded', function() {
         if (stockMaximo && stockTotal > parseFloat(stockMaximo)) {
           muestraMensaje("warning", 3000, "Stock excedido", `La cantidad ingresada superaría el stock máximo permitido (${stockMaximo})`);
           productosValidos = false;
-          return;
+          break;
         }
         
         if (!precio || !precio.value || parseFloat(precio.value) <= 0) {
           muestraMensaje("warning", 3000, "Precio inválido", "El precio unitario debe ser mayor a cero");
           productosValidos = false;
-          return;
+          break;
         }
       }
-    });
+    }
     
     return productosValidos;
   }
   
+  // Configurar envío AJAX para todos los formularios
+  configurarEnvioAjax();
+  
   // Agregar validación a todos los formularios
   document.querySelectorAll('form').forEach(form => {
     form.addEventListener('submit', function(e) {
-      if (!validarFormulario(this)) {
-        e.preventDefault();
+      // Solo validar si no es un envío AJAX
+      if (!this.dataset.ajaxConfigurado) {
+        console.log('Validando formulario no AJAX...');
+        if (!validarFormulario(this)) {
+          e.preventDefault();
+        }
+      } else {
+        console.log('Formulario AJAX detectado, saltando validación estándar...');
       }
     });
   });
@@ -350,6 +368,143 @@ document.addEventListener('DOMContentLoaded', function() {
         ]
       });
       driverObj.drive();
+    });
+  }
+
+  // Función para configurar envío AJAX de formularios
+  function configurarEnvioAjax() {
+    console.log('Configurando envío AJAX...');
+    
+    // Formulario de registro
+    const formRegistro = document.querySelector('form[name="registrar_compra"]') || 
+                        document.querySelector('#registroModal form');
+    
+    console.log('Formulario de registro encontrado:', formRegistro);
+    
+    if (formRegistro && !formRegistro.dataset.ajaxConfigurado) {
+      formRegistro.dataset.ajaxConfigurado = 'true';
+      formRegistro.addEventListener('submit', function(e) {
+        console.log('Enviando formulario de registro...');
+        e.preventDefault();
+        enviarFormularioAjax(this, 'registrar_compra');
+      });
+    }
+    
+    // Formularios de modificación
+    document.querySelectorAll('[id^="editarModal"] form').forEach(form => {
+      console.log('Formulario de edición encontrado:', form);
+      if (!form.dataset.ajaxConfigurado) {
+        form.dataset.ajaxConfigurado = 'true';
+        form.addEventListener('submit', function(e) {
+          console.log('Enviando formulario de edición...');
+          e.preventDefault();
+          enviarFormularioAjax(this, 'modificar_compra');
+        });
+      }
+    });
+    
+    // Formularios de eliminación (si existen)
+    document.querySelectorAll('form').forEach(form => {
+      const eliminarBtn = form.querySelector('button[name="eliminar_compra"]');
+      if (eliminarBtn && !form.dataset.ajaxConfigurado) {
+        form.dataset.ajaxConfigurado = 'true';
+        form.addEventListener('submit', function(e) {
+          console.log('Enviando formulario de eliminación...');
+          e.preventDefault();
+          enviarFormularioAjax(this, 'eliminar_compra');
+        });
+      }
+    });
+  }
+  
+  // Función para enviar formulario por AJAX
+  function enviarFormularioAjax(form, accion) {
+    console.log('Enviando formulario AJAX:', accion);
+    
+    // Validar formulario antes de enviar
+    if (!validarFormulario(form)) {
+      console.log('Formulario no válido, cancelando envío');
+      return;
+    }
+    
+    // Mostrar loader
+    const loader = document.querySelector('.preloader-wrapper');
+    if (loader) {
+      loader.style.display = 'flex';
+    }
+    
+    // Crear FormData
+    const formData = new FormData(form);
+    
+    // Agregar la acción correspondiente
+    formData.append(accion, '1');
+    
+    console.log('Datos del formulario:', Object.fromEntries(formData));
+    
+    // Realizar petición AJAX
+    fetch(window.location.href, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      console.log('Respuesta del servidor:', response);
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Datos recibidos:', data);
+      
+      // Ocultar loader
+      if (loader) {
+        loader.style.display = 'none';
+      }
+      
+      // Mostrar notificación
+      const icono = data.respuesta == 1 ? 'success' : 'error';
+      const titulo = data.respuesta == 1 ? '¡Éxito!' : 'Error';
+      
+      console.log('Mostrando SweetAlert:', { icono, titulo, mensaje: data.mensaje });
+      
+      Swal.fire({
+        icon: icono,
+        title: titulo,
+        text: data.mensaje,
+        timer: 3000,
+        showConfirmButton: false
+      }).then(() => {
+        console.log('SweetAlert cerrado, respuesta:', data.respuesta);
+        // Si fue exitoso, recargar la página después de mostrar la notificación
+        if (data.respuesta == 1) {
+          console.log('Recargando página...');
+          // Cerrar modal si está abierto
+          const modal = bootstrap.Modal.getInstance(document.querySelector('.modal.show'));
+          if (modal) {
+            modal.hide();
+          }
+          window.location.reload();
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Error en AJAX:', error);
+      
+      // Ocultar loader
+      if (loader) {
+        loader.style.display = 'none';
+      }
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un error al procesar la solicitud. Por favor, inténtelo de nuevo.',
+        timer: 3000,
+        showConfirmButton: false
+      });
     });
   }
 });
