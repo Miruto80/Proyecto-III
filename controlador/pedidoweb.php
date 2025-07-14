@@ -50,9 +50,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
         $respuesta = $objPedidoWeb->procesarPedidoweb(json_encode($datosPeticion));
         echo json_encode($respuesta);
-    } else {
-        echo json_encode(['respuesta' => 0, 'mensaje' => 'Faltan datos para actualizar delivery']);
-    }
+    } else if (isset($_POST['enviar'])) {
+        if (!empty($_POST['id_pedido'])) {
+            $datosPeticion = [
+                'operacion' => 'enviar',
+                'datos' => $_POST['id_pedido']
+            ];
+
+            $respuesta = $objPedidoWeb->procesarPedidoweb(json_encode($datosPeticion));
+            echo json_encode($respuesta);
+        } else {
+            echo json_encode(['respuesta' => 0, 'mensaje' => 'Falta el ID del pedido para enviar']);
+        }
+
+    // Eliminar pedido
+    } else if (isset($_POST['entregar'])) {
+        if (!empty($_POST['id_pedido'])) {
+            $datosPeticion = [
+                'operacion' => 'entregar',
+                'datos' => $_POST['id_pedido']
+            ];
+
+            $respuesta = $objPedidoWeb->procesarPedidoweb(json_encode($datosPeticion));
+            echo json_encode($respuesta);
+        } else {
+            echo json_encode(['respuesta' => 0, 'mensaje' => 'Falta el ID del pedido para entregar']);
+        } }
     
 
     exit;

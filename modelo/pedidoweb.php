@@ -33,6 +33,12 @@ class pedidoWeb extends Conexion {
                 case 'tracking':
                          return $this->actualizarTracking($datosProcesar);  
                 
+                case  'enviar':
+                    return $this->enviarPedido($datosProcesar);  
+                
+                case 'entregar':   
+                     return $this->entregarPedido($datosProcesar);  
+
                 default:
                     return    ['respuesta' => 0, 'mensaje' => 'Operación no válida'];
             }
@@ -123,6 +129,7 @@ public function consultarDetallesPedido($id_pedido) {
             $stmtEliminar = $conex->prepare($sqlEliminar);
             $stmtEliminar->execute([$id_pedido]);
 
+            $conex->commit();
          
             $conex = null;
             return ['respuesta' => 1, 'msg' => 'Pedido eliminado correctamente'];
@@ -139,7 +146,52 @@ public function consultarDetallesPedido($id_pedido) {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
-            $sql = "UPDATE pedido SET estado = 2 WHERE id_pedido = ?";
+    
+            // Obtener el método de entrega del pedido
+            $sqlMetodo = "SELECT me.id_entrega, me.nombre FROM pedido p
+                          LEFT JOIN direccion d ON p.id_direccion = d.id_direccion
+                          LEFT JOIN metodo_entrega me ON d.id_metodoentrega = me.id_entrega
+                          WHERE p.id_pedido = ?";
+            $stmtMetodo = $conex->prepare($sqlMetodo);
+            $stmtMetodo->execute([$id_pedido]);
+            $metodo = $stmtMetodo->fetch(PDO::FETCH_ASSOC);
+    
+            if (!$metodo) {
+                $conex->rollBack();
+                return ['respuesta' => 0, 'msg' => 'No se encontró el método de entrega'];
+            }
+    
+            // Decidir el nuevo estado según método de entrega
+            $nuevoEstado = 2;  // Default
+            if (strtolower($metodo['nombre']) === 'delivery' || $metodo['id_entrega'] == 2) {
+                $nuevoEstado = 3;
+            }
+    
+            $sql = "UPDATE pedido SET estado = ? WHERE id_pedido = ?";
+            $stmt = $conex->prepare($sql);
+            if ($stmt->execute([$nuevoEstado, $id_pedido])) {
+                $conex->commit();
+                $conex = null;
+                return ['respuesta' => 1, 'msg' => 'Pedido confirmado'];
+            } else {
+                $conex->rollBack();
+                $conex = null;
+                return ['respuesta' => 0, 'msg' => 'No se pudo confirmar el pedido'];
+            }
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    private function enviarPedido($id_pedido) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            $sql = "UPDATE pedido SET estado = 4 WHERE id_pedido = ?";
             $stmt = $conex->prepare($sql);
             if ($stmt->execute([$id_pedido])) {
                 $conex->commit();  // <-- Aquí debes confirmar la transacción
@@ -158,6 +210,31 @@ public function consultarDetallesPedido($id_pedido) {
             throw $e;
         }
     }
+
+    private function entregarPedido($id_pedido) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            $sql = "UPDATE pedido SET estado = 5 WHERE id_pedido = ?";
+            $stmt = $conex->prepare($sql);
+            if ($stmt->execute([$id_pedido])) {
+                $conex->commit();  // <-- Aquí debes confirmar la transacción
+                $conex = null;
+                return ['respuesta' => 1, 'msg' => 'Pedido confirmado'];
+            } else {
+                $conex->rollBack();
+                $conex = null;
+                return ['respuesta' => 'error', 'msg' => 'No se pudo confirmar el pedido'];
+            }
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+    
     
 
 
