@@ -87,7 +87,7 @@
         </li>
         <?php endif; ?>
         
-      <?php /*if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(5, 'ver')):?>
+      <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(5, 'ver')):?>
         <li class="nav-item">
           <a class="nav-link " href="?pagina=reserva">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -97,7 +97,7 @@
             <span class="nav-link-text ms-1">Reserva</span>
           </a>
         </li>
-      <?php endif; */?>
+      <?php endif; ?>
        
          <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(6, 'ver')): ?>
         <li class="nav-item">
