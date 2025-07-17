@@ -23,9 +23,18 @@
 <?php include 'vista/complementos/nav_catalogo.php' ?>
 
 
-   <section id="shop-categories" class="section-padding" style="background-color:#fff;">
+   <section id="shop-categories" class="section-padding pt-0" style="background-color:#fff;">
+  
     <div class="container-lg">
-        <div class="row g-md-5">
+
+       <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="?pagina=catalogo">Inicio</a></li>
+             <li class="breadcrumb-item active" aria-current="page">Todos los productos</li>
+        </ol>
+      </nav>
+
+        <div class="row g-md-5 pt-0">
             <!-- CATEGORÍAS -->
             <div class="row g-md-5">
             <!-- CATEGORÍAS -->

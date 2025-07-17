@@ -14,6 +14,22 @@ showPasswordButton.addEventListener('click', () => {
   }
 });
 
+/*||| Funcion para cambiar el boton a loader |||*/
+function activarLoaderBoton(idBoton, texto) {
+    const $boton = $(idBoton);
+    const textoActual = $boton.html();
+    $boton.data('texto-original', textoActual); // Guarda el texto original
+    $boton.prop('disabled', true);
+    $boton.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${texto}`);
+}
+
+function desactivarLoaderBoton(idBoton) {
+    const $boton = $(idBoton);
+    const textoOriginal = $boton.data('texto-original');
+    $boton.prop('disabled', false);
+    $boton.html(textoOriginal);
+}
+
 //Función para validar por Keypress
 function validarkeypress(er,e){
     key = e.keyCode;
@@ -24,8 +40,7 @@ function validarkeypress(er,e){
     }
 }
 //Función para validar por keyup
-function validarkeyup(er,etiqueta,etiquetamensaje,
-mensaje){
+function validarkeyup(er,etiqueta,etiquetamensaje,mensaje){
     a = er.test(etiqueta.val());
     if(a){
         etiquetamensaje.text("");
@@ -37,92 +52,72 @@ mensaje){
     }
 }
 
+function muestraMensajetost(icono, titulo, mensaje, tiempo) {
+  Swal.fire({
+    icon: icono,
+    title: titulo,
+    text: mensaje,
+    toast: true,
+    position: "top",
+    showConfirmButton: false,
+    timer: tiempo,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
+}
 
+/*||| Funcion para validar compas de formulario |||*/
+function validarCampo(campo, regex, textoError, mensaje) {
+  const valor = campo.val();
 
-//|||||||||||||| VALIDAR ENVIO ||||||||||||||||||||||
+  if (campo.is("select")) {
+   
+    if (valor === "") {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    } else {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    }
+  } else {
+   
+    if (regex.test(valor)) {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    } else {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    }
+  }
+}
+
 function validarFormulario() {
-    let valido = true;
+    validarCampo($("#cedula"), /^[0-9]{7,8}$/, $("#textocedula"), "Formato incorrecto o vacio.");
+    validarCampo($("#telefono"), /^[0-9]{4}[-]{1}[0-9]{7}$/, $("#textotelefono"), "Formato incorrecto o vacio.");
+    validarCampo($("#nombre"), /^[a-zA-Z]{3,50}$/, $("#textonombre"), "Formato incorrecto o vacio.");
+    validarCampo($("#apellido"), /^[a-zA-Z]{3,50}$/, $("#textoapellido"), "Formato incorrecto o vacio.");
+    validarCampo($("#correo"), /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $("#textocorreo"), "Formato incorrecto o vacio.");
+    validarCampo($("#recontrasena"), /^.{8,16}$/, $("#textorecontrasena"), "Debe tener entre 8 y 16 caracteres.");
+    validarCampo($("#clave"), /^.{8,16}$/, $("#textoclave"), "Debe tener entre 8 y 16 caracteres.");
 
-    if (!/^[0-9]{7,8}$/.test($("#cedula").val())) {
-        $("#textocedula").text("Formato incorrecto.");
-        valido = false;
-    } else {
-        $("#textocedula").text("");
+    const clave = $("#clave").val();
+    const recontrasena = $("#recontrasena").val();
+    if (clave !== recontrasena) {
+        $("#textoclave").text("Las contraseñas no coinciden.");
+        $("#clave, #recontrasena").removeClass("is-valid").addClass("is-invalid");
     }
-
-    if (!/^[0-9]{4}[-]{1}[0-9]{7}$/.test($("#telefono").val())) {
-        $("#textotelefono").text("Formato incorrecto.");
-        valido = false;
-    } else {
-        $("#textotelefono").text("");
-    }
-
-    if (!/^[a-zA-Z]{3,50}$/.test($("#nombre").val())) {
-        $("#textonombre").text("Formato incorrecto.");
-        valido = false;
-    } else {
-        $("#textonombre").text("");
-    }
-
-    if (!/^[a-zA-Z]{3,50}$/.test($("#apellido").val())) {
-        $("#textoapellido").text("Formato incorrecto.");
-        valido = false;
-    } else {
-        $("#textoapellido").text("");
-    }
-
-    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/.test($("#correo").val())) {
-        $("#textocorreo").text("Formato incorrecto.");
-        valido = false;
-    } else {
-        $("#textocorreo").text("");
-    }
-
-    if (!/^.{8,16}$/.test($("#recontrasena").val())) {
-        $("#textorecontrasena").text("Debe tener entre 8 y 16 caracteres.");
-        valido = false;
-    } else {
-        $("#textorecontrasena").text("");
-    }
-
-    if (!/^.{8,16}$/.test($("#clave").val())) {
-        $("#textoclave").text("Debe tener entre 8 y 16 caracteres.");
-        valido = false;
-    } else {
-        $("#textoclave").text("");
-    }
-
-    if ($("#clave").val() !== $("#recontrasena").val()) {
-    $("#textoclave").text("Las contraseñas no coinciden.");
-    valido = false;
-    } else {
-    // Solo limpiamos si ya pasaron las validaciones anteriores
-    if (/^.{8,16}$/.test($("#clave").val()) && /^.{8,16}$/.test($("#recontrasena").val())) {
-        $("#textorecontrasena").text("");
-    }
+    return $(".is-invalid").length === 0;
 }
-
-
-
-    return valido;
-}
-
-
-
 
 //|||||||||||||| VALIDAR ENVIO cedula ||||||||||||||||||||||
 function validarFor() {
-    let valido = true;
-
-     if (!/^[0-9]{7,8}$/.test($("#cedulac").val())) {
-        $("#textocedulac").text("Formato incorrecto.");
-        valido = false;
-    } else {
-        $("#textocedulac").text("");
-    }
-
-    return valido;
+    validarCampo($("#cedulac"), /^[0-9]{7,8}$/, $("#textocedulac"), "Formato incorrecto o vacio.");
+    return $(".is-invalid").length === 0;
 }
+
 
 //|||||||||||||| VALIDAR ENVIO login ||||||||||||||||||||||
 function validarForlogin() {
@@ -145,116 +140,52 @@ function validarForlogin() {
     return valido;
 }
 
-//|||||| ENVIO OLVIDO CLAVE FORM
-$(document).ready(function() {
-    $('#validarolvido').on("click", function(event) {
-        event.preventDefault(); // Evita la recarga de la página
 
+$(document).ready(function() {
+    //|||||| ENVIO OLVIDO CLAVE FORM
+    $('#validarolvido').on("click", function(event) {
+        event.preventDefault(); 
         if (validarFor()) {
+            activarLoaderBoton('#validarolvido',"Validando...");
+
             var datos = new FormData($('#olvidoclave')[0]);
             datos.append('validarclave', 'validarclave');
-             // Agregar loader al botón
-        $('#validarolvido').prop("disabled", true).html('<i class="fa fa-spinner fa-spin"></i> Validanddo...');
-
-        // Enviar los datos solo si todas las validaciones son correctas
-        enviaAjax(datos).always(function() {
-        
-         // Restaurar botón después de completar el proceso
-        $('#validarolvido').prop("disabled", false).html('Validar');
-         });
+            enviaAjax(datos);
         } else {
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "Debe Colocar el nro de cedula",
-                toast: true,
-                position: "top",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
+            muestraMensajetost("error","Error", "Debe Colocar el nro de cedula.", "2000");
         }
     });
 
-//|||||| ENVIO lOGIN FORM
+    //|||||| ENVIO lOGIN FORM
     $('#ingresar').on("click", function(event) {
-        event.preventDefault(); // Evita la recarga de la página
-
+        event.preventDefault(); 
         if (validarForlogin()) {
-        var datos = new FormData($('#login')[0]);
-        datos.append('ingresar', 'ingresar');
-
-        $('#ingresar').prop("disabled", true).html('<i class="fa fa-spinner fa-spin"></i> Iniciando...');
-
-        enviaAjax(datos).always(function() {
-        
-         // Restaurar botón después de completar el proceso
-        $('#ingresar').prop("disabled", false).html('Ingresar');
-        });
+          activarLoaderBoton('#ingresar',"Iniciando...");  
+          
+          var datos = new FormData($('#login')[0]);
+          datos.append('ingresar', 'ingresar');
+          enviaAjax(datos);
         } else {
-            Swal.fire({
-                icon: "error",
-                title: "Formato incorrecto o Vacio",
-                text: "Debe colocar el formato correcto.",
-                toast: true,
-                position: "top",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
+          muestraMensajetost("error","Formato incorrecto o Vacio", "Debe colocar el formato correcto.", "2000");
         }
     });
-});
 
-
-//|||||| ENVIO REGISTRO CLIENTE FORM
-$(document).ready(function() {
+    //|||||| ENVIO REGISTRO CLIENTE FORM
     $('#registrar').on("click", function(event) {
         event.preventDefault();
 
         if (validarFormulario()) {
+            activarLoaderBoton('#registrar',"Guardando...");  
+            
             var datos = new FormData($('#registrocliente')[0]);
             datos.append('registrar', 'registrar');
-            
-      
-        $('#registrar').prop("disabled", true).html('<i class="fa fa-spinner fa-spin"></i> Cargando...');
-        enviaAjax(datos).always(function() {
-        $('#registrar').prop("disabled", false).html('<i class="fa-solid fa-user-plus"></i> Registrar');
-          });
-       
+            enviaAjax(datos);
         } else {
-            Swal.fire({
-                icon: "error",
-                title: "Validaciones incorrectas",
-                text: "Corrige los errores antes de enviar el formulario.",
-                toast: true,
-                position: "top",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
+           muestraMensajetost("error","Validaciones incorrectas", "Corrige los errores antes de enviar el formulario.", "3000");
         }
     });
-});
 
-
-
-
-//|||||| VALIDACION DEL FORM LOGIN Y REGISTRO CLIENTE
-$(document).ready(function(){
-  //VALIDACION DE DATOS  
+  // EXPRESIONES REGULARES 
   $("#usuario").on("keypress",function(e){
     validarkeypress(/^[0-9\b]*$/,e);
   });
@@ -275,29 +206,28 @@ $(document).ready(function(){
   $("#cedulac").on("keypress",function(e){
     validarkeypress(/^[0-9\b]*$/,e);
   });
-  
-  $("#cedulac").on("keyup",function(){
-    validarkeyup(/^[0-9]{7,8}$/,$(this),
+
+   $("#cedulac").on("keyup", function () {
+    validarCampo($(this),/^[0-9]{7,8}$/,
     $("#textocedulac"),"El formato debe ser 1222333");
   });
 
   $("#cedula").on("keypress",function(e){
     validarkeypress(/^[0-9\b]*$/,e);
   });
-  
-  $("#cedula").on("keyup",function(){
-    validarkeyup(/^[0-9]{7,8}$/,$(this),
+
+  $("#cedula").on("keyup", function () {
+    validarCampo($(this),/^[0-9]{7,8}$/,
     $("#textocedula"),"El formato debe ser 1222333");
   });
 
-
    $("#telefono").on("keypress", function (e) {
       validarkeypress(/^[0-9-\-]*$/, e);
-    });
+  });
   
-    $("#telefono").on("keyup", function () {
-      validarkeyup(/^[0-9]{4}[-]{1}[0-9]{7}$/, $(this),
-        $("#textotelefono"), "El formato debe ser 0000-0000000");
+   $("#telefono").on("keyup", function () {
+      validarCampo($(this),/^[0-9]{4}[-]{1}[0-9]{7}$/,
+      $("#textotelefono"), "El formato debe ser 0414-0000000");
     });
   
     $("#telefono").on("input", function () {
@@ -313,8 +243,8 @@ $(document).ready(function(){
     });
 
     $("#correo").on("keyup", function () {
-      validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $(this),
-          $("#textocorreo"), "El formato debe incluir @ y ser válido.");
+      validarCampo($(this), /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/,
+       $("#textocorreo"), "El formato debe incluir @ y ser válido.");
     });
 
     $("#nombre").on("keypress", function (e) {
@@ -322,7 +252,7 @@ $(document).ready(function(){
     });
 
     $("#nombre").on("keyup", function () {
-    validarkeyup(/^[a-zA-Z]{3,50}$/, $(this),
+      validarCampo($(this),/^[a-zA-Z]{3,30}$/,
       $("#textonombre"), "El formato debe ser solo letras");
     });
 
@@ -331,7 +261,7 @@ $(document).ready(function(){
     });
 
     $("#apellido").on("keyup", function () {
-    validarkeyup(/^[a-z-A-Z]{3,50}$/, $(this),
+      validarCampo($(this),/^[a-z-A-Z]{3,30}$/,
       $("#textoapellido"), "El formato debe ser solo letras");
     });
 
@@ -340,7 +270,8 @@ $(document).ready(function(){
     });
     
     $("#clave").on("keyup", function() {
-    validarkeyup(/^.{8,16}$/, $(this), $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+      validarCampo($(this),/^.{8,16}$/, 
+      $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
     });
 
     $("#recontrasena").on("keypress", function(e) {
@@ -348,13 +279,11 @@ $(document).ready(function(){
     });
     
     $("#recontrasena").on("keyup", function() {
-    validarkeyup(/^.{8,16}$/, $(this), $("#textorecontrasena"), "El formato debe ser entre 8 y 16 caracteres");
-    })
-
-
-
+      validarCampo($(this),/^.{8,16}$/, 
+      $("#textorecontrasena"), "El formato debe ser entre 8 y 16 caracteres");
+    });
+    
 });
-  
 
 // AJAX
 function muestraMensaje(icono, tiempo, titulo, mensaje) {
@@ -366,24 +295,6 @@ function muestraMensaje(icono, tiempo, titulo, mensaje) {
     showConfirmButton: false,
   });
 }
-
-function muestraMensajetost(icono, titulo, mensaje, tiempo = 1000) {
-  Swal.fire({
-    icon: icono,
-    title: titulo,
-    text: mensaje,
-    toast: true,
-    position: "top",
-    showConfirmButton: false,
-    timer: tiempo,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    }
-  });
-}
-
 
 function enviaAjax(datos) {
     $.ajax({
@@ -399,7 +310,6 @@ function enviaAjax(datos) {
       success: function (respuesta) {
         console.log(respuesta);
         try {
-        // Eliminar contenido HTML en caso de que aparezca
         var respuestaLimpiada = respuesta.split("<!DOCTYPE html>")[0].trim();
         var lee = JSON.parse(respuestaLimpiada);
         console.log("JSON parseado correctamente:", lee);
@@ -407,14 +317,12 @@ function enviaAjax(datos) {
         console.error("Error al parsear JSON:", error.message); 
         }
         try {
-  
+
            if (lee.accion == 'incluir') {  // Registro Cliente
                 if (lee.respuesta == 1) {  
                   muestraMensaje("success", 2000, "Se ha registrado con éxito", "Ya puede Iniciar Session con Exitosamente");
-                
-                   
+                  desactivarLoaderBoton('#registrar');
                   setTimeout(() => {
-                     $('#registrar').prop("disabled", false).html('<i class="fa-solid fa-user-plus"></i> Registrar');
                      location = '?pagina=login';
                   }, 2000); 
               } else {
@@ -425,34 +333,34 @@ function enviaAjax(datos) {
               
               } else if (lee.accion == 'ingresar') { // Login
                 if (lee.respuesta == 1) {
-                  muestraMensajetost("success","Inicio de Session", "Exitosamente");
-                     $('#ingresar').prop("disabled", false).html('Ingresar');
+                  muestraMensajetost("success","Inicio de Session", "Exitosamente", "1000"); 
+                  desactivarLoaderBoton('#ingresar');
                     setTimeout(function () {
                      location = '?pagina=catalogo';
                   }, 1000);
               
                 } else if (lee.respuesta == 2) {
-                   muestraMensajetost("success","Inicio de Session - Personal", "Exitosamente");
-                   $('#ingresar').prop("disabled", false).html('Ingresar');
-                setTimeout(function () {
-                     location = '?pagina=home';
-                  }, 1000);
-              
+                   muestraMensajetost("success","Inicio de Session - Personal", "Exitosamente", "1000");
+                   desactivarLoaderBoton('#ingresar');
+                   setTimeout(function () {
+                      location = '?pagina=home';
+                    }, 1000);
+                
                 }else{
                   muestraMensaje("error", 2000, lee.text);
-                   $('#ingresar').prop("disabled", false).html('Ingresar');
+                   desactivarLoaderBoton('#ingresar');
                 }
               
               } else if (lee.accion == 'validarclave') { // olvido de clave
                 if (lee.respuesta == 1) {
                      muestraMensaje("success", 1000, "Verificado con Exito", "");
-                      $('#validarolvido').prop("disabled", false).html('Validar');
+                     desactivarLoaderBoton('#validarolvido');
                   setTimeout(function () {
                      location = '?pagina=olvidoclave';
                   }, 1000);
                 } else {
                   muestraMensaje("error", 2000, "ERROR", lee.text);
-                  $('#validarolvido').prop("disabled", false).html('Validar');
+                  desactivarLoaderBoton('#validarolvido');
                 }
               
             }
