@@ -201,15 +201,15 @@ $('#actualizar_permisos').on("click", function () {
 
 $('#actualizar').on("click", function () {
     Swal.fire({
-      title: '¿Desea Cambiar estos datos del Usuario?',
+      title: '¿Desea Cambiar estos datos?',
       text: 'En caso de Cambiar el Rol, los permiso cambian a sus permisos Predeterminado',
       icon: 'question',
       showCancelButton: true,
       color: "#00000",
-      confirmButtonColor: '#58c731',
+      confirmButtonColor: '#50c063ff',
       cancelButtonColor: '#42515A',
-      confirmButtonText: ' SI ',
-      cancelButtonText: 'NO'
+      confirmButtonText: ' Si, Actualizar',
+      cancelButtonText: 'No'
     }).then((result) => {
       if (result.isConfirmed) {
         // Validación de los campos antes de enviar
