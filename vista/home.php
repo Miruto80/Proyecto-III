@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // cfg labels/data vienen de PHP
   const cfg = <?= json_encode($graficaHome, JSON_UNESCAPED_UNICODE) ?>;
-  console.log('cfg desde PHP:', cfg);
+  //console.log('cfg desde PHP:', cfg);
 
   if (!Array.isArray(cfg.data) || !cfg.data.length) {
     console.warn('No hay datos para pintar la gráfica.');
