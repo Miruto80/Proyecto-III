@@ -166,15 +166,13 @@
   <div class="card">
     <div class="card-body text-center">
       
-<?php if ($graficaHome): ?>
-  <img
-    src="<?php echo htmlspecialchars($graficaHome, ENT_QUOTES); ?>"
-    alt="Top 5 productos"
-    class="img-fluid border-radius-lg"
-  >
+<?php if (!empty($graficaHome['data'])): ?>
+  <canvas id="homePieChart" class="img-fluid border-radius-lg" style="max-height:400px"></canvas>
 <?php else: ?>
   <p class="text-muted">No hay datos para la gráfica.</p>
 <?php endif; ?>
+
+
 
 
     </div>
@@ -195,6 +193,58 @@
     </div><!-- FIN CARD PRINCIPAL-->  
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
+
+<!-- 1) Chart.js desde CDN (o local si prefieres) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- 2) Inicializar la gráfica -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof Chart === 'undefined') {
+    console.error('Chart.js no cargó.');
+    return;
+  }
+
+  // cfg labels/data vienen de PHP
+  const cfg = <?= json_encode($graficaHome, JSON_UNESCAPED_UNICODE) ?>;
+  console.log('cfg desde PHP:', cfg);
+
+  if (!Array.isArray(cfg.data) || !cfg.data.length) {
+    console.warn('No hay datos para pintar la gráfica.');
+    return;
+  }
+
+  const ctx = document.getElementById('homePieChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: cfg.labels,
+      datasets: [{
+        data: cfg.data,
+        backgroundColor: [
+          '#FF6384','#36A2EB','#FFCE56',
+          '#4BC0C0','#9966FF'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Top 5 Productos más vendidos'
+        },
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+});
+</script>
+
+
+
 
 </body>
 
