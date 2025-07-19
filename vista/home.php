@@ -165,15 +165,15 @@
 <div class="col-lg-5 col-md-5 col-12">
   <div class="card">
     <div class="card-body text-center">
-      
-<?php if (!empty($graficaHome['data'])): ?>
-  <canvas id="homePieChart" class="img-fluid border-radius-lg" style="max-height:400px"></canvas>
-<?php else: ?>
-  <p class="text-muted">No hay datos para la gráfica.</p>
-<?php endif; ?>
 
-
-
+      <?php if (!empty($graficaHome['data'])): ?>
+        <div class="chart-container" 
+             style="position:relative; width:100%; height:350px;">
+          <canvas id="homePieChart"></canvas>
+        </div>
+      <?php else: ?>
+        <p class="text-muted">No hay datos para la gráfica.</p>
+      <?php endif; ?>
 
     </div>
   </div>
