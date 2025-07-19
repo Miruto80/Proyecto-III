@@ -25,7 +25,7 @@
     height: 8px;
     background-color: #e91e63;
     border-radius: 50%;
-    z-index: 50;
+    z-index: 0;
   }
 </style>
 
