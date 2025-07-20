@@ -485,7 +485,7 @@
                       <div class="col-md-4">
                         <label class="form-label">Producto</label>
                         <select class="form-select producto-select" name="id_producto[]" disabled>
-                          <option value="">Seleccione un producto</option>
+                          <option value="" selected>Seleccione un producto</option>
                           <?php foreach($productos_lista as $producto): ?>
                             <option value="<?php echo $producto['id_producto']; ?>" 
                                     <?php echo ($producto['id_producto'] == $detalle['id_producto']) ? 'selected' : ''; ?>
@@ -541,10 +541,12 @@
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content modal-producto">
       <div class="modal-header">
-        <h5 class="modal-title" id="registroModalLabel">
-          <i class="fas fa-cart-plus"></i> Registrar compra
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="d-flex justify-content-between align-items-center w-100">
+          <h5 class="modal-title d-flex align-items-center gap-2" id="registroModalLabel">
+           Registrar compra
+          </h5>
+          <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
       </div>
       <div class="modal-body">
         <form method="POST" action="" name="registrar_compra">
@@ -575,7 +577,7 @@
                 <div class="col-md-4">
                   <label class="form-label">Producto</label>
                   <select class="form-select producto-select" name="id_producto[]" required>
-                    <option value="">Seleccione un producto</option>
+                    <option value="" selected>Seleccione un producto</option>
                     <?php foreach($productos_lista as $producto): ?>
                       <option value="<?php echo $producto['id_producto']; ?>" 
                               data-stock-actual="<?php echo $producto['stock_disponible']; ?>">
@@ -666,6 +668,41 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+// Asegura que al agregar un producto, el select quede en 'Seleccione un producto' y el botón de eliminar sea rojo
+function crearFilaProducto() {
+  return `
+    <div class=\"row mb-2 producto-fila\">\n      <div class=\"col-md-4\">\n        <label class=\"form-label\">Producto</label>\n        <select class=\"form-select producto-select\" name=\"id_producto[]\" required>\n          <option value=\"\" selected>Seleccione un producto</option>\n          <?php foreach($productos_lista as $producto): ?>\n            <option value=\"<?php echo $producto['id_producto']; ?>\" data-stock-actual=\"<?php echo $producto['stock_disponible']; ?>\">\n              <?php echo $producto['nombre'] . ' - ' . $producto['marca']; ?>\n            </option>\n          <?php endforeach; ?>\n        </select>\n      </div>\n      <div class=\"col-md-2\">\n        <label class=\"form-label\">Cantidad</label>\n        <input type=\"number\" class=\"form-control cantidad-input\" name=\"cantidad[]\" placeholder=\"Cantidad\" value=\"1\" min=\"1\" required>\n      </div>\n      <div class=\"col-md-2\">\n        <label class=\"form-label\">Precio Unit.</label>\n        <input type=\"number\" step=\"0.01\" class=\"form-control precio-input\" name=\"precio_unitario[]\" placeholder=\"Precio Unitario\" value=\"0.00\" min=\"0.01\" required>\n      </div>\n      <div class=\"col-md-2\">\n        <label class=\"form-label\">Precio Total</label>\n        <input type=\"number\" step=\"0.01\" class=\"form-control precio-total\" name=\"precio_total[]\" placeholder=\"Precio Total\" value=\"0.00\" readonly>\n      </div>\n      <div class=\"col-md-2\">\n        <label class=\"form-label\">&nbsp;</label>\n        <button type=\"button\" class=\"btn btn-danger remover-producto form-control\">\n          <i class=\"fas fa-trash-alt\"></i>\n        </button>\n      </div>\n    </div>\n  `;
+}
+
+// Evento para agregar producto en el modal de registro
+const btnAgregar = document.getElementById('agregar-producto');
+if (btnAgregar) {
+  btnAgregar.addEventListener('click', function() {
+    const contenedor = document.getElementById('productos-container');
+    contenedor.insertAdjacentHTML('beforeend', crearFilaProducto());
+  });
+}
+
+// Evento para agregar producto en el modal de edición (puede haber varios)
+document.querySelectorAll('.agregar-producto-edit').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    const containerId = btn.getAttribute('data-container');
+    const contenedor = document.getElementById(containerId);
+    if (contenedor) {
+      contenedor.insertAdjacentHTML('beforeend', crearFilaProducto());
+    }
+  });
+});
+
+// Delegación para eliminar filas de productos (registro y edición)
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.remover-producto')) {
+    const fila = e.target.closest('.producto-fila');
+    if (fila) fila.remove();
+  }
+});
+</script>
 </body>
 
 </html>
