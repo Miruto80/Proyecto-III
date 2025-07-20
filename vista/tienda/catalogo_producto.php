@@ -84,23 +84,27 @@
         <?php if (!empty($registro)): ?>
             <?php foreach ($registro as $producto): ?>
                 <div class="col">
-                    <div class="product-item" data-categoria="<?php echo $producto['id_categoria']; ?>" data-bs-toggle="modal"
-                         data-bs-target="#productModal"
-                         data-id="<?php echo $producto['id_producto']; ?>"
-                         data-nombre="<?php echo htmlspecialchars($producto['nombre']); ?>"
-                         data-precio="<?php echo $producto['precio_detal']; ?>"
-                         data-marca="<?php echo htmlspecialchars($producto['marca']); ?>"
-                         data-descripcion="<?php echo htmlspecialchars($producto['descripcion']); ?>"
-                         data-cantidad-mayor="<?php echo $producto['cantidad_mayor']; ?>"
-                         data-precio-mayor="<?php echo $producto['precio_mayor']; ?>"
-                         data-stock-disponible="<?php echo $producto['stock_disponible']; ?>"
-                         data-imagen="<?php echo $producto['imagen']; ?>"
-                         onclick="openModal(this)">
-
-                        <figure class="position-relative">
-                            <p title="<?php echo htmlspecialchars($producto['nombre']); ?>">
-                                <img src="<?php echo $producto['imagen']; ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>" class="tab-image img-fluid rounded-3">
-                            </p>
+                   <div class="product-item" data-categoria="<?php echo $producto['id_categoria']; ?>" 
+                     data-id="<?php echo $producto['id_producto']; ?>"
+                     data-nombre="<?php echo htmlspecialchars($producto['nombre']); ?>"
+                     data-precio="<?php echo $producto['precio_detal']; ?>"
+                     data-marca="<?php echo htmlspecialchars($producto['marca']); ?>"
+                     data-descripcion="<?php echo htmlspecialchars($producto['descripcion']); ?>"
+                     data-cantidad-mayor="<?php echo $producto['cantidad_mayor']; ?>"
+                     data-precio-mayor="<?php echo $producto['precio_mayor']; ?>"
+                     data-stock-disponible="<?php echo $producto['stock_disponible']; ?>"
+                     data-imagen="<?php echo $producto['imagen']; ?>">
+                  <figure class="position-relative">
+                    <p title="<?php echo htmlspecialchars($producto['nombre']); ?>">
+                      <img
+                       src="<?php echo $producto['imagen']; ?>"
+                       alt="<?php echo htmlspecialchars($producto['nombre']); ?>"
+                       class="tab-image img-fluid rounded-3"
+                       data-bs-toggle="modal"
+                     data-bs-target="#productModal"
+                       onclick="openModal(this.closest('.product-item'))"
+                      />
+                    </p>
                            <?php if ($sesion_activa): ?>
 
 <?php if ($_SESSION["nivel_rol"] == 1): ?>
