@@ -117,6 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
         $obj->registrarBitacora(json_encode($bitacora));
 
        $registro = $obj->consultar();
+        $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'proveedor';
         require_once 'vista/proveedor.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';

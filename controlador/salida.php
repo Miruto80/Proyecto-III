@@ -362,7 +362,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ventas = $salida->consultarVentas();
     $productos_lista = $salida->consultarProductos();
     $metodos_pago = $salida->consultarMetodosPago();
-
+  $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'salida';
     require_once 'vista/salida.php';
 } else {
       require_once 'vista/seguridad/privilegio.php';
@@ -384,7 +384,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     header("Location: ?pagina=catalogo");
     exit();
     } else if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(4, 'ver')) {
-
+             $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'salida';
             require_once 'vista/salida.php';
     } else {
             require_once 'vista/seguridad/privilegio.php';

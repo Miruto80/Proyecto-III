@@ -311,6 +311,7 @@ generarGrafico();
 // Cargamos la vista
 
 if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(2, 'ver')) {
+     $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'entrada';
         require_once 'vista/entrada.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';

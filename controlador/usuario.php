@@ -182,7 +182,7 @@ if (isset($_POST['registrar'])) { /* -------  */
             'descripcion' => 'módulo de Usuario'
         ];
         $objusuario->registrarBitacora(json_encode($bitacora));
-
+        $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'usuario';
         require_once 'vista/usuario.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';

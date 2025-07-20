@@ -146,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'descripcion' => 'módulo de Producto'
          ];
         $objproducto->registrarBitacora(json_encode($bitacora));
-
+ $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'producto';
         require_once 'vista/producto.php';
         } else {
                 require_once 'vista/seguridad/privilegio.php';

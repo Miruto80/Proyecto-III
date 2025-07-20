@@ -25,6 +25,7 @@ if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
     header("Location: ?pagina=catalogo");
     exit();
 }
+  $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'home';
   require_once 'vista/home.php';
 
 ?>
