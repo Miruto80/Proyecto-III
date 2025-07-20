@@ -323,7 +323,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form method="POST" action="">
+            <form method="POST" action="" name="editar_compra">
               <input type="hidden" name="id_compra" value="<?php echo $compra['id_compra']; ?>">
               
               <div class="row mb-3">
@@ -358,16 +358,17 @@
                     <div class="row mb-2 producto-fila">
                       <div class="col-md-4">
                         <label class="form-label">Producto</label>
-                        <select class="form-select producto-select" name="id_producto[]" required>
+                        <select class="form-select producto-select" name="id_producto[]" disabled>
                           <option value="">Seleccione un producto</option>
                           <?php foreach($productos_lista as $producto): ?>
                             <option value="<?php echo $producto['id_producto']; ?>" 
-                                     
+                                    <?php echo ($producto['id_producto'] == $detalle['id_producto']) ? 'selected' : ''; ?>
                                     data-stock-actual="<?php echo $producto['stock_disponible']; ?>">
                               <?php echo $producto['nombre'] . ' - ' . $producto['marca']; ?>
                             </option>
                           <?php endforeach; ?>
                         </select>
+                        <input type="hidden" name="id_producto[]" value="<?php echo $detalle['id_producto']; ?>">
                       </div>
                       <div class="col-md-2">
                         <label class="form-label">Cantidad</label>
@@ -375,7 +376,7 @@
                       </div>
                       <div class="col-md-2">
                         <label class="form-label">Precio Unit.</label>
-                        <input type="number" step="0.01" class="form-control precio-input" name="precio_unitario[]" placeholder="Precio Unitario" value="<?php echo $detalle['precio_unitario']; ?>" min="0.01" required>
+                        <input type="number" step="0.01" class="form-control precio-input" name="precio_unitario[]" placeholder="Precio Unitario" value="<?php echo $detalle['precio_unitario']; ?>" min="0.01" required readonly>
                       </div>
                       <div class="col-md-2">
                         <label class="form-label">Precio Total</label>
@@ -418,7 +419,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form method="POST" action="">
+        <form method="POST" action="" name="registrar_compra">
           <div class="row mb-3">
             <div class="col-md-6">
               <label for="fecha_entrada_reg" class="form-label">Fecha de Entrada</label>
