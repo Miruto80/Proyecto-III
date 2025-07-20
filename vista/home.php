@@ -129,11 +129,11 @@
 
           
             <div class="row mt-4">
-   <div class="col-lg-7 col-md-7 col-12"> <!-- Tabla (60%) -->
+   <div class="col-lg-7 col-md-7 col-12"> 
   <div class="card">
     <div class="card-body">
       <h5>Los 5 Producto más vendidos</h5>
-      <div class="table-responsive"> <!-- ✅ hace que la tabla sea responsive -->
+      <div class="table-responsive">
         <table class="table">
           <thead>
             <tr>
