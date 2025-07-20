@@ -52,6 +52,132 @@
       box-shadow: none;
       outline: none;
     }
+
+    /* ====== ESTILOS MODAL PRODUCTO ====== */
+    .modal-producto {
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    .modal-producto .modal-header {
+      background: linear-gradient(135deg, #f6c5b4 0%, #e8a87c 100%);
+      border-radius: 15px 15px 0 0;
+      border-bottom: none;
+      padding: 1.5rem;
+    }
+    .modal-producto .modal-title {
+      color: #2c3e50;
+      font-weight: 700;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .modal-producto .modal-title i {
+      font-size: 1.8rem;
+      color: #e74c3c;
+    }
+    .modal-producto .modal-body {
+      padding: 2rem;
+      background: #f8f9fa;
+    }
+    .modal-producto .btn-close {
+      background-color: rgba(8, 6, 6, 0.8);
+      border-radius: 50%;
+      padding: 8px;
+      transition: all 0.3s ease;
+    }
+    .modal-producto .btn-close:hover {
+      background-color: #eb0f0f;
+      transform: scale(1.1);
+    }
+    .seccion-formulario {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid #f6c5b4;
+      transition: all 0.3s ease;
+    }
+    .seccion-formulario:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .seccion-formulario h6 {
+      color: #2c3e50;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .seccion-formulario h6 i {
+      color: #f6c5b4;
+      font-size: 1.2rem;
+    }
+    .form-control, .form-select {
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 12px 15px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      background-color: #f8f9fa;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #f6c5b4;
+      box-shadow: 0 0 0 0.2rem rgba(246, 197, 180, 0.25);
+      background-color: white;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .btn-modern {
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-modern::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    .btn-modern:hover::before {
+      left: 100%;
+    }
+    .btn-guardar {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+    }
+    .btn-guardar:hover {
+      background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+    }
+    .btn-limpiar {
+      background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+      color: white;
+    }
+    .btn-limpiar:hover {
+      background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+    }
   </style>
 </head>
 
@@ -412,32 +538,38 @@
 
 <!-- Modal de Registro -->
 <div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="registroModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header header-color">
-        <h5 class="modal-title" id="registroModalLabel">Registrar compra</h5>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content modal-producto">
+      <div class="modal-header">
+        <h5 class="modal-title" id="registroModalLabel">
+          <i class="fas fa-cart-plus"></i> Registrar compra
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form method="POST" action="" name="registrar_compra">
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="fecha_entrada_reg" class="form-label">Fecha de Entrada</label>
-              <input type="date" class="form-control" id="fecha_entrada_reg" name="fecha_entrada" value="<?php echo date('Y-m-d'); ?>" required>
-            </div>
-            <div class="col-md-6">
-              <label for="id_proveedor_reg" class="form-label">Proveedor</label>
-              <select class="form-select" id="id_proveedor_reg" name="id_proveedor" required>
-                <option value="">Seleccione un proveedor</option>
-                <?php foreach($proveedores as $proveedor): ?>
-                  <option value="<?php echo $proveedor['id_proveedor']; ?>"><?php echo $proveedor['nombre']; ?></option>
-                <?php endforeach; ?>
-              </select>
+          <!-- Sección: Datos Básicos de la Compra -->
+          <div class="seccion-formulario">
+            <h6><i class="fas fa-info-circle"></i> Datos de la Compra</h6>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="fecha_entrada_reg" class="form-label">Fecha de Entrada</label>
+                <input type="date" class="form-control" id="fecha_entrada_reg" name="fecha_entrada" value="<?php echo date('Y-m-d'); ?>" required>
+              </div>
+              <div class="col-md-6">
+                <label for="id_proveedor_reg" class="form-label">Proveedor</label>
+                <select class="form-select" id="id_proveedor_reg" name="id_proveedor" required>
+                  <option value="">Seleccione un proveedor</option>
+                  <?php foreach($proveedores as $proveedor): ?>
+                    <option value="<?php echo $proveedor['id_proveedor']; ?>"><?php echo $proveedor['nombre']; ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
             </div>
           </div>
-          
-          <div class="mb-3">
-            <h6>Productos</h6>
+          <!-- Sección: Productos -->
+          <div class="seccion-formulario">
+            <h6><i class="fas fa-boxes"></i> Productos</h6>
             <div id="productos-container">
               <div class="row mb-2 producto-fila">
                 <div class="col-md-4">
@@ -478,10 +610,9 @@
               </button>
             </div>
           </div>
-          
           <div class="text-center mt-4">
-            <button type="submit" name="registrar_compra" class="btn btn-primary">Registrar</button>
-            <button type="reset" class="btn btn-secondary">Limpiar</button>
+            <button type="submit" name="registrar_compra" class="btn btn-modern btn-guardar me-3"><i class="fas fa-save me-2"></i>Registrar</button>
+            <button type="reset" class="btn btn-modern btn-limpiar"><i class="fas fa-eraser me-2"></i>Limpiar</button>
           </div>
         </form>
       </div>
