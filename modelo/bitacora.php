@@ -226,6 +226,7 @@ class Bitacora extends Conexion {
         }
 
         try {
+            date_default_timezone_set('America/Caracas');
             $fecha = date('Y-m-d H:i:s');
             $detalle = $this->generarDetalle($modulo, $accion, $datos);
             
