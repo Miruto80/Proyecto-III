@@ -49,6 +49,7 @@ if(isset($_POST['actualizar'])){
             'descripcion' => 'módulo de Cliente'
         ];
         $objcliente->registrarBitacora(json_encode($bitacora));
+        $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'cliente';
         require_once 'vista/cliente.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';

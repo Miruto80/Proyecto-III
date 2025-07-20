@@ -71,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $objMetodoPago->registrarBitacora(json_encode($bitacora));*/
        
         $metodos = $objMetodoPago->consultar();
+         $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'metodopago';
         require_once __DIR__ . '/../vista/metodopago.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';

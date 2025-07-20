@@ -98,7 +98,12 @@
     </nav>
 <!-- php barra de navegacion-->    
 <?php include 'complementos/nav.php' ?>
-
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+  <div class="preloader-wrapper">
+    <div class="preloader">
+    </div>
+  </div> 
+<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
 
 <div class="container-fluid py-4"> <!-- DIV CONTENIDO -->
 
@@ -148,7 +153,7 @@
                   <th class="text-white">usuario</th>
                  <th class="text-white">Teléfono</th>
                   <th class="text-white">Método Entrega</th>
-                 <th style="" class="text-white">Método Pago</th>
+                 <th class="text-white">Método Pago</th>
                  <th class="text-white">Acción</th>
                 </tr>
               </thead>
@@ -167,12 +172,12 @@
     }
 
     $estatus_texto = array(
-     '0' => 'Anulado',
+     '0' => 'Rechazado',
   '1' => 'Verificar pago',
   '2' => 'Pago Verificado',
-  '3' => 'Pendiente envío',
+  '3' => 'Pendiente envio',
   '4' => 'En camino',
-  '5' => 'Enviado',
+  '5' => 'Entregado',
 
     );
 
@@ -202,29 +207,61 @@
     <td>
     <button class="btn btn-info " data-bs-toggle="modal" 
     data-bs-target="#verDetallesModal<?= $pedido['id_pedido']; ?>">
- <i class="fa fa-eye"></i> 
+ <i class="fa fa-eye"></i> </button>
 
  <?php if (!in_array($pedido['estado'], [0])): ?>
-</button>
-<?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(9, 'especial')): ?>
-<button type="button" class="btn  btn-primary" data-bs-toggle="modal" data-bs-target="#modalTracking<?php echo $pedido['id_pedido']; ?>"><i class="fa-regular fa-envelope"></i>
-</button>
+
+<!-- Botón Tracking: solo si método de entrega es 2 o 3 -->
+<?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(9, 'especial') && in_array($pedido['metodo_entrega'], ['MRW','	ZOOM' ])&&
+  in_array($pedido['estado'], [2, 3])): ?>
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTracking<?php echo $pedido['id_pedido']; ?>">
+    <i class="fa-regular fa-envelope"></i>
+  </button>
 <?php endif; ?>
 
-<!-- <?php if (!in_array($pedido['estado'], [0,1])): ?>
-  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deliveryModal<?php echo $pedido['id_pedido']; ?>">
-  <i class="fa-solid fa-box"></i>
-  </button>
-<?php endif; ?> -->
-
-<?php if (!in_array($pedido['estado'], [0,2,3,4,5])): ?>
-<button type="button" class="btn btn-secundary btn-validar btn-success"  data-id="<?= $pedido['id_pedido'] ?>">
-<i class="fa-solid fa-check"></i>
+<?php 
+$metodo = trim($pedido['metodo_entrega']);
+if ($pedido['estado'] == 3 && $metodo !== 'MRW' && $metodo !== 'ZOOM'): ?>
+  <button type="button" class="btn btn-secondary btn-enviar btn-success" data-id="<?= $pedido['id_pedido'] ?>">
+    <i class="fa-solid fa-motorcycle"></i>
   </button>
 
-  <?php endif; ?>
 
- <?php endif; ?>
+<?php endif; ?>
+<?php 
+$metodo = trim($pedido['metodo_entrega']);
+if (
+    $pedido['estado'] != 1 &&       // No pendiente de pago
+    $pedido['estado'] != 5 &&       // No entregado
+    (
+        $pedido['estado'] == 4 ||
+        $metodo === 'Retiro en Tienda Fisica' ||
+        $metodo === 'MRW' ||
+        $metodo === 'ZOOM'
+    )
+): ?>
+  <button type="button" class="btn btn-secondary btn-entregar btn-warning" data-id="<?= $pedido['id_pedido'] ?>">
+    <i class="fa-solid fa-boxes-stacked"></i>
+  </button>
+<?php endif; ?>
+
+
+
+
+
+<!-- Botones Validar y Eliminar: solo si estado es 1 -->
+<?php if ($pedido['estado'] == 1): ?>
+  <button type="button" class="btn btn-secundary btn-validar btn-success" data-id="<?= $pedido['id_pedido'] ?>">
+    <i class="fa-solid fa-check"></i>
+  </button>
+  <button type="button" class="btn btn-secundary btn-eliminar btn-danger" data-id="<?= $pedido['id_pedido'] ?>">
+    <i class="fa-solid fa-x"></i>
+  </button>
+<?php endif; ?>
+
+<?php endif; ?>
+
+
       
     </td>
 </tr>
@@ -304,9 +341,9 @@
                               '0' => 'Rechazado',
                               '1' => 'Verificar pago',
                               '2' => 'Pago Verificado',
-                              '3' => 'Pendiente envío',
+                              '3' => 'Pendiente envio',
                               '4' => 'En camino',
-                              '5' => 'Enviado',
+                              '5' => 'Entregado',
                             ];
                             echo htmlspecialchars($estados_texto[$pedido['estado']] ?? 'Desconocido');
                           ?>
@@ -348,7 +385,7 @@
                       <?php if (!empty($pedido['direccion'])): ?>
                         <p><strong>Dirección:</strong><br><?php echo nl2br(htmlspecialchars($pedido['direccion'])); ?></p>
                       <?php endif; ?>
-                      <p><strong>Total Bs:</strong> $<?php echo number_format($pedido['precio_total_bs'], 2); ?></p>
+                      <p><strong>Total Bs:</strong> <?php echo number_format($pedido['precio_total_bs'], 2); ?></p>
                     </div>
                   </div>
                 </div>
@@ -450,41 +487,35 @@
     document.querySelectorAll('.tracking-form').forEach(function(form) {
       form.addEventListener('submit', function(e) {
         e.preventDefault();
-        var formData = new FormData(form);
+        const formData = new FormData(form);
+
         console.log('Enviando tracking al correo:', formData.get('correo_cliente'));
 
-        fetch('controlador/pedidoweb_tracking.php', {
-          method: 'POST',
-          body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Tracking enviado',
-              text: data.message,
-              confirmButtonText: 'OK'
-            }).then(() => {
-              location.reload();
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error al enviar',
-              text: data.message,
-              confirmButtonText: 'Cerrar'
-            });
+        $.ajax({
+          url: 'controlador/pedidoweb_tracking.php',
+          type: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+          dataType: 'json',
+                    success: function (data) {
+                      console.log('Respuesta del servidor:', data);
+            if (data.success) {  // <-- aquí cambias 'respuesta' por 'success'
+              Swal.fire({
+                icon: 'success',
+                title: 'Tracking enviado',
+                text: data.message, // también cambia 'msg' por 'message'
+                confirmButtonText: 'OK'
+              }).then(() => location.reload());
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error al enviar',
+                text: data.message,
+                confirmButtonText: 'Cerrar'
+              });
+            }
           }
-        })
-        .catch(err => {
-          console.error(err);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ocurrió un error en la solicitud.',
-            confirmButtonText: 'Cerrar'
-          });
         });
       });
     });

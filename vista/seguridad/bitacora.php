@@ -56,7 +56,7 @@
                 <h4 class="mb-0">
                   <i class="fas fa-history fa-sm text-primary-50"></i> Registro de Actividades
                 </h4>
-                <div class="btn-group" role="group">
+                <div class="btn-group ms-2" role="group">
                   <button type="button" class="btn btn-warning btn-sm" id="limpiarBitacora" title="Limpiar bitácora antigua">
                     <i class="fas fa-broom me-1"></i> Limpiar
                   </button>

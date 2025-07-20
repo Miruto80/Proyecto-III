@@ -4,7 +4,7 @@
 <head> 
   <!-- php barra de navegacion-->
   <?php include 'complementos/head.php' ?> 
-  <link rel="stylesheet" href="assets/css/estatus.css">
+  <link rel="stylesheet" href="assets/css/formulario.css">
   <title> Cliente | LoveMakeup  </title> 
 </head>
  
@@ -135,13 +135,15 @@
 <!-- Modal -->
 <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header header-color">
+    <div class="modal-content modal-producto">
+      <div class="modal-header ">
         <h5 class="modal-title text-dark" id="modalLabel"><i class="fas fa-pencil-alt"></i> Editar Datos del Cliente</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form method="POST" action="?pagina=cliente" id="formdatosactualizar">
+           <div class="seccion-formulario">
+              <h6><i class="fas fa-boxes"></i> Modificar datos del cliente </h6>
           <div class="mb-3">
             <label for="cedula" class="form-label text-g">Cédula</label>
              <div class="input-group mb-3">
@@ -171,11 +173,14 @@
             <input type="hidden" id="modalIdPersona" name="id_persona">
             <input type="hidden" id="modalce" name="cedulaactual">
             <input type="hidden" id="modalco" name="correoactual">
-        </form>
+           </div>
+        
+          </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-success text-dark" name="actualizar" id="actualizar"><i class="fa-solid fa-floppy-disk"></i> Actualizar datos</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-modern btn-guardar me-3" name="actualizar" id="actualizar">
+          <i class="fa-solid fa-floppy-disk me-2"></i> Actualizar datos</button>
+        <button type="button" class="btn btn-modern btn-limpiar" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>

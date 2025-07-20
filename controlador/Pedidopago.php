@@ -84,6 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['continuar_pago'])) {
 }
 
 // Si no es POST AJAX, redirigir al carrito
-require_once('vista/tienda/Pedidopago.php');
+require_once __DIR__ . '/../vista/tienda/Pedidopago.php';
 
 ?>

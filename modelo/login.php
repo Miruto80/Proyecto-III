@@ -168,6 +168,14 @@ class Login extends Conexion {
             if ($resultado) {
                 $conex->commit();
                 $conex = null;
+                
+               /* require_once 'CORREObienvenida.php';
+                $envio = enviarBienvenida($datos['correo']);
+                 if (!$envio['exito']) {
+                        return ['respuesta' => 0, 'accion' => 'incluir'];
+                 }else{
+                      return ['respuesta' => 1, 'accion' => 'incluir'];
+                 }  */
                 return ['respuesta' => 1, 'accion' => 'incluir'];
             }
             

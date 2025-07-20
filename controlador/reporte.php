@@ -114,6 +114,7 @@ $categorias_lista  = (new Categoria())->consultar();
 
 
 if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(1, 'ver')) {
+     $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'reporte';
         require_once 'vista/reporte.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';

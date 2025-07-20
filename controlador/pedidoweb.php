@@ -50,9 +50,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
         $respuesta = $objPedidoWeb->procesarPedidoweb(json_encode($datosPeticion));
         echo json_encode($respuesta);
-    } else {
-        echo json_encode(['respuesta' => 0, 'mensaje' => 'Faltan datos para actualizar delivery']);
-    }
+    } else if (isset($_POST['enviar'])) {
+        if (!empty($_POST['id_pedido'])) {
+            $datosPeticion = [
+                'operacion' => 'enviar',
+                'datos' => $_POST['id_pedido']
+            ];
+
+            $respuesta = $objPedidoWeb->procesarPedidoweb(json_encode($datosPeticion));
+            echo json_encode($respuesta);
+        } else {
+            echo json_encode(['respuesta' => 0, 'mensaje' => 'Falta el ID del pedido para enviar']);
+        }
+
+    // Eliminar pedido
+    } else if (isset($_POST['entregar'])) {
+        if (!empty($_POST['id_pedido'])) {
+            $datosPeticion = [
+                'operacion' => 'entregar',
+                'datos' => $_POST['id_pedido']
+            ];
+
+            $respuesta = $objPedidoWeb->procesarPedidoweb(json_encode($datosPeticion));
+            echo json_encode($respuesta);
+        } else {
+            echo json_encode(['respuesta' => 0, 'mensaje' => 'Falta el ID del pedido para entregar']);
+        } }
     
 
     exit;
@@ -68,8 +91,8 @@ foreach ($pedidos as &$p) {
 
 
 if ($_SESSION["nivel_rol"] >=2 && tieneAcceso(9, 'ver')) {
-     
-require_once 'vista/pedidoweb.php';
+$pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'pedidoweb';
+require_once __DIR__ . '/../vista/pedidoweb.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';
 

@@ -145,6 +145,114 @@ $(document).ready(function() {
   });
 });
 
+
+$(document).on('click', '.btn-enviar', function () {
+  const idPedido = $(this).data('id');
+
+  Swal.fire({
+    title: '¿Enviar Pedido?',
+    text: 'no podrás modificarlo',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, confirmar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: 'controlador/pedidoweb.php',
+        type: 'POST',
+        data: {
+          enviar: 'enviar',
+          id_pedido: idPedido
+        },
+        dataType: 'json',
+        success: function (res) {
+          if (res.respuesta == 1) {
+            Swal.fire({
+              title: 'Enviado',
+              text: res.mensaje || 'Pedido enviado correctamente',
+              icon: 'success',
+              timer: 1200,
+              showConfirmButton: false
+            }).then(() => location.reload());
+          } else {
+            Swal.fire({
+              title: 'Error',
+              text: res.mensaje || 'No se pudo Enviar el pedido',
+              icon: 'error',
+              timer: 1500,
+              showConfirmButton: false
+            });
+          }
+        },
+        error: function () {
+          Swal.fire({
+            title: 'Error',
+            text: 'Error en la comunicación con el servidor',
+            icon: 'error',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+      });
+    }
+  });
+});
+
+
+$(document).on('click', '.btn-entregar', function () {
+  const idPedido = $(this).data('id');
+
+  Swal.fire({
+    title: '¿Entregar Pedido?',
+    text: 'no podrás modificarlo',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, confirmar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: 'controlador/pedidoweb.php',
+        type: 'POST',
+        data: {
+          entregar: 'entregar',
+          id_pedido: idPedido
+        },
+        dataType: 'json',
+        success: function (res) {
+          if (res.respuesta == 1) {
+            Swal.fire({
+              title: 'Enviado',
+              text: res.mensaje || 'Pedido entregado correctamente',
+              icon: 'success',
+              timer: 1200,
+              showConfirmButton: false
+            }).then(() => location.reload());
+          } else {
+            Swal.fire({
+              title: 'Error',
+              text: res.mensaje || 'No se pudo Entregar el pedido',
+              icon: 'error',
+              timer: 1500,
+              showConfirmButton: false
+            });
+          }
+        },
+        error: function () {
+          Swal.fire({
+            title: 'Error',
+            text: 'Error en la comunicación con el servidor',
+            icon: 'error',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+      });
+    }
+  });
+});
+
   // Al hacer clic en "Editar dirección"
 $(document).on('click', '.btnEditarDireccion', function(){
   const $input = $(this).siblings('input[name="direccion"]');

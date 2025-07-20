@@ -1,4 +1,7 @@
 $(document).ready(function () {
+
+ 
+
     function muestraMensaje(icono, tiempo, titulo, mensaje) {
       Swal.fire({
         icon: icono,

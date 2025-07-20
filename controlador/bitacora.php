@@ -81,7 +81,7 @@
     if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(12, 'ver')) {
         // Registrar acceso al módulo de bitácora
         $objBitacora->registrarOperacion('ACCESO A MÓDULO', 'Bitácora', 'Usuario accedió al módulo de Bitácora');
-
+        $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'bitacora';
         require_once 'vista/seguridad/bitacora.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';
