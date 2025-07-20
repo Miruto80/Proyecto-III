@@ -25,7 +25,7 @@
     height: 8px;
     background-color: #e91e63;
     border-radius: 50%;
-    z-index: 50;
+    z-index: 0;
   }
 </style>
 
@@ -39,4 +39,4 @@
 <script src="assets/js/loader.js"></script>
 
 <!-- Tu módulo de notificaciones -->
-<script src="assets/js/notificacion.js"></script>
+<script src="assets/js/notificacion.js" defer></script>

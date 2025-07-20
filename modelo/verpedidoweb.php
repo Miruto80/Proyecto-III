@@ -1,7 +1,7 @@
 <?php
-require_once 'conexion.php';
-require_once 'metodoentrega.php';
-require_once 'metodopago.php';
+require_once __DIR__ . '/../modelo/conexion.php';
+require_once __DIR__ . '/../modelo/metodoentrega.php';
+require_once __DIR__ . '/../modelo/metodopago.php';
 
 class VentaWeb extends Conexion {
     private $objmetodoentrega;
@@ -13,7 +13,6 @@ class VentaWeb extends Conexion {
         $this->objmetodopago = new MetodoPago();
     }
 
-    // Métodos públicos para obtener datos
     public function obtenerMetodosPago() {
         return $this->objmetodopago->obtenerMetodos();
     }
@@ -22,173 +21,213 @@ class VentaWeb extends Conexion {
         return $this->objmetodoentrega->consultar();
     }
 
-    // Método principal para procesar el pedido, sin transacciones en este nivel
     public function procesarPedido($jsonDatos) {
         $datos = json_decode($jsonDatos, true);
-
         if (!isset($datos['operacion']) || $datos['operacion'] !== 'registrar_pedido') {
             return ['success' => false, 'message' => 'Operación no válida.'];
         }
-
-        $datosPedido = $datos['datos'];
+        $d = $datos['datos'];
+        // Validar requeridos
+    
 
         try {
-            // 1. Validar stock
-            $this->validarStockCarrito($datosPedido['carrito']);
+            $this->validarStockCarrito($d['carrito']);
 
-            // 2. Registrar pedido
-            $idPedido = $this->registrarPedido($datosPedido);
-            if (!$idPedido) {
-                throw new Exception("Error al registrar el pedido");
+            // 1. Registrar dirección
+            $idDireccion = $this->registrarDireccion([
+                'id_metodoentrega'=>$d['id_metodoentrega'],
+                'id_persona'=>$d['id_persona'],
+                'direccion_envio'=>$d['direccion_envio'],
+                'sucursal_envio'=>$d['sucursal_envio'] ?? null
+            ]);
+
+            // 2. Insertar pedido sin id_pago (permitir NULL en DB)
+            $idPedido = $this->registrarPedido([
+                'tipo'=>$d['tipo'],
+                'fecha'=>$d['fecha'] ?? date('Y-m-d H:i:s'),
+                'estado'=>$d['estado'] ?? 'pendiente',
+                'precio_total_usd'=>$d['precio_total_usd'],
+                'precio_total_bs'=>$d['precio_total_bs'],
+                'id_direccion'=>$idDireccion,
+                'id_pago'=>null,
+                'id_persona'=>$d['id_persona']
+            ]);
+
+            // 3. Registrar detalle de pago con id_pedido existente
+            $idPago = $this->registrarDetallePago([
+                'id_pedido'=>$idPedido,
+                'id_metodopago'=>$d['id_metodopago'],
+                'referencia_bancaria'=>$d['referencia_bancaria'],
+                'telefono_emisor'=>$d['telefono_emisor'],
+                'banco_destino'=>$d['banco_destino'],
+                'banco'=>$d['banco'],
+                'monto'=>$d['monto'],
+                'monto_usd'=>$d['monto_usd'],
+                'imagen' =>$d['imagen']
+            ]);
+
+            // 4. Actualizar pedido con id_pago
+            $this->actualizarPedidoConIdPago($idPedido, $idPago);
+
+            // 5. Registrar detalles y actualizar stock
+            foreach($d['carrito'] as $item) {
+                $precio = $item['cantidad'] >= $item['cantidad_mayor'] ? $item['precio_mayor'] : $item['precio_detal'];
+                $this->registrarDetalle([
+                    'id_pedido'=>$idPedido,
+                    'id_producto'=>$item['id'],
+                    'cantidad'=>$item['cantidad'],
+                    'precio_unitario'=>$precio
+                ]);
+                $this->actualizarStock($item['id'],$item['cantidad']);
             }
 
-            // 3. Registrar detalles, preliminar y actualizar stock
-            foreach ($datosPedido['carrito'] as $item) {
-                $precioUnitario = (
-                    $item['cantidad'] >= $item['cantidad_mayor']
-                    ? $item['precio_mayor']
-                    : $item['precio_detal']
-                );
-
-                $detalle = [
-                    'id_pedido' => $idPedido,
-                    'id_producto' => $item['id'],
-                    'cantidad' => $item['cantidad'],
-                    'precio_unitario' => $precioUnitario
-                ];
-
-                $idDetalle = $this->registrarDetalle($detalle);
-                if (!$idDetalle) {
-                    throw new Exception("Error al registrar detalle del producto: {$item['nombre']}");
-                }
-
-                $this->registrarPreliminar(['id_detalle' => $idDetalle, 'condicion' => 'pedido']);
-                $this->actualizarStock($item['id'], $item['cantidad']);
-            }
-
-            return ['success' => true, 'id_pedido' => $idPedido, 'message' => 'Pedido registrado correctamente'];
-
+            return ['success'=>true,'id_pedido'=>$idPedido,'message'=>'Pedido registrado correctamente'];
         } catch (Exception $e) {
-            return ['success' => false, 'message' => $e->getMessage()];
+            return ['success'=>false,'message'=>$e->getMessage()];
         }
     }
 
-    // Funciones privadas: cada una con su propia transacción
+    // Auxiliares
+    private function actualizarPedidoConIdPago($idPedido,$idPago) {
+        $conex = $this->getConex1();
+       try{
+        $conex->beginTransaction();
+        $stmt = $conex->prepare("UPDATE pedido SET id_pago=:id_pago WHERE id_pedido=:id_pedido");
+        $stmt->execute(['id_pago'=>$idPago,'id_pedido'=>$idPedido]);
+
+       
+        $conex->commit();
+         }catch (PDOException $e){
+            if($conex){
+                $conex->rollBack();
+              
+            }
+            throw $e;
+         }
+
+         $conex = null;
+    }
+
     private function validarStockCarrito($carrito) {
         $conex = $this->getConex1();
-        try {
-            $conex->beginTransaction();
-            foreach ($carrito as $item) {
-                $stmt = $conex->prepare(
-                    "SELECT stock_disponible, nombre FROM productos WHERE id_producto = :id_producto"
-                );
-                $stmt->execute(['id_producto' => $item['id']]);
-                $producto = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                if (!$producto) {
-                    throw new Exception("Producto con ID {$item['id']} no encontrado.");
-                }
-                if ($item['cantidad'] > $producto['stock_disponible']) {
-                    throw new Exception(
-                        "Stock insuficiente para {$producto['nombre']} (Disponible: {$producto['stock_disponible']}, Solicitado: {$item['cantidad']})"
-                    );
-                }
-            }
-            $conex->commit();
-            return true;
-        } catch (Exception $e) {
-            $conex->rollBack();
-            throw $e;
+       try{
+        $conex->beginTransaction();
+        foreach($carrito as $it) {
+            $stmt = $conex->prepare("SELECT stock_disponible,nombre FROM productos WHERE id_producto=:id");
+            $stmt->execute(['id'=>$it['id']]);
+            $p = $stmt->fetch(PDO::FETCH_ASSOC);
+            if(!$p) throw new Exception("Producto {$it['id']} no encontrado");
+            if($it['cantidad']>$p['stock_disponible']) throw new Exception("Stock insuficiente para {$p['nombre']}");
+            
         }
+        $conex->commit();
+    }catch(Exception $e){
+        if($conex){
+            $conex->rollBack();
+        }
+        throw $e;
+    }
+    $conex = null;
     }
 
-    private function registrarPedido($datos) {
+
+    private function registrarPedido($d) {
         $conex = $this->getConex1();
-        try {
-            $conex->beginTransaction();
-
-            $sql = "INSERT INTO pedido (
-                referencia_bancaria, telefono_emisor, banco, banco_destino, direccion,
-                id_metodopago, id_entrega, id_persona, estado, precio_total, tipo
-            ) VALUES (
-                :referencia_bancaria, :telefono_emisor, :banco, :banco_destino, :direccion,
-                :id_metodopago, :id_entrega, :id_persona, :estado, :precio_total, :tipo
-            )";
-
-            $stmt = $conex->prepare($sql);
-            $stmt->execute([
-                'referencia_bancaria' => $datos['referencia_bancaria'],
-                'telefono_emisor'      => $datos['telefono_emisor'],
-                'banco'                => $datos['banco'],
-                'banco_destino'        => $datos['banco_destino'],
-                'direccion'            => $datos['direccion'],
-                'id_metodopago'        => $datos['id_metodopago'],
-                'id_entrega'           => $datos['id_entrega'],
-                'id_persona'           => $datos['id_persona'],
-                'estado'               => $datos['estado'],
-                'precio_total'         => $datos['precio_total'],
-                'tipo'                 => $datos['tipo']
-            ]);
-            $id = $conex->lastInsertId();
-            $conex->commit();
-            return $id;
-        } catch (Exception $e) {
+       try{ 
+        $conex->beginTransaction();
+        $sql = "INSERT INTO pedido(tipo,fecha,estado,precio_total_usd,precio_total_bs,id_direccion,id_pago,id_persona)".
+               " VALUES(:tipo,:fecha,:estado,:precio_total_usd,:precio_total_bs,:id_direccion,:id_pago,:id_persona)";
+        $stmt = $conex->prepare($sql);
+        $stmt->execute($d);
+        $id = $conex->lastInsertId();
+        $conex->commit();
+        return $id;
+       }catch(Exception $e) {
+        if ($conex->inTransaction()) {
             $conex->rollBack();
-            throw $e;
         }
+        throw $e;
+    }
+    $conex = null;
     }
 
-    private function registrarDetalle($detalle) {
+    private function registrarDetallePago($d) {
         $conex = $this->getConex1();
-        try {
-            $conex->beginTransaction();
-            $sql = "INSERT INTO pedido_detalles (id_pedido, id_producto, cantidad, precio_unitario)
-                    VALUES (:id_pedido, :id_producto, :cantidad, :precio_unitario)";
-            $stmt = $conex->prepare($sql);
-            $stmt->execute($detalle);
-            $id = $conex->lastInsertId();
-            $conex->commit();
-            return $id;
-        } catch (Exception $e) {
+       try{
+        $conex->beginTransaction();
+        $sql = "INSERT INTO detalle_pago(id_pedido,id_metodopago,referencia_bancaria,telefono_emisor,banco_destino,banco,monto,monto_usd,imagen)".
+               " VALUES(:id_pedido,:id_metodopago,:referencia_bancaria,:telefono_emisor,:banco_destino,:banco,:monto,:monto_usd, :imagen)";
+        $stmt = $conex->prepare($sql);
+        $stmt->execute($d);
+        $id = $conex->lastInsertId();
+        $conex->commit();
+        return $id;
+       }catch (Exception $e) {
+        if ($conex->inTransaction()) {
             $conex->rollBack();
-            throw $e;
         }
+        throw $e;
+    }
+    $conex = null;
     }
 
-    private function registrarPreliminar($datos) {
+    private function registrarDetalle($d) {
         $conex = $this->getConex1();
-        try {
-            $conex->beginTransaction();
-            $sql = "INSERT INTO preliminar (id_detalle, condicion)
-                    VALUES (:id_detalle, :condicion)";
-            $stmt = $conex->prepare($sql);
-            $res = $stmt->execute($datos);
-            $conex->commit();
-            return $res;
-        } catch (Exception $e) {
+       try{ 
+        $conex->beginTransaction();
+        $sql = "INSERT INTO pedido_detalles(id_pedido,id_producto,cantidad,precio_unitario)".
+               " VALUES(:id_pedido,:id_producto,:cantidad,:precio_unitario)";
+        $stmt = $conex->prepare($sql);
+        $stmt->execute($d);
+        $conex->commit();
+       }catch (Exception $e) {
+        if ($conex->inTransaction()) {
             $conex->rollBack();
-            throw $e;
         }
+        throw $e;
+    }
+    $conex = null;
     }
 
-    private function actualizarStock($idProducto, $cantidad) {
+    private function registrarDireccion($d) {
         $conex = $this->getConex1();
-        try {
-            $conex->beginTransaction();
-            $sql = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad
-                    WHERE id_producto = :id_producto";
-            $stmt = $conex->prepare($sql);
-            $stmt->execute(['id_producto' => $idProducto, 'cantidad' => $cantidad]);
-            $conex->commit();
-            return true;
-        } catch (Exception $e) {
+       try{
+        $conex->beginTransaction();
+        $sql = "INSERT INTO direccion(id_metodoentrega,id_persona,direccion_envio,sucursal_envio)".
+               " VALUES(:id_metodoentrega,:id_persona,:direccion_envio,:sucursal_envio)";
+        $stmt = $conex->prepare($sql);
+        $stmt->execute($d);
+        $id = $conex->lastInsertId();
+        $conex->commit();
+        return $id;
+       }catch (Exception $e) {
+        if ($conex->inTransaction()) {
             $conex->rollBack();
-            throw $e;
         }
+        throw $e;
+    }
+    $conex = null;
+    }
+
+    private function actualizarStock($id,$cant) {
+        $conex = $this->getConex1();
+       try{ 
+        $conex->beginTransaction();
+        $sql = "UPDATE productos SET stock_disponible=stock_disponible-:cant WHERE id_producto=:id";
+        $stmt = $conex->prepare($sql);
+        $stmt->execute(['cant'=>$cant,'id'=>$id]);
+        $conex->commit();
+       }catch (Exception $e) {
+        if ($conex->inTransaction()) {
+            $conex->rollBack();
+        }
+        throw $e;
+    }
+    $conex = null;
     }
 
     public function vaciarCarrito() {
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if(session_status()===PHP_SESSION_NONE) session_start();
         unset($_SESSION['carrito']);
     }
 }

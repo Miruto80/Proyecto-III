@@ -73,6 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
         $objEntrega->registrarBitacora(json_encode($bitacora));*/
             $metodos = $objEntrega->consultar();
+            $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'metodoentrega';
             require_once __DIR__ . '/../vista/metodoentrega.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';

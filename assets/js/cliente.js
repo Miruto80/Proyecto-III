@@ -1,3 +1,44 @@
+/*||| Funcion para cambiar el boton a loader |||*/
+function activarLoaderBoton(idBoton, texto = 'Cargando...') {
+    const $boton = $(idBoton);
+    const textoActual = $boton.html();
+    $boton.data('texto-original', textoActual); // Guarda el texto original
+    $boton.prop('disabled', true);
+    $boton.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${texto}`);
+}
+
+function desactivarLoaderBoton(idBoton) {
+    const $boton = $(idBoton);
+    const textoOriginal = $boton.data('texto-original');
+    $boton.prop('disabled', false);
+    $boton.html(textoOriginal);
+}
+
+/*||| Funcion para validar compas de formulario |||*/
+function validarCampo(campo, regex, textoError, mensaje) {
+  const valor = campo.val();
+
+  if (campo.is("select")) {
+   
+    if (valor === "") {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    } else {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    }
+  } else {
+   
+    if (regex.test(valor)) {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    } else {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    }
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   var editarModal = document.getElementById("editarModal");
   editarModal.addEventListener("show.bs.modal", function(event) {
@@ -41,82 +82,72 @@ mensaje){
   }
 } 
 
-$(document).on("click", ".favorito, .clienteactivo, .malcliente", function () {
-    var idPersona = $(this).data("id"); 
-    var tipoAccion = $(this).hasClass("favorito") ? "favorito" : 
-                     $(this).hasClass("clienteactivo") ? "clienteactivo" : 
-                     $(this).hasClass("malcliente") ? "malcliente" : "";
-
-    // Mostrar alerta de confirmación antes de enviar los datos
-    Swal.fire({
-        title: `¿Desea cambiar el estado a ${tipoAccion}?`,
-        text: "Esta acción actualizará el estado del cliente.",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#58c731",
-        cancelButtonColor: "#42515A",
-        confirmButtonText: "Sí",
-        cancelButtonText: "No"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $("#id_persona_hidden").val(idPersona);
-
-            var datos = new FormData();
-            datos.append(tipoAccion, tipoAccion);
-            datos.append("id_persona", idPersona);
-            enviaAjax(datos);
-        }
-    });
-});
-
-
 $(document).ready(function() {
 
   $('#actualizar').on("click", function () {
     Swal.fire({
-      title: '¿Desea Cambiar estos datos del cliente?',
-      text: '',
+      title: '¿Actualizar cliente?',
+      text: 'Confirma los cambios.',
       icon: 'question',
       showCancelButton: true,
       color: "#00000",
-      confirmButtonColor: '#58c731',
+      confirmButtonColor: '#50c063ff',
       cancelButtonColor: '#42515A',
       confirmButtonText: ' Si, Actualizar ',
       cancelButtonText: 'NO'
     }).then((result) => {
-      if (result.isConfirmed) {
-       
-        var datos = new FormData($('#formdatosactualizar')[0]);
-        datos.append('actualizar', 'actualizar');
-        enviaAjax(datos);
+     if (result.isConfirmed) {
+        // Validación de los campos antes de enviar
+            let cedulaValida = /^[0-9]{7,8}$/.test($("#modalCedula").val());
+            let correoValido = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/.test($("#modalCorreo").val());
+
+            if (!cedulaValida) {
+                $("#modalCedula").addClass("is-invalid");
+                $("#textocedulamodal").show();
+            } else {
+                $("#modalCedula").removeClass("is-invalid").addClass("is-valid");
+                $("#textocedulamodal").hide();
+            }
+
+            if (!correoValido) {
+                $("#modalCorreo").addClass("is-invalid");
+                $("#textocorreomodal").show();
+            } else {
+                $("#modalCorreo").removeClass("is-invalid").addClass("is-valid");
+                $("#textocorreomodal").hide();
+            }
+
+            // Si todos los campos son válidos, enviar el formulario
+            if (cedulaValida && correoValido) {
+            activarLoaderBoton('#actualizar');
+            var datos = new FormData($('#formdatosactualizar')[0]);
+            datos.append('actualizar', 'actualizar');
+            enviaAjax(datos);
+          }
       }
     });
- });
+ }); 
 
 
-   $("#modalCorreo").on("keypress", function (e) {
-      validarkeypress(/^[a-zA-Z0-9._%+-@\b]*$/, e);
+    $("#modalCedula").on("keypress",function(e){
+      validarkeypress(/^[0-9\b]*$/,e);
     });
 
-    $("#modalCorreo").on("keyup", function () {
-      validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $(this),
-          $("#textocorreomodal"), "El formato debe incluir @ y ser válido.");
-    });
-
-
-    $("#modalCedula").on("keypress", function(e) {
-    validarkeypress(/^[0-9\b]*$/, e); // Permitir solo números y la tecla de retroceso
+    $("#modalCedula").on("keyup", function () {
+      validarCampo($(this),/^[0-9]{7,8}$/,
+    $("#textocedulamodal"),"El formato debe ser 1222333");
     });
     
-    $("#modalCedula").on("keyup", function() {
-    validarkeyup(/^[0-9]{7,8}$/, $(this), $("#textocedulamodal"), "El formato debe ser 1222333");
-    })
+    $("#modalCorreo").on("keypress", function (e) {
+          validarkeypress(/^[a-zA-Z0-9._%+-@\b]*$/, e);
+    });
 
+     $("#modalCorreo").on("keyup", function () {
+      validarCampo($(this), /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/,
+       $("#textocorreomodal"), "El formato debe incluir @ y ser válido .");
+    });
 
 });
-
-
-$
 
 function muestraMensaje(icono, tiempo, titulo, mensaje) {
   Swal.fire({
@@ -145,41 +176,16 @@ function enviaAjax(datos) {
         var lee = JSON.parse(respuesta);
         try {
   
-           if (lee.accion == 'favorito') {
-                if (lee.respuesta == 1) {  
-                  muestraMensaje("success", 1500, "Se ha Cambio  Existosamente", "Cliente Favorito");
-                  setTimeout(function () {
-                    location = '?pagina=cliente';
-                  }, 1000);
-                } else {
-                  muestraMensaje("error", 2000, "ERROR", lee.text);
-                }
-              } else if (lee.accion == 'malcliente') {
-                if (lee.respuesta == 1) {
-                  muestraMensaje("success", 1500, "Se ha Cambio  Existosamente", "Mal Clientes");
-                  setTimeout(function () {
-                    location = '?pagina=cliente';
-                  }, 1000);
-                } else {
-                  muestraMensaje("error", 2000, "ERROR", lee.text);
-                }
-              } else if (lee.accion == 'clienteactivo') {
-                if (lee.respuesta == 1) {
-                  muestraMensaje("success", 1000, "Se ha Cambio  Existosamente", "Cliente Activo Frecuente");
-                  setTimeout(function () {
-                     location = '?pagina=cliente';
-                  }, 1000);
-                } else {
-                  muestraMensaje("error", 2000, "ERROR", lee.text);
-                }
-              } else if (lee.accion == 'actualizar') {
+           if (lee.accion == 'actualizar') {
                 if (lee.respuesta == 1) {
                   muestraMensaje("success", 2000, "Se ha Modificado con éxito", "Su registro se ha Actualizado exitosamente");
+                  desactivarLoaderBoton('#actualizar'); 
                   setTimeout(function () {
                      location = '?pagina=cliente';
                   }, 1000);
                 } else {
                   muestraMensaje("error", 2000, "ERROR", lee.text);
+                  desactivarLoaderBoton('#actualizar'); 
                 }
               }
   

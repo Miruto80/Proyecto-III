@@ -8,7 +8,7 @@
   $objolvido = new Olvido();    
   
   if (isset($_POST['cerrarolvido'])) {    
-      session_destroy(); // Se cierra la sesión
+      session_destroy(); 
       header('Location: ?pagina=login');
       exit;
 

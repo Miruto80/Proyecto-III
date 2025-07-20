@@ -145,70 +145,143 @@ $(document).ready(function() {
   });
 });
 
-  // Actualizar estado delivery y dirección
-  $(document).on('submit', '.form-delivery', function(e) {
-    e.preventDefault();
 
-    const $form = $(this);
-    const idPedido = $form.find('input[name="id_pedido"]').val();
-    const estadoDelivery = $form.find('select[name="estado_delivery"]').val();
-    const direccion = $form.find('input[name="direccion"]').val();
+$(document).on('click', '.btn-enviar', function () {
+  const idPedido = $(this).data('id');
 
-    if (!idPedido || !estadoDelivery || !direccion) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Faltan datos',
-            text: 'Por favor completa todos los campos para actualizar delivery.'
-        });
-        return;
-    }
-
-    const postData = {
-        id_pedido: idPedido,
-        estado_delivery: estadoDelivery,
-        direccion: direccion
-    };
-
-    Swal.fire({
-        title: 'Actualizando estado delivery...',
-        html: 'Por favor espera.',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    $.ajax({
+  Swal.fire({
+    title: '¿Enviar Pedido?',
+    text: 'no podrás modificarlo',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, confirmar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
         url: 'controlador/pedidoweb.php',
         type: 'POST',
-        data: postData,
-        dataType: 'json'
-    }).done(function(res) {
-        Swal.close();
-        if (res.respuesta == 1) {
+        data: {
+          enviar: 'enviar',
+          id_pedido: idPedido
+        },
+        dataType: 'json',
+        success: function (res) {
+          if (res.respuesta == 1) {
             Swal.fire({
-                icon: 'success',
-                title: '¡Listo!',
-                text: 'Estado de delivery actualizado correctamente',
-                timer: 1500,
-                showConfirmButton: false
+              title: 'Enviado',
+              text: res.mensaje || 'Pedido enviado correctamente',
+              icon: 'success',
+              timer: 1200,
+              showConfirmButton: false
             }).then(() => location.reload());
-        } else {
+          } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: res.mensaje || 'No se pudo actualizar el estado delivery'
+              title: 'Error',
+              text: res.mensaje || 'No se pudo Enviar el pedido',
+              icon: 'error',
+              timer: 1500,
+              showConfirmButton: false
             });
-        }
-    }).fail(function() {
-        Swal.close();
-        Swal.fire({
-            icon: 'error',
+          }
+        },
+        error: function () {
+          Swal.fire({
             title: 'Error',
-            text: 'Error en la comunicación con el servidor'
-        });
-    });
+            text: 'Error en la comunicación con el servidor',
+            icon: 'error',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+      });
+    }
+  });
 });
+
+
+$(document).on('click', '.btn-entregar', function () {
+  const idPedido = $(this).data('id');
+
+  Swal.fire({
+    title: '¿Entregar Pedido?',
+    text: 'no podrás modificarlo',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, confirmar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: 'controlador/pedidoweb.php',
+        type: 'POST',
+        data: {
+          entregar: 'entregar',
+          id_pedido: idPedido
+        },
+        dataType: 'json',
+        success: function (res) {
+          if (res.respuesta == 1) {
+            Swal.fire({
+              title: 'Enviado',
+              text: res.mensaje || 'Pedido entregado correctamente',
+              icon: 'success',
+              timer: 1200,
+              showConfirmButton: false
+            }).then(() => location.reload());
+          } else {
+            Swal.fire({
+              title: 'Error',
+              text: res.mensaje || 'No se pudo Entregar el pedido',
+              icon: 'error',
+              timer: 1500,
+              showConfirmButton: false
+            });
+          }
+        },
+        error: function () {
+          Swal.fire({
+            title: 'Error',
+            text: 'Error en la comunicación con el servidor',
+            icon: 'error',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+      });
+    }
+  });
+});
+
+  // Al hacer clic en "Editar dirección"
+$(document).on('click', '.btnEditarDireccion', function(){
+  const $input = $(this).siblings('input[name="direccion"]');
+  $input.prop('readonly', false).focus();
+  $(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-check"></i>');
+});
+
+// AJAX para actualizar delivery
+$(document).on('submit', '.form-delivery', function(e){
+  e.preventDefault();
+  const $form = $(this);
+  const postData = $form.serialize(); // incluye actualizar_delivery, id_pedido, estado_delivery, direccion
+
+  Swal.fire({ title: 'Guardando…', didOpen: ()=> Swal.showLoading(), allowOutsideClick: false });
+
+  $.post('controlador/pedidoweb.php', postData, function(res){
+    Swal.close();
+    if (res.respuesta == 1) {
+      Swal.fire({ icon:'success', title:'¡Hecho!', text:res.msg, timer:1500, showConfirmButton:false })
+           .then(()=> location.reload());
+    } else {
+      Swal.fire({ icon:'error', title:'Error', text: res.msg || 'No se pudo actualizar.' });
+    }
+  }, 'json').fail(function(){
+    Swal.close();
+    Swal.fire({ icon:'error', title:'Error', text:'Error en el servidor.' });
+  });
+});
+
 
 
 $('#btnayuda').on("click", function () {

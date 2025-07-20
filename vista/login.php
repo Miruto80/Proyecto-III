@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Login | LoveMakeup C.A</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
     <link rel="shortcut icon" type="image/png" href="assets/img/icono.png"/>
@@ -14,22 +15,24 @@
     <script src="assets/js/libreria/jquery.min.js"></script>
     <script src="assets/js/libreria/sweetalert2.js"></script>
     <link rel="stylesheet" href="assets/css/login.css" />
-     <script src="assets/js/loader.js"></script>
+    <script src="assets/js/loader.js"></script>
+
   </head>
   <body>
+
 <!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
   <div class="preloader-wrapper">
     <div class="preloader">
     </div>
   </div> 
 <!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+
   <div class="d-md-flex half">
     <div class="bg" style="background-image: url('assets/img/g03.jpg');"></div>
     <div class="contents">
 
       <div class="container">
        
-      
         <div class="row align-items-center justify-content-center">
            <div class="">
         <div class="back-button-container1">
@@ -197,18 +200,6 @@
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

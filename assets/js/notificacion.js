@@ -1,214 +1,192 @@
-// assets/js/notificacion.js
-
 document.addEventListener('DOMContentLoaded', () => {
-  // 0) Mostrar alerta de éxito si flashNotif fue inyectado en la vista
-  if (window.flashNotif) {
-    Swal.fire({
-      icon: 'success',
-      title: '¡Hecho!',
-      text: window.flashNotif,
-      confirmButtonText: 'OK'
-    });
-    window.flashNotif = null;
-  }
-
-  // 1) Puntito rosa: micro‐API count
-  const baseURL = '?pagina=notificacion';
+  const BASE    = '?pagina=notificacion';
   const bellBtn = document.querySelector('.notification-icon');
+  const tbody   = document.getElementById('notif-body');
+  const helpBtn = document.getElementById('btnAyudanoti');
+  let lastId    = Number(localStorage.getItem('lastPedidoId') || 0);
 
-  function updateNotifDot() {
-    fetch(`${baseURL}&accion=count`)
-      .then(res => res.json())
-      .then(d => {
-        if (!bellBtn) return;
-        const dot = bellBtn.querySelector('.notif-dot');
-        if (d.count > 0 && !dot) {
-          bellBtn.insertAdjacentHTML('beforeend', '<span class="notif-dot"></span>');
-        } else if (d.count === 0 && dot) {
-          dot.remove();
-        }
-      })
-      .catch(console.error);
+  // 1) Contador de badge
+  async function updateBadge() {
+    if (!bellBtn) return;
+    try {
+      const res         = await fetch(`${BASE}&accion=count`);
+      const { count }   = await res.json();
+      const dotExisting = bellBtn.querySelector('.notif-dot');
+
+      if (count > 0 && !dotExisting) {
+        bellBtn.insertAdjacentHTML('beforeend',
+          '<span class="notif-dot"></span>');
+      } else if (count === 0 && dotExisting) {
+        dotExisting.remove();
+      }
+    } catch (err) {
+      console.error('updateBadge error:', err);
+    }
   }
-  updateNotifDot();
-  setInterval(updateNotifDot, 30000);
 
-  // 2) Helper: intercepta forms para SweetAlert + submit, con prechecks
-  function bindForm(selector, opts) {
-    document.querySelectorAll(selector).forEach(form => {
-      form.addEventListener('submit', e => {
-        e.preventDefault();
+  // 2) Polling de nuevos pedidos/reservas
+  async function pollPedidos() {
+    if (!bellBtn) return;
+    try {
+      const res               = await fetch(`${BASE}&accion=nuevos&lastId=${lastId}`);
+      const { count, pedidos} = await res.json();
 
-        // Pre‐check para "vaciar": exige al menos una entregada
-        if (opts.requireAnyDelivered) {
-          const hasDelivered = Array.from(
-            document.querySelectorAll('#notif-body tr')
-          ).some(tr => {
-            const st = tr.children[2].textContent.trim();
-            return st === 'Entregada' || st === 'Leída y entregada';
+      if (count > 0) {
+        pedidos.forEach(p => {
+          const title = p.tipo === 3
+            ? `Nueva reserva #${p.id_pedido}`
+            : `Nuevo pedido #${p.id_pedido} – Bs. ${p.total}`;
+
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'info',
+            title,
+            showConfirmButton: false,
+            timer: 4000
           });
-          if (!hasDelivered) {
-            return Swal.fire({
-              icon: 'info',
-              title: 'Nada que vaciar',
-              text: opts.blockText,
-              confirmButtonText: 'OK'
-            });
-          }
-        }
-
-        // Pre‐check para "eliminar": exige que esa notificación esté entregada
-        if (opts.requireDelivered) {
-          const id       = form.querySelector('input[name="id"]').value;
-          const row      = document.querySelector(`#notif-${id}`);
-          const estadoTd = row.children[2].textContent.trim();
-          if (estadoTd !== 'Entregada' && estadoTd !== 'Leída y entregada') {
-            return Swal.fire({
-              icon: 'warning',
-              title: 'Acción no permitida',
-              text: opts.blockText,
-              confirmButtonText: 'OK'
-            });
-          }
-        }
-
-        // Confirmación estándar
-        Swal.fire({
-          title: opts.title,
-          text: opts.text || '',
-          icon: opts.icon || 'warning',
-          showCancelButton: true,
-          confirmButtonText: opts.confirmText || 'Sí',
-          cancelButtonText: 'Cancelar'
-        }).then(({ isConfirmed }) => {
-          if (isConfirmed) form.submit();
         });
-      });
-    });
+
+        // inject dot if missing
+        if (!bellBtn.querySelector('.notif-dot')) {
+          bellBtn.insertAdjacentHTML('beforeend',
+            '<span class="notif-dot"></span>');
+        }
+
+        // update lastId
+        lastId = pedidos[pedidos.length - 1].id_pedido;
+        localStorage.setItem('lastPedidoId', lastId);
+      }
+    } catch (err) {
+      console.error('pollPedidos error:', err);
+    }
   }
 
-  // 3) Enlazar formularios:
+  // 3) Delegación: marcar como leída (solo si existe la tabla)
+  if (tbody) {
+    tbody.addEventListener('click', async e => {
+      const btn = e.target.closest('.btn-action');
+      if (!btn) return;
+      e.preventDefault();
 
-  // Vaciar entregadas (Admin)
-  bindForm('#vaciar-notificaciones-form', {
-    title:             '¿Vaciar todas las notificaciones entregadas?',
-    text:              'Se eliminarán todas las entregadas.',
-    icon:              'warning',
-    confirmText:       'Vaciar',
-    requireAnyDelivered: true,
-    blockText:         'No hay notificaciones entregadas para vaciar.'
-  });
+      const id     = btn.dataset.id;
+      const accion = btn.dataset.accion;
+      const row    = btn.closest('tr');
 
-  // Marcar como leída (Admin)
-  bindForm('form.marcar-leer-form', {
-    title:       '¿Marcar como leída?',
-    icon:        'question',
-    confirmText: 'Leer'
-  });
-
-  // Marcar como entregada (Asesora)
-  bindForm('form.marcar-entregar-form', {
-    title:       '¿Marcar como entregada?',
-    icon:        'question',
-    confirmText: 'Entregar'
-  });
-
-  // Eliminar notificación (Admin)
-  bindForm('form.btn-eliminar-form', {
-    title:             '¿Eliminar notificación?',
-    text:              'Esta acción no se puede deshacer.',
-    icon:              'warning',
-    confirmText:       'Eliminar',
-    requireDelivered:  true,
-    blockText:         'Solo puedes eliminar notificaciones entregadas.'
-  });
-
-    $('#btnAyudanoti').on('click', function() {
-    const DriverClass = window.driver.js.driver;
-    if (typeof DriverClass !== 'function') {
-      console.error('Driver.js v1 no detectado');
-      return;
-    }
-
-    const steps = [];
-
-    // Tabla
-    if ($('.table-compact').length) {
-      steps.push({
-        element: '.table-compact',
-        popover: {
-          title:       'Tabla de notificaciones',
-          description: 'Aquí ves todas las notificaciones.',
-          side:        'top'
-        }
+      const { isConfirmed } = await Swal.fire({
+        title: '¿Marcar como leída?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'Cancelar'
       });
-    }
+      if (!isConfirmed) return;
 
-    // Admin: Vaciar entregadas
-    if ($('#vaciar-notificaciones').length) {
-      steps.push({
-        element: '#vaciar-notificaciones',
-        popover: {
-          title:       'Vaciar entregadas',
-          description: 'Elimina las notificaciones entregadas.',
-          side:        'left'
-        }
-      });
-    }
+      try {
+        const res  = await fetch(`${BASE}&accion=${accion}`, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams({ id })
+        });
+        const data = await res.json();
 
-    // Admin: Marcar como leída
-    if ($('form.marcar-leer-form button').length) {
-      steps.push({
-        element: 'form.marcar-leer-form button',
-        popover: {
-          title:       'Marcar como leída',
-          description: 'Marca nuevas notificaciones como leídas.',
-          side:        'left'
-        }
-      });
-    }
+        await Swal.fire(
+          data.success ? '¡Listo!' : 'Error',
+          data.mensaje,
+          data.success ? 'success' : 'error'
+        );
 
-    // Asesora: Marcar como entregada
-    if ($('form.marcar-entregar-form button').length) {
-      steps.push({
-        element: 'form.marcar-entregar-form button',
-        popover: {
-          title:       'Entregar notificación',
-          description: 'Marca notificaciones leídas como entregadas.',
-          side:        'left'
-        }
-      });
-    }
+if (data.success && row) {
+  // 1) elimino la fila
+  row.remove();
 
-    // Admin: Eliminar
-    if ($('form.btn-eliminar-form button').length) {
-      steps.push({
-        element: 'form.btn-eliminar-form button',
-        popover: {
-          title:       'Eliminar notificación',
-          description: 'Elimina notificaciones entregadas.',
-          side:        'left'
-        }
-      });
-    }
+  // 2) actualizo el badge
+  updateBadge();
 
-    // Paso final
-    steps.push({
-      popover: {
-        title:       '¡Listo!',
-        description: 'Terminaste la guía de notificaciones.'
+  // 3) si ya no hay ninguna fila
+  if (tbody.children.length === 0) {
+    const msg = tbody.dataset.emptyMsg || 'No hay notificaciones.';
+    const tr  = document.createElement('tr');
+    tr.innerHTML = `
+      <td colspan="5" class="text-center py-3">
+        ${msg}
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+      } catch (err) {
+        console.error('marcarLeida error:', err);
+        Swal.fire('Error','No se pudo conectar','error');
       }
     });
+  }
 
-    // Ejecutar Driver.js
-    const driverObj = new DriverClass({
-      nextBtnText:  'Siguiente',
-      prevBtnText:  'Anterior',
-      doneBtnText:  'Listo',
-      popoverClass: 'driverjs-theme',
-      closeBtn:     false,
-      steps
+  // 4) Guía interactiva (solo si existe el botón)
+  if (helpBtn) {
+    helpBtn.addEventListener('click', () => {
+      const Driver = window.driver?.js?.driver;
+      if (typeof Driver !== 'function') {
+        return console.error('Driver.js no detectado');
+      }
+
+      const steps = [];
+
+      if (document.querySelector('.table-compact')) {
+        steps.push({
+          element: '.table-compact',
+          popover: {
+            title: 'Tabla de notificaciones',
+            description: 'Aquí ves todas las notificaciones.',
+            side: 'top'
+          }
+        });
+      }
+      if (document.querySelector('.btn-action[data-accion="marcarLeida"]')) {
+        steps.push({
+          element: '.btn-action[data-accion="marcarLeida"]',
+          popover: {
+            title: 'Marcar como leída',
+            description: 'Haz clic para leer la notificación.',
+            side: 'left'
+          }
+        });
+      }
+          if (document.querySelector('.btn-action[data-accion="marcarLeidaAsesora"]')) {
+      steps.push({
+        element: '.btn-action[data-accion="marcarLeidaAsesora"]',
+        popover: {
+          title: 'Leer',
+          description: 'Haz clic para marcar esta notificación como leída.',
+          side: 'left'
+        }
+      });
+    }
+      steps.push({
+        popover: {
+          title: '¡Listo!',
+          description: 'Terminaste la guía de notificaciones.'
+        }
+      });
+
+      new Driver({
+        nextBtnText:  'Siguiente',
+        prevBtnText:  'Anterior',
+        doneBtnText:  'Listo',
+        popoverClass: 'driverjs-theme',
+        closeBtn:     false,
+        steps
+      }).drive();
     });
-    driverObj.drive();
-  });
+  }
+
+  // 5) Inicialización
+  updateBadge();
+  pollPedidos();
+  setInterval(updateBadge, 30000);
+  setInterval(pollPedidos, 30000);
 });

@@ -52,17 +52,26 @@ nav {
           </div>
         </div>
 
+        <style>
+          .sombra-profunda {
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+                border-radius: 8px; 
+                background-color: #fff;
+                padding: 20px;
+            }
+        </style>
+
         <div class="col-sm-12 col-md-4 col-lg-7 d-none d-md-block">
-          <div class="search-bar row justify-content-between bg-light p-2 rounded-4">
+          <div class="search-bar row justify-content-between p-2 rounded-4 bg-ligth sombra-profunda">
             <div class="col-11">
             <form id="search-form" class="text-center" action="index.php" method="get">
               <input type="hidden" name="pagina" value="catalogo_producto">
-              <input type="text" name="busqueda" class="form-control border-0 bg-transparent"
+              <input type="text" name="busqueda" class="form-control border-0 bg-transparent "
                 placeholder="Búsqueda de más de 1.000 productos">
             </form>
             </div>
             <div class="col-1">
-            <i class="fa-solid fa-magnifying-glass" style="font-size: 25px; cursor:pointer;" onclick="document.getElementById('search-form').submit();"></i>
+            <i class="fa-solid fa-magnifying-glass" style="font-size: 30px; cursor:pointer;" onclick="document.getElementById('search-form').submit();"></i>
             </div>
 
           </div>
@@ -78,7 +87,7 @@ nav {
             <?php 
               $pagina = $_GET['pagina'] ?? '';
               $paginasPermitidas = ['catalogo', 'catalogo_producto', 'vercarrito', 'verpedidoweb'];
-              $paginasOcultas = ['vercarrito', 'verpedidoweb'];
+              $paginasOcultas = ['vercarrito', 'verpedidoweb','Pedidoentrega','Pedidopago','Pedidoconfirmar'];
             ?>
           <?php if (in_array($pagina,$paginasPermitidas)): ?>
             <li>
@@ -102,6 +111,7 @@ nav {
                   </a>
                 </li>
               <?php endif; ?>
+              
 
             <?php endif; ?>
 

@@ -27,6 +27,7 @@ public static function compra(
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph.php';
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie.php';
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie3d.php';
+    
 
     $conex = (new Conexion())->getConex1();
 
@@ -264,15 +265,6 @@ public static function compra(
 }
 
 
-
-
-
-
-
-
-
-
-
 public static function producto(
     $prodId = null,
     $provId = null,
@@ -472,12 +464,6 @@ public static function producto(
         $conex = null;
     }
 }
-
-
-
-
-
-
 
 
 public static function venta(
@@ -729,25 +715,82 @@ public static function venta(
 }
 
 
+public static function graficaVentaTop5(): array
+{
+    require_once 'modelo/conexion.php';
+    $conex = (new Conexion())->getConex1();
+
+    $sql = "
+      SELECT pr.nombre AS producto,
+             SUM(pd.cantidad) AS total
+        FROM pedido pe
+        JOIN pedido_detalles pd ON pd.id_pedido = pe.id_pedido
+        JOIN productos       pr ON pr.id_producto = pd.id_producto
+       WHERE pe.tipo   = 1
+         AND pe.estado = 1
+    GROUP BY pr.id_producto
+    ORDER BY total DESC
+       LIMIT 5
+    ";
+    $stmt = $conex->prepare($sql);
+    $stmt->execute();
+
+    $labels = [];
+    $data   = [];
+    while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $labels[] = htmlspecialchars($r['producto'], ENT_QUOTES);
+        $data[]   = (int)$r['total'];
+    }
+
+    // cierra conexión
+    $conex = null;
+
+    // siempre devolvemos el array, incluso si está vacío
+    return [
+      'labels' => $labels,
+      'data'   => $data
+    ];
+}
+
+
 
 
 
 
 public static function pedidoWeb(
-    $start   = null,
-    $end     = null,
-    $prodId  = null
+    ?string $start = null,
+    ?string $end   = null,
+    ?int    $prodId = null
 ): void {
-    // 1) Guardar valores originales
+    // 1) Normalizar fechas
     $origStart = $start;
     $origEnd   = $end;
-
-    // 2) Si solo hay inicio → fin = hoy
     if ($origStart && !$origEnd) {
         $end = date('Y-m-d');
     }
 
-    // 3) Cargar dependencias
+    // 2) Armar WHERE y params (solo tipo=2)
+    $where  = ['p.tipo = 2'];
+    $params = [];
+    if ($origStart && !$origEnd) {
+        $where[]      = 'p.fecha >= :s AND p.fecha <= :e';
+        $params[':s'] = "{$start} 00:00:00";
+        $params[':e'] = "{$end}   23:59:59";
+    } elseif (!$origStart && $origEnd) {
+        $where[]      = 'p.fecha <= :e';
+        $params[':e'] = "{$end}   23:59:59";
+    } elseif ($origStart && $origEnd) {
+        $where[]      = 'p.fecha BETWEEN :s AND :e';
+        $params[':s'] = "{$start} 00:00:00";
+        $params[':e'] = "{$end}   23:59:59";
+    }
+    if ($prodId) {
+        $where[]        = 'pd.id_producto = :pid';
+        $params[':pid'] = $prodId;
+    }
+    $whereSql = implode(' AND ', $where);
+
+    // 3) Incluir dependencias
     require_once 'modelo/conexion.php';
     require_once 'assets/dompdf/vendor/autoload.php';
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph.php';
@@ -755,42 +798,27 @@ public static function pedidoWeb(
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie3d.php';
 
     $conex = (new Conexion())->getConex1();
-
     try {
         $conex->beginTransaction();
 
-        // — Top 5 productos pedidos web (gráfico) —
-        $whereG  = ['p.tipo = 2'];
-        $paramsG = [];
-        if ($start && $end) {
-            $whereG[]        = 'p.fecha BETWEEN :sG AND :eG';
-            $paramsG[':sG']  = "$start 00:00:00";
-            $paramsG[':eG']  = "$end   23:59:59";
-        }
-        if ($prodId) {
-            $whereG[]         = 'pd.id_producto = :pidG';
-            $paramsG[':pidG'] = $prodId;
-        }
+        // — Gráfico Top 5 Productos — (sin cambios) —
         $sqlG = "
           SELECT pr.nombre AS producto, SUM(pd.cantidad) AS total
             FROM pedido p
-            JOIN pedido_detalles pd ON pd.id_pedido = p.id_pedido
-            JOIN productos pr       ON pr.id_producto = pd.id_producto
-           WHERE " . implode(' AND ', $whereG) . "
-          GROUP BY pr.id_producto
-          ORDER BY total DESC
-          LIMIT 5
+       LEFT JOIN pedido_detalles pd ON pd.id_pedido = p.id_pedido
+       LEFT JOIN productos pr       ON pr.id_producto = pd.id_producto
+           WHERE {$whereSql}
+        GROUP BY pr.id_producto
+        ORDER BY total DESC
+           LIMIT 5
         ";
         $stmtG = $conex->prepare($sqlG);
-        $stmtG->execute($paramsG);
-
+        $stmtG->execute($params);
         $labels = []; $data = [];
         while ($r = $stmtG->fetch(PDO::FETCH_ASSOC)) {
             $labels[] = htmlspecialchars($r['producto']);
             $data[]   = (int)$r['total'];
         }
-
-        // renderizar gráfico a PNG
         $imgDir  = __DIR__ . '/../assets/img/grafica_reportes/';
         $imgFile = $imgDir . 'grafico_pedidoweb.png';
         if (!is_dir($imgDir)) mkdir($imgDir, 0777, true);
@@ -808,133 +836,107 @@ public static function pedidoWeb(
               ? 'data:image/png;base64,'.base64_encode(file_get_contents($imgFile))
               : '';
 
-        // — Tabla de pedidos web —
-        $whereT  = ['p.tipo = 2'];
-        $paramsT = [];
-        if ($start && $end) {
-            $whereT[]        = 'p.fecha BETWEEN :sT AND :eT';
-            $paramsT[':sT']  = "$start 00:00:00";
-            $paramsT[':eT']  = "$end   23:59:59";
-        }
-        if ($prodId) {
-            $whereT[]         = 'pd.id_producto = :pidT';
-            $paramsT[':pidT'] = $prodId;
-        }
+        // — Tabla de Pedidos Web, ahora con columna PRODUCTOS —
         $sqlT = "
           SELECT
-            p.id_pedido,
-            p.fecha,
-            p.estado,
-            p.precio_total,
-            p.referencia_bancaria AS referencia,
-            p.telefono_emisor    AS telefono,
-            me.nombre            AS entrega,
-            mp.nombre            AS pago,
-            CONCAT(c.nombre,' ',c.apellido) AS cliente
+            DATE_FORMAT(p.fecha, '%d/%m/%Y')        AS fecha,
+            p.estado                               AS estado,
+            p.precio_total_bs                      AS total,
+            GROUP_CONCAT(
+              DISTINCT pr.nombre
+              ORDER BY pr.nombre
+              SEPARATOR ', '
+            )                                      AS productos,
+            CONCAT(c.nombre,' ',c.apellido)        AS usuario
           FROM pedido p
-          JOIN cliente c            ON p.id_persona    = c.id_persona
-          LEFT JOIN metodo_entrega me ON p.id_entrega    = me.id_entrega
-          LEFT JOIN metodo_pago    mp ON p.id_metodopago = mp.id_metodopago
-          JOIN pedido_detalles pd   ON p.id_pedido      = pd.id_pedido
-           WHERE " . implode(' AND ', $whereT) . "
-          GROUP BY
-            p.id_pedido, p.fecha, p.estado, p.precio_total,
-            p.referencia_bancaria, p.telefono_emisor,
-            me.nombre, mp.nombre, c.nombre, c.apellido
-          ORDER BY p.precio_total DESC
+          LEFT JOIN pedido_detalles pd ON pd.id_pedido   = p.id_pedido
+          LEFT JOIN productos       pr ON pr.id_producto  = pd.id_producto
+          LEFT JOIN cliente         c  ON c.id_persona   = p.id_persona
+          WHERE {$whereSql}
+          GROUP BY p.id_pedido
+          ORDER BY p.precio_total_bs DESC
         ";
         $stmtT = $conex->prepare($sqlT);
-        $stmtT->execute($paramsT);
-        $rows  = $stmtT->fetchAll(PDO::FETCH_ASSOC);
+        $stmtT->execute($params);
+        $rows = $stmtT->fetchAll(PDO::FETCH_ASSOC);
 
-        // — Texto de filtros —
+        // Mapeo de estados
+        $estados = [
+          '0'=>'Anulado','1'=>'Verificar pago','2'=>'Entregado',
+          '3'=>'Pendiente envío','4'=>'En camino','5'=>'Enviado'
+        ];
+
+        // Texto de filtro (igual que antes)
         if (!$origStart && !$origEnd) {
             $filtro = 'Todos los pedidos web';
-        }
-        elseif ($origStart && !$origEnd) {
-            $filtro = 'Desde '.date('d/m/Y',strtotime($origStart))
-                    .' hasta '.date('d/m/Y');
-        }
-        elseif (!$origStart && $origEnd) {
-            $filtro = 'Hasta '.date('d/m/Y',strtotime($origEnd));
-        }
-        elseif ($origStart === $origEnd) {
-            $filtro = 'Reporte del '.date('d/m/Y',strtotime($origStart));
-        }
-        else {
-            $filtro = 'Desde '.date('d/m/Y',strtotime($origStart))
-                    .' hasta '.date('d/m/Y',strtotime($origEnd));
+        } elseif ($origStart && !$origEnd) {
+            $filtro = "Desde {$start} hasta {$end}";
+        } elseif (!$origStart && $origEnd) {
+            $filtro = "Hasta {$end}";
+        } elseif ($origStart === $origEnd) {
+            $filtro = "Reporte del {$start}";
+        } else {
+            $filtro = "Desde {$start} hasta {$end}";
         }
         if ($prodId) {
             $pSt = $conex->prepare(
-                'SELECT nombre FROM productos WHERE id_producto = :pid'
+                "SELECT nombre FROM productos WHERE id_producto = :pid"
             );
             $pSt->execute([':pid'=>$prodId]);
             $filtro .= ' | Producto: '.htmlspecialchars($pSt->fetchColumn());
         }
 
-        // — Generar PDF —
-        $fechaGen = date('d/m/Y H:i:s');
-        $icon     = __DIR__ . '/../assets/img/icon.PNG';
-        $logoData = file_exists($icon)
-                  ? 'data:image/png;base64,'.base64_encode(file_get_contents($icon))
+        // Construir HTML y generar PDF
+        $logoPath = __DIR__ . '/../assets/img/icon.PNG';
+        $logoData = file_exists($logoPath)
+                  ? 'data:image/png;base64,'.base64_encode(file_get_contents($logoPath))
                   : '';
+        $fechaGen = date('d/m/Y H:i:s');
 
         $html = '<html><head><style>
           @page{margin:120px 50px 60px 50px}
           body{margin:0;font-family:Arial,sans-serif;font-size:12px}
           header{position:fixed;top:-110px;left:0;right:0;height:110px;text-align:center}
-          header img.logo-icon{position:absolute;top:5px;right:5px;width:100px;height:100px}
-          header h1{margin:0;font-size:24px}
-          header p{margin:4px 0;font-size:14px;color:#555}
-          table{width:100%;border-collapse:collapse;margin-top:10px}
+          header img{position:absolute;top:5px;right:5px;width:100px;height:100px}
+          table{width:100%;border-collapse:collapse;margin-top:20px}
           th,td{border:1px solid #000;padding:6px;text-align:center}
           th{background:#f36ca4;color:#fff}
           footer{position:fixed;bottom:-40px;left:0;right:0;height:40px;text-align:center;font-size:10px;color:#666}
         </style></head><body>'
-          . '<header>'
-          . ($logoData?'<img src="'.$logoData.'" class="logo-icon"/>':'')
+          . '<header>' . ($logoData? "<img src=\"{$logoData}\"/>":'')
           . '<h1>LoveMakeup</h1><p>RIF: J-505434403</p>'
           . '</header><main>'
-          . '<h1>Reporte de Pedidos Web</h1>'
+          . '<h2>Reporte Pedidos Web</h2>'
           . "<p><strong>Generado:</strong> {$fechaGen}</p>"
           . "<p><strong>Filtro:</strong> {$filtro}</p>"
-          . (!empty($graf)
-              ? '<h2>Top 5 Productos</h2>
-                 <div style="text-align:center"><img src="'.$graf.'" width="600"/></div>'
+          . ($graf
+              ? "<div style=\"text-align:center;margin:20px 0;\">
+                   <h3>Top 5 Productos</h3>
+                   <img src=\"{$graf}\" width=\"600\"/>
+                 </div>"
               : '')
           . '<table><thead><tr>'
-          . '<th>ID</th><th>Fecha</th><th>Estado</th><th>Total</th>'
-          . '<th>Ref.</th><th>Teléfono</th><th>Entrega</th><th>Pago</th><th>Cliente</th>'
+          . '<th>Fecha</th><th>Estado</th><th>Total (Bs.)</th>'
+          . '<th>Productos</th><th>Usuario</th>'
           . '</tr></thead><tbody>';
-
-        $estados = [
-          '0'=>'Anulado','1'=>'Verificar pago','2'=>'Entregado',
-          '3'=>'Pendiente envío','4'=>'En camino','5'=>'Enviado'
-        ];
         foreach ($rows as $r) {
-            $d   = date('d/m/Y',strtotime($r['fecha']));
-            $est = $estados[(string)$r['estado']] ?? 'Desconocido';
-            $tot = '$'.number_format($r['precio_total'],2);
+            $e   = $estados[(string)$r['estado']] ?? 'Desconocido';
+            $tot = 'Bs '.number_format($r['total'],2);
             $html .= "<tr>
-                        <td>{$r['id_pedido']}</td>
-                        <td>{$d}</td>
-                        <td>{$est}</td>
+                        <td>{$r['fecha']}</td>
+                        <td>{$e}</td>
                         <td>{$tot}</td>
-                        <td>".htmlspecialchars($r['referencia'])."</td>
-                        <td>".htmlspecialchars($r['telefono'])."</td>
-                        <td>".htmlspecialchars($r['entrega'])."</td>
-                        <td>".htmlspecialchars($r['pago'])."</td>
-                        <td>".htmlspecialchars($r['cliente'])."</td>
+                        <td>".htmlspecialchars($r['productos'])."</td>
+                        <td>".htmlspecialchars($r['usuario'])."</td>
                       </tr>";
         }
         $html .= '</tbody></table></main>'
                . '<footer>Página <span class="pageNumber"></span> de <span class="totalPages"></span></footer>'
                . '</body></html>';
 
-        $opts = new Options();
+        $opts = new \Dompdf\Options();
         $opts->set('isRemoteEnabled', true);
-        $pdf = new Dompdf($opts);
+        $pdf = new \Dompdf\Dompdf($opts);
         $pdf->loadHtml($html);
         $pdf->setPaper('A4','portrait');
         $pdf->render();
@@ -945,10 +947,14 @@ public static function pedidoWeb(
         $conex->rollBack();
         throw $e;
     } finally {
-        // cerrar conexión
         $conex = null;
     }
 }
+
+
+
+
+
 
 
 
@@ -1126,33 +1132,57 @@ public static function countVenta(
 
 
 
+public static function countPedidoWeb($start = null, $end = null, $prodId = null): int {
+    // 1) Normalizar rangos parciales
+    $origStart = $start;
+    $origEnd   = $end;
+    if ($origStart && !$origEnd) {
+        // si solo hay inicio, tomamos hasta hoy
+        $end = date('Y-m-d');
+    }
 
-  public static function countPedidoWeb($start = null, $end = null, $prodId = null): int {
-    $conex = (new Conexion())->getConex1();
+    // 2) Armar condiciones y parámetros
     $where  = ['p.tipo = 2'];
     $params = [];
 
-    if ($start && $end) {
-      $where[]        = 'p.fecha BETWEEN :s AND :e';
-      $params[':s']   = $start . ' 00:00:00';
-      $params[':e']   = $end   . ' 23:59:59';
+    if ($origStart && !$origEnd) {
+        // solo fecha de inicio
+        $where[]        = 'p.fecha >= :s';
+        $params[':s']   = $start . ' 00:00:00';
     }
+    elseif (!$origStart && $origEnd) {
+        // solo fecha de fin
+        $where[]        = 'p.fecha <= :e';
+        $params[':e']   = $end   . ' 23:59:59';
+    }
+    elseif ($origStart && $origEnd) {
+        // ambos
+        $where[]        = 'p.fecha BETWEEN :s AND :e';
+        $params[':s']   = $start . ' 00:00:00';
+        $params[':e']   = $end   . ' 23:59:59';
+    }
+
     if ($prodId) {
-      $where[]           = 'pd.id_producto = :pid';
-      $params[':pid']    = $prodId;
+        $where[]        = 'pd.id_producto = :pid';
+        $params[':pid'] = $prodId;
     }
+
     $w = 'WHERE ' . implode(' AND ', $where);
 
+    // 3) Ejecutar conteo
+    $conex = (new Conexion())->getConex1();
     $sql  = "
       SELECT COUNT(DISTINCT p.id_pedido) AS cnt
-      FROM pedido p
-      JOIN pedido_detalles pd ON pd.id_pedido = p.id_pedido
-      $w
+        FROM pedido p
+        JOIN pedido_detalles pd ON pd.id_pedido = p.id_pedido
+      {$w}
     ";
     $stmt = $conex->prepare($sql);
     $stmt->execute($params);
-    return (int)$stmt->fetchColumn();
-  }
+
+    return (int) $stmt->fetchColumn();
+}
+
 
 
 }

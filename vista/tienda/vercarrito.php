@@ -29,16 +29,7 @@ $total = 0;
 
 
 <section id="latest-blog" class="section-padding pt-0">
-    <div class="container-lg">
-        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="?pagina=catalogo">Inicio</a></li>
-            <li class="breadcrumb-item"><a href="?pagina=catalogo_producto">Todos los productos</a></li>
-             <li class="breadcrumb-item active" aria-current="page">Carrito</li>
-        </ol>
-      </nav>
-
-    <div class="mb-4">
+    
 
     <style>
          .cart-step {
@@ -158,6 +149,94 @@ $total = 0;
     cursor: not-allowed;
     box-shadow: none;}
 
+
+    .text-color1{
+    color: #ff009a;
+  }
+
+    .pasos-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 600px;
+      margin: 50px auto;
+    }
+
+    .paso {
+      text-align: center;
+      position: relative;
+      flex: 1;
+    }
+
+    .paso:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 15px;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background-color: #ccc;
+      z-index: 0;
+    }
+
+    .circulo {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin: 0 auto 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      position: relative;
+      z-index: 1;
+    }
+
+    .completado .circulo {
+      background-color: #f679d4; /* amarillo */
+    }
+
+    .actual .circulo {
+      background-color: #4fa7fa; /* naranja */
+    }
+
+    .pendiente .circulo {
+      background-color: #adb5bd; /* gris */
+    }
+
+    .paso span {
+      font-size: 14px;
+    }
+
+    .sombra-suave {
+box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3); 
+}
+
+.opcion-custom {
+  display: block;
+  padding: 15px;
+  border: 2px solid #dee2e6;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  color: #f679d4;
+  font-weight: 500;
+}
+
+.opcion-custom i {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+
+input[type="radio"]:checked + .opcion-custom {
+  border-color: #f679d4;
+  background-color: #ffe9f9;
+  color: black;
+}
+
     </style>
 <?php
 $carritoVacio = empty($_SESSION['carrito']);
@@ -166,11 +245,25 @@ $carritoVacio = empty($_SESSION['carrito']);
  
 
     <div class="detalle-compra-container">
-  <?php if ($carritoVacio): ?>
-    <span class="enlace-compra-disabled">2 Detalles de Compra</span>
-  <?php else: ?>
-    <a href="?pagina=verpedidoweb" class="enlace-compra">Continuar con la Compra <i class="fa-solid fa-share"></i> </a>
-  <?php endif; ?>
+    <div class="container-lg">
+        <div class="pasos-container">
+    <div class="paso actual">
+      <div class="circulo">1</div>
+      <span>Producto</span>
+    </div>
+    <div class="paso pendiente">
+      <div class="circulo">2</div>
+      <span>Entrega</span>
+    </div>
+    <div class="paso pendiente">
+      <div class="circulo">3</div>
+      <span>Pago</span>
+    </div>
+    <div class="paso pendiente">
+      <div class="circulo">4</div>
+      <span>Confirmación</span>
+    </div>
+  </div>
 </div>
 
 
@@ -229,11 +322,14 @@ $carritoVacio = empty($_SESSION['carrito']);
     </tr>
   </thead>
   <tbody>
+
     <?php foreach ($carrito as $item):
       $id = $item['id'];
       $cantidad = $item['cantidad'];
       $precioUnitario = $cantidad >= $item['cantidad_mayor'] ? $item['precio_mayor'] : $item['precio_detal'];
       $subtotal = $cantidad * $precioUnitario;
+      $total += $subtotal;
+     
     ?>
     <tr data-id="<?= $id ?>">
       <td>
@@ -250,6 +346,7 @@ $carritoVacio = empty($_SESSION['carrito']);
         </div>
       </td>
       <td class="subtotal">$<?= number_format($subtotal, 2) ?></td>
+   
     </tr>
     <?php endforeach; ?>
   </tbody>
@@ -258,9 +355,15 @@ $carritoVacio = empty($_SESSION['carrito']);
         </div>
 
         <div class="mt-3 text-end">
+         
             <h4>Total: $<span id="total-carrito" class="total-general"><?= number_format($total, 2) ?></span></h4>
         </div>
     <?php endif; ?>
+</div>
+
+<div class="d-flex justify-content-between m-5">
+<a href="?pagina=catalogo_producto" class="btn btn-secondary"><i class="fa-solid fa-arrow-left me-2"></i> Atrás</a>
+  <a href="?pagina=Pedidoentrega" class="btn btn-primary me-2"> <i class="fa-solid fa-arrow-right"> </i> Continuar</a>
 </div>
  </section>
 <!-- php Publicidad Insta, Publicidad calidad, footer y JS--> 

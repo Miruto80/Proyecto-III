@@ -1,5 +1,3 @@
-// assets/js/reporte.js
-
 document.addEventListener('DOMContentLoaded', function() {
   let isSubmitting = false;
 

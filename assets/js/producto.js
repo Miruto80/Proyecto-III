@@ -1,17 +1,18 @@
 $(document).ready(function () {
   let productosStockBajo = [];
 
-  $('tbody tr').each(function () {
-      const fila = $(this);
-      const nombreProducto = fila.find('td').eq(0).text().trim();
-      const stockDisponible = parseInt(fila.find('td').eq(4).text().trim(), 10);
-      const stockMinimo = parseInt(fila.data('stock-minimo'), 10);
+  const tabla = $('#myTable').DataTable();
 
-      // Verificar si el stock está cerca o ha alcanzado el mínimo
-      if (stockDisponible <= stockMinimo || stockDisponible <= stockMinimo + (stockMinimo * 0.1)) {
-          productosStockBajo.push(`"${nombreProducto}"`);
-          fila.find('td').eq(4).html('<i class="fa-solid fa-triangle-exclamation" style="color: red;"></i> ' + stockDisponible);
-      }
+  tabla.rows().every(function () {
+    const fila = $(this.node());
+    const nombreProducto = fila.find('td').eq(0).text().trim();
+    const stockDisponible = parseInt(fila.find('td').eq(4).text().trim(), 10);
+    const stockMinimo = parseInt(fila.data('stock-minimo'), 10);
+
+    if (stockDisponible <= stockMinimo || stockDisponible <= stockMinimo + (stockMinimo * 0.1)) {
+        productosStockBajo.push(`"${nombreProducto}"`);
+        fila.find('td').eq(4).html('<i class="fa-solid fa-triangle-exclamation" style="color: red;"></i> ' + stockDisponible);
+    }
   });
 
   if (productosStockBajo.length > 0) {
@@ -28,9 +29,10 @@ $(document).ready(function () {
           toast.onmouseenter = Swal.stopTimer;
           toast.onmouseleave = Swal.resumeTimer;
       }
-  });
+    });
   }
 });
+
 
 $('#btnLimpiar').on("click", function () {
   $('#nombre, #descripcion, #marca, #cantidad_mayor, #precio_mayor, #precio_detal, #stock_maximo, #stock_minimo, #categoria').val('').removeClass('is-valid is-invalid');
@@ -75,20 +77,24 @@ $(document).on('click', '.ver-detalles', function () {
   
   $(document).ready(function () {
     $('#btnEnviar').on("click", function () {
-      if(validarenvio()){
-      var datos = new FormData($('#u')[0]);
-      if ($('#accion').val() === 'registrar') {
-        datos.append('registrar', 'registrar');
-      } else if ($('#accion').val() === 'modificar') {
-        datos.append('actualizar', 'actualizar');
-      } else {
-        alert('Acción no definida');
-        return;
-      }
+  if (validarenvio()) {
+    $('#btnEnviar').prop("disabled", true).html('<i class="fas fa-spinner fa-spin me-2"></i>Procesando...');
+
+    var datos = new FormData($('#u')[0]);
+    if ($('#accion').val() === 'registrar') {
+      datos.append('registrar', 'registrar');
+    } else if ($('#accion').val() === 'modificar') {
+      datos.append('actualizar', 'actualizar');
+    } else {
+      alert('Acción no definida');
+      $('#btnEnviar').prop("disabled", false).html('<i class="fas fa-save me-2"></i>Guardar Producto');
+      return;
     }
-      enviaAjax(datos);
-    });
-  });
+
+    enviaAjax(datos);
+  }
+});
+});
   
   // modificar al abrir el modal
   function abrirModalModificar(boton) {
@@ -115,7 +121,6 @@ $(document).on('click', '.ver-detalles', function () {
     const descripcion = fila.find('td').eq(1).text().trim();
     const marca = fila.find('td').eq(2).text().trim();
     const precioDetal = fila.find('td').eq(3).text().trim();
-    const stockDisponible = fila.find('td').eq(4).text().trim();
     const imagenSrc = fila.find('td').eq(5).find('img').attr('src');
     const categoriaTexto = fila.find('td').eq(6).text().trim();
 
@@ -219,87 +224,101 @@ function cambiarEstatusProducto(id_producto, estatus_actual) {
   }
   
   function enviaAjax(datos) {
-    $.ajax({
-      async: true,
-      url: "",
-      type: "POST",
-      contentType: false,
-      data: datos,
-      processData: false,
-      cache: false,
-      beforeSend: function () {},
-      timeout: 10000,
-      success: function (respuesta) {
-        console.log(respuesta);
-        var lee = JSON.parse(respuesta);
-        try {
-          if (lee.accion == 'consultar') {
-            crearConsulta(lee.datos);
+  $.ajax({
+    async: true,
+    url: "",
+    type: "POST",
+    contentType: false,
+    data: datos,
+    processData: false,
+    cache: false,
+    beforeSend: function () {},
+    timeout: 10000,
+    success: function (respuesta) {
+      console.log(respuesta);
+      var lee = JSON.parse(respuesta);
+      try {
+        if (lee.accion == 'consultar') {
+          crearConsulta(lee.datos);
+        }
+
+        else if (lee.accion == 'incluir') {
+          if (lee.respuesta == 1) {
+            $('#u')[0].reset();
+            muestraMensaje("success", 1000, "Se ha registrado con éxito", "Su registro se ha completado exitosamente");
+            setTimeout(function () {
+              location.href = "?pagina=producto";
+            }, 1000);
+          } else {
+            let mensajeError = lee.error ? lee.error : "Ha ocurrido un error inesperado. Inténtelo nuevamente.";
+
+            if (mensajeError.includes("Ya existe un producto con el mismo nombre y marca")) {
+              muestraMensaje("error", 1000, "Registro duplicado", mensajeError);
+            } else {
+              muestraMensaje("error", 1000, "Error en el registro", mensajeError);
+            }
+            $('#btnEnviar').prop("disabled", false).html('<i class="fas fa-save me-2"></i>Guardar Producto');
           }
-          else if (lee.accion == 'incluir') {
-            if (lee.respuesta == 1) {
-              $('#u')[0].reset();
-              muestraMensaje("success", 1000, "Se ha registrado con éxito", "Su registro se ha completado exitosamente");
-              setTimeout(function () {
-                location.href = "?pagina=producto";
-              }, 1000);
+        }
+
+        else if (lee.accion == 'actualizar') {
+          if (lee.respuesta == 1) {
+            muestraMensaje("success", 1000, "Se ha Modificado con éxito", "Su registro se ha Actualizado exitosamente");
+            setTimeout(function () {
+              location = '?pagina=producto';
+            }, 1000);
+          } else {
+            muestraMensaje("error", 2000, "ERROR", lee.text);
+            $('#btnEnviar').prop("disabled", false).html('<i class="fas fa-save me-2"></i>Guardar Producto');
+          }
+        }
+
+        else if (lee.accion == 'eliminar') {
+          if (lee.respuesta == 1) {
+            muestraMensaje("success", 1000, "Se ha eliminado con éxito", "Los datos se han borrado correctamente");
+            setTimeout(function () {
+              location.href = "?pagina=producto";
+            }, 1000);
+          } else {
+            let mensajeError = lee.error ? lee.error : "Ha ocurrido un error inesperado. Inténtelo nuevamente.";
+
+            if (mensajeError.includes("No se puede eliminar un producto con stock disponible")) {
+              muestraMensaje("error", 1000, "Error al eliminar", mensajeError);
             } else {
-              let mensajeError = lee.error ? lee.error : "Ha ocurrido un error inesperado. Inténtelo nuevamente.";
-        
-              if (mensajeError.includes("Ya existe un producto con el mismo nombre y marca")) {
-                  muestraMensaje("error", 1000, "Registro duplicado", mensajeError);
-              } else {
-                  muestraMensaje("error", 1000, "Error en el registro", mensajeError);
-              }
-             }
-          } else if (lee.accion == 'actualizar') {
-            if (lee.respuesta == 1) {
-              muestraMensaje("success", 1000, "Se ha Modificado con éxito", "Su registro se ha Actualizado exitosamente");
-              setTimeout(function () {
-                location = '?pagina=producto';
-              }, 1000);
-            } else {
-                muestraMensaje("error", 2000, "ERROR", lee.text);
-            }
-          } else if (lee.accion == 'eliminar') {
-            if (lee.respuesta == 1) {
-              muestraMensaje("success", 1000, "Se ha eliminado con éxito", "Los datos se han borrado correctamente");
-              setTimeout(function () {
-                location.href = "?pagina=producto";
-              }, 1000);
-            } else {
-              let mensajeError = lee.error ? lee.error : "Ha ocurrido un error inesperado. Inténtelo nuevamente.";
-              
-              if (mensajeError.includes("No se puede eliminar un producto con stock disponible")) {
-                  muestraMensaje("error", 1000, "Error al eliminar", mensajeError);
-              } else {
-                  muestraMensaje("error", 1000, "Error en la eliminación", mensajeError);
-              }
-            }
-          } else if (lee.accion == 'cambiarEstatus') {
-            if (lee.respuesta == 1) {
-              muestraMensaje("success", 1000, "Se ha Cambiado el estatus con con éxito", "Los datos se han borrado correctamente");
-              setTimeout(function () {
-                location.href = "?pagina=producto";
-              }, 1000);
-            } else {
-              muestraMensaje("error", 2000, "ERROR", lee.text);
+              muestraMensaje("error", 1000, "Error en la eliminación", mensajeError);
             }
           }
-        } catch (e) {
-          alert("Error en JSON " + e.name);
         }
-      },
-      error: function (request, status, err) {
-        Swal.close();
-        if (status == "timeout") {
-          muestraMensaje("error", 2000, "Error", "Servidor ocupado, intente de nuevo");
-        } else {
-          muestraMensaje("error", 2000, "Error", "ERROR: <br/>" + request + status + err);
+
+        else if (lee.accion == 'cambiarEstatus') {
+          if (lee.respuesta == 1) {
+            muestraMensaje("success", 1000, "Se ha Cambiado el estatus con éxito", "Los datos se han actualizado correctamente");
+            setTimeout(function () {
+              location.href = "?pagina=producto";
+            }, 1000);
+          } else {
+            muestraMensaje("error", 2000, "ERROR", lee.text);
+          }
         }
+      } catch (e) {
+        alert("Error en JSON " + e.name);
+        $('#btnEnviar').prop("disabled", false).html('<i class="fas fa-save me-2"></i>Guardar Producto');
       }
-    });
-  }
+    },
+
+    error: function (request, status, err) {
+      Swal.close();
+      if (status == "timeout") {
+        muestraMensaje("error", 2000, "Error", "Servidor ocupado, intente de nuevo");
+      } else {
+        muestraMensaje("error", 2000, "Error", "ERROR: <br/>" + request + status + err);
+      }
+
+      $('#btnEnviar').prop("disabled", false).html('<i class="fas fa-save me-2"></i>Guardar Producto');
+    }
+  });
+}
+
   
   $("#archivo").on("change", function () {
     mostrarImagen(this);
