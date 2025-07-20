@@ -40,8 +40,9 @@ $(document).ready(function () {
     }).then((result) => {
       if (result.isConfirmed) {
         $.ajax({
-          url: '?pagina=bitacora&limpiar=1',
+          url: '?pagina=bitacora',
           type: 'POST',
+          data: { limpiar: 1 },
           success: function(response) {
             try {
               var data = JSON.parse(response);
