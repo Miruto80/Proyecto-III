@@ -3,6 +3,7 @@
 session_start();
 
 require_once 'modelo/login.php';
+require_once 'modelo/bitacora.php';
 
 $objlogin = new Login();
 
@@ -53,7 +54,8 @@ if (isset($_POST['ingresar'])) {
                 'accion' => 'Inicio de sesión',
                 'descripcion' => 'El usuario ha iniciado sesión exitosamente.'
             ];
-            $objlogin->registrarBitacora(json_encode($bitacora));
+            $bitacoraObj = new Bitacora();
+            $bitacoraObj->registrarOperacion($bitacora['accion'], 'login', $bitacora);
             
             echo json_encode(['respuesta' => 2, 'accion' => 'ingresar']);
             exit;
@@ -85,7 +87,8 @@ if (isset($_POST['ingresar'])) {
             'accion' => 'Cierre de sesión',
             'descripcion' => 'El usuario ha cerrado sesión.'
         ];
-        $objlogin->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'login', $bitacora);
     }
     session_destroy();
     header('Location: ?pagina=login');
@@ -157,7 +160,8 @@ if (isset($_POST['ingresar'])) {
         'accion' => 'Cierre de sesión',
         'descripcion' => 'El usuario ha cerrado sesión por URL.'
     ];
-    $objlogin->registrarBitacora(json_encode($bitacora));
+    $bitacoraObj = new Bitacora();
+    $bitacoraObj->registrarOperacion($bitacora['accion'], 'login', $bitacora);
     }
   
     session_destroy();

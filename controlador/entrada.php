@@ -6,6 +6,7 @@ if (empty($_SESSION["id"])) {
 } /* Validacion URL */
 
 require_once 'modelo/entrada.php';
+require_once 'modelo/bitacora.php';
 require_once 'permiso.php';
 $entrada = new Entrada();
 
@@ -52,7 +53,8 @@ if (isset($_POST['registrar_compra'])) {
                 'accion' => 'Registro de compra',
                 'descripcion' => 'Se registró la compra ID: ' . $resultadoRegistro['id_compra']
             ];
-            $entrada->registrarBitacora(json_encode($bitacora));
+            $bitacoraObj = new Bitacora();
+            $bitacoraObj->registrarOperacion($bitacora['accion'], 'entrada', $bitacora);
         }
 
         if (esAjax()) {
@@ -104,7 +106,8 @@ if (isset($_POST['modificar_compra'])) {
             'accion' => 'Modificación de compra',
             'descripcion' => 'Se modificó la compra ID: ' . $datosCompra['datos']['id_compra']
         ];
-        $entrada->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'entrada', $bitacora);
     }
 
     if (esAjax()) {
@@ -139,7 +142,8 @@ if (isset($_POST['eliminar_compra'])) {
             'accion' => 'Eliminación de compra',
             'descripcion' => 'Se eliminó la compra ID: ' . $datosCompra['datos']['id_compra']
         ];
-        $entrada->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'entrada', $bitacora);
     }
 
     if (esAjax()) {

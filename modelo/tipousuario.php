@@ -5,29 +5,6 @@ require_once 'conexion.php';
 
 class tipousuario extends Conexion {
 
-    public function registrarBitacora(string $jsonDatos): bool {
-        $d = json_decode($jsonDatos, true);
-        $c = $this->getConex2();
-        try {
-            $c->beginTransaction();
-            $sql = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona)
-                    VALUES (:accion, NOW(), :descripcion, :id_persona)";
-            $stmt = $c->prepare($sql);
-            $stmt->execute([
-                'accion'      => $d['accion'],
-                'descripcion' => $d['descripcion'],
-                'id_persona'  => $d['id_persona']
-            ]);
-            $c->commit();
-            $c = null;
-            return true;
-        } catch (\PDOException $e) {
-            $c->rollBack();
-            $c = null;
-            throw $e;
-        }
-    }
-
     public function procesarTipousuario(string $jsonDatos): array {
         $p = json_decode($jsonDatos, true);
         return match($p['operacion'] ?? '') {

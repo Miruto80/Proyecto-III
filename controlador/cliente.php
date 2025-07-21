@@ -5,6 +5,7 @@ if (empty($_SESSION["id"])){
 } /*  Validacion URL  */
 
 require_once 'modelo/cliente.php';
+require_once 'modelo/bitacora.php';
 require_once 'permiso.php';
 $objcliente = new Cliente();
 
@@ -36,7 +37,8 @@ if(isset($_POST['actualizar'])){
                            ' Cédula: ' . $datosCliente['datos']['cedula'] . 
                            ' Correo: ' . $datosCliente['datos']['correo']
         ];
-        $objcliente->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'cliente', $bitacora);
     }
 
     echo json_encode($resultado);
@@ -48,7 +50,8 @@ if(isset($_POST['actualizar'])){
             'accion' => 'Acceso a Módulo',
             'descripcion' => 'módulo de Cliente'
         ];
-        $objcliente->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'cliente', $bitacora);
         $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'cliente';
         require_once 'vista/cliente.php';
 } else {

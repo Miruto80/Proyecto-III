@@ -6,6 +6,7 @@ if (empty($_SESSION["id"])) {
 } /* Validacion URL */
 
 require_once 'modelo/datos.php';
+require_once 'modelo/bitacora.php';
 require_once 'permiso.php';
 
 $objdatos = new Datos();
@@ -64,7 +65,8 @@ if (isset($_POST['actualizar'])) {
                             ' telefono: ' . $datosUsuario['datos']['telefono'] .
                            ' Correo: ' . $datosUsuario['datos']['correo']
         ];
-        $objdatos->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'datos', $bitacora);
         
     }
         echo json_encode($resultado);
@@ -88,7 +90,8 @@ if (isset($_POST['actualizar'])) {
             'descripcion' => 'El usuario con cambio su clave, ID: ' . $datosUsuario['datos']['id_persona'] 
                            
         ];
-        $objdatos->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'datos', $bitacora);
         
     }
         echo json_encode($resultado);
@@ -100,7 +103,8 @@ if (isset($_POST['actualizar'])) {
             'accion' => 'Acceso a Módulo',
             'descripcion' => 'módulo de Modificar Datos'
     ];
-    $objdatos->registrarBitacora(json_encode($bitacora));
+    $bitacoraObj = new Bitacora();
+    $bitacoraObj->registrarOperacion($bitacora['accion'], 'datos', $bitacora);
    
     if ($_SESSION["nivel_rol"] != 2 && $_SESSION["nivel_rol"] != 3) {
     header("Location: ?pagina=catalogo");
