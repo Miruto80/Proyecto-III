@@ -125,6 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(14, 'ver')) {
       
         $registro = $obj->consultar();
+        $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'tipousuario';
         require_once 'vista/tipousuario.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';

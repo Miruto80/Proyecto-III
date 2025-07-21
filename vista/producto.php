@@ -56,14 +56,14 @@
 }
 
 .modal-producto .btn-close {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(8, 6, 6, 0.8);
   border-radius: 50%;
   padding: 8px;
   transition: all 0.3s ease;
 }
 
 .modal-producto .btn-close:hover {
-  background-color: #fff;
+  background-color: #eb0f0f;
   transform: scale(1.1);
 }
 

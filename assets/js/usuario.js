@@ -1,21 +1,52 @@
+/*||| Funcion para cambiar el boton a loader |||*/
+function activarLoaderBoton(idBoton, texto = 'Cargando...') {
+    const $boton = $(idBoton);
+    const textoActual = $boton.html();
+    $boton.data('texto-original', textoActual); // Guarda el texto original
+    $boton.prop('disabled', true);
+    $boton.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${texto}`);
+}
+
+function desactivarLoaderBoton(idBoton) {
+    const $boton = $(idBoton);
+    const textoOriginal = $boton.data('texto-original');
+    $boton.prop('disabled', false);
+    $boton.html(textoOriginal);
+}
+
+
+function activarLoaderBotonElemento($boton, texto = 'Eliminando...') {
+    const textoActual = $boton.html();
+    $boton.data('texto-original', textoActual);
+    $boton.prop('disabled', true);
+    $boton.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${texto}`);
+}
+
+function desactivarLoaderBotonElemento($boton) {
+    const textoOriginal = $boton.data('texto-original');
+    $boton.prop('disabled', false);
+    $boton.html(textoOriginal);
+}
+
+
 var deleteButtons = document.querySelectorAll('.eliminar');
-// Recorre los botones de eliminar y añade un receptor de eventos a cada uno de ellos
 deleteButtons.forEach(function (button) {
   button.addEventListener('click', function (e) {
-    e.preventDefault(); // Evita que se envíe el formulario
-    // Muestra la alerta de confirmación
+    e.preventDefault();
+    const $boton = $(this);
+        botonActivo = $boton;
     Swal.fire({
-      title: '¿Desea eliminar los datos?',
-      text: '',
-      icon: 'question',
+     title: '¿Eliminar Usuario?',
+      text: '¿Desea eliminar a este usuario?',
+      icon: 'warning',
       showCancelButton: true,
-      color: "#00000",
-      confirmButtonColor: '#38b96f',
-      cancelButtonColor: '#EF233C',
-      confirmButtonText: ' SI ',
-      cancelButtonText: 'NO'
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
+        activarLoaderBotonElemento($boton);
         var form = this.closest('form');
         var datos = new FormData(form);
         enviaAjax(datos);
@@ -23,6 +54,9 @@ deleteButtons.forEach(function (button) {
     });
   });
 });
+
+
+/*||| Funcion para validar compas de formulario |||*/
 function validarCampo(campo, regex, textoError, mensaje) {
   const valor = campo.val();
 
@@ -47,8 +81,7 @@ function validarCampo(campo, regex, textoError, mensaje) {
   }
 }
 
-
-
+// PARA EDITAR DATOS DEL USUARIO
 document.addEventListener("DOMContentLoaded", function() {
   var editarModal = document.getElementById("editarModal");
   editarModal.addEventListener("show.bs.modal", function(event) {
@@ -87,8 +120,7 @@ function validarkeypress(er,e){
     }
 }
 //Función para validar por keyup
-function validarkeyup(er,etiqueta,etiquetamensaje,
-mensaje){
+function validarkeyup(er,etiqueta,etiquetamensaje,mensaje){
   a = er.test(etiqueta.val());
   if(a){
     etiquetamensaje.text("");
@@ -102,7 +134,7 @@ mensaje){
 
 $(document).ready(function() {
 
-
+/* ||| FUNCION PARA VALIDAR ENVIO REGISTRO ||| */
 function validarCampos() {
     let cedulaValida = /^[0-9]{7,8}$/.test($("#cedula").val());
     let telefonoValido = /^[0-9]{4}-[0-9]{7}$/.test($("#telefono").val());
@@ -110,10 +142,8 @@ function validarCampos() {
     let nombreValido = /^[a-zA-Z]{3,30}$/.test($("#nombre").val());
     let apellidoValido = /^[a-zA-Z]{3,30}$/.test($("#apellido").val());
     let claveValida = /^.{8,16}$/.test($("#clave").val());
-
     let confirmarClave = $("#confirmar_clave").val();
     let confirmarValida = /^.{8,16}$/.test(confirmarClave) && confirmarClave === $("#clave").val();
-
     let rolValido = $("#rolSelect").val() !== "";
 
     function aplicarEstado(input, valido, feedback, mensaje = "") {
@@ -125,7 +155,6 @@ function validarCampos() {
             $(feedback).text(mensaje).show();
         }
     }
-
     aplicarEstado("#cedula", cedulaValida, "#textocedula", "Formato: entre 7 y 8 dígitos.");
     aplicarEstado("#telefono", telefonoValido, "#textotelefono", "Formato: 0000-0000000");
     aplicarEstado("#correo", correoValido, "#textocorreo", "Debe incluir @ y ser válido.");
@@ -141,9 +170,10 @@ function validarCampos() {
 }
 
 
-
+/*||| ENVIO AJAX FORMULARIO |||*/
 $('#registrar').on("click", function () {
     if (validarCampos()) {
+        activarLoaderBoton('#registrar');
         var datos = new FormData($('#u')[0]);
         datos.append('registrar', 'registrar');
         enviaAjax(datos);
@@ -161,6 +191,7 @@ $('#actualizar_permisos').on("click", function () {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
+             activarLoaderBoton('#actualizar_permisos');
             var datos = new FormData($('#forpermiso')[0]);
             datos.append('actualizar_permisos', 'actualizar_permisos');
             enviaAjax(datos);
@@ -168,18 +199,17 @@ $('#actualizar_permisos').on("click", function () {
     });
 });
 
-  
-  $('#actualizar').on("click", function () {
+$('#actualizar').on("click", function () {
     Swal.fire({
-      title: '¿Desea Cambiar estos datos del Usuario?',
+      title: '¿Desea Cambiar estos datos?',
       text: 'En caso de Cambiar el Rol, los permiso cambian a sus permisos Predeterminado',
       icon: 'question',
       showCancelButton: true,
       color: "#00000",
-      confirmButtonColor: '#58c731',
+      confirmButtonColor: '#50c063ff',
       cancelButtonColor: '#42515A',
-      confirmButtonText: ' SI ',
-      cancelButtonText: 'NO'
+      confirmButtonText: ' Si, Actualizar',
+      cancelButtonText: 'No'
     }).then((result) => {
       if (result.isConfirmed) {
         // Validación de los campos antes de enviar
@@ -204,6 +234,7 @@ $('#actualizar_permisos').on("click", function () {
 
             // Si todos los campos son válidos, enviar el formulario
             if (cedulaValida && correoValido) {
+                 activarLoaderBoton('#actualizar');
                 var datos = new FormData($('#formdatosactualizar')[0]);
                 datos.append('actualizar', 'actualizar');
                 enviaAjax(datos);
@@ -212,6 +243,7 @@ $('#actualizar_permisos').on("click", function () {
     });
  });
 
+ /* VALIDACIONES DE EXPRESIONES REGULARES */
   $("#rolSelect").on("change", function () {
     validarCampo($(this), null, $("#textorol"), "Por favor, seleccione un rol válido.");
   });
@@ -270,11 +302,9 @@ $('#actualizar_permisos').on("click", function () {
       $("#textoapellido"), "El formato debe ser solo letras");
     });
 
-
     $("#clave").on("keypress", function(e) {
        validarkeyup(/^.{8,16}$/, e);
     });
-    
 
     $("#clave").on("keyup", function() {
       validarCampo($(this),/^.{8,16}$/, $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
@@ -284,44 +314,28 @@ $('#actualizar_permisos').on("click", function () {
        validarkeyup(/^.{8,16}$/, e);
     });
     
-
     $("#confirmar_clave").on("keyup", function() {
       validarCampo($(this),/^.{8,16}$/, $("#textoconfirmar"), "El formato debe ser entre 8 y 16 caracteres");
     });
 
+    $("#modalCedula").on("keypress",function(e){
+      validarkeypress(/^[0-9\b]*$/,e);
+    });
 
-  $("#modalCedula").on("keypress",function(e){
-    validarkeypress(/^[0-9\b]*$/,e);
-  });
+    $("#modalCedula").on("keyup", function () {
+      validarCampo($(this),/^[0-9]{7,8}$/,
+    $("#textocedulamodal"),"El formato debe ser 1222333");
+    });
+    
+    $("#modalCorreo").on("keypress", function (e) {
+          validarkeypress(/^[a-zA-Z0-9._%+-@\b]*$/, e);
+    });
 
-  $("#modalCedula").on("keyup", function () {
-    let isValid = /^[0-9]{7,8}$/.test($(this).val());
-    if (isValid) {
-        $(this).removeClass("is-invalid").addClass("is-valid");
-        $("#textocedulamodal").hide();
-    } else {
-        $(this).removeClass("is-valid").addClass("is-invalid");
-        $("#textocedulamodal").show();
-    }
-});
-  $("#modalCorreo").on("keypress", function (e) {
-        validarkeypress(/^[a-zA-Z0-9._%+-@\b]*$/, e);
-  });
-  
-  $("#modalCorreo").on("keyup", function () {
-        let isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/.test($(this).val());
-        if (isValid) {
-            $(this).removeClass("is-invalid").addClass("is-valid");
-            $("#textocorreomodal").hide();
-        } else {
-            $(this).removeClass("is-valid").addClass("is-invalid");
-            $("#textocorreomodal").show();
-        }
+     $("#modalCorreo").on("keyup", function () {
+      validarCampo($(this), /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/,
+       $("#textocorreomodal"), "El formato debe incluir @ y ser válido .");
     });
 });
-
-
-
 
 function muestraMensaje(icono, tiempo, titulo, mensaje) {
   Swal.fire({
@@ -332,7 +346,6 @@ function muestraMensaje(icono, tiempo, titulo, mensaje) {
     showConfirmButton: false,
   });
 }
-
 
 function enviaAjax(datos) {
     $.ajax({
@@ -352,39 +365,53 @@ function enviaAjax(datos) {
   
            if (lee.accion == 'incluir') {
                 if (lee.respuesta == 1) {  
-                  muestraMensaje("success", 1000, "Se ha registrado con éxito", "Su registro se ha completado exitosamente");
+                  muestraMensaje("success", 1500, "Se ha registrado con éxito", "Su registro se ha completado exitosamente");
+                     desactivarLoaderBoton('#registrar');
                   setTimeout(function () {
                     location = '?pagina=usuario';
                   }, 1000);
                 } else {
                   muestraMensaje("error", 1000, lee.text, "");
+                     desactivarLoaderBoton('#registrar');
                 }
               } else if (lee.accion == 'actualizar') {
                 if (lee.respuesta == 1) {
                   muestraMensaje("success", 2000, "Se ha Modificado con éxito", "Su registro se ha Actualizado exitosamente");
+                    desactivarLoaderBoton('#actualizar');  
                   setTimeout(function () {
                     location = '?pagina=usuario';
                   }, 1000);
                 } else {
                   muestraMensaje("error", 2000, lee.text,"");
+                  desactivarLoaderBoton('#actualizar'); 
                 }
               } else if (lee.accion == 'eliminar') {
                 if (lee.respuesta == 1) {
                   muestraMensaje("success", 1000, "Se ha eliminado con éxito", "Los datos se han borrado correctamente ");
+                  if (botonActivo) {
+                        desactivarLoaderBotonElemento(botonActivo);
+                        botonActivo = null; 
+                    }
                   setTimeout(function () {
                      location = '?pagina=usuario';
                   }, 1000);
                 } else {
                   muestraMensaje("error", 2000, lee.text,"" );
+                    if (botonActivo) {
+                        desactivarLoaderBotonElemento(botonActivo);
+                        botonActivo = null;
+                    }
                 }
               } else if (lee.accion == 'actualizar_permisos') {
                 if (lee.respuesta == 1) {
-                  muestraMensaje("success", 1000, "Se ha modificado los Permisos con éxito", "Los datos se han modificado correctamente ");
+                  muestraMensaje("success", 1500, "Se ha modificado los Permisos con éxito", "Los datos se han modificado correctamente ");
+                  desactivarLoaderBoton('#actualizar_permisos');
                   setTimeout(function () {
                      location = '?pagina=usuario';
                   }, 1000);
                 } else {
                   muestraMensaje("error", 2000, lee.text,"" );
+                  desactivarLoaderBoton('#actualizar_permisos');
                 }
               }
   

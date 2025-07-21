@@ -129,53 +129,52 @@
 
           
             <div class="row mt-4">
-    <div class="col-lg-7 col-md-7 col-12"> <!-- Tabla (60%) -->
-        <div class="card">
-            <div class="card-body">
-                <h5>Los 5 Producto más vendidos</h5>
-    <table class="table">
-    <thead>
-        <tr>
-            <th style="color:#d67888;" class="text-center"><b>Producto</b></th>
-            <th style="color:#d67888;" class="text-center"><b>Cantidad</b></th>
-            <th style="color:#d67888;" class="text-center"><b>Total</b></th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        if (!empty($registro)) {
-            foreach ($registro as $fila) {
+   <div class="col-lg-7 col-md-7 col-12"> 
+  <div class="card">
+    <div class="card-body">
+      <h5>Los 5 Producto más vendidos</h5>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="color:#d67888;" class="text-center"><b>Producto</b></th>
+              <th style="color:#d67888;" class="text-center"><b>Cantidad</b></th>
+              <th style="color:#d67888;" class="text-center"><b>Total</b></th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            if (!empty($registro)) {
+              foreach ($registro as $fila) {
                 echo "<tr>";
                 echo "<td class='text-center'>" . htmlspecialchars($fila['nombre_producto']) . "</td>";
                 echo "<td class='text-center'>" . htmlspecialchars($fila['cantidad_vendida']) . "</td>";
                 echo "<td class='text-center'> $" . htmlspecialchars(number_format($fila['total_vendido'], 2)) . "</td>";
                 echo "</tr>";
+              }
+            } else {
+              echo "<tr><td colspan='3' class='text-center'>No hay datos disponibles</td></tr>";
             }
-        } else {
-            echo "<tr><td colspan='3'>No hay datos disponibles</td></tr>";
-        }
-        ?>
-    </tbody>
-</table>
-
-            </div>
-        </div>
+            ?>
+          </tbody>
+        </table>
+      </div> <!-- /table-responsive -->
     </div>
+  </div>
+</div>
 
 <div class="col-lg-5 col-md-5 col-12">
   <div class="card">
     <div class="card-body text-center">
-      
-<?php if ($graficaHome): ?>
-  <img
-    src="<?php echo htmlspecialchars($graficaHome, ENT_QUOTES); ?>"
-    alt="Top 5 productos"
-    class="img-fluid border-radius-lg"
-  >
-<?php else: ?>
-  <p class="text-muted">No hay datos para la gráfica.</p>
-<?php endif; ?>
 
+      <?php if (!empty($graficaHome['data'])): ?>
+        <div class="chart-container" 
+             style="position:relative; width:100%; height:350px;">
+          <canvas id="homePieChart"></canvas>
+        </div>
+      <?php else: ?>
+        <p class="text-muted">No hay datos para la gráfica.</p>
+      <?php endif; ?>
 
     </div>
   </div>
@@ -195,6 +194,58 @@
     </div><!-- FIN CARD PRINCIPAL-->  
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
+
+<!-- 1) Chart.js desde CDN (o local si prefieres) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- 2) Inicializar la gráfica -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof Chart === 'undefined') {
+    console.error('Chart.js no cargó.');
+    return;
+  }
+
+  // cfg labels/data vienen de PHP
+  const cfg = <?= json_encode($graficaHome, JSON_UNESCAPED_UNICODE) ?>;
+  //console.log('cfg desde PHP:', cfg);
+
+  if (!Array.isArray(cfg.data) || !cfg.data.length) {
+    console.warn('No hay datos para pintar la gráfica.');
+    return;
+  }
+
+  const ctx = document.getElementById('homePieChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: cfg.labels,
+      datasets: [{
+        data: cfg.data,
+        backgroundColor: [
+          '#FF6384','#36A2EB','#FFCE56',
+          '#4BC0C0','#9966FF'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Top 5 Productos más vendidos'
+        },
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+});
+</script>
+
+
+
 
 </body>
 

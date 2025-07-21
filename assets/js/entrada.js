@@ -132,7 +132,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const productoSelect = document.querySelector('.producto-select');
     if (!productoSelect) return;
     
-    const productosOptions = productoSelect.innerHTML;
+    let productosOptions = productoSelect.innerHTML;
+    // Forzar que la opción 'Seleccione un producto' esté seleccionada
+    productosOptions = productosOptions.replace(/<option([^>]*)selected([^>]*)>/gi, '<option$1$2>');
+    productosOptions = productosOptions.replace(/<option([^>]*)value=""([^>]*)>/i, '<option$1value="" selected$2>');
     
     // Crear nueva fila
     const nuevaFila = document.createElement('div');

@@ -5,7 +5,7 @@
   <!-- php barra de navegacion-->
   <?php include 'complementos/head.php' ?> 
   <title> Usuario | LoveMakeup  </title> 
- <link rel="stylesheet" href="assets/css/estatus.css">
+  <link rel="stylesheet" href="assets/css/formulario.css">
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
@@ -109,15 +109,21 @@
                   <td><?php echo $dato['apellido']?></td>
                   <td><?php echo $dato['nombre_tipo']?></td>
                   
-                      <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'especial')): ?>
+                 <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'especial')): ?>
                     <td>
                         <form action="?pagina=usuario" method="POST">
-                          <button type="submit" class="btn btn-warning btn-sm permisotur" name="modificar" value="<?php echo $dato['id_persona']?>">
-                              <i class="fa-solid fa-users-gear" title="Modificar Permiso"></i>
-                          </button>  
-                      </form>      
-                  </td>
-                   <?php endif; ?>
+                            <?php
+                                $idActual = $_SESSION["id"];
+                                $idFila = $dato['id_persona'];
+                                $deshabilitado = ($idActual == $idFila || $idFila == 2) ? 'disabled' : '';
+                            ?>
+                            <button type="submit" class="btn btn-warning btn-sm permisotur" name="modificar" value="<?php echo $idFila ?>" <?php echo $deshabilitado ?>>
+                                <i class="fa-solid fa-users-gear" title="Modificar Permiso"></i>
+                            </button>  
+                        </form>      
+                    </td>
+                <?php endif; ?>
+
                   <td>
                       <span class="<?= $estatus_classes[$dato['estatus']] ?>">
                         <?php echo $estatus_texto[$dato['estatus']] ?>
@@ -157,7 +163,7 @@
                 </button>
                     <?php endif; ?>
                           <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(13, 'eliminar')): ?>
-                        <button name="eliminar" class="btn btn-danger btn-sm eliminar" value="<?php echo $dato['id_persona']?>">
+                        <button name="eliminar" id="eliminar" class="btn btn-danger btn-sm eliminar" value="<?php echo $dato['id_persona']?>">
                           <i class="fas fa-trash-alt" title="Eliminar"> </i>
                         </button>
                         <input type="hidden" name="eliminar" value="<?php echo $dato['id_persona']?>">
@@ -183,14 +189,19 @@
 <!-- Modal -->
 <div class="modal fade" id="registro" tabindex="1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog  modal-lg modal-dialog-centered">
-    <div class="modal-content">
-    <div class="modal-header header-color">
-        <h1 class="modal-title fs-5" id="1"> <i class="fa-solid fa-user-plus"></i> Registrar Usuario</h1>
+    <div class="modal-content modal-producto">
+    <div class="modal-header">
+        <h5 class="modal-title fs-5" id="1">
+        <i class="fa-solid fa-user-plus"></i>
+         Registrar Usuario</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <div class="modal-body">
+        
   <form action="?pagina=usuario" method="POST" id="u" autocomplete="off">
+     <div class="seccion-formulario">
+              <h6><i class="fas fa-boxes"></i> Datos del Usuario </h6>
     <div class="row g-3">
       <!-- F1: Nombre y Apellido -->
       <div class="col-md-6">
@@ -199,7 +210,7 @@
           <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
           <input type="text" class="form-control" name="nombre" id="nombre" placeholder="nombre: juan">
         </div>
-        <span id="textonombre" class="alert-text text-danger"></span>
+        <span id="textonombre" class="error-message"></span>
       </div>
 
       <div class="col-md-6">
@@ -208,7 +219,7 @@
           <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
           <input type="text" class="form-control" name="apellido" id="apellido" placeholder="apellido: perez">
         </div>
-        <span id="textoapellido" class="alert-text text-danger"></span>
+        <span id="textoapellido" class="error-message"></span>
       </div>
 
       <!-- F2: Cédula y Rol -->
@@ -218,7 +229,7 @@
           <span class="input-group-text"><i class="fa-solid fa-id-card"></i></span>
           <input type="text" class="form-control" name="cedula" id="cedula" placeholder="cedula: 11222333">
         </div>
-        <span id="textocedula" class="alert-text text-danger"></span>
+        <span id="textocedula" class="error-message"></span>
       </div>
 
       <div class="col-md-6">
@@ -234,7 +245,7 @@
             <?php } ?>
           </select>
         </div>
-         <span id="textorol" class="alert-text text-danger"></span>
+         <span id="textorol" class="error-message"></span>
         <input type="hidden" id="nivelHidden" name="nivel">
       </div>
 
@@ -245,7 +256,7 @@
           <span class="input-group-text"><i class="fa-solid fa-mobile-screen-button"></i></span>
           <input type="text" class="form-control" name="telefono" id="telefono" placeholder="Telefono: 04240001122">
         </div>
-        <span id="textotelefono" class="alert-text text-danger"></span>
+        <span id="textotelefono" class="error-message"></span>
       </div>
 
       <div class="col-md-6 ">
@@ -254,7 +265,7 @@
           <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
           <input type="text" class="form-control" name="correo" id="correo" placeholder="Correo: tucorreo@dominio.com">
         </div>
-        <span id="textocorreo" class="alert-text text-danger"></span>
+        <span id="textocorreo" class="error-message"></span>
       </div>
 
       <!-- F4: Contraseña -->
@@ -264,7 +275,7 @@
           <span class="input-group-text"><i class="fa-solid fa-unlock"></i></span>
           <input type="text" class="form-control" name="clave" id="clave" placeholder="Contraseña:">
         </div>
-        <span id="textoclave" class="alert-text text-danger"></span>
+        <span id="textoclave" class="error-message"></span>
       </div>
 
       <div class="col-md-6">
@@ -273,16 +284,18 @@
           <span class="input-group-text"><i class="fa-solid fa-unlock-keyhole"></i></span>
           <input type="text" class="form-control" id="confirmar_clave" placeholder="Confirmar contraseña:">
         </div>
-        <span id="textoconfirmar" class="alert-text text-danger mb-5"></span>
+        <span id="textoconfirmar" class="error-message"></span>
       </div>
-<hr class="bg-primary">
+ </div>
+ </div>
+  
       <!-- Botones -->
       <div class="col-12 text-center ">
-        <button type="button" class="btn btn-primary me-2" id="registrar">
-          <i class="fa-solid fa-floppy-disk"></i> Registrar
+        <button type="button" class="btn btn-modern btn-guardar me-3" id="registrar">
+          <i class="fa-solid fa-floppy-disk me-2"></i> Registrar
         </button>
-        <button type="reset" class="btn btn-secondary">
-          <i class="fa-solid fa-eraser"></i> Limpiar
+        <button type="reset" class="btn btn-modern btn-limpiar">
+          <i class="fa-solid fa-eraser me-2"></i> Limpiar
         </button>
       </div>
     </div>
@@ -298,20 +311,22 @@
 <!-- Modal MODIFCAR -->
 <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header header-color">
+    <div class="modal-content modal-producto">
+      <div class="modal-header">
         <h5 class="modal-title text-dark" id="modalLabel"><i class="fas fa-pencil-alt"></i> Editar Datos del Usuario</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form method="POST" action="?pagina=cliente" id="formdatosactualizar">
+              <div class="seccion-formulario">
+              <h6><i class="fas fa-boxes"></i> Modicar datos del Usuario </h6>
           <div class="mb-3">
             <label for="cedula" class="form-label text-g">Cédula</label>
              <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-id-card"></i></span>
                    <input type="text" class="form-control" id="modalCedula" name="cedula">
               </div>
-                <span id="textocedulamodal" class="text-danger"></span>
+                <span id="textocedulamodal" class="error-message"> </span>
           </div>
           <div class="mb-3">
             <label for="correo" class="form-label text-g">Correo Electrónico</label>
@@ -319,7 +334,7 @@
                   <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-envelope"></i></span>
                   <input type="email" class="form-control" id="modalCorreo" name="correo">
               </div>  
-              <span id="textocorreomodal" class="invalid-feedback"> El formato debe incluir @ y ser válido.</span>
+              <span id="textocorreomodal" class="error-message"> </span>
           </div>
           <div class="mb-3">
              <label for="rol" class="form-label text-g">Rol</label>
@@ -352,12 +367,18 @@
           <input type="hidden" id="modalco" name="correoactual">
           
           <input type="hidden" id="modalIdPersona" name="id_persona">
+ </div>
+  </div>
+     <div class="col-12 text-center ">
+           <button type="button" class="btn btn-modern btn-guardar me-3" name="actualizar" id="actualizar">
+            <i class="fa-solid fa-floppy-disk me-2"></i> Actualizar datos</button>
+        <button type="button" class="btn btn-modern btn-limpiar" data-bs-dismiss="modal">Cerrar</button>
         </form>
+       </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-success text-dark" name="actualizar" id="actualizar"><i class="fa-solid fa-floppy-disk"></i> Actualizar datos</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-      </div>
+
+       
+
     </div>
   </div>
 </div>
@@ -400,6 +421,7 @@
     </div>
   </div>
 </div>
+
 <script>
   const infoModal = document.getElementById('infoModal');
   infoModal.addEventListener('show.bs.modal', function (event) {
@@ -431,76 +453,6 @@
     document.getElementById('modalEstatus').innerHTML = `<span class="${estatusClase[estatus]}">${estatusTexto[estatus]}</span>`;
   });
 </script>
-<div class="modal fade" id="permisosModal" tabindex="-1" aria-labelledby="permisosModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="permisosModalLabel">Permisos por Módulo</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <div class="table-responsive">
-          <table class="table table-bordered text-center align-middle">
-            <thead class="table-light">
-              <tr>
-                <th>#</th>
-                <th>Módulo</th>
-                <th>Ver</th>
-                <th>Crear</th>
-                <th>Actualizar</th>
-                <th>Eliminar</th>
-                <th>Especial</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Ejemplo de fila -->
-              <tr>
-                <td>1</td>
-                <td>Dashboard</td>
-                <td><div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="">
-                   
-                    </div></td>
-              <td><center><div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="">
-                    
-                    </div></center></td>
-              <td><div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="">
-                   
-                    </div></td>
-              <td><div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="">
-                    
-                    </div></td>
-              <td><div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="">
-                    
-                    </div></td>                  
-              
-              </tr>
-              <!-- Agrega más filas según los módulos -->
-              <tr>
-                <td>2</td>
-                <td>Usuarios</td>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td><input type="checkbox" class="form-check-input"></td>
-              </tr>
-              <!-- ... -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-success">Guardar</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Salir</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script>
 document.getElementById('rolSelect').addEventListener('change', function() {

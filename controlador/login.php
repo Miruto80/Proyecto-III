@@ -106,12 +106,17 @@ if (isset($_POST['ingresar'])) {
             'clave' => $_POST['clave']
         ]
     ];
-
+    $correo = $_POST['correo'];
     $resultado = $objlogin->procesarLogin(json_encode($datosRegistro));
+
+    if ($resultado['respuesta'] == 1) {
+        require_once 'modelo/CORREObienvenida.php';
+        $envio = enviarBienvenida($correo);
+    }
+
     echo json_encode($resultado);
-
-// ------------------
-
+ 
+// -------------
 } else if (isset($_POST['validarclave'])) {
     $datosValidar = [
         'operacion' => 'validar',

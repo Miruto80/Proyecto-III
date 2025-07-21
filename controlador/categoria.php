@@ -91,6 +91,7 @@ if (isset($_POST['eliminar'])) {
         ];
         $Cat->registrarBitacora(json_encode($bitacora));
         $categorias = $Cat->consultar();
+        $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'categoria';
         require_once 'vista/categoria.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';
