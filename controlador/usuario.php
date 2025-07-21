@@ -6,6 +6,7 @@
     
    require_once 'modelo/usuario.php';
    require_once 'permiso.php';
+   require_once 'modelo/bitacora.php';
     $objusuario = new Usuario();
     
     $rol = $objusuario->obtenerRol();
@@ -40,7 +41,8 @@ if (isset($_POST['registrar'])) { /* -------  */
                 'descripcion' => 'Se registró el usuario: ' . $datosUsuario['datos']['cedula'] . ' ' . 
                                 $datosUsuario['datos']['nombre'] . ' ' . $datosUsuario['datos']['apellido']
             ];
-            $objusuario->registrarBitacora(json_encode($bitacora));
+            $bitacoraObj = new Bitacora();
+            $bitacoraObj->registrarOperacion($bitacora['accion'], 'usuario', $bitacora);
         }
 
         echo json_encode($resultadoRegistro);
@@ -101,7 +103,8 @@ if (isset($_POST['registrar'])) { /* -------  */
                            ' Cédula: ' . $datosUsuario['datos']['cedula'] . 
                            ' Correo: ' . $datosUsuario['datos']['correo']
         ];
-        $objusuario->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'usuario', $bitacora);
     }
 
     echo json_encode($resultado);
@@ -139,7 +142,8 @@ if (isset($_POST['registrar'])) { /* -------  */
             'accion' => 'Modificar Permiso',
             'descripcion' => 'Se Modifico los permisos del usuario con ID: '
         ];
-        $objusuario->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'usuario', $bitacora);
     }
 
     echo json_encode($resultado);
@@ -170,7 +174,8 @@ if (isset($_POST['registrar'])) { /* -------  */
             'accion' => 'Eliminación de usuario',
             'descripcion' => 'Se eliminó el usuario con ID: ' . $datosUsuario['datos']['id_persona']
         ];
-        $objusuario->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'usuario', $bitacora);
     }
 
     echo json_encode($resultado);
@@ -181,7 +186,8 @@ if (isset($_POST['registrar'])) { /* -------  */
             'accion' => 'Acceso a Módulo',
             'descripcion' => 'módulo de Usuario'
         ];
-        $objusuario->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'usuario', $bitacora);
         $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'usuario';
         require_once 'vista/usuario.php';
 } else {

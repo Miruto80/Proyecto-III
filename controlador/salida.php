@@ -7,6 +7,7 @@ if (empty($_SESSION["id"])) {
 
 require_once 'modelo/salida.php';
  require_once 'permiso.php';
+require_once 'modelo/bitacora.php';
 $salida = new Salida();
 
 // Generar o verificar el token CSRF
@@ -356,7 +357,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'accion' => 'Acceso a Módulo',
         'descripcion' => 'módulo de Ventas'
     ];
-    $salida->registrarBitacora(json_encode($bitacora));
+    $bitacoraObj = new Bitacora();
+    $bitacoraObj->registrarOperacion($bitacora['accion'], 'salida', $bitacora);
 
     // Consultar datos actualizados para la vista
     $ventas = $salida->consultarVentas();

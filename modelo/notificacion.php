@@ -10,38 +10,6 @@ class Notificacion extends Conexion
     }
 
     /**
-     * Registra una entrada en la bitácora (usa getConex2())
-     */
-    public function registrarBitacora(string $jsonDatos): bool
-    {
-        $datos = json_decode($jsonDatos, true);
-        return $this->ejecutarSentenciaBitacora($datos);
-    }
-
-    private function ejecutarSentenciaBitacora(array $datos): bool
-    {
-        $conex = $this->getConex2();
-        try {
-            $conex->beginTransaction();
-
-            $sql = "INSERT INTO bitacora 
-                        (accion, fecha_hora, descripcion, id_persona) 
-                    VALUES 
-                        (:accion, NOW(), :descripcion, :id_persona)";
-            $stmt = $conex->prepare($sql);
-            $stmt->execute($datos);
-
-            $conex->commit();
-            return true;
-        } catch (PDOException $e) {
-            $conex->rollBack();
-            throw $e;
-        } finally {
-            $conex = null;
-        }
-    }
-
-    /**
      * 1) Generar notificaciones a partir de pedidos
      */
 public function generarDePedidos(): int
