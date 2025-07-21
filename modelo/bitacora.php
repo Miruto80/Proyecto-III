@@ -226,11 +226,14 @@ class Bitacora extends Conexion {
         }
 
         try {
+            date_default_timezone_set('America/Caracas');
             $fecha = date('Y-m-d H:i:s');
             $detalle = $this->generarDetalle($modulo, $accion, $datos);
             
-            // Agregar el módulo al final de la descripción
-            $detalle .= " [" . ucfirst($modulo) . "]";
+            // Agregar el módulo al final de la descripción, excepto si es 'bitacora'
+            if (strtolower($modulo) !== 'bitacora') {
+                $detalle .= " [" . ucfirst($modulo) . "]";
+            }
 
             $registro = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
                         VALUES (:accion, :fecha_hora, :descripcion, :id_persona)";

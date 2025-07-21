@@ -129,38 +129,39 @@
 
           
             <div class="row mt-4">
-    <div class="col-lg-7 col-md-7 col-12"> <!-- Tabla (60%) -->
-        <div class="card">
-            <div class="card-body">
-                <h5>Los 5 Producto más vendidos</h5>
-    <table class="table">
-    <thead>
-        <tr>
-            <th style="color:#d67888;" class="text-center"><b>Producto</b></th>
-            <th style="color:#d67888;" class="text-center"><b>Cantidad</b></th>
-            <th style="color:#d67888;" class="text-center"><b>Total</b></th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        if (!empty($registro)) {
-            foreach ($registro as $fila) {
+   <div class="col-lg-7 col-md-7 col-12"> 
+  <div class="card">
+    <div class="card-body">
+      <h5>Los 5 Producto más vendidos</h5>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="color:#d67888;" class="text-center"><b>Producto</b></th>
+              <th style="color:#d67888;" class="text-center"><b>Cantidad</b></th>
+              <th style="color:#d67888;" class="text-center"><b>Total</b></th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            if (!empty($registro)) {
+              foreach ($registro as $fila) {
                 echo "<tr>";
                 echo "<td class='text-center'>" . htmlspecialchars($fila['nombre_producto']) . "</td>";
                 echo "<td class='text-center'>" . htmlspecialchars($fila['cantidad_vendida']) . "</td>";
                 echo "<td class='text-center'> $" . htmlspecialchars(number_format($fila['total_vendido'], 2)) . "</td>";
                 echo "</tr>";
+              }
+            } else {
+              echo "<tr><td colspan='3' class='text-center'>No hay datos disponibles</td></tr>";
             }
-        } else {
-            echo "<tr><td colspan='3'>No hay datos disponibles</td></tr>";
-        }
-        ?>
-    </tbody>
-</table>
-
-            </div>
-        </div>
+            ?>
+          </tbody>
+        </table>
+      </div> <!-- /table-responsive -->
     </div>
+  </div>
+</div>
 
 <div class="col-lg-5 col-md-5 col-12">
   <div class="card">

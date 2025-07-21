@@ -238,7 +238,7 @@ $('#btnAyuda').on("click", function () {
         { element: '[aria-controls="offcanvasCart"]', popover: { title: 'Carrito de compras', description: 'Haz clic aquí para ver los productos que has agregado al carrito.', side: "left", align: 'start' }},
         { element: '[data-bs-target="#cerrar"]', popover: { title: 'Cerrar sesión', description: 'Este botón te permite cerrar sesión en tu cuenta.', side: "left", align: 'start' }},
         { element: '.section-title', popover: { title:'Productos más vendidos', description: 'Un listado de nuestros 10 productos más vendidos.', side: "top", align: 'start' }},
-        { element: '.product-item', popover: { title: 'Productos', description: 'Estas son las cartas de nuestros productos. Puedes dar clic para ver más detalles del producto.', side: "left", align: 'start' }},
+        { element: '.product-item', popover: { title: 'Productos', description: 'Estas son las cartas de nuestros productos. Puedes dar clic en la imagen para ver más detalles del producto.', side: "left", align: 'start' }},
         { element: '.categorias', popover: { title: 'Filtrado por categoría', description: 'Aquí podrás seleccionar las categorías y te saldrán los productos asociados', side: "left", align: 'start' }},
         { element: '#Botonlado', popover: { title: 'Ver todos los productos', description: 'Aquí puedes ver el listado de todos los productos', side: "left", align: 'start' }},
         { popover: { title: 'Eso es todo', description: 'Este es el fin de la guía, espero que hayas entendido' }}

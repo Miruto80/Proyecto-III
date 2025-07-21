@@ -40,8 +40,9 @@ $(document).ready(function () {
     }).then((result) => {
       if (result.isConfirmed) {
         $.ajax({
-          url: '?pagina=bitacora&limpiar=1',
+          url: '?pagina=bitacora',
           type: 'POST',
+          data: { limpiar: 1 },
           success: function(response) {
             try {
               var data = JSON.parse(response);
@@ -52,9 +53,25 @@ $(document).ready(function () {
                   icon: 'success',
                   timer: 2000,
                   showConfirmButton: false
-                }).then(() => {
-                  location.reload();
                 });
+                // Eliminar filas de la tabla que sean de más de 90 días
+                const fechaLimite = new Date();
+                fechaLimite.setDate(fechaLimite.getDate() - 90);
+                $('#myTable tbody tr').each(function() {
+                  const fechaTexto = $(this).find('td').eq(0).text();
+                  if (fechaTexto) {
+                    const partes = fechaTexto.split(/[\/ :]/);
+                    // Formato esperado: dd/mm/yyyy hh:mm:ss
+                    const fecha = new Date(partes[2], partes[1]-1, partes[0], partes[3], partes[4], partes[5]);
+                    if (fecha < fechaLimite) {
+                      $(this).remove();
+                    }
+                  }
+                });
+                // Si la tabla queda vacía, mostrar mensaje
+                if ($('#myTable tbody tr').length === 0) {
+                  $('#myTable tbody').append('<tr><td colspan="6" class="text-center">No hay registros en la bitácora</td></tr>');
+                }
               } else {
                 Swal.fire('Error', data.message, 'error');
               }
