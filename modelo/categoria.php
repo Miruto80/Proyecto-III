@@ -161,7 +161,8 @@ class Categoria extends Conexion {
         try {
             $sql   = "SELECT id_categoria, nombre
                       FROM categoria
-                      WHERE estatus = 1";
+                      WHERE estatus = 1
+                      ORDER BY id_categoria DESC";
             $stmt  = $conex->prepare($sql);
             $stmt->execute();
             $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
