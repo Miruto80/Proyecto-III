@@ -2,7 +2,7 @@
 require_once 'assets/dompdf/vendor/autoload.php';
 use Dompdf\Dompdf;
 
-require_once 'modelo/conexion.php';
+require_once 'modelo/conexion.php'; 
 
 class proveedor extends Conexion {
     //---------------------------------------------------

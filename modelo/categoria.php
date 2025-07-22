@@ -9,7 +9,7 @@ class Categoria extends Conexion {
     // 2) Router JSON → CRUD
     public function procesarCategoria(string $jsonDatos): array {
         $payload   = json_decode($jsonDatos, true);
-        $operacion = $payload['operacion'] ?? '';
+        $operacion = $payload['operacion'] ?? ''; 
         $d         = $payload['datos']    ?? [];
 
         try {

@@ -8,7 +8,7 @@ if (empty($_SESSION['id'])) {
 
 require_once 'modelo/proveedor.php';
  require_once 'permiso.php';
-require_once 'modelo/bitacora.php';
+require_once 'modelo/bitacora.php';  
 $obj = new proveedor();
 
 // Fijamos el rol en “Administrador”
