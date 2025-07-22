@@ -347,6 +347,8 @@ function muestraMensaje(icono, tiempo, titulo, mensaje) {
   });
 }
 
+
+
 function enviaAjax(datos) {
     $.ajax({
       async: true,

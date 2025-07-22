@@ -21,11 +21,11 @@
       
       <div class="modal-body"> <!-- Modal contenido -->
       
-      <div class="d-flex justify-content-center align-items-center">
+      <div class="d-flex justify-content-center mp-3 align-items-center">
           <img src="assets/img/integoracion.png" width="35%">
       </div>
       <div class="d-flex justify-content-center align-items-center">
-        <h3>¿Desea cerrar la session?</h3>
+        <h3>¿Desea Cerrar la sesión?</h3>
       </div>
 
       <br>    

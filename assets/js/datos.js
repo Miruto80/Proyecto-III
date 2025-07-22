@@ -21,6 +21,46 @@ mensaje){
   }
 }
 
+/*||| Funcion para cambiar el boton a loader |||*/
+function activarLoaderBoton(idBoton, texto = 'Cargando...') {
+    const $boton = $(idBoton);
+    const textoActual = $boton.html();
+    $boton.data('texto-original', textoActual); // Guarda el texto original
+    $boton.prop('disabled', true);
+    $boton.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${texto}`);
+}
+
+function desactivarLoaderBoton(idBoton) {
+    const $boton = $(idBoton);
+    const textoOriginal = $boton.data('texto-original');
+    $boton.prop('disabled', false);
+    $boton.html(textoOriginal);
+}
+
+/*||| Funcion para validar compas de formulario |||*/
+function validarCampo(campo, regex, textoError, mensaje) {
+  const valor = campo.val();
+
+  if (campo.is("select")) {
+   
+    if (valor === "") {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    } else {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    }
+  } else {
+   
+    if (regex.test(valor)) {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    } else {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    }
+  }
+}
 
 $(document).ready(function() {
 
@@ -34,11 +74,12 @@ $(document).ready(function() {
       color: "#00000",
       confirmButtonColor: '#58c731',
       cancelButtonColor: '#42515A',
-      confirmButtonText: ' SI ',
+      confirmButtonText: ' Si, actualizar ',
       cancelButtonText: 'NO'
     }).then((result) => {
       if (result.isConfirmed) {
         var datos = new FormData($('#datos')[0]);
+        activarLoaderBoton('#actualizar');
         datos.append('actualizar', 'actualizar');
         enviaAjax(datos);
       }
@@ -49,8 +90,8 @@ $(document).ready(function() {
     validarkeypress(/^[0-9-\b]*$/,e);
   });
   
-  $("#cedula").on("keyup",function(){
-    validarkeyup(/^[0-9]{7,8}$/,$(this),
+  $("#cedula").on("keyup", function () {
+    validarCampo($(this),/^[0-9]{7,8}$/,
     $("#textocedula"),"El formato debe ser 1222333");
   });
 
@@ -59,9 +100,9 @@ $(document).ready(function() {
       validarkeypress(/^[0-9-\-]*$/, e);
     });
   
-    $("#telefono").on("keyup", function () {
-      validarkeyup(/^[0-9]{4}[-]{1}[0-9]{7}$/, $(this),
-        $("#textotelefono"), "El formato debe ser 0000-0000000");
+      $("#telefono").on("keyup", function () {
+      validarCampo($(this),/^[0-9]{4}[-]{1}[0-9]{7}$/,
+      $("#textotelefono"), "El formato debe ser 0422-0001020");
     });
   
     $("#telefono").on("input", function () {
@@ -77,17 +118,16 @@ $(document).ready(function() {
       validarkeypress(/^[a-zA-Z0-9._%+-@\b]*$/, e);
     });
 
-    $("#correo").on("keyup", function () {
-      validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $(this),
-          $("#textocorreo"), "El formato debe incluir @ y ser válido.");
+     $("#correo").on("keyup", function () {
+      validarCampo($(this), /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $("#textocorreo"), "El formato debe incluir @ y ser válido.");
     });
 
     $("#nombre").on("keypress", function (e) {
     validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
     });
-
+    
     $("#nombre").on("keyup", function () {
-    validarkeyup(/^[a-zA-Z]{3,50}$/, $(this),
+      validarCampo($(this),/^[a-zA-Z]{3,30}$/,
       $("#textonombre"), "El formato debe ser solo letras");
     });
 
@@ -96,7 +136,7 @@ $(document).ready(function() {
     });
 
     $("#apellido").on("keyup", function () {
-    validarkeyup(/^[a-z-A-Z]{3,50}$/, $(this),
+      validarCampo($(this),/^[a-z-A-Z]{3,30}$/,
       $("#textoapellido"), "El formato debe ser solo letras");
     });
 
@@ -104,58 +144,57 @@ $(document).ready(function() {
        validarkeyup(/^.{8,16}$/, e);
     });
     
+    
     $("#clave").on("keyup", function() {
-      validarkeyup(/^.{8,16}$/, $(this), $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
-    })
+      validarCampo($(this),/^.{8,16}$/, $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+    });
 
+      $("#clavenueva").on("keypress", function(e) {
+       validarkeyup(/^.{8,16}$/, e);
+    });
+    
+    
+    $("#clavenueva").on("keyup", function() {
+      validarCampo($(this),/^.{8,16}$/, $("#textoclavenueva"), "El formato debe ser entre 8 y 16 caracteres");
+    });
 
-
+      $("#clavenuevac").on("keypress", function(e) {
+       validarkeyup(/^.{8,16}$/, e);
+    });
+    
+    
+    $("#clavenuevac").on("keyup", function() {
+      validarCampo($(this),/^.{8,16}$/, $("#textoclavenuevac"), "El formato debe ser entre 8 y 16 caracteres");
+    });
 
     function validarFormulario() {
     let validar = true;
 
-    // Validar cada campo con su expresión regular
-    if (!/^.{8,16}$/.test($("#clave").val())) {
-        $("#textoclave").text("El formato debe ser entre 8 y 16 caracteres");
-        validar = false;
-    }
+    validarCampo($("#clave"), /^.{8,16}$/, $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+    if (!/^.{8,16}$/.test($("#clave").val())) validar = false;
 
-    if (!/^.{8,16}$/.test($("#clavenueva").val())) {
-        $("#textoclavenueva").text("El formato debe ser entre 8 y 16 caracteres");
-        validar = false;
-    }
+    validarCampo($("#clavenueva"), /^.{8,16}$/, $("#textoclavenueva"), "El formato debe ser entre 8 y 16 caracteres");
+    if (!/^.{8,16}$/.test($("#clavenueva").val())) validar = false;
 
-    if (!/^.{8,16}$/.test($("#clavenuevac").val())) {
-        $("#textoclavenuevac").text("El formato debe ser entre 8 y 16 caracteres");
-        validar = false;
-    }
+    validarCampo($("#clavenuevac"), /^.{8,16}$/, $("#textoclavenuevac"), "El formato debe ser entre 8 y 16 caracteres");
+    if (!/^.{8,16}$/.test($("#clavenuevac").val())) validar = false;
 
-    // Validar que clavenueva y clavenuevac sean iguales
+    // Comparación entre nueva contraseña y confirmación
     if ($("#clavenueva").val() !== $("#clavenuevac").val()) {
-        $("#textoclavenuevac").text("Las contraseñas no coinciden").css("color", "red");
+        $("#clavenuevac").removeClass("is-valid").addClass("is-invalid");
+        $("#clavenueva").removeClass("is-valid").addClass("is-invalid");
+        $("#textoclavenuevac").text("Las contraseñas no coinciden");
         validar = false;
     }
 
-    // Si alguna validación falla, mostrar la alerta
+
     if (!validar) {
-        Swal.fire({
-            icon: "error",
-            title: "Validaciones incorrectas",
-            text: "Corrige los errores antes de enviar.",
-            toast: true,
-            position: "top",
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.onmouseenter = Swal.stopTimer;
-                toast.onmouseleave = Swal.resumeTimer;
-            }
-        });
+        muestraMensajetost('error', 'Validaciones incorrectas', 'Corrige los errores antes de enviar.', '3000');
     }
 
     return validar;
 }
+
 
 // Modificar el evento del botón para validar antes de enviar
 $('#actualizarclave').on("click", function () {
@@ -173,6 +212,7 @@ $('#actualizarclave').on("click", function () {
         }).then((result) => {
             if (result.isConfirmed) {
                 var datos = new FormData($('#formclave')[0]);
+                activarLoaderBoton('#actualizarclave');
                 datos.append('actualizarclave', 'actualizarclave');
                 enviaAjax(datos);
             }
@@ -181,7 +221,6 @@ $('#actualizarclave').on("click", function () {
 });
 
 });
-
 
 function muestraMensaje(icono, tiempo, titulo, mensaje) {
   Swal.fire({
@@ -193,6 +232,22 @@ function muestraMensaje(icono, tiempo, titulo, mensaje) {
   });
 }
 
+function muestraMensajetost(icono, titulo, mensaje, tiempo) {
+  Swal.fire({
+    icon: icono,
+    title: titulo,
+    text: mensaje,
+    toast: true,
+    position: "top",
+    showConfirmButton: false,
+    timer: tiempo,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
+}
 
 function enviaAjax(datos) {
     $.ajax({
@@ -213,20 +268,24 @@ function enviaAjax(datos) {
            if (lee.accion == 'clave') {
                 if (lee.respuesta == 1) {  
                   muestraMensaje("success", 1500, "Se ha Cambiado su clave con exito", "");
+                  desactivarLoaderBoton('#actualizarclave');
                   setTimeout(function () {
                     location = '?pagina=datos';
-                  }, 1000);
+                  }, 1500);
                 } else {
                   muestraMensaje("error", 2000, lee.text, "");
+                  desactivarLoaderBoton('#actualizarclave');
                 }
               } else if (lee.accion == 'actualizar') {
                 if (lee.respuesta == 1) {
-                  muestraMensaje("success", 1000, "Se ha Modificado con éxito", "Su registro se ha Actualizado exitosamente");
+                  muestraMensaje("success", 1500, "Se ha Modificado con éxito", "Su registro se ha Actualizado exitosamente");
+                  desactivarLoaderBoton('#actualizar');
                   setTimeout(function () {
                     location = '?pagina=datos&m=a';
-                  }, 1000);
-                } else {
+                  }, 1500);
+                } else {  
                   muestraMensaje("error", 2000, lee.text, "");
+                 desactivarLoaderBoton('#actualizar');
                 }
               } 
         } catch (e) {
