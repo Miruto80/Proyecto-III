@@ -243,3 +243,23 @@
     box-shadow: 0 2em 0 0 var(--bs-primary);
   }
 }
+
+  #scrollToTopBtn {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            z-index: 1000;
+            background-color:#ED73B1;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: none; /* Oculto al inicio */
+          }
+          #scrollToTopBtn:hover {
+            background-color: #ec93c0;
+          }

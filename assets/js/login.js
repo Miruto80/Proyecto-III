@@ -94,6 +94,29 @@ function validarCampo(campo, regex, textoError, mensaje) {
   }
 }
 
+function validarCampoS(campo, regex, textoError, mensaje) {
+  const valor = campo.val();
+
+  if (campo.is("select")) {
+    if (valor === "") {
+      campo.removeClass("input-correcto").addClass("input-incorrecto");
+      textoError.text(mensaje);
+    } else {
+      campo.removeClass("input-incorrecto").addClass("input-correcto");
+      textoError.text("");
+    }
+  } else {
+    if (regex.test(valor)) {
+      campo.removeClass("input-incorrecto").addClass("input-correcto");
+      textoError.text("");
+    } else {
+      campo.removeClass("input-correcto").addClass("input-incorrecto");
+      textoError.text(mensaje);
+    }
+  }
+}
+
+
 function validarFormulario() {
     validarCampo($("#cedula"), /^[0-9]{7,8}$/, $("#textocedula"), "Formato incorrecto o vacio.");
     validarCampo($("#telefono"), /^[0-9]{4}[-]{1}[0-9]{7}$/, $("#textotelefono"), "Formato incorrecto o vacio.");
@@ -123,22 +146,27 @@ function validarFor() {
 function validarForlogin() {
     let valido = true;
 
-     if (!/^[0-9]{7,8}$/.test($("#usuario").val())) {
+    if (!/^[0-9]{7,8}$/.test($("#usuario").val())) {
+        $("#usuario").removeClass("input-correcto").addClass("input-incorrecto");
         $("#textousuario").text("Formato incorrecto.");
         valido = false;
     } else {
+        $("#usuario").removeClass("input-incorrecto").addClass("input-correcto");
         $("#textousuario").text("");
     }
 
     if (!/^.{8,16}$/.test($("#pid").val())) {
+        $("#pid").removeClass("input-correcto").addClass("input-incorrecto");
         $("#textop").text("Debe tener entre 8 y 16 caracteres.");
         valido = false;
     } else {
+        $("#pid").removeClass("input-incorrecto").addClass("input-correcto");
         $("#textop").text("");
     }
 
     return valido;
 }
+
 
 
 $(document).ready(function() {
@@ -189,9 +217,10 @@ $(document).ready(function() {
   $("#usuario").on("keypress",function(e){
     validarkeypress(/^[0-9\b]*$/,e);
   });
-  
-  $("#usuario").on("keyup",function(){
-    validarkeyup(/^[0-9]{6,8}$/,$(this),
+
+
+     $("#usuario").on("keyup", function () {
+    validarCampoS($(this),/^[0-9]{7,8}$/,
     $("#textousuario"),"El formato debe ser 1222333");
   });
 
@@ -199,9 +228,10 @@ $(document).ready(function() {
     validarkeyup(/^.{8,16}$/, e);
   });
 
-  $("#pid").on("keyup", function() {
-    validarkeyup(/^.{8,16}$/, $(this), $("#textop"), "El formato debe ser entre 8 y 16 caracteres");
-  });
+   $("#pid").on("keyup", function() {
+      validarCampoS($(this),/^.{8,16}$/, 
+      $("#textop"), "El formato debe ser entre 8 y 16 caracteres");
+    });
  
   $("#cedulac").on("keypress",function(e){
     validarkeypress(/^[0-9\b]*$/,e);

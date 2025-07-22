@@ -69,7 +69,7 @@ function validarCampo(campo, regex, textoError, mensaje) {
       campo.removeClass("is-invalid").addClass("is-valid");
       textoError.text("");
     }
-  } else {
+  } else { 
    
     if (regex.test(valor)) {
       campo.removeClass("is-invalid").addClass("is-valid");

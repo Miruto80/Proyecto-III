@@ -44,6 +44,9 @@
     </div>
   </div>
 </div>
+<button id="scrollToTopBtn" title="Ir al inicio">
+  <i class="fa fa-arrow-up"></i>
+</button>
 
   
   <!--   Core JS Files   -->
@@ -71,5 +74,20 @@
           dropdownMenu.classList.remove('show');
           dropdownIcon.setAttribute('aria-expanded', 'false');
         }
+      });
+
+      // Mostrar u ocultar el botón según el scroll
+      window.addEventListener("scroll", function () {
+        const btn = document.getElementById("scrollToTopBtn");
+        if (window.scrollY > 150) {
+          btn.style.display = "block";
+        } else {
+          btn.style.display = "none";
+        }
+      });
+
+      // Volver al inicio al hacer clic
+      document.getElementById("scrollToTopBtn").addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
       </script>
