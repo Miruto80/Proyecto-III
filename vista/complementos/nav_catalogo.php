@@ -107,7 +107,7 @@ nav {
                     <span class="badge rounded-pill contador contadorL">
                       <?php echo count($carrito); ?>
                     </span>
-                    <i class="fa-solid fa-cart-shopping" style="font-size: 25px;"></i>
+                    <i class="fa-solid fa-cart-shopping" style="font-size: 25px;color:#FA48C9;"></i>
                   </a>
                 </li>
               <?php endif; ?>

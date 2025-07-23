@@ -144,9 +144,8 @@
           <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead  class="table-color">
                 <tr>
-                  <th class="text-white" style="display: none;">ID</th>
-                  <th class="text-white" style="display: none;">Tipo</th>
-                  <th class="text-white d-none">Fecha</th>
+            
+                  <th class="text-white">Fecha</th>
                   <th class="text-white"style="">Estado</th>
                   <th class="text-white">Total</th>
                   <th class="text-white">Referencia</th>
@@ -194,9 +193,8 @@
   
 ?>
     <tr style="text-align:center;">
-    <td style="display: none;"><?= $pedido['id_pedido'] ?></td>
-    <td style="display: none;"><?= $pedido['tipo'] ?></td>
-    <td class="d-none"><?= $pedido['fecha'] ?></td>
+ 
+    <td class=""><?= $pedido['fecha'] ?></td>
     <td class=" m-3 text-white badge <?php echo $badgeClass; ?>"><?php echo $estatus_texto[$pedido['estado']] ?></td>
     <td><?= $pedido['precio_total_bs'] ?>$</td>
     <td><?= $pedido['referencia_bancaria'] ?></td>
