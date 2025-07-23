@@ -4,15 +4,43 @@ use Dompdf\Dompdf;
 
 require_once 'modelo/conexion.php'; 
 
-class proveedor extends Conexion {
-    //---------------------------------------------------
-    // 1) Bitácora JSON-driven
-    //---------------------------------------------------
-    // Eliminar método registrarBitacora y ejecutarBitacora
+ class proveedor extends Conexion {
+ 
+    private $bitacoraObj;
 
-    //---------------------------------------------------
-    // 2) Procesador único de operaciones
-    //---------------------------------------------------
+     function __construct() {
+         parent::__construct();
+        require_once 'modelo/bitacora.php';    
+        $this->bitacoraObj = new Bitacora();
+     }
+
+
+    /**
+     * Guarda una entrada en la bitácora para este módulo.
+     * Retorna true si no hubo excepción, false en caso contrario.
+     */
+    public function registrarBitacora(string $jsonDatos): bool {
+        $datos = json_decode($jsonDatos, true);
+        try {
+            $this->bitacoraObj->registrarOperacion(
+                $datos['accion'],
+                'proveedor',
+                $datos
+            );
+            return true;
+        } catch (\Throwable $e) {
+            error_log('Bitacora fallo (proveedor): ' . $e->getMessage());
+            return false;
+        }
+    }
+
+
+
+
+
+
+
+
     public function procesarProveedor(string $jsonDatos): array {
         $payload   = json_decode($jsonDatos, true);
         $operacion = $payload['operacion'] ?? '';
@@ -134,9 +162,9 @@ class proveedor extends Conexion {
 
 
 
-    /**
+    /*
  * Regenera en disco el PNG con el Top 5 de proveedores.
- */
+
 private function generarGrafico(): void {
     // 1) Incluir JPGraph
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph.php';
@@ -256,5 +284,5 @@ private function generarGrafico(): void {
     $dompdf->render();
     $dompdf->stream("Reporte_Proveedores.pdf", ["Attachment" => false]);
 }
-
+ */
 }
