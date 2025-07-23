@@ -1,9 +1,27 @@
 <?php
 require_once 'modelo/conexion.php';
+require_once 'modelo/bitacora.php'; 
 
 class Categoria extends Conexion {
+    private $bitacoraObj;
     function __construct() {
         parent::__construct();
+        $this->bitacoraObj = new Bitacora();
+    }
+
+        public function registrarBitacora(string $jsonDatos): bool {
+        $datos = json_decode($jsonDatos, true);
+        try {
+            $this->bitacoraObj->registrarOperacion(
+                $datos['accion'],
+                'categoria',  // nombre del módulo
+                $datos
+            );
+            return true;
+        } catch (\Throwable $e) {
+            error_log('Bitacora fallo (categoria): ' . $e->getMessage());
+            return false;
+        }
     }
 
     // 2) Router JSON → CRUD
