@@ -81,7 +81,7 @@
                     if ($registro && is_array($registro)) {
                       foreach ($registro as $dato) { ?>
                         <tr>
-                          <td><?php echo date('d/m/Y H:i:s', strtotime($dato['fecha_hora']))?></td>
+                          <td class="fecha-bitacora" data-fecha="<?php echo htmlspecialchars($dato['fecha_hora']) ?>"></td>
                           <td>
                             <span class="badge bg-<?php 
                               switch($dato['accion']) {

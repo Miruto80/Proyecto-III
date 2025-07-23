@@ -52,7 +52,7 @@
           
               <i class="fa-solid fa-right-to-bracket me-sm-1"></i> 
                
-                <span class="d-sm-inline d-none">Cerrar Session</span>
+                <span class="d-sm-inline d-none">Cerrar sesión</span>
                 <span class="d-block d-md-none">Salir</span> 
               </a>
             </li>

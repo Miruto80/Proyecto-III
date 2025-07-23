@@ -69,7 +69,7 @@ function validarCampo(campo, regex, textoError, mensaje) {
       campo.removeClass("is-invalid").addClass("is-valid");
       textoError.text("");
     }
-  } else {
+  } else { 
    
     if (regex.test(valor)) {
       campo.removeClass("is-invalid").addClass("is-valid");
@@ -346,6 +346,8 @@ function muestraMensaje(icono, tiempo, titulo, mensaje) {
     showConfirmButton: false,
   });
 }
+
+
 
 function enviaAjax(datos) {
     $.ajax({

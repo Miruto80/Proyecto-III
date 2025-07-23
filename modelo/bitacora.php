@@ -321,19 +321,17 @@ class Bitacora extends Conexion {
         }
     }
 
-    public function limpiarBitacoraAntigua($dias = 90) {
+    // Eliminar todos los registros de la bitácora
+    public function limpiarBitacora() {
         try {
-            $fecha_limite = date('Y-m-d H:i:s', strtotime("-{$dias} days"));
-            $registro = "DELETE FROM bitacora WHERE fecha_hora < :fecha_limite";
+            $registro = "DELETE FROM bitacora";
             $strExec = $this->conex2->prepare($registro);
-            $strExec->bindParam(':fecha_limite', $fecha_limite);
             $result = $strExec->execute();
-            
             if ($result) {
                 $filas_eliminadas = $strExec->rowCount();
                 return array(
-                    'success' => true, 
-                    'message' => "Se eliminaron {$filas_eliminadas} registros de más de {$dias} días"
+                    'success' => true,
+                    'message' => "Se eliminaron {$filas_eliminadas} registros de la bitácora"
                 );
             } else {
                 return array('success' => false, 'message' => 'Error al limpiar la bitácora');

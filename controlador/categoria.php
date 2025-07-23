@@ -6,6 +6,7 @@ if (empty($_SESSION['id'])) {
 }
 
 require_once 'modelo/categoria.php';
+require_once 'modelo/bitacora.php';  
 require_once 'permiso.php';
 $Cat = new Categoria();
 
@@ -89,7 +90,8 @@ if (isset($_POST['eliminar'])) {
             'accion' => 'Acceso a Módulo',
             'descripcion' => 'módulo de Categoria'
         ];
-        $Cat->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'categoria', $bitacora);
         $categorias = $Cat->consultar();
         $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'categoria';
         require_once 'vista/categoria.php';

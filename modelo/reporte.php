@@ -770,7 +770,7 @@ public static function pedidoWeb(
     }
 
     // 2) Armar WHERE y params (solo tipo=2)
-    $where  = ['p.tipo = 2'];
+    $where  = ['p.tipo = 2', 'p.estado IN (2,5)'];
     $params = [];
     if ($origStart && !$origEnd) {
         $where[]      = 'p.fecha >= :s AND p.fecha <= :e';
@@ -862,8 +862,8 @@ public static function pedidoWeb(
 
         // Mapeo de estados
         $estados = [
-          '0'=>'Anulado','1'=>'Verificar pago','2'=>'Entregado',
-          '3'=>'Pendiente envío','4'=>'En camino','5'=>'Enviado'
+          '0'=>'Anulado','1'=>'Verificar pago','2'=>'Pago verificado',
+          '3'=>'Pendiente envío','4'=>'En camino','5'=>'Entregado'
         ];
 
         // Texto de filtro (igual que antes)
@@ -1142,7 +1142,7 @@ public static function countPedidoWeb($start = null, $end = null, $prodId = null
     }
 
     // 2) Armar condiciones y parámetros
-    $where  = ['p.tipo = 2'];
+    $where  = ['p.tipo = 2', 'p.estado IN (2,5)'];
     $params = [];
 
     if ($origStart && !$origEnd) {

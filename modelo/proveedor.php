@@ -2,37 +2,45 @@
 require_once 'assets/dompdf/vendor/autoload.php';
 use Dompdf\Dompdf;
 
-require_once 'modelo/conexion.php';
+require_once 'modelo/conexion.php'; 
 
-class proveedor extends Conexion {
-    //---------------------------------------------------
-    // 1) Bitácora JSON-driven
-    //---------------------------------------------------
+ class proveedor extends Conexion {
+ 
+    private $bitacoraObj;
+
+     function __construct() {
+         parent::__construct();
+        require_once 'modelo/bitacora.php';    
+        $this->bitacoraObj = new Bitacora();
+     }
+
+
+    /**
+     * Guarda una entrada en la bitácora para este módulo.
+     * Retorna true si no hubo excepción, false en caso contrario.
+     */
     public function registrarBitacora(string $jsonDatos): bool {
         $datos = json_decode($jsonDatos, true);
-        return $this->ejecutarBitacora($datos);
-    }
-
-    private function ejecutarBitacora(array $datos): bool {
-        $conex = $this->getConex2();
         try {
-            $conex->beginTransaction();
-            $sql = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona)
-                    VALUES (:accion, NOW(), :descripcion, :id_persona)";
-            $stmt = $conex->prepare($sql);
-            $stmt->execute($datos);
-            $conex->commit();
-            $conex = null;
+            $this->bitacoraObj->registrarOperacion(
+                $datos['accion'],
+                'proveedor',
+                $datos
+            );
             return true;
-        } catch (\PDOException $e) {
-            if ($conex) { $conex->rollBack(); $conex = null; }
-            throw $e;
+        } catch (\Throwable $e) {
+            error_log('Bitacora fallo (proveedor): ' . $e->getMessage());
+            return false;
         }
     }
 
-    //---------------------------------------------------
-    // 2) Procesador único de operaciones
-    //---------------------------------------------------
+
+
+
+
+
+
+
     public function procesarProveedor(string $jsonDatos): array {
         $payload   = json_decode($jsonDatos, true);
         $operacion = $payload['operacion'] ?? '';
@@ -154,9 +162,9 @@ class proveedor extends Conexion {
 
 
 
-    /**
+    /*
  * Regenera en disco el PNG con el Top 5 de proveedores.
- */
+
 private function generarGrafico(): void {
     // 1) Incluir JPGraph
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph.php';
@@ -276,5 +284,5 @@ private function generarGrafico(): void {
     $dompdf->render();
     $dompdf->stream("Reporte_Proveedores.pdf", ["Attachment" => false]);
 }
-
+ */
 }

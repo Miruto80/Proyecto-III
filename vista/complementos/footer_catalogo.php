@@ -138,6 +138,9 @@
     </div>
   </footer>
 
+<button id="scrollToTopBtn" title="Ir al inicio">
+  <i class="fa fa-arrow-up"></i>
+</button>
 
   <script src="assets/js/catalago/jquery-1.11.0.min.js"></script>
 
@@ -151,6 +154,20 @@
   <script src="assets/js/bootstrap.bundle.min.js"></script>
 
 <script>
+ // Mostrar u ocultar el botón según el scroll
+      window.addEventListener("scroll", function () {
+        const btn = document.getElementById("scrollToTopBtn");
+        if (window.scrollY > 300) {
+          btn.style.display = "block";
+        } else {
+          btn.style.display = "none";
+        }
+      });
+
+      // Volver al inicio al hacer clic
+      document.getElementById("scrollToTopBtn").addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
 
   // Funcion para poner el nombre
  function obtenerSaludo(nombreCompleto) {
@@ -183,7 +200,7 @@
           <img src="assets/img/integoracion.png" width="35%">
       </div>
       <div class="d-flex justify-content-center align-items-center">
-        <h3>¿Desea cerrar la session?</h3>
+        <h3>¿Desea Cerrar la sesión?</h3>
       </div>
 
       <br>    

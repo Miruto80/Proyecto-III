@@ -34,36 +34,6 @@ class Datos extends Conexion{
 
 /*-----*/
 
-    public function registrarBitacora($jsonDatos) {
-        $datos = json_decode($jsonDatos, true);
-        return $this->ejecutarSentenciaBitacora($datos);
-    }
-
-    private function ejecutarSentenciaBitacora($datos) {
-        $conex = $this->getConex2();
-        try {
-            $conex->beginTransaction();
-            
-            $sql = "INSERT INTO bitacora (accion, fecha_hora, descripcion, id_persona) 
-                    VALUES (:accion, NOW(), :descripcion, :id_persona)";
-            
-            $stmt = $conex->prepare($sql);
-            $stmt->execute($datos);
-            
-            $conex->commit();
-            $conex = null;
-            return true;
-        } catch (PDOException $e) {
-            if ($conex) {
-                $conex->rollBack();
-                $conex = null;
-            }
-            throw $e;
-        }
-    }
-
-/*-----*/
-
     public function procesarUsuario($jsonDatos) {
         $datos = json_decode($jsonDatos, true);
         $operacion = $datos['operacion'];

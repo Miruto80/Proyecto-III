@@ -9,6 +9,7 @@ if (empty($_SESSION['id'])) {
 
 require_once 'modelo/tipousuario.php';
  require_once 'permiso.php';
+require_once 'modelo/bitacora.php';
 $obj = new tipousuario();
 
 // 0) Bitácora de acceso al módulo (GET)
@@ -18,7 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         'accion'     => 'Acceso a módulo',
         'descripcion'=> 'Ingreso al módulo Tipo Usuario'
     ];
-    $obj->registrarBitacora(json_encode($bit));
+    $bitacoraObj = new Bitacora();
+    $bitacoraObj->registrarOperacion($bit['accion'], 'tipousuario', $bit);
 }
 
 // 1) CRUD JSON‐driven
@@ -45,7 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $nombre, $nivel
                 )
             ];
-            $obj->registrarBitacora(json_encode($bit));
+            $bitacoraObj = new Bitacora();
+            $bitacoraObj->registrarOperacion($bit['accion'], 'tipousuario', $bit);
         }
 
         echo json_encode($res);
@@ -80,7 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $nombre, $nivel, $estatusText
                 )
             ];
-            $obj->registrarBitacora(json_encode($bit));
+            $bitacoraObj = new Bitacora();
+            $bitacoraObj->registrarOperacion($bit['accion'], 'tipousuario', $bit);
         }
 
         echo json_encode($res);
@@ -116,7 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $rolNom
                 )
             ];
-            $obj->registrarBitacora(json_encode($bit));
+            $bitacoraObj = new Bitacora();
+            $bitacoraObj->registrarOperacion($bit['accion'], 'tipousuario', $bit);
         }
 
         echo json_encode($res);

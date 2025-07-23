@@ -26,11 +26,11 @@ $(document).ready(function () {
 
 
 
-  // Función para limpiar bitácora antigua
+  // Función para limpiar bitácora (eliminar todos los registros)
   $('#limpiarBitacora').on('click', function() {
     Swal.fire({
-      title: '¿Limpiar bitácora antigua?',
-      text: 'Se eliminarán registros de más de 90 días. Esta acción no se puede deshacer.',
+      title: '¿Limpiar toda la bitácora?',
+      text: 'Se eliminarán todos los registros. Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -54,24 +54,9 @@ $(document).ready(function () {
                   timer: 2000,
                   showConfirmButton: false
                 });
-                // Eliminar filas de la tabla que sean de más de 90 días
-                const fechaLimite = new Date();
-                fechaLimite.setDate(fechaLimite.getDate() - 90);
-                $('#myTable tbody tr').each(function() {
-                  const fechaTexto = $(this).find('td').eq(0).text();
-                  if (fechaTexto) {
-                    const partes = fechaTexto.split(/[\/ :]/);
-                    // Formato esperado: dd/mm/yyyy hh:mm:ss
-                    const fecha = new Date(partes[2], partes[1]-1, partes[0], partes[3], partes[4], partes[5]);
-                    if (fecha < fechaLimite) {
-                      $(this).remove();
-                    }
-                  }
-                });
-                // Si la tabla queda vacía, mostrar mensaje
-                if ($('#myTable tbody tr').length === 0) {
-                  $('#myTable tbody').append('<tr><td colspan="6" class="text-center">No hay registros en la bitácora</td></tr>');
-                }
+                // Eliminar todas las filas de la tabla
+                $('#myTable tbody').empty();
+                $('#myTable tbody').append('<tr><td colspan="6" class="text-center">No hay registros en la bitácora</td></tr>');
               } else {
                 Swal.fire('Error', data.message, 'error');
               }
@@ -258,6 +243,19 @@ $(document).ready(function() {
   });
 
 
+});
+
+// Al cargar la página, formatear las fechas a la hora local del usuario
+$(document).ready(function () {
+  $('.fecha-bitacora').each(function() {
+    var fechaUTC = $(this).data('fecha');
+    if (fechaUTC) {
+      var fechaLocal = new Date(fechaUTC.replace(' ', 'T'));
+      var opciones = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      var fechaFormateada = fechaLocal.toLocaleString('es-VE', opciones);
+      $(this).text(fechaFormateada);
+    }
+  });
 });
 
 

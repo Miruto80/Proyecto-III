@@ -46,11 +46,11 @@
 
 
 
-    // Limpiar bitácora antigua
+    // Limpiar bitácora (eliminar todos los registros)
     if(isset($_POST['limpiar'])) {
         header('Content-Type: application/json');
         try {
-            $resultado = $objBitacora->limpiarBitacoraAntigua();
+            $resultado = $objBitacora->limpiarBitacora();
             echo json_encode($resultado);
         } catch (Exception $e) {
             echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);

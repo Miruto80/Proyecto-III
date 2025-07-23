@@ -1,45 +1,33 @@
 <?php
 require_once 'modelo/conexion.php';
+require_once 'modelo/bitacora.php'; 
 
 class Categoria extends Conexion {
+    private $bitacoraObj;
     function __construct() {
         parent::__construct();
+        $this->bitacoraObj = new Bitacora();
     }
 
-    // 1) Bitácora
-    public function registrarBitacora(string $jsonDatos): bool {
+        public function registrarBitacora(string $jsonDatos): bool {
         $datos = json_decode($jsonDatos, true);
-        return $this->ejecutarSentenciaBitacora($datos);
-    }
-
-    private function ejecutarSentenciaBitacora(array $datos): bool {
-        $conex = $this->getConex2();
         try {
-            $conex->beginTransaction();
-
-            $sql = "INSERT INTO bitacora
-                      (accion, fecha_hora, descripcion, id_persona)
-                    VALUES
-                      (:accion, NOW(), :descripcion, :id_persona)";
-            $stmt = $conex->prepare($sql);
-            $stmt->execute($datos);
-
-            $conex->commit();
-            $conex = null;
+            $this->bitacoraObj->registrarOperacion(
+                $datos['accion'],
+                'categoria',  // nombre del módulo
+                $datos
+            );
             return true;
-        } catch (PDOException $e) {
-            if ($conex) {
-                $conex->rollBack();
-                $conex = null;
-            }
-            throw $e;
+        } catch (\Throwable $e) {
+            error_log('Bitacora fallo (categoria): ' . $e->getMessage());
+            return false;
         }
     }
 
     // 2) Router JSON → CRUD
     public function procesarCategoria(string $jsonDatos): array {
         $payload   = json_decode($jsonDatos, true);
-        $operacion = $payload['operacion'] ?? '';
+        $operacion = $payload['operacion'] ?? ''; 
         $d         = $payload['datos']    ?? [];
 
         try {
@@ -161,7 +149,8 @@ class Categoria extends Conexion {
         try {
             $sql   = "SELECT id_categoria, nombre
                       FROM categoria
-                      WHERE estatus = 1";
+                      WHERE estatus = 1
+                      ORDER BY id_categoria DESC";
             $stmt  = $conex->prepare($sql);
             $stmt->execute();
             $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);

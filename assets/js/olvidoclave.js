@@ -21,6 +21,31 @@ mensaje){
   }
 }
 
+/*||| Funcion para validar compas de formulario |||*/
+function validarCampo(campo, regex, textoError, mensaje) {
+  const valor = campo.val();
+
+  if (campo.is("select")) {
+   
+    if (valor === "") {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    } else {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    }
+  } else { 
+   
+    if (regex.test(valor)) {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    } else {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    }
+  }
+}
+
 
 function cambiarVista() {
     let vistaActual = document.getElementById("forclave").parentNode.parentNode;
@@ -195,8 +220,8 @@ function cambiarVistaConfirmacion() {
     validarkeyup(/^.{8,16}$/, e);
     });
     
-    $("#clavenueva").on("keyup", function() {
-    validarkeyup(/^.{8,16}$/, $(this), $("#textoclavenueva"), "El formato debe ser entre 8 y 16 caracteres");
+   $("#clavenueva").on("keyup", function() {
+      validarCampo($(this),/^.{8,16}$/, $("#textoclavenueva"), "El formato debe ser entre 8 y 16 caracteres");
     });
 
 
@@ -204,8 +229,8 @@ function cambiarVistaConfirmacion() {
     validarkeyup(/^.{8,16}$/, e);
     });
     
-    $("#clavenuevac").on("keyup", function() {
-    validarkeyup(/^.{8,16}$/, $(this), $("#textoclavenuevac"), "El formato debe ser entre 8 y 16 caracteres");
+  $("#clavenuevac").on("keyup", function() {
+      validarCampo($(this),/^.{8,16}$/, $("#textoclavenuevac"), "El formato debe ser entre 8 y 16 caracteres");
     });
  
 }
@@ -215,7 +240,7 @@ $(document).ready(function() {
  
 
  $('#validar').on("click", function(event) {
-        event.preventDefault(); // Evita la recarga de la página
+        event.preventDefault(); 
 
         if (validarFormulario()) {
              var datos = new FormData($('#forclave')[0]);
@@ -256,25 +281,26 @@ $(document).ready(function() {
     });
 
     $("#correo").on("keyup", function () {
-      validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $(this),
-          $("#textocorreo"), "El formato debe incluir @ y ser válido.");
+      validarCampo($(this), /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/,
+       $("#textocorreo"), "El formato debe incluir @ y ser válido.");
     });
 
-  $("#clavenueva").on("keypress", function(e) {
+    $("#clavenueva").on("keypress", function(e) {
     validarkeyup(/^.{8,16}$/, e);
     });
-    
-    $("#clavenueva").on("keyup", function() {
-    validarkeyup(/^.{8,16}$/, $(this), $("#textoclavenueva"), "El formato debe ser entre 8 y 16 caracteres");
+
+     $("#clavenueva").on("keyup", function() {
+      validarCampo($(this),/^.{8,16}$/, $("#textoclavenueva"), "El formato debe ser entre 8 y 16 caracteres");
     });
 
 
     $("#clavenuevac").on("keypress", function(e) {
     validarkeyup(/^.{8,16}$/, e);
     });
-    
-    $("#clavenuevac").on("keyup", function() {
-    validarkeyup(/^.{8,16}$/, $(this), $("#textoclavenuevac"), "El formato debe ser entre 8 y 16 caracteres");
+
+
+     $("#clavenuevac").on("keyup", function() {
+      validarCampo($(this),/^.{8,16}$/, $("#textoclavenuevac"), "El formato debe ser entre 8 y 16 caracteres");
     });
 
 });
@@ -283,6 +309,8 @@ $(document).on("click", "#validarNuevo", function(event) {
     event.preventDefault(); // Evita la recarga de la página
 
      if (validarFormulariocodigo()) {
+         $('#validarNuevo').prop('disabled', true);
+        $('#validarNuevo').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Validando...');
         var datos = new FormData($('#forcambio_clave')[0]);
         datos.append('validarcodigo', 'validarcodigo');
         enviaAjax(datos);
@@ -478,7 +506,8 @@ function enviaAjax(datos) {
            if (lee.accion == 'validar') {
               if (lee.respuesta == 1) {  
                 muestraMensaje("success", 2000, "Se ha enviado un código enviado al correo", "");
-
+                $('#validar').prop('disabled', false);
+                 $('#validar').html('Validar');
                 // Espera un momento antes de cambiar la vista
                 setTimeout(() => {
                     cambiarVista();
@@ -491,7 +520,8 @@ function enviaAjax(datos) {
             } else if (lee.accion == 'validarcodigo') {
             if (lee.respuesta == 1) {
                 muestraMensaje("success", 2000, "Codigo de verificación correcto", "");
-        
+                 $('#validarNuevo').prop('disabled', false);
+                 $('#validarNuevo').html('Continuar');
                 setTimeout(() => {
                     cambiarVistaConfirmacion();
                 }, 2200);
@@ -505,7 +535,7 @@ function enviaAjax(datos) {
                    $('#validarclave').html('Cambiar Clave');
                   setTimeout(function () {
                      location = '?pagina=login';
-                  }, 2500);
+                  }, 2500); 
             }else {
                 muestraMensaje("error", 2000, lee.text, "");
                    $('#validarclave').prop('disabled', false);

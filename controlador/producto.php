@@ -6,6 +6,7 @@ if (empty($_SESSION["id"])) {
 }
 
 require_once 'modelo/producto.php';
+require_once 'modelo/bitacora.php';
 require_once 'permiso.php';
 $objproducto = new producto();
 
@@ -50,7 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'descripcion' => 'Se registró el producto: ' . $datosProducto['datos']['nombre'] . ' ' . 
                                     $datosProducto['datos']['marca']
                 ];
-                $objproducto->registrarBitacora(json_encode($bitacora));
+                $bitacoraObj = new Bitacora();
+                $bitacoraObj->registrarOperacion($bitacora['accion'], 'producto', $bitacora);
             }
 
             echo json_encode($resultadoRegistro);
@@ -92,7 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'descripcion' => 'Se modificó el producto: ' . $datosProducto['datos']['nombre'] . ' ' . 
                                 $datosProducto['datos']['marca']
             ];
-            $objproducto->registrarBitacora(json_encode($bitacora));
+            $bitacoraObj = new Bitacora();
+            $bitacoraObj->registrarOperacion($bitacora['accion'], 'producto', $bitacora);
         }
 
         echo json_encode($resultado);
@@ -113,7 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'accion' => 'Eliminación de producto',
                 'descripcion' => 'Se eliminó el producto con ID: ' . $datosProducto['datos']['id_producto']
             ];
-            $objproducto->registrarBitacora(json_encode($bitacora));
+            $bitacoraObj = new Bitacora();
+            $bitacoraObj->registrarOperacion($bitacora['accion'], 'producto', $bitacora);
         }
 
         echo json_encode($resultado);
@@ -134,7 +138,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'accion' => 'Cambio de estatus de producto',
                 'descripcion' => 'Se cambió el estatus del producto con ID: ' . $datosProducto['datos']['id_producto']
             ];
-            $objproducto->registrarBitacora(json_encode($bitacora));
+            $bitacoraObj = new Bitacora();
+            $bitacoraObj->registrarOperacion($bitacora['accion'], 'producto', $bitacora);
         }
 
         echo json_encode($resultado);
@@ -145,7 +150,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'accion' => 'Acceso a Módulo',
         'descripcion' => 'módulo de Producto'
          ];
-        $objproducto->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'producto', $bitacora);
  $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'producto';
         require_once 'vista/producto.php';
         } else {

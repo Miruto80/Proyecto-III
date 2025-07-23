@@ -8,6 +8,7 @@ if (empty($_SESSION['id'])) {
 
 require_once 'modelo/proveedor.php';
  require_once 'permiso.php';
+require_once 'modelo/bitacora.php';  
 $obj = new proveedor();
 
 // Fijamos el rol en “Administrador”
@@ -114,7 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
             'accion' => 'Acceso a Módulo',
             'descripcion' => 'módulo de Proveedor'
         ];
-        $obj->registrarBitacora(json_encode($bitacora));
+        $bitacoraObj = new Bitacora();
+        $bitacoraObj->registrarOperacion($bitacora['accion'], 'proveedor', $bitacora);
 
        $registro = $obj->consultar();
         $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'proveedor';
