@@ -150,9 +150,6 @@
                   <th class="text-white">Total</th>
                   <th class="text-white">Referencia</th>
                   <th class="text-white">usuario</th>
-                 <th class="text-white">Teléfono</th>
-                  <th class="text-white">Método Entrega</th>
-                 <th class="text-white">Método Pago</th>
                  <th class="text-white">Acción</th>
                 </tr>
               </thead>
@@ -199,9 +196,7 @@
     <td><?= $pedido['precio_total_bs'] ?>$</td>
     <td><?= $pedido['referencia_bancaria'] ?></td>
     <td><?= $pedido['nombre'] ?></td>
-    <td><?= $pedido['telefono_emisor'] ?></td>
-    <td><?= $pedido['metodo_entrega'] ?></td>
-    <td style=""><?= $pedido['metodo_pago'] ?></td>
+
     <td>
     <button class="btn btn-info " data-bs-toggle="modal" 
     data-bs-target="#verDetallesModal<?= $pedido['id_pedido']; ?>">
