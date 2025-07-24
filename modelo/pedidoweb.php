@@ -86,7 +86,7 @@ class pedidoWeb extends Conexion {
             LEFT JOIN metodo_pago mp ON dp.id_metodopago = mp.id_metodopago
 
             WHERE p.tipo = 2
-            ORDER BY p.fecha DESC";
+            ORDER BY p.fecha ASC";
 
     $stmt = $this->getconex1()->prepare($sql);  
     $stmt->execute();
