@@ -601,7 +601,7 @@ if (
 <script>
   $(document).ready(function() {
     $('#myTable').DataTable({
-      order: [[0, 'desc']] // Ordenar por la columna de fecha, descendente
+      "order": [[0, "desc"]] // Ordenar por la primera columna (Fecha) de forma descendente
     });
   });
 </script>
@@ -611,6 +611,8 @@ if (
 <?php include 'complementos/footer.php' ?>
 <script src="assets/js/pedidoweb.js"></script>
 <script src="assets/js/demo/datatables-demo.js"></script>
+<script src="assets/js/libreria/datatables.min.js"></script>
+<script src="assets/js/libreria/jquery.min.js"></script>
 </body>
 
 </html>
