@@ -611,7 +611,7 @@ if (
 <?php include 'complementos/footer.php' ?>
 <script src="assets/js/pedidoweb.js"></script>
 <script src="assets/js/demo/datatables-demo.js"></script>
-<script src="assets/js/libreria/datatables.min.js"></script>
+
 <script src="assets/js/libreria/jquery.min.js"></script>
 </body>
 
