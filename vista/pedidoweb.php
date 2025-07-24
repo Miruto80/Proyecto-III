@@ -597,14 +597,7 @@ if (
   <?php endforeach; ?>
 <?php endif; ?>
 
-    
 
-<script>if (!$.fn.DataTable.isDataTable('#myTable')) {
-    $('#myTable').DataTable({
-        order: [[0, 'desc']]
-    });
-}
-</script>
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>

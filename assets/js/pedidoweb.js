@@ -282,7 +282,11 @@ $(document).on('submit', '.form-delivery', function(e){
   });
 });
 
-
+if (!$.fn.DataTable.isDataTable('#myTable')) {
+  $('#myTable').DataTable({
+      order: [[0, 'desc']]
+  });
+}
 
 
 
