@@ -215,7 +215,7 @@
 <?php 
 $metodo = trim($pedido['metodo_entrega']);
 if ($pedido['estado'] == 3 && $metodo !== 'MRW' && $metodo !== 'ZOOM'): ?>
-  <button type="button" style="background-color: #fde047;" title="Enviar Pedido" class="btn btn-secondary btn-enviar" data-id="<?= $pedido['id_pedido'] ?>">
+  <button type="button" style="background-color:rgb(197, 174, 56);" title="Enviar Pedido" class="btn btn-secondary btn-enviar" data-id="<?= $pedido['id_pedido'] ?>">
     <i class="fa-solid fa-motorcycle"></i>
   </button>
 
