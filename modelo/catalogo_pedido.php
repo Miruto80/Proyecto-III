@@ -49,11 +49,11 @@ class Catalogopedido extends Conexion{
     LEFT JOIN detalle_pago dp ON p.id_pago = dp.id_pago
     LEFT JOIN metodo_pago mp ON dp.id_metodopago = mp.id_metodopago
 
-    WHERE p.tipo IN (1, 2, 3)
+    WHERE p.tipo IN (1, 2, 3) AND p.id_persona = ?
     ORDER BY p.fecha DESC";
 
 $stmt = $this->getconex1()->prepare($sql);  
-$stmt->execute();
+$stmt->execute([$id_persona]);
 return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
         
