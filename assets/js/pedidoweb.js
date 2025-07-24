@@ -300,6 +300,8 @@ $('#btnayuda').on("click", function () {
       { element: '.btn-validar', popover: { title: 'validar pedido', description: 'Este botón te permite validar un pedido cuando el pago es confirmado', side: "left", align: 'start' }},
       { element: '.btn-eliminar', popover: { title: 'Eliminar pedido', description: 'Usa este botón para eliminar un pedido', side: "left", align: 'start' }},
       { element: '.btn-enviar', popover: { title: 'Enviar pedido', description: 'Usa este botón para Enviar un pedido', side: "left", align: 'start' }},
+      { element: '.btn-entregar', popover: { title: 'Entregar pedido', description: 'Usa este botón para confirmar que el pedido fue Entregado', side: "left", align: 'start' }},
+      { element: '.btn-tracking', popover: { title: 'Enviar Tracking', description: 'Usa este botón enviar el codigo de Tracking al Cliente', side: "left", align: 'start' }},
       { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un pedido especifico ', side: "right", align: 'start' }},
       { popover: { title: 'Eso es todo', description: 'Este es el fin de la guia espero hayas entendido'} }
     ]

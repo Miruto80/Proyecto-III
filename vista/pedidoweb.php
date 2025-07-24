@@ -207,7 +207,7 @@
 <!-- Botón Tracking: solo si método de entrega es 2 o 3 -->
 <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(9, 'especial') && in_array($pedido['metodo_entrega'], ['MRW','	ZOOM' ])&&
   in_array($pedido['estado'], [2, 3])): ?>
-  <button type="button" title="Enviar Codigo Tracking " class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTracking<?php echo $pedido['id_pedido']; ?>">
+  <button type="button" title="Enviar Codigo Tracking " class="btn btn-primary btn-tracking" data-bs-toggle="modal" data-bs-target="#modalTracking<?php echo $pedido['id_pedido']; ?>">
     <i class="fa-regular fa-envelope"></i>
   </button>
 <?php endif; ?>
