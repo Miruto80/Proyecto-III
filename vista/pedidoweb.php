@@ -141,9 +141,7 @@
 
       <div class="table-responsive m-3"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-            <script>$('#myTable').DataTable({
-  order: [[0, 'desc']] 
-});</script>
+ 
           <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead  class="table-color">
                 <tr>
@@ -601,6 +599,9 @@ if (
 
     
 
+<script>$('#myTable').DataTable({
+  order: [[0, 'desc']] 
+});</script>
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
