@@ -282,9 +282,7 @@ $(document).on('submit', '.form-delivery', function(e){
   });
 });
 
-$('#myTable').DataTable({
-  order: [[0, 'desc']] 
-});
+
 
 
 
