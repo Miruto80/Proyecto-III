@@ -198,7 +198,7 @@
     <td><?= $pedido['nombre'] ?></td>
 
     <td>
-    <button class="btn btn-info " data-bs-toggle="modal" 
+    <button class="btn btn-info " title="ver detalles" data-bs-toggle="modal" 
     data-bs-target="#verDetallesModal<?= $pedido['id_pedido']; ?>">
  <i class="fa fa-eye"></i> </button>
 
@@ -207,7 +207,7 @@
 <!-- Botón Tracking: solo si método de entrega es 2 o 3 -->
 <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(9, 'especial') && in_array($pedido['metodo_entrega'], ['MRW','	ZOOM' ])&&
   in_array($pedido['estado'], [2, 3])): ?>
-  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTracking<?php echo $pedido['id_pedido']; ?>">
+  <button type="button" title="Enviar Codigo Tracking " class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTracking<?php echo $pedido['id_pedido']; ?>">
     <i class="fa-regular fa-envelope"></i>
   </button>
 <?php endif; ?>
@@ -215,7 +215,7 @@
 <?php 
 $metodo = trim($pedido['metodo_entrega']);
 if ($pedido['estado'] == 3 && $metodo !== 'MRW' && $metodo !== 'ZOOM'): ?>
-  <button type="button" class="btn btn-secondary btn-enviar btn-success" data-id="<?= $pedido['id_pedido'] ?>">
+  <button type="button" title="Enviar Pedido" class="btn btn-secondary btn-enviar btn-success" data-id="<?= $pedido['id_pedido'] ?>">
     <i class="fa-solid fa-motorcycle"></i>
   </button>
 
@@ -233,7 +233,7 @@ if (
         $metodo === 'ZOOM'
     )
 ): ?>
-  <button type="button" class="btn btn-secondary btn-entregar btn-warning" data-id="<?= $pedido['id_pedido'] ?>">
+  <button type="button" title="Pedido Entregado" class="btn btn-secondary btn-entregar btn-warning" data-id="<?= $pedido['id_pedido'] ?>">
     <i class="fa-solid fa-boxes-stacked"></i>
   </button>
 <?php endif; ?>
@@ -244,10 +244,10 @@ if (
 
 <!-- Botones Validar y Eliminar: solo si estado es 1 -->
 <?php if ($pedido['estado'] == 1): ?>
-  <button type="button" class="btn btn-secundary btn-validar btn-success" data-id="<?= $pedido['id_pedido'] ?>">
+  <button type="button" title="Confirmar Pago" class="btn btn-secundary btn-validar btn-success" data-id="<?= $pedido['id_pedido'] ?>">
     <i class="fa-solid fa-check"></i>
   </button>
-  <button type="button" class="btn btn-secundary btn-eliminar btn-danger" data-id="<?= $pedido['id_pedido'] ?>">
+  <button type="button" title="Rechazar Pedido" class="btn btn-secundary btn-eliminar btn-danger" data-id="<?= $pedido['id_pedido'] ?>">
     <i class="fa-solid fa-x"></i>
   </button>
 <?php endif; ?>
