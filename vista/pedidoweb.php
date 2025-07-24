@@ -598,6 +598,14 @@ if (
 <?php endif; ?>
 
 
+<script>
+  $(document).ready(function() {
+    $('#myTable').DataTable({
+      order: [[0, 'desc']] // Ordenar por la columna de fecha, descendente
+    });
+  });
+</script>
+
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>

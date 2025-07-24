@@ -282,15 +282,6 @@ $(document).on('submit', '.form-delivery', function(e){
   });
 });
 
-if ( $.fn.DataTable.isDataTable('#myTable') ) {
-  $('#myTable').DataTable().clear().destroy();
-}
-
-$('#myTable').DataTable({
-  order: [[0, 'desc']],
-  
-});
-
 
 
 $('#btnayuda').on("click", function () {
