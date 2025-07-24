@@ -373,6 +373,8 @@ if (
   <p><strong>Comprobante de Pago:</strong></p>
   <img src="<?php echo htmlspecialchars($pedido['imagen']); ?>" alt="Comprobante de Pago" class="img-fluid rounded border" style="max-width: 300px;">
 <?php endif; ?>
+<p><strong>Numero Destinatario:</strong> <?php echo number_format($pedido['telefono_emisor'] ?? 'N/A'); ?></p>
+
 
                       <p><strong>Método de Entrega:</strong> <?php echo htmlspecialchars($pedido['metodo_entrega'] ?? 'N/A'); ?></p>
                       <?php if (!empty($pedido['direccion'])): ?>
