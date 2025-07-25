@@ -56,6 +56,18 @@ class Usuario extends Conexion
                         $datosProcesar['insertar_permisos'] = true;
                     }
 
+                     if ($datosProcesar['cedula'] !== $datosProcesar['cedula_actual']) {
+                        if ($this->verificarExistencia(['campo' => 'cedula', 'valor' => $datosProcesar['cedula']])) {
+                            return ['respuesta' => 0, 'accion' => 'actualizar', 'text' => 'La cédula ya está registrada'];
+                        }
+                    }
+
+                    if ($datosProcesar['correo'] !== $datosProcesar['correo_actual']) {
+                        if ($this->verificarExistencia(['campo' => 'correo', 'valor' => $datosProcesar['correo']])) {
+                            return ['respuesta' => 0, 'accion' => 'actualizar', 'text' => 'El correo electrónico ya está registrado'];
+                        }
+                    }
+
                     return $this->ejecutarActualizacion($datosProcesar);
                     
                 case 'eliminar':
