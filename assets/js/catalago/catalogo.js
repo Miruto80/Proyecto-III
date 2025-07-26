@@ -207,110 +207,121 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-document.querySelectorAll('.btn-agregar-carrito-exterior').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
+document.addEventListener("DOMContentLoaded", () => {
+  const formCarrito = document.getElementById("form-carrito");
+  const btnAgregarCarrito = document.getElementById("btn-agregar-carrito-exterior");
 
-    const formExterno = e.target.closest('form.form-carrito-exterior');
-    if (!formExterno) return;
+  if (btnAgregarCarrito && formCarrito) {
+      btnAgregarCarrito.addEventListener("click", (e) => {
+          e.preventDefault();
 
-    const formData = new FormData(formExterno);
+          const formData = new FormData(formCarrito);
 
-    const stockDisponible = parseInt(formData.get("stockDisponible"));
-    const idProducto = formData.get("id");
+          const stockDisponible = parseInt(formData.get("stockDisponible"));
+          const idProducto = formData.get("id");
+          console.log(stockDisponible)
+          console.log(idProducto)
 
-    const itemExistente = document.querySelector(`li[data-id="${idProducto}"]`);
-    let cantidadActual = 0;
-    if (itemExistente) {
-      const textoCantidad = itemExistente.querySelector('.cantidad-texto')?.textContent;
-      const match = textoCantidad.match(/^(\d+)/);
-      if (match) {
-        cantidadActual = parseInt(match[1]);
-      }
-    }
+          const itemExistente = document.querySelector(`li[data-id="${idProducto}"]`);
+          let cantidadActual = 0;
+          if (itemExistente) {
+           const textoCantidad = itemExistente.querySelector('.cantidad-texto')?.textContent;
+           const match = textoCantidad.match(/^(\d+)/);
+            if (match) {
+             cantidadActual = parseInt(match[1]);
+           }
+          }
 
     if(stockDisponible === 0){
-      muestraMensaje('error', 1000, 'Sin stock', 'Este producto no está disponible actualmente.');
+              muestraMensaje('error', 1000, 'Sin stock', 'Este producto no está disponible actualmente.');
       return;
-    }
-
-    if (cantidadActual >= stockDisponible) {
-      muestraMensaje('error', 1000, 'Stock limitado', 'Ya has agregado el máximo permitido.');
-      return;
-    }
-
-    fetch("controlador/carrito.php", {
-      method: "POST",
-      body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        muestraMensaje('success', 1000, '¡Agregado!', 'El producto se agregó al carrito.');
-
-        const ulCarrito = document.querySelector('.carrito-dropdown');
-        if (!ulCarrito) {
-          console.error("No se encontró el <ul> del carrito en el HTML.");
-          return;
-        }
-
-        const liVacio = ulCarrito.querySelector('li.text-center');
-        if (liVacio) {
-          liVacio.remove();
-        }
-
-        const id = data.producto.id;
-        let itemExistente = ulCarrito.querySelector(`li[data-id="${id}"]`);
-
-        if (!itemExistente) {
-          const item = document.createElement('li');
-          item.className = 'list-group-item d-flex justify-content-between lh-sm';
-          item.setAttribute('data-id', id);
-
-          item.innerHTML = `
-            <div>
-              <h6 class="fs-5 fw-normal my-0">${data.producto.nombre}</h6>
-              <small class="text-muted cantidad-texto">${data.producto.cantidad} x $${data.producto.precio_unitario}</small>
-            </div>
-            <div class="text-end">
-              <span class="text-body-secondary subtotal-texto">$${data.producto.subtotal}</span><br>
-              <button class="btn-eliminar btn btn-sm btn-outline-danger mt-1" data-id="${id}">
-                <i class="fa-solid fa-x"></i>
-              </button>
-            </div>
-          `;
-
-          ulCarrito.insertBefore(item, ulCarrito.lastElementChild);
-
-          item.querySelector('.btn-eliminar').addEventListener('click', function (e) {
-            e.preventDefault();
-            eliminarProducto(id);
-          });
-
-          setTimeout(() => location.reload(), 500);
-        } else {
-          itemExistente.querySelector('small.cantidad-texto').textContent = `${data.producto.cantidad} x $${data.producto.precio_unitario}`;
-          itemExistente.querySelector('span.subtotal-texto').textContent = `$${data.producto.subtotal}`;
-        }
-
-        // Actualizar contador
-        const contador = document.querySelector('.contador');
-        if (contador) {
-          if (!itemExistente) {
-            contador.textContent = parseInt(contador.textContent) + 1;
           }
-        }
+ if (cantidadActual >= stockDisponible) {
+           muestraMensaje('error', 1000, 'Stock limitado', 'Ya has agregado el máximo permitido.');
+                return;
+          } 
 
-        const totalGeneral = document.getElementById('total-general');
-        if (totalGeneral) {
-          totalGeneral.textContent = data.total_general; 
-        }
-      } else {
-        alert("Error: " + data.mensaje);
-      }
-    })
-    .catch(error => console.error("Error al procesar la solicitud:", error));
-  });
+    
+
+          fetch("controlador/carrito.php", {
+              method: "POST",
+              body: formData,
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  muestraMensaje('success', 1000, '¡Agregado!', 'El producto se agregó al carrito.');
+                  const ulCarrito = document.querySelector('.carrito-dropdown');
+                  if (!ulCarrito) {
+                      console.error("No se encontró el <ul> del carrito en el HTML.");
+                      return;
+                  }
+                    
+
+                  const liVacio = ulCarrito.querySelector('li.text-center');
+                  if (liVacio) {
+                      liVacio.remove();
+                  }
+
+                  const id = data.producto.id;
+                  let itemExistente = ulCarrito.querySelector(`li[data-id="${id}"]`);
+
+                  if (!itemExistente) {
+                     
+                      const item = document.createElement('li');
+                      item.className = 'list-group-item d-flex justify-content-between lh-sm';
+                      item.setAttribute('data-id', id);
+
+                      item.innerHTML = `
+                          <div>
+                              <h6 class="fs-5 fw-normal my-0">${data.producto.nombre}</h6>
+                              <small class="text-muted cantidad-texto">${data.producto.cantidad} x $${data.producto.precio_unitario}</small>
+                          </div>
+                          <div class="text-end">
+                              <span class="text-body-secondary subtotal-texto">$${data.producto.subtotal}</span><br>
+                              <button class="btn-eliminar btn btn-sm btn-outline-danger mt-1" data-id="${id}">
+                                  <i class="fa-solid fa-x"></i>
+                              </button>
+                          </div>
+                      `;
+
+                      ulCarrito.insertBefore(item, ulCarrito.lastElementChild); 
+
+                    
+                      item.querySelector('.btn-eliminar').addEventListener('click', function (e) {
+                          e.preventDefault();
+                          eliminarProducto(id);
+                      });
+
+                      muestraMensaje('success',1000,'¡Agregado!', 'El producto se agregó al carrito.');
+
+                      setTimeout(() => location.reload(), 500);
+                  } else {
+                    
+                      itemExistente.querySelector('small.cantidad-texto').textContent = `${data.producto.cantidad} x $${data.producto.precio_unitario}`;
+                      itemExistente.querySelector('span.subtotal-texto').textContent = `$${data.producto.subtotal}`;
+                  }
+
+                  // Actualizar contador
+                  const contador = document.querySelector('.contador');
+                  if (contador) {
+                     
+                      if (!itemExistente) {
+                          contador.textContent = parseInt(contador.textContent) + 1;
+                      }
+                  }
+
+                  const totalGeneral = document.getElementById('total-general');
+                  if (totalGeneral) {
+                      totalGeneral.textContent = data.total_general; 
+                  }
+              } else {
+                  alert("Error: " + data.mensaje);
+              }
+          })
+          .catch(error => console.error("Error al procesar la solicitud:", error));
+      });
+  }
 });
 
 

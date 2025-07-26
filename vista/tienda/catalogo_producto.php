@@ -230,9 +230,10 @@
 
 <?php if ($_SESSION["nivel_rol"] == 1): ?>
    
-    <button type="button" id="btn-agregar-carrito" class="btn btn-dark w-100 mt-2">
-        <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
-    </button>
+  <button type="button" id="btn-agregar-carrito-exterior"  class="btn btn-dark rounded-1 p-2 fs-7 btn-cart">
+                            <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
+                          </button>
+
 
 
 
