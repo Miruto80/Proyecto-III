@@ -63,6 +63,7 @@ class pedidoWeb extends Conexion {
                 cli.apellido AS apellido,
                  cli.correo AS correo,   
                 d.direccion_envio AS direccion,
+                d.sucursal_envio AS sucursal,
                 
                 me.nombre AS metodo_entrega,
                 me.descripcion AS descripcion_entrega,

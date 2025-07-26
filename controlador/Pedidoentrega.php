@@ -15,20 +15,26 @@ $venta = new VentaWeb();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['continuar_entrega'])) {
     header('Content-Type: application/json');
 
+
     $me = $_POST['metodo_entrega'] ?? null;
-    if (!in_array($me, ['1','2','3'])) {
+    $empresa_envio = $_POST['empresa_envio'] ?? null;
+    if (!in_array($me, ['1','2','3','4'])) {
         echo json_encode(['success'=>false,'message'=>'Método de entrega inválido.']);
         exit;
+    }
+
+    if ($me == '2' && $empresa_envio == '3') {
+        $me = '3';
     }
 
     // Construye array de entrega
     $entrega = ['id_metodoentrega' => $me];
     switch ($me) {
-        case '1': // Tienda física
+        case '4': // Tienda física
             $entrega['direccion_envio'] = $_POST['direccion_envio'] ?? '';
             $entrega['sucursal_envio']  = null;
             break;
-        case '2': // MRW/ZOOM
+        case '2': // MRW
             if (empty($_POST['empresa_envio']) || empty($_POST['sucursal_envio'])) {
                 echo json_encode(['success'=>false,'message'=>'Complete empresa y sucursal.']);
                 exit;
@@ -37,8 +43,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['continuar_entrega']))
             $entrega['sucursal_envio']  = $_POST['sucursal_envio'];
             $entrega['direccion_envio'] = $_POST['direccion_envio'];
             break;
-            case '3': // Delivery propio
-                // Asegúrate de que lleguen todos los campos
+
+        case '3': //ZOOM
+                if (empty($_POST['empresa_envio']) || empty($_POST['sucursal_envio'])) {
+                    echo json_encode(['success'=>false,'message'=>'Complete empresa y sucursal.']);
+                    exit;
+                }
+                $entrega['empresa_envio']   = $_POST['empresa_envio'];
+                $entrega['sucursal_envio']  = $_POST['sucursal_envio'];
+                $entrega['direccion_envio'] = $_POST['direccion_envio'];
+                break;
+     
+
+        case '1': // Delivery propio
+                
                 foreach (['zona','parroquia','sector','direccion_envio'] as $f) {
                     if (empty($_POST[$f])) {
                         echo json_encode(['success'=>false,'message'=>"Falta el campo $f."]);

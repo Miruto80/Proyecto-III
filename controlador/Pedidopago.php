@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['continuar_pago'])) {
         unset($_SESSION['carrito'], $_SESSION['pedido_entrega']);
         echo json_encode([
             'success'  => true,
-            'message'  => 'Su pedido ha sido registrado.',
+            'message'  => 'Pago realizado en espera de Verificacion.',
             'redirect' => '?pagina=confirmacion&id='.$res['id_pedido']
         ]);
     } else {

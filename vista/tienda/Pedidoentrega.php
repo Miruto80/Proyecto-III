@@ -137,7 +137,7 @@ input[type="radio"]:checked + .opcion-custom {
 
 
     <div class="col-md-3">
-      <input type="radio" id="op1" name="metodo_entrega" value="1" class="d-none">
+      <input type="radio" id="op1" name="metodo_entrega" value="4" class="d-none">
       <label for="op1" class="opcion-custom">
         <i class="fa-solid fa-shop"></i><br>
         Tienda física
@@ -155,7 +155,7 @@ input[type="radio"]:checked + .opcion-custom {
 
 
     <div class="col-md-3">
-      <input type="radio" id="op3" name="metodo_entrega" value="3" class="d-none">
+      <input type="radio" id="op3" name="metodo_entrega" value="1" class="d-none">
       <label for="op3" class="opcion-custom">
       <i class="fa-solid fa-bicycle"></i><br>
         Delivery
@@ -190,7 +190,7 @@ input[type="radio"]:checked + .opcion-custom {
      <div class="mb-3">
       <p class="text-center text-color1">Retiro en Tienda fisica</p>
     <label for="retira" class="form-label text-dark">Tienda física ubicada en la av 20 con calles 29 y 30 CC Barquisimeto plaza, Estado Lara, Venezuela </label>
-    <input type="text" class="form-control text-dark" id="retira" value="Retiro en Tienda Fisica" readonly>
+    <input type="text" class="form-control text-dark" name="direccion_envio" id="retira" value="Retiro en Tienda Fisica" readonly>
   </div>
   </div>
 </template>

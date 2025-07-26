@@ -378,9 +378,22 @@ if (
 
 
                       <p><strong>Método de Entrega:</strong> <?php echo htmlspecialchars($pedido['metodo_entrega'] ?? 'N/A'); ?></p>
+
+                      <?php if($pedido['metodo_entrega'] === 'Delivery' || $pedido['metodo_entrega'] === 'Retiro en Tienda Fisica'): ?>
                       <?php if (!empty($pedido['direccion'])): ?>
                         <p><strong>Dirección:</strong><br><?php echo nl2br(htmlspecialchars($pedido['direccion'])); ?></p>
                       <?php endif; ?>
+                      <?php endif; ?>
+
+
+                      <?php if($pedido['metodo_entrega'] === 'MRW' || $pedido['metodo_entrega'] === 'ZOOM'): ?>
+                        <?php if (!empty($pedido['direccion'])): ?>
+                        <p><strong>Nombre Sucursal:</strong><br><?php echo nl2br(htmlspecialchars($pedido['direccion'])); ?></p>
+                      <?php endif; ?>
+
+                        <p><strong>Codigo sucursal</strong> <?php echo htmlspecialchars($pedido['sucursal'] ?? 'N/A'); ?></p>
+                    <?php endif; ?>
+
                       <p><strong>Total Bs:</strong> <?php echo number_format($pedido['precio_total_bs'], 2); ?></p>
                     </div>
                   </div>

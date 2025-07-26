@@ -47,10 +47,10 @@ $(document).ready(function() {
   }
 
   function validarFormularioPedido() {
-    const me = $('#metodoentrega').val();
+    const me = $('input[name="metodo_entrega"]:checked').val();
     let ok = true;
 
-    if (me === '3') {
+    if (me === '1') {
       // delivery → validar zona/parroquia/sector/dirección
       ok = validarSelect($('#zona'), "Seleccione una zona") && ok;
       ok = validarSelect($('#parroquia'), "Seleccione una parroquia") && ok;
@@ -111,6 +111,22 @@ $(document).ready(function() {
     $('#formulario-opciones').html(formularios[id]);
 
     bindValidations();
+
+
+    if(id === 'op2'){
+      $(document).on('change', '#empresa_envio', function () {
+        const empresa = $(this).val().toLowerCase();
+        const radioOp2 = $('#op2'); // Radio button op2
+
+        if (empresa === '3') {
+            radioOp2.val('3'); // Cambiar a 3
+        } else if (empresa === '2') {
+            radioOp2.val('2'); // Volver al valor original 2
+        }
+    });
+    }
+
+
 
     if (id === 'op3') {
       // Definimos los datos

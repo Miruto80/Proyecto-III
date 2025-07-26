@@ -8,6 +8,8 @@ $entrega = $_SESSION['pedido_entrega'];
 $carrito = $_SESSION['carrito'];
 
 
+
+
 // Calcular total USD
 $total = 0;
 foreach ($carrito as $item) {
