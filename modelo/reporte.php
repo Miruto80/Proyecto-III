@@ -721,13 +721,15 @@ public static function graficaVentaTop5(): array
     $conex = (new Conexion())->getConex1();
 
     $sql = "
-      SELECT pr.nombre AS producto,
+      SELECT pr.nombre    AS producto,
              SUM(pd.cantidad) AS total
         FROM pedido pe
         JOIN pedido_detalles pd ON pd.id_pedido = pe.id_pedido
         JOIN productos       pr ON pr.id_producto = pd.id_producto
-       WHERE pe.tipo   = 1
-         AND pe.estado = 1
+       WHERE
+         (pe.tipo = 1 AND pe.estado = 1)      
+         OR
+         (pe.tipo = 2 AND pe.estado IN (2,3,4,5))  
     GROUP BY pr.id_producto
     ORDER BY total DESC
        LIMIT 5
