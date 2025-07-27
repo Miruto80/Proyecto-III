@@ -25,6 +25,94 @@ Version: 1.1
           #scrollToTopBtn:hover {
             background-color: #3e90d3;
   }
+
+
+   .btn-custom {
+    border: 2px solid transparent;
+    background-color: #f5f5f5;
+    color: #333;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+  }
+
+  .btn-custom:hover {
+    background-color: #e0e0e0;
+    border-color: #ccc;
+  }
+
+  .btn-verde {
+    border: 2px solid transparent;
+    background-color: #1e913bff;
+    color: #ffffff;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+  }
+  .btn-verde:hover {
+    background-color: #2dc252ff;
+    border-color: #176e2dff;
+  }
+
+   .btn-reset {
+    border: 2px solid transparent;
+    background-color: #adadadff;
+    color: #000000;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+  }
+
+  .btn-reset:hover {
+    background-color: #919191ff;
+    border-color: #000000;
+  }
+
+  .btn-eliminar {
+    border: 2px solid transparent;
+    background-color: #ec6363ff;
+    color: #000000;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+  }
+
+  .btn-eliminar:hover {
+    background-color: #e05353ff;
+    border-color: #e63c3cff;
+  }
+
+  .text-titel{
+    color: #0d6efd;
+  }
+
+  .btn-custom.active {
+    background-color: #0d6efd;
+    color: #fff;
+    border-color: #0a58ca;
+    box-shadow: 0 0 8px rgba(13, 110, 253, 0.4);
+  }
+
+  .custom-breadcrumb {
+  background-color: #f0f0f0ff; 
+  border: 1px solid #dee2e6; 
+  border-radius: 1rem;     
+  padding: 0.7rem 1rem;    
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); 
+}
+
+.custom-breadcrumb .breadcrumb-item a {
+  color: #0d6efd;           
+  text-decoration: none;
+}
+
+.custom-breadcrumb .breadcrumb-item.active {
+  color: #000000ff;            
+}
 /*--------------------------------------------------------------
 This is main CSS file that contains custom style rules used in this template
 --------------------------------------------------------------*/

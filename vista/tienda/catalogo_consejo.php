@@ -36,9 +36,9 @@ transition: transform 0.2s;
 
 <section id="latest-blog" class="section-padding pt-0">
     <div class="container-lg">
-        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="?pagina=catalogo">Inicio</a></li>
+       <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="custom-breadcrumb mt-3">
+        <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a href="?pagina=catalogo">Inicio</a></li>
              <li class="breadcrumb-item active" aria-current="page">Consejos de Belleza</li>
         </ol>
       </nav>

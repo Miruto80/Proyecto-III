@@ -55,8 +55,15 @@
   <!-- NAV -->
   <?php include 'vista/complementos/nav_catalogo.php' ?>
 
-  <section class="section-padding">
+  <section class="section-padding pt-0">
     <div class="container-lg">
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="custom-breadcrumb mt-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="?pagina=catalogo">Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Mi lista de deseos</li>
+        </ol>
+      </nav>
+      <br>
       <div class="row">
         <div class="col-12 d-flex justify-content-between align-items-center mb-4">
           <h2 class="section-title">Lista de Deseos</h2>

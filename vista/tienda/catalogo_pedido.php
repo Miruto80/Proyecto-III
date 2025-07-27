@@ -65,7 +65,14 @@ table {
 
 <section id="latest-blog" class="section-padding pt-0">
     <div class="container-lg">
-     
+         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="custom-breadcrumb mt-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="?pagina=catalogo">Inicio</a></li>
+            <li class="breadcrumb-item" aria-current="page">Ver</li>
+             <li class="breadcrumb-item active" aria-current="page">Mis Pedidos</li>
+        </ol>
+      </nav>
+      <br>
       <div class="row">
         <div class="section-header d-flex align-items-center justify-content-between mb-lg-2">
           <h2 class="section-title">Mis Pedidos</h2>

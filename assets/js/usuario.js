@@ -307,7 +307,8 @@ $('#actualizar').on("click", function () {
     });
 
     $("#clave").on("keyup", function() {
-      validarCampo($(this),/^.{8,16}$/, $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+      validarCampo($(this),/^.{8,16}$/, 
+      $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
     });
 
      $("#confirmar_clave").on("keypress", function(e) {
@@ -359,7 +360,7 @@ function enviaAjax(datos) {
       processData: false,
       cache: false,
       beforeSend: function () { },
-      timeout: 10000,
+      timeout: 10000, 
       success: function (respuesta) {
         console.log(respuesta);
         var lee = JSON.parse(respuesta);

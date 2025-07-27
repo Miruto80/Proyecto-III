@@ -196,7 +196,7 @@
       
       <div class="modal-body"> <!-- Modal contenido -->
       
-      <div class="d-flex justify-content-center align-items-center">
+      <div class="d-flex justify-content-center align-items-center mb-3">
           <img src="assets/img/integoracion.png" width="35%">
       </div>
       <div class="d-flex justify-content-center align-items-center">
@@ -207,9 +207,9 @@
 
       <div class="d-flex justify-content-center align-items-center">
           <form action="?pagina=catalogo" method="POST" autocomplete="off">  <!-- Cerrar sesión-->
-              <button type="submit" class="btn btn-primary btn-lg me-4" name="cerrar"> SI </button>
+              <button type="submit" class="btn-verde me-4" name="cerrar"> Si </button>
           </form> 
-         <button type="button" class="btn btn-dark btn-lg me-4" data-bs-dismiss="modal">NO</button>
+         <button type="button" class="btn-reset me-4" data-bs-dismiss="modal">No</button>
       </div>
 
 

@@ -8,12 +8,13 @@ $(document).ready(function() {
       icon: 'question',
       showCancelButton: true,
       color: "#00000",
-      confirmButtonColor: '#58c731',
+      confirmButtonColor: '#1e913bff',
       cancelButtonColor: '#42515A',
-      confirmButtonText: ' SI ',
+      confirmButtonText: ' Si, actualizar ',
       cancelButtonText: 'NO'
     }).then((result) => {
       if (result.isConfirmed) {
+         activarLoaderBoton('#actualizar');
         var datos = new FormData($('#u')[0]);
         datos.append('actualizar', 'actualizar');
         enviaAjax(datos);
@@ -24,64 +25,54 @@ $(document).ready(function() {
 function validarFormulario() {
     let validar = true;
 
-    // Validar cada campo con su expresión regular
-    if (!/^.{8,16}$/.test($("#clave").val())) {
-        $("#textoclave").text("El formato debe ser entre 8 y 16 caracteres");
-        validar = false;
-    }
+    // Validar campos con la lógica original
+    validarCampo($("#clave"), /^.{8,16}$/, $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+    validarCampo($("#clavenueva"), /^.{8,16}$/, $("#textoclavenueva"), "El formato debe ser entre 8 y 16 caracteres");
+    validarCampo($("#clavenuevac"), /^.{8,16}$/, $("#textoclavenuevac"), "El formato debe ser entre 8 y 16 caracteres");
 
-    if (!/^.{8,16}$/.test($("#clavenueva").val())) {
-        $("#textoclavenueva").text("El formato debe ser entre 8 y 16 caracteres");
-        validar = false;
-    }
+    // Validar coincidencia entre las contraseñas
+    const clavenueva = $("#clavenueva").val();
+    const clavenuevac = $("#clavenuevac").val();
 
-    if (!/^.{8,16}$/.test($("#clavenuevac").val())) {
-        $("#textoclavenuevac").text("El formato debe ser entre 8 y 16 caracteres");
-        validar = false;
-    }
-
-    // Validar que clavenueva y clavenuevac sean iguales
-    if ($("#clavenueva").val() !== $("#clavenuevac").val()) {
+    if (clavenueva !== clavenuevac) {
+        $("#clavenueva, #clavenuevac").removeClass("is-valid").addClass("is-invalid");
         $("#textoclavenuevac").text("Las contraseñas no coinciden").css("color", "red");
         validar = false;
     }
 
-    // Si alguna validación falla, mostrar la alerta
+    // Verificar que todos los campos requeridos estén válidos visualmente
+    const clavesValidas = $("#clave").hasClass("is-valid") &&
+                          $("#clavenueva").hasClass("is-valid") &&
+                          $("#clavenuevac").hasClass("is-valid");
+
+    if (!clavesValidas) {
+        validar = false;
+    }
+
     if (!validar) {
-        Swal.fire({
-            icon: "error",
-            title: "Validaciones incorrectas",
-            text: "Corrige los errores antes de enviar.",
-            toast: true,
-            position: "top",
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.onmouseenter = Swal.stopTimer;
-                toast.onmouseleave = Swal.resumeTimer;
-            }
-        });
+        muestraMensajetost("error", "Validaciones incorrectas", "Corrige los errores antes de enviar.", "2500");
     }
 
     return validar;
 }
 
+
 // Modificar el evento del botón para validar antes de enviar
 $('#actualizarclave').on("click", function () {
     if (validarFormulario()) {
         Swal.fire({
-            title: '¿Desea guardar los cambios?',
+            title: '¿Desea Cambiar la clave?',
             text: '',
             icon: 'question',
             showCancelButton: true,
             color: "#00000",
-            confirmButtonColor: '#58c731',
+            confirmButtonColor: '#1e913bff',
             cancelButtonColor: '#42515A',
-            confirmButtonText: ' SI ',
+            confirmButtonText: ' Si, cambiar',
             cancelButtonText: 'NO'
         }).then((result) => {
             if (result.isConfirmed) {
+                activarLoaderBoton('#actualizarclave');
                 var datos = new FormData($('#formclave')[0]);
                 datos.append('actualizarclave', 'actualizarclave');
                 enviaAjax(datos);
@@ -116,15 +107,44 @@ mensaje){
   }
 }
 
-function validarkeyup(er, etiqueta, etiquetamensaje, mensaje) {
-  let elemento = $(etiqueta); // Convertir a jQuery
-  let a = er.test(elemento.val()); // Usar .val() correctamente
-  if (a) {
-    etiquetamensaje.text("");
-    return 1;
-  } else {
-    etiquetamensaje.text(mensaje);
-    return 0;
+/*||| Funcion para cambiar el boton a loader |||*/
+function activarLoaderBoton(idBoton, texto = 'Cargando...') {
+    const $boton = $(idBoton);
+    const textoActual = $boton.html();
+    $boton.data('texto-original', textoActual); // Guarda el texto original
+    $boton.prop('disabled', true);
+    $boton.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${texto}`);
+}
+
+function desactivarLoaderBoton(idBoton) {
+    const $boton = $(idBoton);
+    const textoOriginal = $boton.data('texto-original');
+    $boton.prop('disabled', false);
+    $boton.html(textoOriginal);
+}
+
+/*||| Funcion para validar compas de formulario |||*/
+function validarCampo(campo, regex, textoError, mensaje) {
+  const valor = campo.val();
+
+  if (campo.is("select")) {
+   
+    if (valor === "") {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    } else {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    }
+  } else { 
+   
+    if (regex.test(valor)) {
+      campo.removeClass("is-invalid").addClass("is-valid");
+      textoError.text("");
+    } else {
+      campo.removeClass("is-valid").addClass("is-invalid");
+      textoError.text(mensaje);
+    }
   }
 }
 
@@ -135,19 +155,18 @@ $(document).ready(function() {
     validarkeypress(/^[0-9-\b]*$/,e);
   });
   
-  $("#cedula").on("keyup",function(){
-    validarkeyup(/^[0-9]{7,8}$/,$(this),
+  $("#cedula").on("keyup", function () {
+    validarCampo($(this),/^[0-9]{7,8}$/,
     $("#textocedula"),"El formato debe ser 1222333");
   });
-
 
    $("#telefono").on("keypress", function (e) {
       validarkeypress(/^[0-9-\-]*$/, e);
     });
   
-    $("#telefono").on("keyup", function () {
-      validarkeyup(/^[0-9]{4}[-]{1}[0-9]{7}$/, $(this),
-        $("#textotelefono"), "El formato debe ser 0000-0000000");
+  $("#telefono").on("keyup", function () {
+      validarCampo($(this),/^[0-9]{4}[-]{1}[0-9]{7}$/,
+      $("#textotelefono"), "El formato debe ser 0000-0000000");
     });
   
     $("#telefono").on("input", function () {
@@ -163,17 +182,17 @@ $(document).ready(function() {
       validarkeypress(/^[a-zA-Z0-9._%+-@\b]*$/, e);
     });
 
-    $("#correo").on("keyup", function () {
-      validarkeyup(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/, $(this),
-          $("#textocorreo"), "El formato debe incluir @ y ser válido.");
+  $("#correo").on("keyup", function () {
+      validarCampo($(this), /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,60}$/,
+       $("#textocorreo"), "El formato debe incluir @ y ser válido.");
     });
 
     $("#nombre").on("keypress", function (e) {
     validarkeypress(/^[A-Za-z\b\s\u00f1\u00d1\u00E0-\u00FC]*$/, e);
     });
 
-    $("#nombre").on("keyup", function () {
-    validarkeyup(/^[a-zA-Z]{3,50}$/, $(this),
+     $("#nombre").on("keyup", function () {
+      validarCampo($(this),/^[a-zA-Z]{3,30}$/,
       $("#textonombre"), "El formato debe ser solo letras");
     });
 
@@ -182,43 +201,45 @@ $(document).ready(function() {
     });
 
     $("#apellido").on("keyup", function () {
-    validarkeyup(/^[a-z-A-Z]{3,50}$/, $(this),
+      validarCampo($(this),/^[a-z-A-Z]{3,30}$/,
       $("#textoapellido"), "El formato debe ser solo letras");
     });
+
 
     $("#clave").on("keypress", function(e) {
     validarkeyup(/^.{8,16}$/, e);
     });
     
     $("#clave").on("keyup", function() {
-    validarkeyup(/^.{8,16}$/, $(this), $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
+      validarCampo($(this),/^.{8,16}$/, 
+      $("#textoclave"), "El formato debe ser entre 8 y 16 caracteres");
     });
 
      $("#clavenueva").on("keypress", function(e) {
     validarkeyup(/^.{8,16}$/, e);
     });
-    
-    $("#clavenueva").on("keyup", function() {
-    validarkeyup(/^.{8,16}$/, $(this), $("#textoclavenueva"), "El formato debe ser entre 8 y 16 caracteres");
-    });
 
+     $("#clavenueva").on("keyup", function() {
+      validarCampo($(this),/^.{8,16}$/, 
+      $("#textoclavenueva"), "El formato debe ser entre 8 y 16 caracteres");
+    });
 
     $("#clavenuevac").on("keypress", function(e) {
     validarkeyup(/^.{8,16}$/, e);
     });
     
     $("#clavenuevac").on("keyup", function() {
-    validarkeyup(/^.{8,16}$/, $(this), $("#textoclavenuevac"), "El formato debe ser entre 8 y 16 caracteres");
+      validarCampo($(this),/^.{8,16}$/, 
+      $("#textoclavenuevac"), "El formato debe ser entre 8 y 16 caracteres");
     });
-
 
 
     $("#confirmar").on("keypress", function (e) {
     validarkeypress(/^[A-Z\s\u00D1\u00C0-\u00D6\u00D8-\u00DE]*$/, e);
     });
     
-    $("#confirmar").on("keyup", function () {
-    validarkeyup(/^[A-Z]{7,7}$/, $(this),
+    $("#confirmar").on("keyup", function() {
+      validarCampo($(this),/^[A-Z]{7,7}$/, 
       $("#textoconfirmar"), "El formato es: MAYUSCULA");
     });
 
@@ -247,7 +268,7 @@ $(document).ready(function() {
 
                         if (countdown <= 0) {
                             clearInterval(interval);
-
+                            activarLoaderBoton('#btnEliminar');
                             var datos = new FormData($('#eliminarForm')[0]);
                             datos.append('eliminar', 'eliminar');
                             enviaAjax(datos);
@@ -256,27 +277,29 @@ $(document).ready(function() {
                 }
             });
         } else {
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "Debe escribir exactamente 'ACEPTAR' para continuar.",
-                toast: true,
-                position: "top",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
+             muestraMensajetost("error","Error", "Debe escribir exactamente 'ACEPTAR' para continuar", "3000");
         }
     });
 });
 
 });
 
-
+function muestraMensajetost(icono, titulo, mensaje, tiempo) {
+  Swal.fire({
+    icon: icono,
+    title: titulo,
+    text: mensaje,
+    toast: true,
+    position: "top",
+    showConfirmButton: false,
+    timer: tiempo,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
+}
 
 // AJAX
 function muestraMensaje(icono, tiempo, titulo, mensaje) {
@@ -288,7 +311,7 @@ function muestraMensaje(icono, tiempo, titulo, mensaje) {
     showConfirmButton: false,
   });
 }
-
+ 
 
 function enviaAjax(datos) {
     $.ajax({
@@ -317,29 +340,35 @@ function enviaAjax(datos) {
            if (lee.accion == 'actualizar') {
                 if (lee.respuesta == 1) {  
                   muestraMensaje("success", 2000, "Se ha Actualizado con éxito", "Sus datos se en modificado con exitosamente");
+                  desactivarLoaderBoton('#actualizar');
                   setTimeout(() => {
                  location = '?pagina=catalogo_datos&m=a';
                   }, 2000); 
               } else {
                   muestraMensaje("error", 2000, lee.text, "");
+                  desactivarLoaderBoton('#actualizar');
                 }
               } else if (lee.accion == 'eliminar') {
                 if (lee.respuesta == 1) {
                   muestraMensaje("success", 2000, "Se ha eliminado con éxito", "Los datos se han borrado correctamente ");
+                      desactivarLoaderBoton('#btnEliminar');
                   setTimeout(function () {
                      location = '?pagina=catalogo';
                   }, 1000);
                 } else {
                   muestraMensaje("error", 2000, "ERROR", lee.text);
+                  desactivarLoaderBoton('#btnEliminar');
                 }
               } else if (lee.accion == 'clave') {
                 if (lee.respuesta == 1) {
                   muestraMensaje("success", 2000, "Se ha cambio con éxito", "correctamente ");
+                      desactivarLoaderBoton('#actualizarclave');
                   setTimeout(function () {
                      location = '?pagina=catalogo_datos';
                   }, 1000);
                 } else {
-                  muestraMensaje("error", 2000, "ERROR", lee.text);
+                  muestraMensaje("error", 2000, lee.text, "Revise y vuelva a intentar" );
+                      desactivarLoaderBoton('#actualizarclave');
                 }
               }
             
