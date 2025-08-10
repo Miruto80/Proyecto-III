@@ -4,7 +4,12 @@
 <head> 
   <!-- php barra de navegacion-->
   <?php include 'vista/complementos/head.php' ?> 
-  <title> Cambiar Permisos | LoveMakeup  </title> 
+  <title> Cambiar Permisos | LoveMakeup  </title>
+  <link rel="stylesheet" href="assets/css/formulario.css">
+<style>
+ 
+
+</style>
 </head>
  
 <body class="g-sidenav-show bg-gray-100">
@@ -46,28 +51,44 @@
               
             <div class="d-sm-flex align-items-center justify-content-between mb-3">
               <h4 class="mb-0"><i class="fa-solid fa-users-gear me-2" style="color: #f6c5b4;"></i>
-                Permiso del Usuario</h4>
+                Permiso del Usuario: <strong><?php echo $nombre_usuario . ' ' . $apellido_usuario; ?></strong></h4>
            
        <!-- Button que abre el Modal N1 Registro -->
         <a href="?pagina=usuario" class="btn btn-primary"><i class="fa-solid fa-reply"></i> Regresar</a>
+
       </div>
 
-       <div class="alert alert-light" role="alert">
-      <strong><i class="fa-solid fa-user-shield me-2"></i>Permisos del Módulo:</strong> Este espacio permite asignar lo que cada usuario puede hacer: ver, registrar, editar, eliminar o usar funciones especiales en cada módulo del sistema.
+<div class="info-box">
+  <div class="info-icon">
+    <i class="fa-solid fa-user-shield"></i>
   </div>
+
+  <div class="info-content">
+    <strong>Permisos del Módulo:</strong>
+    <p>Este espacio permite asignar lo que cada usuario puede hacer: ver, registrar, editar, eliminar o usar funciones especiales en cada módulo del sistema.</p>
+  </div>
+
+  <div class="info-help">
+    <button class="help-btn" id="ayudapermiso" title="¿Necesitas ayuda?">
+      <i class="fa-solid fa-circle-question"></i>
+    </button>
+  </div>
+</div>
+
+
        <form action="?pagina=usuario" method="POST" autocomplete="off" id="forpermiso">
           
-          <div class="table-responsive">
+      <div class="table-responsive">
         <table class="table table-bordered text-center align-middle table-hover">
   <thead class="table-color">
     <tr>
       <th class="text-white">#</th>
-      <th class="text-white">Módulo</th>
-      <th class="text-white">Ver</th>
-      <th class="text-white">Registrar</th>
-      <th class="text-white">Editar</th>
-      <th class="text-white">Eliminar</th>
-      <th class="text-white">Especial</th>
+      <th class="text-white modulo">Módulo</th>
+      <th class="text-white ver">Ver</th>
+      <th class="text-white registrar">Registrar</th>
+      <th class="text-white editar">Editar</th>
+      <th class="text-white eliminar">Eliminar</th>
+      <th class="text-white especial">Especial</th>
     </tr>
   </thead>
   <tbody>
@@ -146,8 +167,9 @@
 
           <hr class="bg-primary">
             <div class="text-center">
-                        <button type="button" class="btn btn-success btn-lg" name="actualizar_permisos" id="actualizar_permisos"> <i class="fa-solid fa-floppy-disk me-2"></i> Guardar</button>
-              </div>
+               <button type="button" class="btn btn-success guardar btn-lg" name="actualizar_permisos" id="actualizar_permisos"> <i class="fa-solid fa-floppy-disk me-2"></i> Guardar</button>
+                
+            </div>
         </div>
    </form>
         </div>
@@ -163,13 +185,6 @@
 <?php include 'vista/complementos/footer.php' ?>
 <script src="assets/js/permiso.js"></script>
 <script src="assets/js/usuario.js"></script>
-
-
-<script>
-
-
-</script>
-
 
 
 </body>

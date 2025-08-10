@@ -190,3 +190,108 @@
   margin-top: 0.25rem;
   font-weight: 500;
 }
+
+  /* Estilo general del popover */
+.driverjs-theme .driver-popover {
+  background-color: #f8f9fa;
+  border: 2px solid #d63384 !important;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  max-width: 320px;
+}
+
+/* Título del popover */
+.driverjs-theme .driver-popover-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #0d6efd;
+  margin-bottom: 10px;
+}
+
+/* Descripción del popover */
+.driverjs-theme .driver-popover-description {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Botones de navegación */
+.driverjs-theme .driver-popover-footer button {
+  font-size: 16px !important;
+  padding: 10px 18px !important;
+  margin: 5px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+.info-box {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background-color: #f9f9fc;
+  border-left: 6px solid #4a90e2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-family: 'Segoe UI', sans-serif;
+  position: relative;
+}
+
+.info-icon {
+  font-size: 24px;
+  color: #4a90e2;
+  margin-right: 12px;
+  margin-top: 4px;
+}
+
+.info-content {
+  flex: 1;
+}
+
+.info-content strong {
+  display: block;
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.info-content p {
+  margin: 0;
+  font-size: 16px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.info-help {
+  margin-left: 20px;
+  align-self: flex-start;
+}
+
+.help-btn {
+  background-color: transparent;
+  border: none;
+  font-size: 30px;
+  color: #4a90e2;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.help-btn:hover {
+  color: #2c6cb0;
+}
+
+
+/* Estilos para las secciones del formulario */
+.seccion-tabla {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #f6c5b4;
+  transition: all 0.3s ease;
+}

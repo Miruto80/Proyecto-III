@@ -79,9 +79,6 @@
 </style>
 
 <body class="g-sidenav-show bg-gray-100">
-
-
-  
 <!-- php barra de navegacion-->
 <?php include 'complementos/sidebar.php' ?>
 
@@ -113,7 +110,7 @@
             <div class="card-header pb-0">  <!-- CARD N-1 -->  
     
     <!--Titulo de página -->
-     <div class="d-sm-flex align-items-center justify-content-between mb-5">
+     <div class="d-sm-flex align-items-center justify-content-between mb-3">
      <div class="d-flex gap-2">
      <h4 class="mb-0"><i class="fa-solid fa-desktop mr-2" style="color: #f6c5b4;"></i>
         Pedido Web</h5>

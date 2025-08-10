@@ -7,15 +7,15 @@
           </a>
 
      
-<a href="?pagina=notificacion"
-   class="notification-icon me-2"
-   style="background:white; padding:8px; border-radius:12px; text-decoration:none;">
-  <i class="fa-solid fa-bell" style="color:black;"></i>
-</a>
+            <a href="?pagina=notificacion"
+            class="notification-icon me-2"
+            style="background:white; padding:8px; border-radius:12px; text-decoration:none;">
+            <i class="fa-solid fa-bell" style="color:black;"></i>
+            </a>
 
   
         <div class="input-group">
-          <span class="input-group-text text-body dropdown-toggle" id="dropdownIcon" aria-expanded="false" style="cursor: pointer; padding: 12px;">
+          <span class="input-group-text t text-body dropdown-toggle" id="dropdownIcon" aria-expanded="false" style="cursor: pointer; padding: 12px;">
              <i class="fa-solid fa-user-gear" aria-hidden="true"></i>
          </span>
         

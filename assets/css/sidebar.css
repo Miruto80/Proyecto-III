@@ -172,16 +172,16 @@
     color:rgb(0, 0, 0); 
  }
 
-  .input-group-text {
+  .t {
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  .input-group-text:hover {
+  .t:hover {
     background-color: #fff3f3; /* Azul Bootstrap */
 
   }
 
-  .input-group-text:hover i {
+  .t:hover i {
     color: rgb(252, 152, 243);
   }
 

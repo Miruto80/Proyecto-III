@@ -34,9 +34,13 @@ deleteButtons.forEach(function (button) {
   button.addEventListener('click', function (e) {
     e.preventDefault();
     const $boton = $(this);
-        botonActivo = $boton;
+    botonActivo = $boton;
+
+    const nombre = this.getAttribute('data-nombre');
+    const apellido = this.getAttribute('data-apellido');
+
     Swal.fire({
-     title: '¿Eliminar Usuario?',
+      title: `¿Eliminar a ${nombre} ${apellido}?`,
       text: '¿Desea eliminar a este usuario?',
       icon: 'warning',
       showCancelButton: true,
@@ -54,6 +58,7 @@ deleteButtons.forEach(function (button) {
     });
   });
 });
+
 
 
 /*||| Funcion para validar compas de formulario |||*/
@@ -173,12 +178,26 @@ function validarCampos() {
 /*||| ENVIO AJAX FORMULARIO |||*/
 $('#registrar').on("click", function () {
     if (validarCampos()) {
-        activarLoaderBoton('#registrar');
-        var datos = new FormData($('#u')[0]);
-        datos.append('registrar', 'registrar');
-        enviaAjax(datos);
+        Swal.fire({
+            title: '¿Deseas registrar este usuario?',
+            text: 'Se asignarán permisos predeterminados según el nivel seleccionado.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, registrar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                activarLoaderBoton('#registrar');
+                var datos = new FormData($('#u')[0]);
+                datos.append('registrar', 'registrar');
+                enviaAjax(datos);
+            }
+        });
     }
 });
+
 
 
 $('#actualizar_permisos').on("click", function () {

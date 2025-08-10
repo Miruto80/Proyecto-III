@@ -245,7 +245,7 @@ class Usuario extends Conexion
             $sql = "SELECT p.*, ru.id_rol, ru.nombre AS nombre_tipo, ru.nivel
                     FROM usuario p 
                     INNER JOIN rol_usuario ru ON p.id_rol = ru.id_rol
-                    WHERE ru.nivel IN (2, 3) AND p.estatus >= 1";
+                    WHERE ru.nivel IN (2, 3) AND p.estatus >= 1 AND p.id_persona >=2";
                     
             $stmt = $conex->prepare($sql);
             $stmt->execute();

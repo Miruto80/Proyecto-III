@@ -5,7 +5,7 @@
   <!-- php barra de navegacion-->
   <?php include 'complementos/head.php' ?> 
   <link rel="stylesheet" href="assets/css/formulario.css">
-  <title> Cliente | LoveMakeup  </title> 
+  <title> Clientes | LoveMakeup  </title> 
 </head>
  
 <body class="g-sidenav-show bg-gray-100">
@@ -43,26 +43,24 @@
     <!--Titulo de página -->
      <div class="d-sm-flex align-items-center justify-content-between mb-3">
        <h4 class="mb-0"><i class="fa-solid fa-user me-2" style="color: #f6c5b4;"></i>
-        Cliente</h4>
+        Clientes</h4>
            
        <!-- Button que abre el Modal N1 Registro -->
-       <button type="button" class="btn btn-primary">
+       <button type="button" class="btn btn-primary"  title="click para ver la ayuda">
             <span class="icon text-white">
             <i class="fas fa-info-circle me-2"></i>
             </span>
             <span class="text-white" id="ayudacliente">Ayuda</span>
           </button>
       </div>
-          
+        
 
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-           <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+           <table class="table table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
-                  <th class="text-white text-center">Cedula</th>
-                  <th class="text-white text-center">Nombre</th>
-                  <th class="text-white text-center">Apellido</th>
+                  <th class="text-white text-center">Nombre y Cédula</th>
                   <th class="text-white text-center">Telefono</th>
                   <th class="text-white text-center">Correo</th>
                   <th class="text-white text-center">Estatus</th>
@@ -79,29 +77,58 @@
                   );
               
                   $estatus_classes = array(
-                    1 =>  'badge bg-success',
-                    2 =>  'badge bg-warning text-dark'
+                    1 =>  'badge bg-success text-dark',
+                    2 =>  'badge bg-danger text-white'
                   );
 
                   foreach ($registro as $dato){
                 ?>
                 <tr>
-                  <td><?php echo $dato['cedula']?></td>
-                  <td><?php echo $dato['nombre']?></td>
-                  <td><?php echo $dato['apellido']?></td>
-                  <td><?php echo $dato['telefono']?></td>
-                  <td><?php echo $dato['correo']?></td>
                   <td>
+                    <div class="d-flex align-items-center">
+                      <div class="me-3">
+                        <i class="fas fa-user-circle fa-2x" style="color: #f6c5b4;"></i>
+                      </div>
+                      <div>
+                        <div class="text-dark"><b><?php echo $dato['nombre'] . ' ' . $dato['apellido']; ?></b></div>
+                        <div>N° Cédula: <?php echo $dato['cedula']; ?></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                      <div class="text-dark">
+                        <?php echo $dato['telefono'] ?>
+                      </div>
+                  <?php
+                    $telefono_limpio = str_replace('-', '', $dato['telefono']);
+                    $telefono_sin_cero = ltrim($telefono_limpio, '0');
+                    $link_whatsapp = "https://wa.me/58" . $telefono_sin_cero;
+                  ?>
+                  <a href="<?= $link_whatsapp ?>" target="_blank" class="btn btn-success btn-sm mt-1 Ayudatelefono" title="Contactar por WhatsApp">
+                    <i class="fab fa-whatsapp me-1"></i> WhatsApp
+                  </a>
+                </td>
+
+                 <td>
+                    <div class="text-dark">
+                      <?php echo $dato['correo'] ?>
+                    </div>
+                      <a href="mailto:<?= $dato['correo'] ?>" class="btn btn-info btn-sm mt-1 Ayudacorreo" title="Enviar correo">
+                    <i class="fas fa-envelope me-1"></i> Enviar correo
+                  </a>
+                </td>
+
+                  <td class="text-center">
                   <span class="<?= $estatus_classes[$dato['estatus']] ?>">
                     <?php echo $estatus_texto[$dato['estatus']] ?>
                   </span>
                   </td>
                     
                   <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(8, 'editar')): ?>
-                  <td>
+                  <td class="text-center">
                       <form method="POST" action="?pagina=cliente" id="formestatus">
                   
-                        <button type="button" class="btn btn-primary btn-sm modificar"
+                        <button type="button" class="btn btn-primary btn-sm modificar" title="Editar datos del cliente"
                             data-bs-toggle="modal"
                             data-bs-target="#editarModal"
                             data-id="<?php echo $dato['id_persona']; ?>"
@@ -187,6 +214,7 @@
 </div>
 
 <!--FIN Modal -->
+
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>

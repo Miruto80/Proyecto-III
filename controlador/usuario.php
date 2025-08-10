@@ -61,8 +61,12 @@ if (isset($_POST['registrar'])) { /* -------  */
        
         $modificar = $objusuario->buscar($id_persona);
         $nivel_usuario = $objusuario->obtenerNivelPorId($id_persona);
+        
+        $nombre_usuario = trim($_POST['permisonombre']);
+        $apellido_usuario = trim($_POST['permisoapellido']);
+        
         require_once ("vista/seguridad/permiso.php");
-
+       
     }else if(isset($_POST['actualizar'])){ /* -------  */
     $datosUsuario = [
         'operacion' => 'actualizar',

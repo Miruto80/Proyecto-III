@@ -3,7 +3,8 @@
 
 <head> 
   <!-- php barra de navegacion-->
-  <?php include 'vista/complementos/head.php' ?> 
+  <?php include 'vista/complementos/head.php' ?>
+  <link rel="stylesheet" href="assets/css/formulario.css"> 
   <title> Cambiar Datos | LoveMakeup  </title> 
 </head>
  
@@ -66,11 +67,17 @@
           <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
             <div class="nav-wrapper position-relative end-0">
               <ul class="nav nav-pills nav-fill p-1" role="tablist">
-                <li class="nav-item">
-                  <a href="?pagina=home" class="bg-primary nav-link mb-0 px-0 py-1 active d-flex align-items-center justify-content-center">
+                <li class="nav-item me-2">
+                  <a href="?pagina=home" class="regresar bg-primary nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center">
                     <i class="ni ni-app"></i>
                     <span class="ms-2 text-white"> <i class="fa-solid fa-reply me-2"></i> Regresar</span>
                   </a>
+                </li>
+                <li class="nav-item">
+                  <buttom class="bg-primary nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center" id="datosayuda">
+                    <i class="ni ni-app"></i>
+                    <span class="ms-2 text-white"> <i class="fas fa-info-circle me-2"></i> ayuda</span>
+                  </buttom>
                 </li>
                 
               </ul>
@@ -83,19 +90,26 @@
             <div class="container mt-4">
   <div class="row">
     <!-- Información Personal -->
-    <div class="col-md-6">
+    <div class="col-md-6 informacion">
       <h5><i class="fa-solid fa-user me-2" style="color:#f6c5b4;"></i> Información Personal</h5>
       <?php if (isset($_GET['m']) && $_GET['m'] == 'a'): ?>
-        <div class="alert alert-info alert-dismissible fade show text-center text-white" role="alert">
-          <b><i class="fa-solid fa-circle-info"></i> Los cambios se aplicarán cuando cierre la sesión.</b>
-          <button type="button" class="btn-close text-danger" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  
+       <div class="info-box">
+        <div class="info-icon">
+          <i class="fa-solid fa-circle-info"></i>
         </div>
+
+        <div class="info-content">
+          <strong>Aviso Importante:</strong>
+          <p>Los cambios se aplicarán cuando cierre la sesión.</p>
+        </div>
+      </div>
       <?php endif; ?>
-<p class="text-muted">
-  En esta área podrás <strong>actualizar tu información personal</strong>, como cédula, nombre, apellido, teléfono y correo electrónico.
-  <span class="text-primary"> Recuerda que los cambios se aplicarán al cerrar sesión. </span>
-</p>
-      <form action="?pagina=usuario" method="POST" autocomplete="off" id="datos">
+        <p class="text-muted">
+          En esta área podrás <strong>actualizar tu información personal</strong>, como cédula, nombre, apellido, teléfono y correo electrónico.
+          <span class="text-primary"> Recuerda que los cambios se aplicarán al cerrar sesión. </span>
+        </p>
+       <form action="?pagina=usuario" method="POST" autocomplete="off" id="datos">
         <!-- Cédula -->
         <div class="row mb-3">
           <div class="col-12">
@@ -155,7 +169,7 @@
     </div>
 
     <!-- Seguridad con collapse -->
-    <div class="col-md-5">
+    <div class="col-md-5 seguridad">
       <h5><i class="fa-solid fa-shield-halved me-2" style="color:#f6c5b4;"></i> Seguridad</h5>
       <p class="text-muted">
   En la sección de <strong>seguridad</strong> puedes <span class="text-warning">modificar tu clave de acceso</span> de forma segura. Solo haz clic en el botón para desplegar el formulario y completa los campos requeridos.

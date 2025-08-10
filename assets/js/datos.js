@@ -305,3 +305,25 @@ function enviaAjax(datos) {
     });
   }
   
+   $('#datosayuda').on("click", function () {
+  
+  const driver = window.driver.js.driver;
+  
+  const driverObj = new driver({
+    nextBtnText: 'Siguiente',
+        prevBtnText: 'Anterior',
+        doneBtnText: 'Listo',
+    popoverClass: 'driverjs-theme',
+    closeBtn:false,
+    steps: [
+      { element: '.informacion', popover: { title: 'Modificar Datos', description: 'En esta seccion puede modificar sus datos personales', side: "left", }},
+      { element: '.seguridad', popover: { title: 'Cambiar Clave', description: 'En esta seccion puede Cambiar la clave de acceso.', side: "bottom", align: 'start' }},
+      { element: '.regresar', popover: { title: 'Boton Regresar', description: 'Este boton se puede regresar al inicio.', side: "left", align: 'start' }},
+    
+      { popover: { title: 'Eso es todo', description: 'Este es el fin de la guia espero hayas entendido'} }
+    ]
+  });
+  
+  // Iniciar el tour
+  driverObj.drive();
+});

@@ -50,7 +50,7 @@
     
        <!-- Button que abre el Modal N1 Registro -->
        <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'registrar')): ?>
-          <button type="button" class="btn btn-success registrar" data-bs-toggle="modal" data-bs-target="#registro">
+          <button type="button" class="btn btn-success registrar" title="Registro un nuevo usuario" data-bs-toggle="modal" data-bs-target="#registro">
             <span class="icon text-white">
             <i class="fas fa-file-medical me-2"></i>
             </span>
@@ -58,7 +58,7 @@
           </button>
          <?php endif; ?>
          
-  <button type="button" class="btn btn-primary" id="ayuda">
+  <button type="button" class="btn btn-primary" id="ayuda" title="click para ver la ayuda">
     <span class="icon text-white">
       <i class="fas fa-info-circle me-2"></i>
     </span>
@@ -70,12 +70,11 @@
   </div>  
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+          <table class="table  table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
-                  <th class="text-white text-center">Cedula</th>
-                  <th class="text-white text-center">Nombre</th>
-                  <th class="text-white text-center">Apellido</th>
+                  <th class="text-white text-center">Nombre y Cédula</th>
+                 
                   <th class="text-white text-center">Rol</th>
                     <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'especial')): ?>
                   <th class="text-white text-center">Permisos</th>
@@ -93,52 +92,76 @@
                   );
               
                   $estatus_classes = array(
-                    1 =>  'badge bg-success',
-                    2 =>  'badge bg-warning',
+                    1 =>  'badge bg-success text-dark',
+                    2 =>  'badge bg-danger',
                     3 =>  'badge bg-primary'
                   );
 
                   foreach ($registro as $dato){
-                    if ($dato['id_persona'] == 1) {
-                    continue;
-                     }
                 ?>
                 <tr>
-                  <td><?php echo $dato['cedula']?></td>
-                  <td><?php echo $dato['nombre']?></td>
-                  <td><?php echo $dato['apellido']?></td>
-                  <td><?php echo $dato['nombre_tipo']?></td>
+                 <td>
+                    <div class="d-flex align-items-center">
+                      <div class="me-3">
+                        <i class="fa-solid fa-id-card-clip fa-2x" style="color: #f6c5b4;"></i>
+                      </div>
+                      <div>
+                        <div class="text-dark">
+                          <b>
+                            <?php echo $dato['nombre'] . ' ' . $dato['apellido']; ?>
+                            <?php if ($dato['id_persona'] == 2): ?>
+                              <i class="fa-solid fa-circle-check text-primary ms-1" title="Jefa Lovemakeup C.A"></i>
+                            <?php endif; ?>
+                          </b>
+                        </div>
+                        <div>N° Cédula: <?php echo $dato['cedula']; ?></div>
+                      </div>
+                    </div>
+                  </td>
+
+           
+                  <td class="text-center text-dark">
+                     <div>
+                        <?php echo $dato['nombre_tipo']; ?>
+                      </div>
+                      <div style="font-size: 11px; color: #d67888">
+                        <b> Nivel: <?php echo $dato['nivel']; ?> </b>
+                      </div>
+                  </td>
                   
                  <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'especial')): ?>
-                    <td>
+                    <td class="text-center">
                         <form action="?pagina=usuario" method="POST">
                             <?php
                                 $idActual = $_SESSION["id"];
                                 $idFila = $dato['id_persona'];
                                 $deshabilitado = ($idActual == $idFila || $idFila == 2) ? 'disabled' : '';
                             ?>
-                            <button type="submit" class="btn btn-warning btn-sm permisotur" name="modificar" value="<?php echo $idFila ?>" <?php echo $deshabilitado ?>>
+                            <button type="submit" class="btn btn-warning btn-sm permisotur" name="modificar" title="Modificar Permiso del usuario" value="<?php echo $idFila ?>" <?php echo $deshabilitado ?>>
                                 <i class="fa-solid fa-users-gear" title="Modificar Permiso"></i>
-                            </button>  
+                            </button> 
+                            <input type="hidden" name="permisonombre" value=" <?php echo $dato['nombre']; ?>">
+                            <input type="hidden" name="permisoapellido" value=" <?php echo $dato['apellido']; ?>">  
                         </form>      
                     </td>
                 <?php endif; ?>
 
-                  <td>
+                  <td class="text-center">
                       <span class="<?= $estatus_classes[$dato['estatus']] ?>">
                         <?php echo $estatus_texto[$dato['estatus']] ?>
                       </span>
                   </td>
 
-                  <td>
+                  <td class="text-center">
 
                     <form method="POST" action="?pagina=usuario">
                    
-                      <button type="button" class="btn btn-info btn-sm informacion"
+                      <button type="button" class="btn btn-info btn-sm informacion" title="Ver mas informacion del usuario"
                       data-bs-toggle="modal"
                       data-bs-target="#infoModal"
                       data-nombre="<?php echo $dato['nombre']; ?>"
                       data-apellido="<?php echo $dato['apellido']; ?>"
+                      data-cedula="<?php echo $dato['cedula']; ?>"
                       data-rol="<?php echo $dato['nombre_tipo']; ?>"
                       data-telefono="<?php echo $dato['telefono']; ?>"
                       data-correo="<?php echo $dato['correo']; ?>"
@@ -148,7 +171,7 @@
                     </button>
                 
                       <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'editar')): ?>
-                      <button type="button" class="btn btn-primary btn-sm modificar"
+                      <button type="button" class="btn btn-primary btn-sm modificar" title="Editar datos del usuario"
                       data-bs-toggle="modal"
                       data-bs-target="#editarModal"
                       data-id="<?php echo $dato['id_persona']; ?>"
@@ -159,16 +182,25 @@
                       data-id_tipo="<?php echo $dato['id_rol'];
                     ?>" >
                    
-                  <i class="fas fa-pencil-alt" title="Editar"></i> 
+                  <i class="fas fa-pencil-alt"></i> 
                 </button>
                     <?php endif; ?>
-                          <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(13, 'eliminar')): ?>
-                        <button name="eliminar" id="eliminar" class="btn btn-danger btn-sm eliminar" value="<?php echo $dato['id_persona']?>">
-                          <i class="fas fa-trash-alt" title="Eliminar"> </i>
-                        </button>
-                        <input type="hidden" name="eliminar" value="<?php echo $dato['id_persona']?>">
-                    
+
+                        <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(13, 'eliminar')): ?>
+                          <button 
+                            name="eliminar" 
+                            id="eliminar" 
+                            class="btn btn-danger btn-sm eliminar" 
+                            value="<?php echo $dato['id_persona']?>" 
+                            title="Eliminar Usuario"
+                            data-nombre="<?php echo $dato['nombre']; ?>"
+                            data-apellido="<?php echo $dato['apellido']; ?>"
+                          >
+                            <i class="fas fa-trash-alt" title="Eliminar"></i>
+                          </button>
+                          <input type="hidden" name="eliminar" value="<?php echo $dato['id_persona']; ?>">
                         <?php endif; ?>
+
 
                      </form>
                   </td>
@@ -179,8 +211,7 @@
           </table> <!-- Fin tabla--> 
       </div>  <!-- Fin div table-->
 
-
-            </div><!-- FIN CARD N-1 -->  
+      </div><!-- FIN CARD N-1 -->  
     </div>
     </div>  
     </div><!-- FIN CARD PRINCIPAL-->  
@@ -287,7 +318,28 @@
         <span id="textoconfirmar" class="error-message"></span>
       </div>
  </div>
+ <hr class="bg-primary">
+ <div class="col">
+     <div class="info-box">
+        <div class="info-icon">
+          <i class="fa-solid fa-circle-info"></i>
+        </div>
+
+        <div class="info-content">
+          <strong>Aviso Importante:</strong>
+          <p>Los permisos predeterminados se asignan según el nivel del usuario:</p>
+          <p>
+            <b>Nivel 3: acceso completo a los módulos:</b> <br>
+            <span class="text-muted">Reporte, Compra, Producto, Venta, Reserva, Proveedor, Categoría, Cliente, Pedido Web, Método de Pago, Método de Entrega, Usuario, Tipo de Usuario.</span>
+          </p>
+          <p><b>Nivel 2: acceso limitado a los módulos: </b><br>
+              <span class="text-muted">Reporte, Producto, Venta, Reserva, Pedido Web.</span></p>
+          <p>Si deseas modificar los permisos asignados, dirígete a la sección <b>Permisos</b> </p>
+        </div>
+      </div>
+  </div>
  </div>
+
   
       <!-- Botones -->
       <div class="col-12 text-center ">
@@ -389,16 +441,21 @@
 
 <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content shadow">
+    <div class="modal-content modal-producto">
       <div class="modal-header header-color text-white">
         <h5 class="modal-title" id="infoModalLabel">Información del Usuario</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <table class="table ">
+         <div class="seccion-formulario table-responsive">
+        <table class="table">
           <tr>
             <th>Nombre Completo</th>
             <td id="modalNombreCompleto"></td>
+          </tr>
+          <tr>
+            <th>N° Cedula</th>
+            <td id="modalcedula"></td>
           </tr>
           <tr>
             <th>Rol</th>
@@ -417,6 +474,7 @@
             <td id="modalEstatus"></td>
           </tr>
         </table>
+        </div>
       </div>
     </div>
   </div>
@@ -429,6 +487,7 @@
 
     const nombre = button.getAttribute('data-nombre');
     const apellido = button.getAttribute('data-apellido');
+    const cedula = button.getAttribute('data-cedula');
     const rol = button.getAttribute('data-rol');
     const telefono = button.getAttribute('data-telefono');
     const correo = button.getAttribute('data-correo');
@@ -441,12 +500,13 @@
     };
 
     const estatusClase = {
-      1: 'badge bg-success',
-      2: 'badge bg-warning',
+      1: 'badge bg-success text-dark',
+      2: 'badge bg-danger text-white',
       3: 'badge bg-primary'
     };
 
     document.getElementById('modalNombreCompleto').textContent = `${nombre} ${apellido}`;
+    document.getElementById('modalcedula').textContent = cedula;
     document.getElementById('modalRol').textContent = rol;
     document.getElementById('modalTelefonoss').textContent = telefono;
     document.getElementById('modalCorreoss').textContent = correo;

@@ -16,8 +16,8 @@ if (isset($_POST['actualizar'])) {
         'operacion' => 'actualizar',
         'datos' => [
             'id_persona' => $_SESSION["id"],
-            'nombre' => $_POST['nombre'],
-            'apellido' => $_POST['apellido'],
+            'nombre' => ucfirst(strtolower($_POST['nombre'])),
+            'apellido' => ucfirst(strtolower($_POST['apellido'])),
             'cedula' => $_POST['cedula'],
             'correo' => strtolower($_POST['correo']),
             'telefono' => $_POST['telefono'],
@@ -26,8 +26,8 @@ if (isset($_POST['actualizar'])) {
         ]
     ];
 
-    $nombre_actual = $_SESSION["nombre"];
-    $apellido_actual = $_SESSION["apellido"];
+    $nombre_actual = ucfirst(strtolower($_SESSION["nombre"]));
+    $apellido_actual = ucfirst(strtolower($_SESSION["apellido"]));
     $telefono_actual = $_SESSION["telefono"];
 
    

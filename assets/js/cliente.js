@@ -219,6 +219,8 @@ function enviaAjax(datos) {
     closeBtn:false,
     steps: [
       { element: '.table-color', popover: { title: 'Tabla de cliente', description: 'Aqui es donde se guardaran los registros de los clientes', side: "left", }},
+      { element: '.Ayudatelefono', popover: { title: 'Boton para contactar el cliente "WhatsApp"', description: 'Este botón te lleva directo al chat de WhatsApp con el cliente para que puedas escribirle fácilmente..', side: "left", align: 'start' }},
+      { element: '.Ayudacorreo', popover: { title: 'Boton para contactar el cliente "Correo"', description: 'Este botón Abre tu aplicación de correo para que puedas enviarle un email al cliente sin copiar su dirección.', side: "left", align: 'start' }},
       { element: '.modificar', popover: { title: 'Modificar datos del cliente', description: 'Este botón te permite editar la cedula y el correo de un cliente registrado.', side: "left", align: 'start' }},
       { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un cliente en la tabla', side: "right", align: 'start' }},
       { popover: { title: 'Eso es todo', description: 'Este es el fin de la guia espero hayas entendido'} }
