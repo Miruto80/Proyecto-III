@@ -1,8 +1,4 @@
 
-
-
-
-
 <!-- ||||||||||||||||||||| PIE DE PAGINA ||||||||||||||||||||||||||||||||-->
   <footer class="section-padding pb-5 bg-dark text-secondary-emphasis" data-bs-theme="dark">
     <div class="container-lg">
@@ -10,22 +6,22 @@
 
         <div class="col-md-3 col-sm-6">
           <div class="footer-menu">
-            <img src="assets/img/logo2.png" width="130" height="130" alt="logo">
+            <img src="assets/img/img200.png" width="55%" height="55%" alt="logo loveMakeup C.A">
             <div class="social-links mt-3">
-              <ul class="d-flex list-unstyled gap-3">
+              <ul class="d-flex list-unstyled gap-3 text-center">
                 
                 <li>
-                  <a href="https://www.instagram.com/lovemakeupyk/" target="_blank" class="text-secondary-emphasis">
+                  <a href="https://www.instagram.com/lovemakeupyk/" target="_blank" class="text-secondary-emphasis" title="Instagram LoveMakeup">
                     <i class="fa-brands fa-instagram" style="font-size: 30px; color: #fa48c9;"></i>
                   </a>
                 </li>
                 <li>
-                  <a href="https://wa.link/0e2clu" target="_blank" class="text-secondary-emphasis">
+                  <a href="https://wa.link/0e2clu" target="_blank" class="text-secondary-emphasis" title="WhatsApp LoveMakeup">
                   <i class="fa-brands fa-whatsapp" style="font-size: 30px; color: #fa48c9;"></i>
                   </a>
                 </li>
                  <li>
-                  <a href="https://www.facebook.com/lovemakeupyk/" target="_blank" class="text-secondary-emphasis">
+                  <a href="https://www.facebook.com/lovemakeupyk/" target="_blank" class="text-secondary-emphasis" title="Facebook LoveMakeup">
                   <i class="fa-brands fa-facebook" style="font-size: 30px; color: #fa48c9;"></i>
                   </a>
                 </li>
@@ -48,7 +44,7 @@
                   <i class="fa-brands fa-facebook"></i>  Facebook</a>
               </li>
               <li class="menu-item">
-                <a href="https://www.instagram.com/lovemakeupyk/" target="_blank" class="nav-link text-secondary-emphasis">
+                <a href="https://wa.link/0e2clu" target="_blank" class="nav-link text-secondary-emphasis">
                   <i class="fa-solid fa-phone"></i> 04245115414
                 </a>
               </li>
@@ -183,6 +179,7 @@
         }
 
         document.getElementById("saludo").innerHTML = saludo;
+        document.getElementById("saludos").innerHTML = saludo;
     }
 
     var nombreUsuario = "<?php echo $nombreCompleto; ?>"; // Usa el nombre y apellido de sesión o valores por defecto

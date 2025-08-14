@@ -60,12 +60,12 @@
         <div id="form-personales" class="formulario mt-3">
           <div class="row">
         <div class="section-header d-flex align-items-center justify-content-between mb-lg-2">
-          <h2 class="section-title text-titel">Datos Personales </h2>
+          <h2 class="section-title text-titel-1">Datos Personales </h2>
         </div>
       </div>
        <form action="?pagina=catalogo_datos" method="POST" autocomplete="off" id="u">
       <div class="row">
-         <h5>información personal</h5>
+         <h5>Información personal</h5>
             <?php
             if (isset($_GET['m']) && $_GET['m'] == 'a') {
               echo '<div class="alert alert-info alert-dismissible fade show text-center" role="alert">
@@ -75,8 +75,8 @@
             }
             ?>  
         </div>  
-          <div class="row">
-            <div class="col-md-6 mb-3">
+          <div class="row mb-3">
+            <div class="col-md-4 mb-3">
               <label for="cedula">Cédula</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="fa-solid fa-id-card" style="color:#ff2bc3;"></i></span>
@@ -85,7 +85,7 @@
               <p id="textocedula" class="text-danger"></p>
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="col-md-4 mb-3">
               <label for="nombre">Nombre</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="fa-solid fa-user" style="color:#ff2bc3;"></i></span>
@@ -94,7 +94,7 @@
               <p id="textonombre" class="text-danger"></p>
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="col-md-4 mb-3">
               <label for="apellido">Apellido</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="fa-solid fa-user" style="color:#ff2bc3;"></i></span>
@@ -112,7 +112,7 @@
               <p id="textotelefono" class="text-danger"></p>
             </div>
 
-            <div class="col-md-12 mb-3">
+            <div class="col-md-6 mb-3">
               <label for="correo">Correo Electrónico</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="fa-solid fa-envelope" style="color:#ff2bc3;"></i></span>
@@ -137,7 +137,7 @@
         <div id="form-seguridad" class="formulario  mt-3 d-none"> <!-- f2-->
           <div class="row">
         <div class="section-header d-flex align-items-center justify-content-between mb-lg-2">
-          <h2 class="section-title text-titel">Seguridad</h2>
+          <h2 class="section-title text-titel-1">Seguridad</h2>
         </div>
       </div>
             <div class="row">
@@ -195,7 +195,7 @@
 <hr>
         <div class="row bg-light">
         <div class="section-header d-flex align-items-center justify-content-between mb-lg-2">
-          <h2 class="section-title text-titel">Estado de la Cuenta </h2>
+          <h2 class="section-title text-titel-1">Estado de la Cuenta </h2>
         </div>
       </div>
       
@@ -204,18 +204,96 @@
           <div class="col">
             <p class="text-dark">
               <i class="fa-solid fa-user-xmark"></i> ¿Deseas Eliminar la Cuenta? 
-              <button class="btn-eliminar ms-2" data-bs-toggle="modal" data-bs-target="#cuenta"><i class="fa-solid fa-user-xmark me-2"></i>Eliminar Cuenta</button>
+              <button class="btn-delete ms-2" data-bs-toggle="modal" data-bs-target="#cuenta"><i class="fa-solid fa-user-xmark me-2"></i>Eliminar Cuenta</button>
             </p>
           </div>
         </div>
 
         </div> <!-- f2 / -->
 
-        <div id="form-direcciones" class="formulario d-none"> <!-- f3 /-->
-          <h6 class="mb-3">Formulario de Direcciones</h6>
-          <input type="text" class="form-control mb-2" placeholder="Dirección principal">
-          <input type="text" class="form-control mb-2" placeholder="Ciudad">
+        <div id="form-direcciones" class="formulario d-none"> <!-- f3 -->
+           <div class="row">
+            <div class="section-header d-flex align-items-center justify-content-between mb-lg-2">
+              <h2 class="section-title text-titel-1">Direcciones</h2>
+            </div>
+           </div>
+          <table class="table" width="100%" cellspacing="0">
+             <thead class="bg-table">
+                <tr>
+                  <th class="text-white"> <i class="fa-solid fa-bicycle me-2"></i> DELIVERY</th>
+                </tr>
+              </thead>
+               <tbody>
+                <td>
+                      <div class="container">
+                        <div class="row g-3 align-items-center mb-3">
+                        
+                          <div class="col-md-1 col-12">
+                            <p class="text-dark"><b>Mi Casa</b></p>
+                          </div>
+                       
+                          <div class="col-md-7 col-12">
+                            <input type="text" class="form-control text-dark" placeholder="Direccion de mi casa">
+                          </div>
+                          
+                          <div class="col-md-4 col-12 d-flex gap-2">
+                            <button class="btn-registrar"><i class="fa-solid fa-file-circle-plus me-2"></i> Agregar</button>
+                            <button class="btn-editar"> <i class="fa-solid fa-pen-to-square me-2"></i> Editar</button>
+                          </div>
+                        </div>
+                    </div>
+                </td>
+               </tbody>
+          </table>
+      <br>
+      <table class="table" width="100%" cellspacing="0">
+         <thead class="bg-table">
+                <tr>
+                  <th class="text-white"> <i class="fa-solid fa-truck me-2"></i> ENVIOS NACIONALES</th>
+                </tr>
+                
+              </thead>
+               <tbody>
+                <td>
+                 <div class="container">
+                      <div class="row g-3 align-items-center mb-3">
+                        
+                        <div class="col-md-1 col-12">
+                          <p class="text-dark"><b>MRW</b></p>
+                        </div>
+                      
+                        <div class="col-md-7 col-12">
+                          <input type="text" class="form-control text-dark" placeholder="MRW">
+                        </div>
+
+                        <div class="col-md-4 col-12 d-flex gap-2">
+                          <button class="btn-registrar"><i class="fa-solid fa-file-circle-plus me-2"></i> Agregar</button>
+                          <button class="btn-editar"><i class="fa-solid fa-pen-to-square me-2"></i> Editar</button>
+                        </div>
+                      </div>
+
+                      <div class="row g-3 align-items-center">
+                       
+                        <div class="col-md-1 col-12">
+                          <p class="text-dark"><b>ZOOM</b></p>
+                        </div>
+                    
+                        <div class="col-md-7 col-12">
+                          <input type="text" class="form-control text-dark" placeholder="ZOOM">
+                        </div>
+                     
+                        <div class="col-md-4 col-12 d-flex gap-2">
+                          <button class="btn-registrar"><i class="fa-solid fa-file-circle-plus me-2"></i> Agregar</button>
+                          <button class="btn-editar"><i class="fa-solid fa-pen-to-square me-2"></i> Editar</button>
+                        </div>
+                      </div>
+                  </div>
+                </td>
+               </tbody>
+          </table>
+
         </div><!-- f3 /-->
+      
       </div> 
     
     
@@ -236,15 +314,12 @@
     // Mostrar el formulario correspondiente
     document.getElementById('form-' + formularioId).classList.remove('d-none');
 
-    // Activar solo el botón correspondiente
     document.querySelectorAll('.btn-custom').forEach(btn => {
       btn.classList.remove('active');
     });
     const btnActivo = document.getElementById('btn-' + formularioId);
     if (btnActivo) btnActivo.classList.add('active');
   }
-
-  // Ya no es necesario `window.onload` si el botón ya está marcado como activo desde el HTML
 </script>
 
 
@@ -257,27 +332,27 @@
 <div class="modal fade" id="cuenta" tabindex="2" aria-labelledby="s" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header bg-primary">
+      <div class="modal-header bg-table">
         <h5 class="modal-title text-white" id="exampleModalLabel">¿Deseas Eliminar la Cuenta?</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style=" color: #ffffff;"></button>
       </div>
       <div class="modal-body">
-        <h5 class="text-danger">Aviso Importante sobre la Eliminación de Cuenta</h5>
+        <h5 class="text-titel-2">Aviso Importante sobre la Eliminación de Cuenta</h5>
         <p class="text-dark"> <b>Estimado/a, <?php echo $nombreCompleto ?> </b></p>
 
         <p class="text-dark">Queremos informarte que al eliminar tu cuenta, se perderá de forma permanente toda la información relacionada con tus pedidos, tu historial de compras y la lista de tus productos favoritos.</p>
 
         <p class="text-dark">Esta acción es irreversible, y una vez eliminada tu cuenta, no podremos recuperar la información eliminada.</p>
 
- <form id="eliminarForm" action="?pagina=catalogo_datos" method="POST" autocomplete="off"> 
-    <label>Escriba la palabra ACEPTAR, para confimar la eliminación</label>
-    <input type="text" name="confirmar" id="confirmar" class="form-control text-dark" placeholder="ACEPTAR">
-    <p id="textoconfirmar" class="text-danger"></p>
-    <input type="hidden" name="persona" value="<?php echo $_SESSION['id'] ?>" >
-    <div class="modal-footer">
-        <button type="button" class="btn-verde" name="eliminar" id="btnEliminar">Continuar</button>
-    </div>
-</form>
+      <form id="eliminarForm" action="?pagina=catalogo_datos" method="POST" autocomplete="off"> 
+          <label>Escriba la palabra ACEPTAR, para confimar la eliminación</label>
+          <input type="text" name="confirmar" id="confirmar" class="form-control text-dark" placeholder="ACEPTAR">
+          <p id="textoconfirmar" class="text-danger"></p>
+          <input type="hidden" name="persona" value="<?php echo $_SESSION['id'] ?>" >
+          <div class="modal-footer">
+              <button type="button" class="btn-verde" name="eliminar" id="btnEliminar">Continuar</button>
+          </div>
+      </form>
     </div>
   </div>
 </div>

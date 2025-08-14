@@ -3,7 +3,9 @@
      if (empty($_SESSION["iduser"])){
        header("location:?pagina=login");
      } /*  Validacion URL  */
-     
+     if (!empty($_SESSION['id'])) {
+        require_once 'verificarsession.php';
+} 
   require_once 'modelo/olvidoclave.php'; 
   $objolvido = new Olvido();    
   

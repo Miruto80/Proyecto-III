@@ -7,6 +7,11 @@ $apellido = isset($_SESSION["apellido"]) && !empty($_SESSION["apellido"]) ? $_SE
 $nombreCompleto = trim($nombre . " " . $apellido);
 
 $sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
+
+if (!empty($_SESSION['id'])) {
+    require_once 'verificarsession.php';
+}
+
 // Si no está logueado, redirige
 require_once __DIR__ . '/../modelo/verpedidoweb.php';
 $venta = new VentaWeb();

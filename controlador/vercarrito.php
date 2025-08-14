@@ -9,6 +9,10 @@ $nombreCompleto = trim($nombre . " " . $apellido);
 
 $sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
 
+if (!empty($_SESSION['id'])) {
+        require_once 'verificarsession.php';
+} 
+
 $carrito = $_SESSION['carrito'] ?? [];
 $carritoEmpty = empty($carrito);
 $total = 0;

@@ -26,7 +26,7 @@
    <section id="shop-categories" class="section-padding pt-0" style="background-color:#fff;">
   
     <div class="container-lg">
-        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="custom-breadcrumb mt-3">
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="custom-breadcrumb mt-3 mb-3">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="?pagina=catalogo">Inicio</a></li>
              <li class="breadcrumb-item active" aria-current="page">Todos los productos</li>

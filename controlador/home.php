@@ -1,14 +1,17 @@
 <?php  
     session_start();
-    if (empty($_SESSION["id"])){
-      
-      header("location:?pagina=login");
-    } 
-
-
-    require_once 'modelo/home.php';
-     require_once 'modelo/reporte.php';
+if (empty($_SESSION['id'])) {
+    header('Location:?pagina=login');
+    exit;
+}
+ if (!empty($_SESSION['id'])) {
+    require_once 'verificarsession.php';
+} 
+ require_once 'modelo/home.php';
+ require_once 'modelo/reporte.php';
  require_once 'permiso.php';
+
+
 
 $objhome = new home();
 

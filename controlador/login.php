@@ -45,6 +45,7 @@ if (isset($_POST['ingresar'])) {
         $_SESSION["estatus"] = $resultado->estatus;
 
         if ($_SESSION["nivel_rol"] == 1) {
+
             echo json_encode(['respuesta' => 1, 'accion' => 'ingresar']);
             exit;
        

@@ -4,7 +4,9 @@ if (empty($_SESSION["id"])) {
     header("location:?pagina=login");
     exit;
 }
-
+if (!empty($_SESSION['id'])) {
+        require_once 'verificarsession.php';
+} 
 require_once __DIR__ . '/../modelo/pedidoweb.php';
  require_once 'permiso.php';
 $objPedidoWeb = new pedidoWeb();

@@ -1,7 +1,9 @@
 <?php
 session_start();
 require_once __DIR__ . '/../modelo/verpedidoweb.php';
-
+if (!empty($_SESSION['id'])) {
+    require_once 'verificarsession.php';
+}
 // Verificar sesión y definir variable para la vista
 $sesion_activa = isset($_SESSION['id']) && !empty($_SESSION['id']);
 

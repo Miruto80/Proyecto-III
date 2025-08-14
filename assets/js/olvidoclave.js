@@ -7,6 +7,22 @@ function validarkeypress(er,e){
     e.preventDefault();
     }
 }
+
+function activarLoaderBoton(idBoton, texto = 'Cargando...') {
+    const $boton = $(idBoton);
+    const textoActual = $boton.html();
+    $boton.data('texto-original', textoActual); // Guarda el texto original
+    $boton.prop('disabled', true);
+    $boton.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${texto}`);
+}
+
+function desactivarLoaderBoton(idBoton) {
+    const $boton = $(idBoton);
+    const textoOriginal = $boton.data('texto-original');
+    $boton.prop('disabled', false);
+    $boton.html(textoOriginal);
+}
+
 //Función para validar por keyup
 function validarkeyup(er,etiqueta,etiquetamensaje,
 mensaje){
@@ -20,6 +36,7 @@ mensaje){
     return 0;
   }
 }
+
 
 /*||| Funcion para validar compas de formulario |||*/
 function validarCampo(campo, regex, textoError, mensaje) {
@@ -56,11 +73,11 @@ function cambiarVista() {
             <img src="assets/img/logo2.png" class="img-fluid mb-1" style="width:100px;">
         </div>
         <h4 class="text-center text-primary mb-1">Olvido de Contraseña</h4>
-         <p class="text-center">Paso: 2 de 3</p>      
+        <p class="text-center color-g"> <b>Paso: 2 de 3</b></p>      
         <hr class="bg-dark">
 
         <form action="?pagina=olvidoclave" method="POST" id="forcambio_clave" autocomplete="off">
-            <div class="mb-3 text-center">
+            <div class="mb-3 text-center text-dark">
                 
                 <p><b>Por favor, ingresa el código que se envió a tu correo electrónico.</b></p>
                    
@@ -78,7 +95,7 @@ function cambiarVista() {
             
             </div>
 
-            <div class="text-center ">
+            <div class="text-center text-dark ">
             <p >Te recomendamos revisar también la bandeja de spam o los correos no deseados en caso de que no lo encuentres.</p>   
             
            <p id="temporizador" class="text-primary fw-bold">Reenviar el código en 1:30</p>
@@ -168,7 +185,7 @@ $(document).ready(function () {
 
     $(document).on("click", "#btnReenviar", function (event) {
         event.preventDefault();
-        $btnReenviar.prop('disabled', true).text('Enviando...');
+         activarLoaderBoton('#btnReenviar');
         var datos = new FormData($('#forcambio_clave')[0]);
         datos.append('btnReenviar', 'btnReenviar');
         enviaAjax(datos);
@@ -192,18 +209,25 @@ function cambiarVistaConfirmacion() {
                 </div>
               
                 <h4 class="text-center text-primary mb-1">Cambiar la Contraseña</h4>
-                 <p class="text-center">Paso: 3 de 3</p>
+                <p class="text-center color-g"> <b>Paso: 3 de 3</b></p>
                 <hr class="bg-dark">
           
                 <form action="?pagina=olvidoclave" method="POST" id="forconfirmacion" autocomplete="off">
-                    <div class="mb-3 text-center mb-5">
-                        <label for="clave" class="form-label fw-bold text-g">Constraseña Nueva</label>
+                    <div class="text-center mb-5">
+
+                    <div class="text-center text-dark mb-3">
+                            Por favor, ingresa tu nueva contraseña y confírmala. 
+                            Asegúrate de que tenga entre <strong>8 y 16 caracteres</strong> para garantizar tu seguridad.
+                    </div>
+
+                        <label for="clave" class="form-label fw-bold text-t m-0 text-primary">Constraseña Nueva</label>
                         <input type="text" id="clavenueva" name="clavenueva" class="form-control text-center" placeholder="Constraseña Nuevo">
                         <span id="textoclavenueva" class="text-danger"></span>
                             <br>
-                         <label for="clavenueva" class="form-label fw-bold text-g">Confirmar Contraseña</label>
+                         <label for="clavenueva" class="form-label fw-bold text-t m-0 text-primary">Confirmar Contraseña</label>
                         <input type="text" id="clavenuevac" name="confirmar" class="form-control text-center" placeholder="Confirmar la constraseña nueva">
                          <span id="textoclavenuevac" class="text-danger"></span>
+
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="submit" name="cerrarolvido" class="btn btn-danger">Cancelar</button>
@@ -243,21 +267,12 @@ $(document).ready(function() {
         event.preventDefault(); 
 
         if (validarFormulario()) {
-             var datos = new FormData($('#forclave')[0]);
-             datos.append('validar', 'validar');
-              // Deshabilitar el botón y agregar el spinner
-        $('#validar').prop('disabled', true);
-        $('#validar').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Validando...');
+           
+            activarLoaderBoton('#validar');
+            var datos = new FormData($('#forclave')[0]);
+            datos.append('validar', 'validar');
+            enviaAjax(datos);
 
-        enviaAjax(datos).then(() => {
-            // Restaurar el botón después de la solicitud
-            $('#validar').prop('disabled', false);
-            $('#validar').html('Validar');
-        }).catch(() => {
-            // En caso de error, también restaurar el botón
-            $('#validar').prop('disabled', false);
-            $('#validar').html('Validar');
-        });
         } else {
              Swal.fire({
             icon: "error",
@@ -309,11 +324,12 @@ $(document).on("click", "#validarNuevo", function(event) {
     event.preventDefault(); // Evita la recarga de la página
 
      if (validarFormulariocodigo()) {
-         $('#validarNuevo').prop('disabled', true);
-        $('#validarNuevo').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Validando...');
+
+        activarLoaderBoton('#validarNuevo');
         var datos = new FormData($('#forcambio_clave')[0]);
         datos.append('validarcodigo', 'validarcodigo');
         enviaAjax(datos);
+
     } else {
              Swal.fire({
             icon: "error",
@@ -340,12 +356,12 @@ $(document).on("click", "#validarNuevo", function(event) {
         event.preventDefault(); // Evita la recarga de la página
 
         if (validarFormularioclave()) {
+
+            activarLoaderBoton('#validarclave');
              var datos = new FormData($('#forconfirmacion')[0]);
              datos.append('validarclave', 'validarclave');
-              $('#validarclave').prop('disabled', true);
-              $('#validarclave').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Validando...');
-
              enviaAjax(datos);
+
         } else {
              Swal.fire({
             icon: "error",
@@ -400,25 +416,34 @@ function validarFormulariocodigo() {
 function validarFormularioclave() {
     let validar = true;
 
-    // Validar cada campo con su expresión regular
-    if (!/^.{8,16}$/.test($("#clavenueva").val())) {
-        $("#textoclavenueva").text("El formato debe ser entre 8 y 16 caracteres");
+    const $clave = $("#clavenueva");
+    const $claveConfirm = $("#clavenuevac");
+    const $errorClave = $("#textoclavenueva");
+    const $errorConfirm = $("#textoclavenuevac");
+
+    // Validar formato de cada campo
+    if (!/^.{8,16}$/.test($clave.val())) {
+        $errorClave.text("El formato debe ser entre 8 y 16 caracteres");
+        $clave.removeClass("is-valid").addClass("is-invalid");
         validar = false;
     }
 
-    if (!/^.{8,16}$/.test($("#clavenuevac").val())) {
-        $("#textoclavenuevac").text("El formato debe ser entre 8 y 16 caracteres");
+    if (!/^.{8,16}$/.test($claveConfirm.val())) {
+        $errorConfirm.text("El formato debe ser entre 8 y 16 caracteres");
+        $claveConfirm.removeClass("is-valid").addClass("is-invalid");
         validar = false;
     }
 
     // Validar que clavenueva y clavenuevac sean iguales
-    if ($("#clavenueva").val() !== $("#clavenuevac").val()) {
-        $("#textoclavenuevac").text("Las contraseñas no coinciden").css("color", "red");
+    if ($clave.val() !== $claveConfirm.val()) {
+        $errorConfirm.text("El formato esta mal o la constraseña no coincide");
+        $claveConfirm.removeClass("is-valid").addClass("is-invalid");
         validar = false;
     }
 
     return validar;
 }
+
 
 
 function muestraMensaje(icono, tiempo, titulo, mensaje) {
@@ -506,40 +531,36 @@ function enviaAjax(datos) {
            if (lee.accion == 'validar') {
               if (lee.respuesta == 1) {  
                 muestraMensaje("success", 2000, "Se ha enviado un código enviado al correo", "");
-                $('#validar').prop('disabled', false);
-                 $('#validar').html('Validar');
+                desactivarLoaderBoton('#validar');  
                 // Espera un momento antes de cambiar la vista
                 setTimeout(() => {
                     cambiarVista();
                 }, 2200);
             } else {
                 muestraMensaje("error", 1000, lee.text, "");
-                 $('#validar').prop('disabled', false);
-                 $('#validar').html('Validar');
+                desactivarLoaderBoton('#validar');
              }
             } else if (lee.accion == 'validarcodigo') {
             if (lee.respuesta == 1) {
                 muestraMensaje("success", 2000, "Codigo de verificación correcto", "");
-                 $('#validarNuevo').prop('disabled', false);
-                 $('#validarNuevo').html('Continuar');
+                  desactivarLoaderBoton('#validarNuevo');
                 setTimeout(() => {
                     cambiarVistaConfirmacion();
                 }, 2200);
             } else {
                 muestraMensaje("error", 2000, lee.text, "");
+                 desactivarLoaderBoton('#validarNuevo');
                  }
             } else if (lee.accion == 'actualizar') {
                 if (lee.respuesta == 1) {
                   muestraMensaje("success", 2500, "Se ha Cambiado su Constraseña con exito ", "ya puede iniciar su seccion");
-                   $('#validarclave').prop('disabled', false);
-                   $('#validarclave').html('Cambiar Clave');
+                    desactivarLoaderBoton('#validarclave');
                   setTimeout(function () {
                      location = '?pagina=login';
-                  }, 2500); 
+                  }, 2500);
             }else {
                 muestraMensaje("error", 2000, lee.text, "");
-                   $('#validarclave').prop('disabled', false);
-                   $('#validarclave').html('Cambiar Clave');
+                   desactivarLoaderBoton('#validarclave');
                }      
             } else if (lee.accion == 'reenviar') {
                 if (lee.respuesta == 1) {
@@ -548,7 +569,7 @@ function enviaAjax(datos) {
 
                 } else {
                     muestraMensaje("error", 2000, lee.text, "");
-                   $('#btnReenviar').prop('disabled', false).text('Reenviar código');
+                    desactivarLoaderBoton('#btnReenviar');
                 }
         }
   

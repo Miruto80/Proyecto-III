@@ -453,29 +453,109 @@ function enviaAjax(datos) {
       }
     });
   }
-  
-  $('#ayuda').on("click", function () {
-  
+
+  let driverObj; // Definido globalmente
+
+$('#ayuda').on("click", function () {
   const driver = window.driver.js.driver;
-  
-  const driverObj = new driver({
+
+  driverObj = new driver({
     nextBtnText: 'Siguiente',
-        prevBtnText: 'Anterior',
-        doneBtnText: 'Listo',
+    prevBtnText: 'Anterior',
+    doneBtnText: 'Listo',
     popoverClass: 'driverjs-theme',
-    closeBtn:false,
+    closeBtn: false,
     steps: [
-      { element: '.table-color', popover: { title: 'Tabla de usuario', description: 'Aqui es donde se guardaran los registros de usuario', side: "left", }},
-      { element: '.registrar', popover: { title: 'Boton de registrar', description: 'Darle click aqui te llevara a un modal para poder registrar', side: "bottom", align: 'start' }},
-      { element: '.informacion', popover: { title: 'Mas informacion del Usuario', description: 'Este botón te permite ver mas información de los usuario registrado.', side: "left", align: 'start' }},
-      { element: '.permisotur', popover: { title: 'Ver Permiso del Usuario', description: 'Este botón te permite ver mas información de los permiso del  usuario. Y se puede Modificar los permiso', side: "left", align: 'start' }},
-      { element: '.modificar', popover: { title: 'Modificar Usuario', description: 'Este botón te permite editar la información de un usuario registrado.', side: "left", align: 'start' }},
-      { element: '.eliminar', popover: { title: 'Eliminar Usuario', description: 'Usa este botón para eliminar un usuario de la lista.', side: "left", align: 'start' }},
-      { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un usuario en la tabla', side: "right", align: 'start' }},
-      { popover: { title: 'Eso es todo', description: 'Este es el fin de la guia espero hayas entendido'} }
+      { element: '.table-color', popover: { title: 'Tabla de usuario', description: 'Aquí es donde se guardarán los registros de usuario', side: "left" }},
+      { element: '.registrar', popover: { title: 'Botón de registrar', description: 'Te lleva a un modal para registrar', side: "bottom", align: 'start' }},
+      { element: '.informacion', popover: { title: 'Más información del Usuario', description: 'Ver más información del usuario registrado.', side: "left", align: 'start' }},
+      { element: '.permisotur', popover: { title: 'Ver Permiso del Usuario', description: 'Ver y modificar permisos del usuario.', side: "left", align: 'start' }},
+      { element: '.modificar', popover: { title: 'Modificar Usuario', description: 'Editar información del usuario.', side: "left", align: 'start' }},
+      { element: '.eliminar', popover: { title: 'Eliminar Usuario', description: 'Eliminar usuario de la lista.', side: "left", align: 'start' }},
+      { element: '.dt-search', popover: { title: 'Buscar', description: 'Buscar usuario en la tabla.', side: "right", align: 'start' }},
+      { popover: { title: 'Eso es todo', description: 'Fin de la guía. ¡Espero que te haya servido!' }}
     ]
   });
-  
-  // Iniciar el tour
+
   driverObj.drive();
 });
+
+/*
+let tiempoInactivo = 0;
+const tiempoLimite = 60; // 10 minutos en segundos
+let alertaMostrada = false;
+
+function reiniciarContador() {
+  tiempoInactivo = 0;
+  alertaMostrada = false;
+    console.log('no entro');
+}
+
+setInterval(() => {
+  tiempoInactivo++; 
+
+  // Mostrar alerta 1 minuto antes de cerrar sesión
+  if (tiempoInactivo === tiempoLimite - 10 && !alertaMostrada) {
+    alertaMostrada = true;
+
+    Swal.fire({
+      title: '¿Seguir conectado?',
+      text: 'Tu sesión está por expirar. ¿Deseas extender el tiempo?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, continuar',
+      cancelButtonText: 'Cerrar sesión',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        reiniciarContador(); // Reinicia el contador si el usuario quiere seguir
+      } else {
+        window.location.href = "?pagina=login"; // Cierra sesión
+      }
+    });
+  }
+
+  // Cierre automático si no responde
+  if (tiempoInactivo >= tiempoLimite) {
+    window.location.href = "?pagina=login";
+  }
+}, 1000);
+
+['mousemove', 'keydown', 'click'].forEach(event => {
+  document.addEventListener(event, reiniciarContador);
+});
+*/
+
+
+$(document).on('keydown', function(e) {
+  
+  if ($(e.target).is('input, textarea')) return;
+
+  // CTRL + ALT + R → Abrir modal de registro usuario
+  if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'n') {
+    $('#registro').modal('show');
+  }
+
+  // CTRL + ALT + C → abril cerrar session
+  if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'c') {
+    $('#cerrar').modal('show');
+  }
+
+   // Activar Driver.js con tecla A
+  if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') {
+    if (driverObj) {
+      driverObj.drive();
+    }
+  }
+
+  // Cerrar modales con Ctrl + Alt + X
+  if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+    $('#registro').modal('hide');
+     $('#editarModal').modal('hide');
+     $('#infoModal').modal('hide');
+    $('#cerrar').modal('hide');
+  }
+});
+
+

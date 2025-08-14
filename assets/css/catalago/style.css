@@ -71,7 +71,7 @@ Version: 1.1
     border-color: #000000;
   }
 
-  .btn-eliminar {
+  .btn-delete {
     border: 2px solid transparent;
     background-color: #ec6363ff;
     color: #000000;
@@ -81,14 +81,63 @@ Version: 1.1
     border-radius: 8px;
   }
 
-  .btn-eliminar:hover {
+  .btn-delete:hover {
     background-color: #e05353ff;
     border-color: #e63c3cff;
+  }
+
+   .btn-editar {
+    border: 2px solid transparent;
+    background-color:#0273f5;
+    color: #ffffff;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.4rem 1.2rem;
+    border-radius: 8px;
+  }
+  
+  .btn-editar:hover {
+    background-color: #0451aa;
+    border-color: #0273f5;
+  }
+  
+  .btn-registrar {
+    border: 2px solid transparent;
+    background-color: #1e913bff;
+    color: #ffffff;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.4rem 1.2rem;
+    border-radius: 8px;
+  }
+  .btn-registrar:hover {
+    background-color: #2dc252ff;
+    border-color: #176e2dff;
+  }
+
+ 
+  .bg-rosad {
+    background-color: #f172b2;
+    color: #ffffff;
+  }
+
+   .bg-table {
+    background-color: #d67888;
+    color: #ffffff;
   }
 
   .text-titel{
     color: #0d6efd;
   }
+
+  .text-titel-1{
+    color: #f172b2;
+  }
+
+  .text-titel-2{
+    color: #ff2020;
+  }
+
 
   .btn-custom.active {
     background-color: #0d6efd;

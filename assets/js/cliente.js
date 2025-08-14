@@ -206,7 +206,7 @@ function enviaAjax(datos) {
     });
   }
   
-
+  let driverObj; // Definido globalmente
    $('#ayudacliente').on("click", function () {
   
   const driver = window.driver.js.driver;
@@ -229,4 +229,29 @@ function enviaAjax(datos) {
   
   // Iniciar el tour
   driverObj.drive();
+})
+
+
+$(document).on('keydown', function(e) {
+  
+  if ($(e.target).is('input, textarea')) return;
+
+
+  // CTRL + ALT + C → abril cerrar session
+  if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'c') {
+    $('#cerrar').modal('show');
+  }
+
+   // Activar Driver.js con tecla A
+  if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') {
+    if (driverObj) {
+      driverObj.drive();
+    }
+  }
+
+  // Cerrar modales con Ctrl + Alt + X
+  if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+    $('#editarModal').modal('hide');
+    $('#cerrar').modal('hide');
+  }
 });

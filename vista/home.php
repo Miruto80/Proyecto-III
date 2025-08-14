@@ -127,7 +127,7 @@
   </div>
 </div> <!-- cierre -->
 
-          
+      
             <div class="row mt-4">
    <div class="col-lg-7 col-md-7 col-12"> 
   <div class="card">

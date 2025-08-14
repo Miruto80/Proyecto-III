@@ -156,11 +156,15 @@ nav {
         
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
           <div class="offcanvas-header">
+          
             <h5 class="offcanvas-title" id="offcanvasNavbarLabel">LoveMakeup C.A</h5>
+              
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
           </div>
-          <div class="offcanvas-body justify-content-center">
-
+            <div id="saludos" class="text-center mt-1 text-dark d-md-none"></div>  
+              
+            <div class="offcanvas-body justify-content-center">
+         
             <ul class="navbar-nav mb-0">
               <li class="nav-item border-end-0 border-lg-end-0 border-lg-end active">
                 <a href="?pagina=catalogo" class="nav-link fw-bold px-4 py-3">Inicio</a>

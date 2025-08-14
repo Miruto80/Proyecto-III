@@ -145,8 +145,8 @@ input[type="radio"]:checked + .opcion-custom {
   </style>
 
   <section class="section-padding pt-0">
-
-    <div class="container-lg ">
+ 
+    <div class="container-lg "> 
       <!-- Pasos -->
       <div class="pasos-container mb-5">
         <div class="paso completado"><div class="circulo">1</div><span>Producto</span></div>

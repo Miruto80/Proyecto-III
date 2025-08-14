@@ -4,7 +4,9 @@ if (empty($_SESSION['id'])) {
     header('Location:?pagina=login');
     exit;
 }
-
+if (!empty($_SESSION['id'])) {
+        require_once 'verificarsession.php';
+} 
 require_once 'modelo/reporte.php';
 require_once 'modelo/producto.php';
 require_once 'modelo/proveedor.php';

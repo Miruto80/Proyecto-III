@@ -19,6 +19,18 @@
 
   </head>
   <body>
+  <?php
+if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'sesion_expirada') {
+    echo "<script>
+        Swal.fire({
+            icon: 'info',
+            title: 'Sesión expirada',
+            text: 'Tu sesión ha caducado por inactividad. Por favor, inicia sesión nuevamente.',
+            confirmButtonColor: '#fa8fb1',
+            confirmButtonText: 'Entendido'
+        });
+    </script>";
+}  ?>
 
 <!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
   <div class="preloader-wrapper">
@@ -35,7 +47,7 @@
        
         <div class="row align-items-center justify-content-center">
            <div class="">
-        <div class="back-button-container1">
+        <div class="back-button-container">
         <center>
         <a href="?pagina=catalogo" class="back-button1">
          <i class="fa-solid fa-shop text-h"> </i> Volver a Tienda
@@ -76,7 +88,9 @@
               </form>
               <hr class="bg-dark">
               <center>
-              <a href="#" class="btn-sm badge rounded-pill tex-c" data-bs-toggle="modal" data-bs-target="#registroclientess" style="text-decoration: none !important; color:#000000;"> <i class="fa-solid fa-user-plus"></i>  Crea tu cuenta y empieza a comprar</a>
+              <a href="#" class="btn-sm badge rounded-pill tex-c" data-bs-toggle="modal" data-bs-target="#registroclientess"
+               style="text-decoration: none !important; color:#000000;">
+                <i class="fa-solid fa-user-plus"></i>  Crea tu cuenta y empieza a comprar</a>
             </center>
             </div>
           </div>

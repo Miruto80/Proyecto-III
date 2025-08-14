@@ -26,7 +26,7 @@
 <section class="section-padding pt-0">
     <div class="container">
 
-       <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="custom-breadcrumb mt-3">
+       <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="custom-breadcrumb mt- mb-3">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="?pagina=catalogo">Inicio</a></li>
              <li class="breadcrumb-item active" aria-current="page">Contacto</li>
@@ -84,7 +84,7 @@
           <article class="post-item card border-1 border-light shadow-sm p-3">
             <div class="image-holder zoom-effect">
               <a href="#">
-                <img src="assets/img/b5.png" alt="post" class="card-img-top">
+                <img src="assets/img/b50.jpg" alt="post" class="card-img-top">
               </a>
             </div>
             <div class="card-body">

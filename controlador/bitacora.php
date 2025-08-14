@@ -10,7 +10,9 @@
        header("location:?pagina=login");
      } /*  Validacion URL  */
     
-    
+     if (!empty($_SESSION['id'])) {
+        require_once 'verificarsession.php';
+    } 
     require_once 'modelo/bitacora.php';
     require_once 'permiso.php';
     $objBitacora = new Bitacora();

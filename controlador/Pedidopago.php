@@ -7,6 +7,9 @@ $nombreCompleto = trim($nombre . " " . $apellido);
 
 $sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
 
+if (!empty($_SESSION['id'])) {
+    require_once 'verificarsession.php';
+}
 
 if (empty($_SESSION['id'])) {
     header('Location:?pagina=login');

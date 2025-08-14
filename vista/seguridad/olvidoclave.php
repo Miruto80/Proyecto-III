@@ -8,23 +8,33 @@
 	  <!-- JS LIBRERIA -->
   <script src="assets/js/libreria/jquery.min.js"></script>
   <script src="assets/js/libreria/sweetalert2.js"></script>
-
-</head>
-<body>
-
-<style type="text/css">
+<style>
 	body{
 	background-color: #879cc5;
 	}
 
 	.text-g{
-	font-size: 14px;
+	font-size: 16px;
+	}
+
+	.text-t{
+		font-size: 16px;
 	}
 
 	.color-g{
-		color:red;
+		color:#EB60E4;
+		font-size: 18px;
+	}
+
+	.text-c{
+		color:#000000;
+		font-size: 20px;
 	}
 </style>
+
+</head>
+<body>
+
 
 <div class="container d-flex justify-content-center align-items-center vh-100">
 
@@ -34,29 +44,36 @@
 		</div>
 		
     	<h4 class="text-center text-primary mb-1">Olvido de Contraseña</h4>
-		<p class="text-center">Paso: 1 de 3</p>
-		<hr class="bg-dark">
-    	<h6 class="text-center mb-3">
+		<p class="text-center color-g"> <b>Paso: 1 de 3</b></p>
+		
+    	<h6 class="text-center">
 			Estimado 
-			<?php 
-				echo ($_SESSION["tabla_origen"] == 1) ? "Cliente" : "Usuario";
-			?>, 
+			<?php  echo ($_SESSION["tabla_origen"] == 1) ? "Cliente" : "Usuario";?>, 
 			<?php echo $_SESSION["nombres"] . " " . $_SESSION["apellidos"]; ?>
 		</h6>
-
+<hr class="bg-dark">
         <form action="?pagina=olvidoclave" method="POST" id="forclave" autocomplete="off">
-		<div class="mb-3 text-center mb-5">
-            <label for="input" class="form-label fw-bold text-g">Ingrese su correo Electronico</label>
-            <input type="text" id="correo" name="correo" class="form-control text-center" placeholder="correo: tucorreo@dominio.com"> 
-            <span id="textocorreo" class="text-danger"></span>
+		<div class="text-center mb-5">
+            <p class="text-center text-primary m-0"><strong>Ingrese su correo Electronico</strong></p>
+            <input type="text" id="correo" name="correo" class="form-control text-center text-dark" placeholder="correo: tucorreo@dominio.com"> 
+            <span id="textocorreo" class="text-danger m-0"></span>
+			<br>
+		<div class="text-center text-dark ">
+		<p>
+			Para continuar, por favor ingresa tu <strong>correo electrónico</strong>. 
+			Te enviaremos un codigo de verificación.
+		</p>
 		</div>
-        <div class="d-flex justify-content-between">
+
+		</div>
+        <div class="d-flex justify-content-between ">
 			<button type="submit" name="cerrarolvido" class="btn btn-danger">Cancelar</button>
 				
             <button type="button" class="btn btn-success" id="validar">Continuar</button>
 			</form>
         </div>
     </div>
+
  <script src="assets/js/core/bootstrap.min.js"></script>
   <script src="assets/js/olvidoclave.js"></script>
 </body>

@@ -5,7 +5,9 @@ if (empty($_SESSION["id"])) {
     header("location:?pagina=login");
     exit;
 }
-
+if (!empty($_SESSION['id'])) {
+        require_once 'verificarsession.php';
+} 
 require_once __DIR__ . '/../modelo/metodoentrega.php';
 require_once 'permiso.php';
 $objEntrega = new metodoentrega();
@@ -72,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'descripcion' => 'módulo de Metodo Entrega'
         ];
         $objEntrega->registrarBitacora(json_encode($bitacora));*/
-            $metodos = $objEntrega->consultar();
+            $metodos = $objEntrega->consultar(); 
             $pagina_actual = isset($_GET['pagina']) ? $_GET['pagina'] : 'metodoentrega';
             require_once __DIR__ . '/../vista/metodoentrega.php';
 } else {

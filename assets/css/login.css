@@ -219,8 +219,6 @@ h2 {
   border: 1px solid #dc3545 !important;
 }
 
-
-
 .back-button1 {
   text-decoration: none !important; 
   display: flex;
@@ -238,6 +236,12 @@ h2 {
 .back-button1:hover {
   background-color: #fa8fb1; 
   color: #000000 !important;
+}
+
+@media (max-width: 576px) {
+  .back-button1 {
+    width: 100%; /* o 100% si quieres que ocupe todo el ancho */
+  }
 }
 
   .password-input1 {

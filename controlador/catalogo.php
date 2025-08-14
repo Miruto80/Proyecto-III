@@ -7,6 +7,10 @@ $nombreCompleto = trim($nombre . " " . $apellido);
 
 $sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
 
+if (!empty($_SESSION['id'])) {
+    require_once 'verificarsession.php';
+}
+
 require_once 'modelo/catalogo.php';
 require_once 'modelo/ListaDeseo.php';
 

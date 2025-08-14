@@ -4,7 +4,9 @@ if (empty($_SESSION['id'])) {
     header('Location:?pagina=login');
     exit;
 }
-
+if (!empty($_SESSION['id'])) {
+        require_once 'verificarsession.php';
+} 
 $nivel = (int)($_SESSION['nivel_rol'] ?? 0);
 
 

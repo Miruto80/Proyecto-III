@@ -50,7 +50,7 @@
     
        <!-- Button que abre el Modal N1 Registro -->
        <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(13, 'registrar')): ?>
-          <button type="button" class="btn btn-success registrar" title="Registro un nuevo usuario" data-bs-toggle="modal" data-bs-target="#registro">
+          <button type="button" class="btn btn-success registrar" title="(CONTROL + ALT + N) Registrar usuario" data-bs-toggle="modal" data-bs-target="#registro">
             <span class="icon text-white">
             <i class="fas fa-file-medical me-2"></i>
             </span>
@@ -58,7 +58,7 @@
           </button>
          <?php endif; ?>
          
-  <button type="button" class="btn btn-primary" id="ayuda" title="click para ver la ayuda">
+  <button type="button" class="btn btn-primary" id="ayuda" title="(CONTROL + ALT + A) click para ver la ayuda">
     <span class="icon text-white">
       <i class="fas fa-info-circle me-2"></i>
     </span>
@@ -225,7 +225,7 @@
         <h5 class="modal-title fs-5" id="1">
         <i class="fa-solid fa-user-plus"></i>
          Registrar Usuario</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close"  title="(CONTROL + ALT + X) Cerrar" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <div class="modal-body">
@@ -366,7 +366,7 @@
     <div class="modal-content modal-producto">
       <div class="modal-header">
         <h5 class="modal-title text-dark" id="modalLabel"><i class="fas fa-pencil-alt"></i> Editar Datos del Usuario</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" title="(CONTROL + ALT + X) Cerrar"  aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form method="POST" action="?pagina=cliente" id="formdatosactualizar">
@@ -444,7 +444,7 @@
     <div class="modal-content modal-producto">
       <div class="modal-header header-color text-white">
         <h5 class="modal-title" id="infoModalLabel">Información del Usuario</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" title="(CONTROL + ALT + X) Cerrar" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
          <div class="seccion-formulario table-responsive">

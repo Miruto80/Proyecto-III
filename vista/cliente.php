@@ -46,7 +46,7 @@
         Clientes</h4>
            
        <!-- Button que abre el Modal N1 Registro -->
-       <button type="button" class="btn btn-primary"  title="click para ver la ayuda">
+       <button type="button" class="btn btn-primary"  title="(CONTROL + ALT + A) click para ver la ayuda">
             <span class="icon text-white">
             <i class="fas fa-info-circle me-2"></i>
             </span>
@@ -165,7 +165,7 @@
     <div class="modal-content modal-producto">
       <div class="modal-header ">
         <h5 class="modal-title text-dark" id="modalLabel"><i class="fas fa-pencil-alt"></i> Editar Datos del Cliente</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"  title="(CONTROL + ALT + X) Cerrar" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form method="POST" action="?pagina=cliente" id="formdatosactualizar">
