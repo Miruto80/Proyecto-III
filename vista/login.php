@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
     <link rel="shortcut icon" type="image/png" href="assets/img/icono.png"/>
-  
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
       <!-- CSS Files -->
     <link id="pagestyle" href="assets/css/argon-dashboard.css?v=2.1.0" rel="stylesheet" />
     <link id="pagestyle" href="assets/css/sidebar.css" rel="stylesheet" />
@@ -46,19 +46,15 @@ if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'sesion_expirada') {
       <div class="container">
        
         <div class="row align-items-center justify-content-center">
-           <div class="">
+          
         <div class="back-button-container">
-        <center>
-        <a href="?pagina=catalogo" class="back-button1">
-         <i class="fa-solid fa-shop text-h"> </i> Volver a Tienda
-        </a> <br>
-        </center>
-      </div>
+    
+      
           <div class="col-md-12">
   
             <div class="form-block mx-auto">
 
-              <div class="text-center mb-2">
+              <div class="text-center mb-1">
 
               <h3>Inicio de Sesión</h3> 
               <p class="text-primary">Ingrese su cedula y clave para acceder al sistema</p>
@@ -76,6 +72,11 @@ if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'sesion_expirada') {
                   <span id="show-password" class="fa fa-eye"></span>
                     </div>
                 <p id="textop" class="text-danger"></p>
+                      <!-- reCAPTCHA -->
+                    <div class="d-flex justify-content-center my-3">
+                        <div class="g-recaptcha" data-sitekey="6LfHU6YrAAAAAJbZuGP2Z-l_HyrEMRftGDfR8cQH"></div>
+                    </div>
+
                 </div>
                 
  
@@ -100,7 +101,10 @@ if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'sesion_expirada') {
 
     
   </div>
-    
+    <a href="?pagina=catalogo" class="back-button1">
+  <i class="fa-solid fa-shop text-h"></i> Volver a Tienda
+</a>
+
     
       <!-- Modal olvido de clave-->
       <div class="modal fade" id="olvido" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

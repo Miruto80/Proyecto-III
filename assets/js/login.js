@@ -188,6 +188,11 @@ $(document).ready(function() {
     $('#ingresar').on("click", function(event) {
         event.preventDefault(); 
         if (validarForlogin()) {
+          var recaptchaResponse = grecaptcha.getResponse();
+          if (recaptchaResponse === "") {
+            muestraMensajetost("error", "reCAPTCHA vacío", "Por favor verifica que no eres un robot.", "2000");
+            return; // Detiene el envío
+          }
           activarLoaderBoton('#ingresar',"Iniciando...");  
           
           var datos = new FormData($('#login')[0]);

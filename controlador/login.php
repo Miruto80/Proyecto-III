@@ -8,6 +8,31 @@ require_once 'modelo/bitacora.php';
 $objlogin = new Login();
 
 if (isset($_POST['ingresar'])) {
+    
+    if (empty($_POST['g-recaptcha-response'])) {
+            echo json_encode([
+                'respuesta' => 0,
+                'accion' => 'ingresar',
+                'text' => 'No se recibió el token de reCAPTCHA.'
+            ]);
+    exit;
+    }
+
+    $ip=$_SERVER['REMOTE_ADDR'];
+    $captcha  = $_POST['g-recaptcha-response'];
+    $secretkey = "6LfHU6YrAAAAAPNZ1yCRwIo0UgBAMbnnNwTQaSFJ";
+    $validacion=file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretkey&response=$captcha&remoteip=$ip");
+    $atributos= json_decode($validacion, TRUE);
+
+    if(!$atributos['success']){
+            echo json_encode([
+            'respuesta' => 0,
+            'accion' => 'ingresar',
+            'text' => 'Verificación fallida: el CAPTCHA está vacío o fue rechazado. Intenta nuevamente.'
+        ]);
+        exit;
+    }
+    
     $datosLogin = [
         'operacion' => 'verificar',
         'datos' => [
