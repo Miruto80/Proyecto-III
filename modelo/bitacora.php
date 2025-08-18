@@ -56,6 +56,12 @@ class Bitacora extends Conexion {
             'actualizar' => self::MODIFICAR,
             'eliminar' => self::ELIMINAR,
             'cambiar_estado' => self::CAMBIO_ESTADO
+        ],
+        'tipousuario' => [
+            'registrar' => self::CREAR,
+            'modificar' => self::MODIFICAR,
+            'eliminar' => self::ELIMINAR,
+            'cambiar_estado' => self::CAMBIO_ESTADO
         ]
     ];
 
@@ -141,6 +147,11 @@ class Bitacora extends Conexion {
             'metodo_entrega' => [
                 'nombre' => 'Nombre del Método',
                 'descripcion' => 'Descripción'
+            ],
+            'tipousuario' => [
+                'nombre' => 'Nombre del Tipo',
+                'nivel' => 'Nivel',
+                'estatus' => 'Estado'
             ]
         ];
 

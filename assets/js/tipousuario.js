@@ -129,41 +129,49 @@ $('#btnAyuda').on("click", function () {
     closeBtn:     false,
     steps: [
       {
-        element: '.registrar',
+        element: '.table-color',
         popover: {
-          title:       'Registrar rol',
-          description: 'Abre el modal para crear un nuevo rol.',
+          title:       'Tabla de Tipos de Usuario',
+          description: 'Aquí ves la lista de tipos de usuario registrados.',
+          side:        'top'
+        }
+      },
+      {
+        element: 'button[data-bs-target="#registro"]',
+        popover: {
+          title:       'Registrar Tipo de Usuario',
+          description: 'Abre el modal para crear un nuevo tipo de usuario.',
           side:        'bottom'
         }
       },
       {
-        element: '.table-color',
+        element: 'button[data-bs-target="#infoModal"]',
         popover: {
-          title:       'Tabla de roles',
-          description: 'Muestra el listado de todos los roles activos.',
-          side:        'top'
+          title:       'Ver Información',
+          description: 'Haz clic aquí para ver los detalles del tipo de usuario.',
+          side:        'left'
         }
       },
       {
         element: '.modificar',
         popover: {
-          title:       'Editar rol',
-          description: 'Modifica los datos de un rol existente.',
+          title:       'Editar Tipo de Usuario',
+          description: 'Modifica los datos de un tipo de usuario existente.',
           side:        'left'
         }
       },
       {
         element: '.eliminar',
         popover: {
-          title:       'Eliminar rol',
-          description: 'Elimina un rol del sistema.',
+          title:       'Eliminar Tipo de Usuario',
+          description: 'Elimina un tipo de usuario del sistema.',
           side:        'left'
         }
       },
       {
         popover: {
           title:       '¡Listo!',
-          description: 'Finalizaste la guía de ayuda.'
+          description: 'Finalizaste la guía de ayuda del módulo Tipo de Usuario.'
         }
       }
     ]
