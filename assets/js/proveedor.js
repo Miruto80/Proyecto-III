@@ -8,9 +8,10 @@ $(function(){
   $('#btnAbrirRegistrar').click(()=>{
     $('#formProveedor')[0].reset();
     $('#formProveedor').find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
-    $('#formProveedor').find('span.text-danger').text('');
+    $('#formProveedor').find('span.error-message').text('');
     $('#accion').val('registrar');
-    $('#modalTitle').text('Registrar Proveedor');
+    $('#modalTitleText').text('Registrar Proveedor');
+    $('#btnText').text('Registrar');
     $('#registro').modal('show');
   });
 
@@ -27,10 +28,11 @@ $(function(){
       $('#direccion').val(data.direccion);
 
       $('#formProveedor').find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
-      $('#formProveedor').find('span.text-danger').text('');
+      $('#formProveedor').find('span.error-message').text('');
 
       $('#accion').val('actualizar');
-      $('#modalTitle').text('Modificar Proveedor');
+      $('#modalTitleText').text('Modificar Proveedor');
+      $('#btnText').text('Actualizar');
       $('#registro').modal('show');
     }, 'json')
     .fail(()=> mostrarMensaje('error',2000,'Error','No se cargaron datos'));
