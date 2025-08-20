@@ -216,6 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $datosVenta = [
                 'id_persona' => $id_persona,
                 'precio_total' => floatval($_POST['precio_total']),
+                'precio_total_bs' => floatval($_POST['precio_total_bs'] ?? 0),
                 'detalles' => []
             ];
 
@@ -287,8 +288,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Agregar métodos de pago a los datos de la venta
             $datosVenta['metodos_pago'] = $metodosPago;
 
+            // Log de depuración
+            error_log("Datos de venta a procesar: " . json_encode($datosVenta));
+            
             $respuesta = $salida->registrarVentaPublico($datosVenta);
-            enviarRespuesta($respuesta);
+            
+            // Log de respuesta
+            error_log("Respuesta del modelo: " . json_encode($respuesta));
+            
+            if ($respuesta['respuesta'] == 1) {
+                enviarRespuesta([
+                    'respuesta' => 1,
+                    'mensaje' => 'Venta registrada exitosamente',
+                    'id_pedido' => $respuesta['id_pedido']
+                ]);
+            } else {
+                enviarRespuesta([
+                    'respuesta' => 0,
+                    'error' => $respuesta['mensaje'] ?? 'Error al registrar la venta'
+                ]);
+            }
         } catch (Exception $e) {
             enviarRespuesta([
                 'respuesta' => 0,

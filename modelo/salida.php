@@ -48,12 +48,13 @@ class Salida extends Conexion {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
-            // Insertar cabecera del pedido SOLO con los campos existentes
-            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total_usd, id_persona) 
-                    VALUES ('1', NOW(), '1', :precio_total_usd, :id_persona)";
+            // Insertar cabecera del pedido con los campos correctos según la estructura de la BD
+            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total_usd, precio_total_bs, id_persona) 
+                    VALUES ('1', NOW(), '1', :precio_total_usd, :precio_total_bs, :id_persona)";
             $stmt = $conex->prepare($sql);
             $stmt->execute([
                 'precio_total_usd' => $datos['precio_total'],
+                'precio_total_bs' => $datos['precio_total_bs'] ?? 0.00, // Usar el valor calculado desde el frontend
                 'id_persona' => $datos['id_persona']
             ]);
             $id_pedido = $conex->lastInsertId();
@@ -74,15 +75,18 @@ class Salida extends Conexion {
                 if ($stock < $detalle['cantidad']) {
                     throw new Exception('Stock insuficiente para el producto ID: ' . $detalle['id_producto']);
                 }
-                $sql_detalle = "INSERT INTO pedido_detalles(cantidad, precio_unitario, id_pedido, id_producto) 
-                                   VALUES (:cantidad, :precio_unitario, :id_pedido, :id_producto)";
+                
+                // Insertar detalle del pedido
+                $sql_detalle = "INSERT INTO pedido_detalles(id_pedido, id_producto, cantidad, precio_unitario) 
+                                   VALUES (:id_pedido, :id_producto, :cantidad, :precio_unitario)";
                 $stmt_detalle = $conex->prepare($sql_detalle);
                 $stmt_detalle->execute([
-                    'cantidad' => $detalle['cantidad'],
-                    'precio_unitario' => $detalle['precio_unitario'],
                     'id_pedido' => $id_pedido,
-                    'id_producto' => $detalle['id_producto']
+                    'id_producto' => $detalle['id_producto'],
+                    'cantidad' => $detalle['cantidad'],
+                    'precio_unitario' => $detalle['precio_unitario']
                 ]);
+                
                 // Actualizar stock
                 $sql_stock = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad 
                                    WHERE id_producto = :id_producto";
@@ -481,6 +485,9 @@ class Salida extends Conexion {
         return $this->registrarVentaPrivado($datos);
     }
     private function registrarVentaPrivado($datos) {
+        // Log de depuración
+        error_log("Iniciando registro de venta con datos: " . json_encode($datos));
+        
         // Validaciones previas
         if (!isset($datos['id_persona']) || $datos['id_persona'] <= 0) {
             throw new Exception('ID de persona no válido');
@@ -507,15 +514,22 @@ class Salida extends Conexion {
                 throw new Exception('El cliente no existe o está inactivo');
             }
 
-            // Insertar cabecera del pedido
-            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total_usd, id_persona) VALUES ('1', NOW(), '1', ?, ?)";
+            // Insertar cabecera del pedido con los campos correctos según la estructura de la BD
+            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total_usd, precio_total_bs, id_persona) VALUES ('1', NOW(), '1', ?, ?, ?)";
             $params = [
                 $datos['precio_total'],
+                $datos['precio_total_bs'] ?? 0.00, // Usar el valor calculado desde el frontend
                 $datos['id_persona']
             ];
+            
+            error_log("SQL para insertar pedido: " . $sql);
+            error_log("Parámetros del pedido: " . json_encode($params));
+            
             $stmt = $conex->prepare($sql);
             $stmt->execute($params);
             $id_pedido = $conex->lastInsertId();
+            
+            error_log("ID del pedido insertado: " . $id_pedido);
 
             // Procesar detalles de productos
             foreach ($datos['detalles'] as $detalle) {
@@ -544,16 +558,22 @@ class Salida extends Conexion {
                     throw new Exception('Stock insuficiente para el producto: ' . $producto['nombre']);
                 }
 
-                // Insertar detalle
-                $sql_det = "INSERT INTO pedido_detalles(cantidad, precio_unitario, id_pedido, id_producto) VALUES (?, ?, ?, ?)";
+                // Insertar detalle del pedido
+                $sql_det = "INSERT INTO pedido_detalles(id_pedido, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
                 $params_det = [
-                    $detalle['cantidad'],
-                    $detalle['precio_unitario'],
                     $id_pedido,
-                    $detalle['id_producto']
+                    $detalle['id_producto'],
+                    $detalle['cantidad'],
+                    $detalle['precio_unitario']
                 ];
+                
+                error_log("SQL para insertar detalle: " . $sql_det);
+                error_log("Parámetros del detalle: " . json_encode($params_det));
+                
                 $stmt_det = $conex->prepare($sql_det);
                 $stmt_det->execute($params_det);
+                
+                error_log("Detalle insertado para producto ID: " . $detalle['id_producto']);
 
                 // Actualizar stock
                 $sql_stock = "UPDATE productos SET stock_disponible = stock_disponible - ? WHERE id_producto = ?";
@@ -565,6 +585,21 @@ class Salida extends Conexion {
             if (isset($datos['metodos_pago']) && !empty($datos['metodos_pago'])) {
                 $this->registrarMetodosPagoVenta($id_pedido, $datos['metodos_pago'], $conex);
             }
+            
+            // Actualizar el pedido con el ID del pago si se registraron métodos de pago
+            if (!empty($datos['metodos_pago'])) {
+                // Obtener el ID del primer detalle de pago insertado
+                $sql_get_pago = "SELECT id_pago FROM detalle_pago WHERE id_pedido = ? ORDER BY id_pago ASC LIMIT 1";
+                $stmt_get_pago = $conex->prepare($sql_get_pago);
+                $stmt_get_pago->execute([$id_pedido]);
+                $id_pago = $stmt_get_pago->fetchColumn();
+                
+                if ($id_pago) {
+                    $sql_update_pedido = "UPDATE pedido SET id_pago = ? WHERE id_pedido = ?";
+                    $stmt_update = $conex->prepare($sql_update_pedido);
+                    $stmt_update->execute([$id_pago, $id_pedido]);
+                }
+            }
 
             // Bitácora
             $bitacora = [
@@ -574,15 +609,27 @@ class Salida extends Conexion {
             ];
             $this->registrarBitacora(json_encode($bitacora));
             
+            error_log("Commit de la transacción exitoso");
             $conex->commit();
             $conex = null;
-            return ['respuesta' => 1, 'id_pedido' => $id_pedido];
+            
+            $respuesta_final = ['respuesta' => 1, 'id_pedido' => $id_pedido];
+            error_log("Respuesta final del modelo: " . json_encode($respuesta_final));
+            
+            return $respuesta_final;
         } catch (Exception $e) {
+            error_log("Error en registro de venta: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            
             if ($conex) {
                 $conex->rollBack();
                 $conex = null;
             }
-            return ['respuesta' => 0, 'mensaje' => $e->getMessage()];
+            
+            $respuesta_error = ['respuesta' => 0, 'mensaje' => $e->getMessage()];
+            error_log("Respuesta de error: " . json_encode($respuesta_error));
+            
+            return $respuesta_error;
         }
     }
 
@@ -800,6 +847,29 @@ class Salida extends Conexion {
                 'success' => false,
                 'message' => $e->getMessage()
             ];
+        }
+    }
+    
+    // Método para registrar en bitácora
+    private function registrarBitacora($datos) {
+        try {
+            $conex = $this->getConex1();
+            $datos_array = json_decode($datos, true);
+            
+            $sql = "INSERT INTO bitacora (id_persona, accion, descripcion, fecha_hora) 
+                    VALUES (?, ?, ?, NOW())";
+            $stmt = $conex->prepare($sql);
+            $stmt->execute([
+                $datos_array['id_persona'],
+                $datos_array['accion'],
+                $datos_array['descripcion']
+            ]);
+            
+            $conex = null;
+            return true;
+        } catch (Exception $e) {
+            // Si falla la bitácora, no afectar la operación principal
+            return false;
         }
     }
 }

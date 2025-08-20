@@ -635,6 +635,9 @@
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
 
+<!-- jQuery -->
+<script src="assets/js/libreria/jquery.min.js"></script>
+
 <!-- Script para el cálculo de precios -->
 <script src="assets/js/entrada.js"></script>
 

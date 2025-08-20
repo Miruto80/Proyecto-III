@@ -5,6 +5,22 @@ document.addEventListener('DOMContentLoaded', function() {
     loader.style.display = 'none';
   }
 
+  /*||| Funcion para cambiar el boton a loader |||*/
+  function activarLoaderBoton(idBoton, texto) {
+    const $boton = $(idBoton);
+    const textoActual = $boton.html();
+    $boton.data('texto-original', textoActual); // Guarda el texto original
+    $boton.prop('disabled', true);
+    $boton.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${texto}`);
+  }
+
+  function desactivarLoaderBoton(idBoton) {
+    const $boton = $(idBoton);
+    const textoOriginal = $boton.data('texto-original');
+    $boton.prop('disabled', false);
+    $boton.html(textoOriginal);
+  }
+
   // Establecer la fecha máxima como hoy para todos los campos de fecha
   const fechaHoy = new Date().toISOString().split('T')[0];
   document.querySelectorAll('input[type="date"]').forEach(input => {
@@ -430,7 +446,16 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     
-    // Mostrar loader
+    // Activar loader en el botón correspondiente
+    if (accion === 'registrar_compra') {
+      activarLoaderBoton('button[name="registrar_compra"]', 'Registrando...');
+    } else if (accion === 'modificar_compra') {
+      activarLoaderBoton('button[name="modificar_compra"]', 'Modificando...');
+    } else if (accion === 'eliminar_compra') {
+      activarLoaderBoton('button[name="eliminar_compra"]', 'Eliminando...');
+    }
+    
+    // Mostrar loader de página
     const loader = document.querySelector('.preloader-wrapper');
     if (loader) {
       loader.style.display = 'flex';
@@ -462,9 +487,18 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => {
       console.log('Datos recibidos:', data);
       
-      // Ocultar loader
+      // Ocultar loader de página
       if (loader) {
         loader.style.display = 'none';
+      }
+      
+      // Desactivar loader del botón correspondiente
+      if (accion === 'registrar_compra') {
+        desactivarLoaderBoton('button[name="registrar_compra"]');
+      } else if (accion === 'modificar_compra') {
+        desactivarLoaderBoton('button[name="modificar_compra"]');
+      } else if (accion === 'eliminar_compra') {
+        desactivarLoaderBoton('button[name="eliminar_compra"]');
       }
       
       // Mostrar notificación
@@ -496,9 +530,18 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
       console.error('Error en AJAX:', error);
       
-      // Ocultar loader
+      // Ocultar loader de página
       if (loader) {
         loader.style.display = 'none';
+      }
+      
+      // Desactivar loader del botón correspondiente
+      if (accion === 'registrar_compra') {
+        desactivarLoaderBoton('button[name="registrar_compra"]');
+      } else if (accion === 'modificar_compra') {
+        desactivarLoaderBoton('button[name="modificar_compra"]');
+      } else if (accion === 'eliminar_compra') {
+        desactivarLoaderBoton('button[name="eliminar_compra"]');
       }
       
       Swal.fire({
