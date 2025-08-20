@@ -141,7 +141,7 @@ require_once 'modelo/conexion.php';
     //---------------------------------------------------
     public function consultar(): array {
         $conex = $this->getConex1();
-        $sql   = "SELECT * FROM proveedor WHERE estatus = 1";
+        $sql   = "SELECT * FROM proveedor WHERE estatus = 1 ORDER BY id_proveedor DESC";
         $stmt  = $conex->prepare($sql);
         $stmt->execute();
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
