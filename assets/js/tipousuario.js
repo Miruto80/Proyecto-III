@@ -31,10 +31,7 @@ $(function(){
   }
 
   // —— 1) DataTables ——  
-  $('#myTable').DataTable({
-    language: { search:'_INPUT_', searchPlaceholder:'Buscar rol...' },
-    paging:true, info:false, lengthChange:false
-  });
+  $('#myTable').DataTable();
 
   // —— 2) Registrar ——  
   $('#registrar').on('click', function(){
