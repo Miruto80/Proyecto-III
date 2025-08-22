@@ -3,6 +3,7 @@
 <head>
   <?php include 'complementos/head.php'; ?>
   <title> Categoria | LoveMakeup </title>
+  <link rel="stylesheet" href="assets/css/formulario.css">
 </head>
 <body class="g-sidenav-show bg-gray-100">
 
@@ -37,50 +38,67 @@
             <div class="card-header pb-0">
               <div class="d-sm-flex align-items-center justify-content-between mb-5">
                 <h4 class="mb-0">
-                  <i class="fa-solid fa-tag mr-2" style="color: #f6c5b4;"></i>
+                  <i class="fa-solid fa-tag me-2" style="color: #f6c5b4;"></i>
                   Categoria
                 </h4>
-<!-- Dentro de .d-sm-flex, justo después de btnAbrirRegistrar -->
  
                 <div class="d-flex gap-2">
                     <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(7, 'registrar')): ?>
-                  <button id="btnAbrirRegistrar" class="btn btn-success">
-                    <i class="fas fa-file-medical"></i> Registrar
+                  <button id="btnAbrirRegistrar" class="btn btn-success" title="(CONTROL + ALT + N) Registrar categoría">
+                    <span class="icon text-white">
+                      <i class="fas fa-file-medical me-2"></i>
+                    </span>
+                    <span class="text-white">Registrar</span>
                   </button>
                        <?php endif; ?>
-                  <button id="btnAyuda" type="button" class="btn btn-primary">
-                    <i class="fas fa-info-circle"></i> Ayuda
+                  <button id="btnAyuda" type="button" class="btn btn-primary" title="(CONTROL + ALT + A) click para ver la ayuda">
+                    <span class="icon text-white">
+                      <i class="fas fa-info-circle me-2"></i>
+                    </span>
+                    <span class="text-white">Ayuda</span>
                   </button>
               </div>
 
               </div>
 
               <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+                <table class="table table-hover" id="myTable" width="100%" cellspacing="0">
                   <thead class="table-color">
                     <tr>
-                      <th class="text-white">ID</th>
-                      <th class="text-white">NOMBRE</th>
-                      <th class="text-white">ACCION</th>
+                      <th class="text-white text-center">Nombre de Categoría</th>
+                      <th class="text-white text-center">Acción</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     <?php foreach ($categorias as $dato): ?>
                       <tr data-id="<?= $dato['id_categoria'] ?>">
-                        <td><?= $dato['id_categoria'] ?></td>
-                        <td><?= htmlspecialchars($dato['nombre']) ?></td>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <div class="me-3">
+                              <i class="fa-solid fa-tag fa-2x" style="color: #f6c5b4;"></i>
+                            </div>
+                            <div>
+                              <div class="text-dark">
+                                <b><?= htmlspecialchars($dato['nombre']) ?></b>
+                              </div>
+                              <div style="font-size: 11px; color: #d67888">
+                                <b>ID: <?= $dato['id_categoria'] ?></b>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
 
                         <td class="text-center">
                           <div class="d-flex justify-content-center gap-2">
                               <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(7, 'editar')): ?>
-                             <button class="btn btn-primary btn-sm btnModif">
+                             <button class="btn btn-primary btn-sm btnModif" title="Editar datos de la categoría">
                               <i class="fas fa-pencil-alt"></i>
                              </button>
                               <?php endif; ?>
 
                               <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(7, 'eliminar')): ?>
-                             <button class="btn btn-danger btn-sm btnElim">
+                             <button class="btn btn-danger btn-sm btnElim" title="Eliminar categoría">
                               <i class="fas fa-trash-alt"></i>
                              </button>
                               <?php endif; ?>
@@ -101,11 +119,14 @@
     <!-- Modal único para Registrar/Modificar -->
     <div class="modal fade" id="registro" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content modal-producto">
 
-          <div class="modal-header header-color">
-            <h5 class="modal-title" id="modalTitle">Registrar Categoría</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          <div class="modal-header">
+            <h5 class="modal-title fs-5" id="modalTitle">
+              <i class="fa-solid fa-tag"></i>
+              <span id="modalTitleText">Registrar Categoría</span>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" title="(CONTROL + ALT + X) Cerrar" aria-label="Close"></button>
           </div>
 
           <div class="modal-body">
@@ -113,20 +134,52 @@
               <input type="hidden" id="id_categoria" name="id_categoria" value="">
               <input type="hidden" id="accion" name="accion" value="registrar">
 
-              <label for="nombre">Nombre</label>
-              <input type="text"
-                     id="nombre"
-                     name="nombre"
-                     class="form-control"
-                     maxlength="30"
-                     placeholder="Ejemplo: Polvo"
-                     required>
-              <span id="snombre" class="text-danger"></span>
-              <br>
+              <div class="seccion-formulario">
+                <h6><i class="fas fa-tag"></i> Información de la Categoría</h6>
+                <div class="row g-3">
+                  <div class="col-md-12">
+                    <label for="nombre">NOMBRE DE LA CATEGORÍA</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
+                      <input type="text"
+                             id="nombre"
+                             name="nombre"
+                             class="form-control"
+                             maxlength="30"
+                             placeholder="Ejemplo: Polvo, Base, Sombras, etc."
+                             required>
+                    </div>
+                    <span id="snombre" class="error-message"></span>
+                  </div>
+                </div>
+              </div>
 
-              <div class="text-center">
-                <button type="button" id="btnEnviar" class="btn btn-primary">Guardar</button>
-                <button type="reset" id="btnLimpiar" class="btn btn-secondary">Limpiar</button>
+              <div class="col">
+                <div class="info-box">
+                  <div class="info-icon">
+                    <i class="fa-solid fa-circle-info"></i>
+                  </div>
+                  <div class="info-content">
+                    <strong>Información Importante:</strong>
+                    <p>Las categorías ayudan a organizar los productos del sistema. Una buena categorización facilita la búsqueda y gestión del inventario.</p>
+                    <p><b>Recomendaciones:</b></p>
+                    <ul class="text-muted">
+                      <li>Usa nombres descriptivos y claros</li>
+                      <li>Evita nombres muy largos o confusos</li>
+                      <li>Piensa en cómo los usuarios buscarán los productos</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botones -->
+              <div class="col-12 text-center">
+                <button type="button" id="btnEnviar" class="btn btn-modern btn-guardar me-3">
+                  <i class="fa-solid fa-floppy-disk me-2"></i> <span id="btnText">Registrar</span>
+                </button>
+                <button type="reset" id="btnLimpiar" class="btn btn-modern btn-limpiar">
+                  <i class="fa-solid fa-eraser me-2"></i> Limpiar
+                </button>
               </div>
             </form>
           </div>

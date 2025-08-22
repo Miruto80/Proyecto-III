@@ -67,7 +67,8 @@ $(function() {
     $('#u').find('.is-valid, .is-invalid').removeClass('is-valid is-invalid');
     $('#snombre').text('');
     $('#accion').val('registrar');
-    $('#modalTitle').text('Registrar Categoría');
+    $('#modalTitleText').text('Registrar Categoría');
+    $('#btnText').text('Registrar');
     new bootstrap.Modal($('#registro')).show();
   });
 
@@ -78,7 +79,7 @@ $(function() {
     // usa this en lugar de event.currentTarget
     const $tr   = $(this).closest('tr');
     const id    = $tr.data('id');
-    const nombre= $tr.find('td').eq(1).text().trim();
+    const nombre= $tr.find('td').eq(0).find('.text-dark b').text().trim();
 
     $('#id_categoria').val(id);
     $('#nombre')
@@ -87,7 +88,8 @@ $(function() {
       .data('numError', false);
     $('#snombre').text('');
     $('#accion').val('actualizar');
-    $('#modalTitle').text('Modificar Categoría');
+    $('#modalTitleText').text('Modificar Categoría');
+    $('#btnText').text('Actualizar');
     new bootstrap.Modal($('#registro')).show();
   };
   // mapea todos los botones
