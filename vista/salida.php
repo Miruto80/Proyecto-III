@@ -843,7 +843,16 @@
                       <h5 class="mb-0">Total: <span id="total-general-venta" class="text-success">$0.00</span></h5>
                       <!-- Campo oculto para el precio total -->
                       <input type="hidden" name="precio_total" value="0.00">
+                      <!-- Campo oculto para el precio total en bolívares -->
+                      <input type="hidden" name="precio_total_bs" value="0.00">
                     </div>
+                  </div>
+                  
+                  <!-- Información de conversión de moneda -->
+                  <div class="alert alert-info mt-2" id="info-conversion" style="display: none;">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Tasa de cambio:</strong> Calculando...
+                    <br><strong>Total en bolívares:</strong> Calculando...
                   </div>
                 </div>
               </div>
@@ -1183,11 +1192,14 @@
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
 
-<!-- Script para inicializar DataTable -->
-<script src="assets/js/demo/datatables-demo.js"></script>
+  <!-- jQuery -->
+  <script src="assets/js/libreria/jquery.min.js"></script>
+  
+  <!-- Script para inicializar DataTable -->
+  <script src="assets/js/demo/datatables-demo.js"></script>
 
-<!-- Script para el cálculo de precios en ventas -->
-<script src="assets/js/salida.js"></script>
+  <!-- Script para el cálculo de precios en ventas -->
+  <script src="assets/js/salida.js"></script>
 
 <!-- Script para manejar collapsibles del modal de detalles -->
 <script>
