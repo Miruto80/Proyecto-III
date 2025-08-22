@@ -4,6 +4,9 @@ function mostrarMensaje(icono, tiempo, titulo, mensaje) {
 
 $(function(){
 
+  // —— 1) DataTables ——  
+  $('#myTable').DataTable();
+
   // 1) Abrir modal Registrar
   $('#btnAbrirRegistrar').click(()=>{
     $('#formProveedor')[0].reset();
