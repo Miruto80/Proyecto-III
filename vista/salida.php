@@ -362,6 +362,7 @@
       font-size: 0.9rem;
       background-color: #f8f9fa;
       transition: all 0.3s ease;
+      margin-bottom: 8px;
     }
     
     .producto-search:focus {
@@ -375,14 +376,15 @@
       font-style: italic;
     }
     
-    /* Ocultar opciones que no coinciden con la búsqueda */
-    .producto-select-venta option[data-search-text]:not([data-search-text*=""]) {
-      display: none;
+    /* Mostrar todas las opciones por defecto */
+    .producto-select-venta option {
+      display: block;
     }
     
-    /* Resaltar opciones que coinciden con la búsqueda */
-    .producto-select-venta option[data-search-text*=""] {
-      display: block;
+    /* Estilo para opciones filtradas (opcional - para resaltar) */
+    .producto-select-venta option.filtered {
+      background-color: #f8f9fa;
+      color: #6c757d;
     }
   </style>
 </head>
@@ -1282,20 +1284,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 const select = this.nextElementSibling;
                 const options = select.querySelectorAll('option[data-search-text]');
                 
+                // Si no hay término de búsqueda, mostrar todas las opciones
+                if (searchTerm === '') {
+                    options.forEach(option => {
+                        option.style.display = 'block';
+                        option.classList.remove('filtered');
+                    });
+                    return;
+                }
+                
+                // Filtrar opciones y mostrar solo las que coinciden
                 options.forEach(option => {
                     const searchText = option.getAttribute('data-search-text');
                     if (searchText.includes(searchTerm)) {
                         option.style.display = 'block';
+                        option.classList.remove('filtered');
                     } else {
                         option.style.display = 'none';
+                        option.classList.add('filtered');
                     }
                 });
                 
-                // Si hay un término de búsqueda, mostrar solo las opciones que coinciden
-                if (searchTerm !== '') {
-                    select.querySelector('option[value=""]').style.display = 'none';
-                } else {
-                    select.querySelector('option[value=""]').style.display = 'block';
+                // Mostrar la opción por defecto
+                const defaultOption = select.querySelector('option[value=""]');
+                if (defaultOption) {
+                    defaultOption.style.display = 'block';
                 }
             });
             
@@ -1305,6 +1318,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (select.value !== '') {
                     this.value = select.options[select.selectedIndex].text;
                 }
+            });
+            
+            // Limpiar búsqueda cuando se hace clic en el select
+            const select = buscador.nextElementSibling;
+            select.addEventListener('click', function() {
+                if (buscador.value !== '') {
+                    // Mostrar todas las opciones cuando se hace clic en el select
+                    const options = this.querySelectorAll('option[data-search-text]');
+                    options.forEach(option => {
+                        option.style.display = 'block';
+                        option.classList.remove('filtered');
+                    });
+                }
+            });
+            
+            // Restaurar filtro cuando se cierra el select
+            select.addEventListener('blur', function() {
+                setTimeout(() => {
+                    if (buscador.value !== '') {
+                        const searchTerm = buscador.value.toLowerCase().trim();
+                        const options = this.querySelectorAll('option[data-search-text]');
+                        
+                        options.forEach(option => {
+                            const searchText = option.getAttribute('data-search-text');
+                            if (searchText.includes(searchTerm)) {
+                                option.style.display = 'block';
+                                option.classList.remove('filtered');
+                            } else {
+                                option.style.display = 'none';
+                                option.classList.add('filtered');
+                            }
+                        });
+                    }
+                }, 200); // Pequeño delay para permitir la selección
             });
         });
     }
