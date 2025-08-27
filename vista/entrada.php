@@ -186,6 +186,41 @@
       box-shadow: none !important;
       transition: none !important;
     }
+
+    /* Estilos para el buscador de productos */
+    .producto-search-container {
+      position: relative;
+    }
+    
+    .producto-search {
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      background-color: #f8f9fa;
+      transition: all 0.3s ease;
+    }
+    
+    .producto-search:focus {
+      border-color: #f6c5b4;
+      box-shadow: 0 0 0 0.2rem rgba(246, 197, 180, 0.25);
+      background-color: white;
+    }
+    
+    .producto-search::placeholder {
+      color: #6c757d;
+      font-style: italic;
+    }
+    
+    /* Ocultar opciones que no coinciden con la búsqueda */
+    .producto-select option[data-search-text]:not([data-search-text*=""]) {
+      display: none;
+    }
+    
+    /* Resaltar opciones que coinciden con la búsqueda */
+    .producto-select option[data-search-text*=""] {
+      display: block;
+    }
   </style>
 </head>
 
@@ -497,7 +532,8 @@
                           <?php foreach($productos_lista as $producto): ?>
                             <option value="<?php echo $producto['id_producto']; ?>" 
                                     <?php echo ($producto['id_producto'] == $detalle['id_producto']) ? 'selected' : ''; ?>
-                                    data-stock-actual="<?php echo $producto['stock_disponible']; ?>">
+                                    data-stock-actual="<?php echo $producto['stock_disponible']; ?>"
+                                    data-search-text="<?php echo strtolower($producto['nombre'] . ' ' . $producto['marca']); ?>">
                               <?php echo $producto['nombre'] . ' - ' . $producto['marca']; ?>
                             </option>
                           <?php endforeach; ?>
@@ -584,15 +620,20 @@
               <div class="row mb-2 producto-fila">
                 <div class="col-md-4">
                   <label class="form-label">Producto</label>
-                  <select class="form-select producto-select" name="id_producto[]" required>
-                    <option value="" selected>Seleccione un producto</option>
-                    <?php foreach($productos_lista as $producto): ?>
-                      <option value="<?php echo $producto['id_producto']; ?>" 
-                              data-stock-actual="<?php echo $producto['stock_disponible']; ?>">
-                        <?php echo $producto['nombre'] . ' - ' . $producto['marca']; ?>
-                      </option>
-                    <?php endforeach; ?>
-                  </select>
+                  <!-- Buscador de productos -->
+                  <div class="producto-search-container">
+                    <input type="text" class="form-control producto-search" placeholder="Buscar producto..." style="margin-bottom: 5px;">
+                    <select class="form-select producto-select" name="id_producto[]" required>
+                      <option value="" selected>Seleccione un producto</option>
+                      <?php foreach($productos_lista as $producto): ?>
+                        <option value="<?php echo $producto['id_producto']; ?>" 
+                                data-stock-actual="<?php echo $producto['stock_disponible']; ?>"
+                                data-search-text="<?php echo strtolower($producto['nombre'] . ' ' . $producto['marca']); ?>">
+                          <?php echo $producto['nombre'] . ' - ' . $producto['marca']; ?>
+                        </option>
+                      <?php endforeach; ?>
+                    </select>
+                  </div>
                 </div>
                 <div class="col-md-2">
                   <label class="form-label">Cantidad</label>
@@ -676,6 +717,146 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Configurar collapsibles inicialmente si ya están en el DOM
     configurarCollapsiblesDetalles();
+
+    // Funcionalidad de búsqueda de productos
+    function configurarBuscadorProductos() {
+        document.querySelectorAll('.producto-search').forEach(buscador => {
+            buscador.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const select = this.nextElementSibling;
+                const options = select.querySelectorAll('option[data-search-text]');
+                
+                options.forEach(option => {
+                    const searchText = option.getAttribute('data-search-text');
+                    if (searchText.includes(searchTerm)) {
+                        option.style.display = 'block';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+                
+                // Si hay un término de búsqueda, mostrar solo las opciones que coinciden
+                if (searchTerm !== '') {
+                    select.querySelector('option[value=""]').style.display = 'none';
+                } else {
+                    select.querySelector('option[value=""]').style.display = 'block';
+                }
+            });
+            
+            // Limpiar búsqueda cuando se selecciona un producto
+            buscador.addEventListener('change', function() {
+                const select = this.nextElementSibling;
+                if (select.value !== '') {
+                    this.value = select.options[select.selectedIndex].text;
+                }
+            });
+        });
+    }
+
+    // Configurar buscadores cuando se abre el modal de registro
+    const registroModal = document.getElementById('registroModal');
+    if (registroModal) {
+        registroModal.addEventListener('shown.bs.modal', function() {
+            configurarBuscadorProductos();
+        });
+    }
+
+    // Configurar buscadores cuando se abre cualquier modal de edición
+    document.querySelectorAll('[id^="editarModal"]').forEach(modal => {
+        modal.addEventListener('shown.bs.modal', function() {
+            configurarBuscadorProductos();
+        });
+    });
+
+    // Configurar buscadores inicialmente si ya están en el DOM
+    configurarBuscadorProductos();
+
+    // Función para agregar nueva fila de producto con buscador
+    function agregarFilaProducto() {
+        const container = document.getElementById('productos-container');
+        const nuevaFila = document.createElement('div');
+        nuevaFila.className = 'row mb-2 producto-fila';
+        
+        nuevaFila.innerHTML = `
+            <div class="col-md-4">
+                <label class="form-label">Producto</label>
+                <!-- Buscador de productos -->
+                <div class="producto-search-container">
+                    <input type="text" class="form-control producto-search" placeholder="Buscar producto..." style="margin-bottom: 5px;">
+                    <select class="form-select producto-select" name="id_producto[]" required>
+                        <option value="" selected>Seleccione un producto</option>
+                        ${Array.from(document.querySelector('.producto-select').options).map(option => 
+                            option.outerHTML
+                        ).join('')}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Cantidad</label>
+                <input type="number" class="form-control cantidad-input" name="cantidad[]" placeholder="Cantidad" value="1" min="1" required>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Precio Unit.</label>
+                <input type="number" step="0.01" class="form-control precio-input" name="precio_unitario[]" placeholder="Precio Unitario" value="0.00" min="0.01" required>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Precio Total</label>
+                <input type="number" step="0.01" class="form-control precio-total" name="precio_total[]" placeholder="Precio Total" value="0.00" readonly>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <button type="button" class="btn btn-danger remover-producto form-control">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(nuevaFila);
+        
+        // Configurar el buscador para la nueva fila
+        configurarBuscadorProductos();
+        
+        // Configurar eventos para la nueva fila
+        configurarEventosProducto(nuevaFila);
+    }
+
+    // Configurar eventos para una fila de producto
+    function configurarEventosProducto(fila) {
+        const select = fila.querySelector('.producto-select');
+        const cantidadInput = fila.querySelector('.cantidad-input');
+        const precioInput = fila.querySelector('.precio-input');
+        const precioTotalInput = fila.querySelector('.precio-total');
+        
+        // Evento para cambio de cantidad o precio
+        [cantidadInput, precioInput].forEach(input => {
+            input.addEventListener('input', calcularPrecioTotal);
+        });
+        
+        function calcularPrecioTotal() {
+            const cantidad = parseInt(cantidadInput.value) || 0;
+            const precio = parseFloat(precioInput.value) || 0;
+            const total = cantidad * precio;
+            precioTotalInput.value = total.toFixed(2);
+        }
+    }
+
+    // Configurar eventos para botones de agregar/remover productos
+    document.addEventListener('click', function(e) {
+        if (e.target.id === 'agregar-producto') {
+            agregarFilaProducto();
+        } else if (e.target.classList.contains('remover-producto')) {
+            const fila = e.target.closest('.producto-fila');
+            if (document.querySelectorAll('.producto-fila').length > 1) {
+                fila.remove();
+            }
+        }
+    });
+
+    // Configurar eventos para la primera fila de producto
+    const primeraFila = document.querySelector('.producto-fila');
+    if (primeraFila) {
+        configurarEventosProducto(primeraFila);
+    }
 });
 </script>
 </body>
