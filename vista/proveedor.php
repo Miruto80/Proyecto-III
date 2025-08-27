@@ -323,6 +323,8 @@
 
 <?php include 'complementos/footer.php'; ?>
 
+<!-- para el datatable-->
+<script src="assets/js/demo/datatables-demo.js"></script>
 <script src="assets/js/proveedor.js"></script>
 </body>
 </html>

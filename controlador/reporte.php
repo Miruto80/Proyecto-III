@@ -15,19 +15,41 @@ require_once 'permiso.php';
 
 $objProd = new Producto();
 
-// 1) Recoger valores “raw” (pueden venir como string vacíos)
+// 1) Recoger valores "raw" (pueden venir como string vacíos)
 $startRaw = $_REQUEST['f_start'] ?? '';
 $endRaw   = $_REQUEST['f_end']   ?? '';
 $prodRaw  = $_REQUEST['f_id']    ?? '';
 $provRaw  = $_REQUEST['f_prov']  ?? '';
 $catRaw   = $_REQUEST['f_cat']   ?? '';
 
-// 2) Normalizar para que sean null o int
+// 2) Nuevos filtros avanzados
+$montoMinRaw = $_REQUEST['monto_min'] ?? '';
+$montoMaxRaw = $_REQUEST['monto_max'] ?? '';
+$precioMinRaw = $_REQUEST['precio_min'] ?? '';
+$precioMaxRaw = $_REQUEST['precio_max'] ?? '';
+$stockMinRaw = $_REQUEST['stock_min'] ?? '';
+$stockMaxRaw = $_REQUEST['stock_max'] ?? '';
+$metodoPagoRaw = $_REQUEST['f_mp'] ?? '';
+$metodoPagoWebRaw = $_REQUEST['metodo_pago'] ?? '';
+$estadoRaw = $_REQUEST['estado'] ?? '';
+
+// 3) Normalizar para que sean null o int/float
 $start  = $startRaw ?: null;
 $end    = $endRaw   ?: null;
 $prodId = is_numeric($prodRaw) ? (int)$prodRaw : null;
 $provId = is_numeric($provRaw) ? (int)$provRaw : null;
 $catId  = is_numeric($catRaw)  ? (int)$catRaw  : null;
+
+// Normalizar nuevos filtros
+$montoMin = is_numeric($montoMinRaw) ? (float)$montoMinRaw : null;
+$montoMax = is_numeric($montoMaxRaw) ? (float)$montoMaxRaw : null;
+$precioMin = is_numeric($precioMinRaw) ? (float)$precioMinRaw : null;
+$precioMax = is_numeric($precioMaxRaw) ? (float)$precioMaxRaw : null;
+$stockMin = is_numeric($stockMinRaw) ? (int)$stockMinRaw : null;
+$stockMax = is_numeric($stockMaxRaw) ? (int)$stockMaxRaw : null;
+$metodoPago = is_numeric($metodoPagoRaw) ? (int)$metodoPagoRaw : null;
+$metodoPagoWeb = is_numeric($metodoPagoWebRaw) ? (int)$metodoPagoWebRaw : null;
+$estado = is_numeric($estadoRaw) ? (int)$estadoRaw : null;
 
 // Limitar fechas a hoy y corregir orden
 $today = date('Y-m-d');
@@ -48,16 +70,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET'
 
     switch ($accion) {
         case 'countCompra':
-            $cnt = Reporte::countCompra($start, $end, $prodId, $catId);
+            $cnt = Reporte::countCompra($start, $end, $prodId, $catId, $provId, $montoMin, $montoMax);
             break;
         case 'countProducto':
-            $cnt = Reporte::countProducto($prodId, $provId, $catId);
+            $cnt = Reporte::countProducto($prodId, $provId, $catId, $precioMin, $precioMax, $stockMin, $stockMax, $estado);
             break;
         case 'countVenta':
-            $cnt = Reporte::countVenta($start, $end, $prodId, null, $catId);
+            $cnt = Reporte::countVenta($start, $end, $prodId, $metodoPago, $catId, $montoMin, $montoMax);
             break;
         case 'countPedidoWeb':
-            $cnt = Reporte::countPedidoWeb($start, $end, $prodId);
+            $cnt = Reporte::countPedidoWeb($start, $end, $prodId, $estado, $metodoPagoWeb, $montoMin, $montoMax);
             break;
         default:
             $cnt = 0;
@@ -78,19 +100,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
 
     switch ($accion) {
         case 'compra':
-            Reporte::compra($start, $end, $prodId, $catId);
+            Reporte::compra($start, $end, $prodId, $catId, $provId, $montoMin, $montoMax);
             $desc = 'Generó Reporte de Compras';
             break;
         case 'producto':
-            Reporte::producto($prodId, $provId, $catId);
+            Reporte::producto($prodId, $provId, $catId, $precioMin, $precioMax, $stockMin, $stockMax, $estado);
             $desc = 'Generó Reporte de Productos';
             break;
         case 'venta':
-            Reporte::venta($start, $end, $prodId, $catId);
+            Reporte::venta($start, $end, $prodId, $catId, $metodoPago, $montoMin, $montoMax);
             $desc = 'Generó Reporte de Ventas';
             break;
         case 'pedidoWeb':
-            Reporte::pedidoWeb($start, $end, $prodId);
+            Reporte::pedidoWeb($start, $end, $prodId, $estado, $metodoPagoWeb, $montoMin, $montoMax);
             $desc = 'Generó Reporte de Pedidos Web';
             break;
         default:

@@ -10,7 +10,10 @@ public static function compra(
     $start   = null,
     $end     = null,
     $prodId  = null,
-    $catId   = null
+    $catId   = null,
+    $provId  = null,
+    $montoMin = null,
+    $montoMax = null
 ): void {
     // 1) Guardar valores originales
     $origStart = $start;
@@ -62,6 +65,21 @@ public static function compra(
             $whereG[]         = 'p.id_categoria = :catG';
             $paramsG[':catG'] = $catId;
         }
+        if ($provId) {
+            $whereG[]         = 'c.id_proveedor = :provG';
+            $paramsG[':provG'] = $provId;
+        }
+
+        // Filtros de montos - usar HAVING para funciones agregadas
+        $havingG = [];
+        if ($montoMin !== null) {
+            $havingG[]       = 'SUM(cd.cantidad * cd.precio_unitario) >= :montoMinG';
+            $paramsG[':montoMinG'] = $montoMin;
+        }
+        if ($montoMax !== null) {
+            $havingG[]       = 'SUM(cd.cantidad * cd.precio_unitario) <= :montoMaxG';
+            $paramsG[':montoMaxG'] = $montoMax;
+        }
 
         $sqlG = "
           SELECT p.nombre AS producto, SUM(cd.cantidad) AS total
@@ -73,6 +91,7 @@ public static function compra(
                  : ''
            ) . "
           GROUP BY p.id_producto
+           " . ($havingG ? 'HAVING ' . implode(' AND ', $havingG) : '') . "
           ORDER BY total DESC
           LIMIT 10
         ";
@@ -131,6 +150,21 @@ public static function compra(
             $whereT[]        = 'p.id_categoria = :catT';
             $paramsT[':catT']= $catId;
         }
+        if ($provId) {
+            $whereT[]        = 'c.id_proveedor = :provT';
+            $paramsT[':provT']= $provId;
+        }
+
+        // Filtros de montos - usar HAVING porque es una función agregada
+        $havingT = [];
+        if ($montoMin !== null) {
+            $havingT[]       = 'SUM(cd.cantidad * cd.precio_unitario) >= :montoMinT';
+            $paramsT[':montoMinT'] = $montoMin;
+        }
+        if ($montoMax !== null) {
+            $havingT[]       = 'SUM(cd.cantidad * cd.precio_unitario) <= :montoMaxT';
+            $paramsT[':montoMaxT'] = $montoMax;
+        }
 
         $sqlT = "
           SELECT
@@ -155,6 +189,7 @@ public static function compra(
                  : ''
            ) . "
           GROUP BY c.fecha_entrada, pr.nombre
+           " . ($havingT ? 'HAVING ' . implode(' AND ', $havingT) : '') . "
           ORDER BY total DESC
         ";
         $stmtT = $conex->prepare($sqlT);
@@ -192,6 +227,13 @@ public static function compra(
             );
             $cSt->execute([':cid' => $catId]);
             $filtro .= ' | Categoría: '.htmlspecialchars($cSt->fetchColumn());
+        }
+        if ($provId) {
+            $provSt = $conex->prepare(
+                'SELECT nombre FROM proveedor WHERE id_proveedor = :prov'
+            );
+            $provSt->execute([':prov' => $provId]);
+            $filtro .= ' | Proveedor: '.htmlspecialchars($provSt->fetchColumn());
         }
 
         // — Armar y emitir PDF —
@@ -268,7 +310,12 @@ public static function compra(
 public static function producto(
     $prodId = null,
     $provId = null,
-    $catId  = null
+    $catId  = null,
+    $precioMin = null,
+    $precioMax = null,
+    $stockMin = null,
+    $stockMax = null,
+    $estado = null
 ): void {
     // 1) Cargar dependencias
     require_once 'modelo/conexion.php';
@@ -301,6 +348,26 @@ public static function producto(
         if ($catId) {
             $whereG[]          = 'p.id_categoria = :cat';
             $paramsG[':cat']   = $catId;
+        }
+        if ($precioMin !== null) {
+            $whereG[]          = 'p.precio_detal >= :precioMinG';
+            $paramsG[':precioMinG'] = $precioMin;
+        }
+        if ($precioMax !== null) {
+            $whereG[]          = 'p.precio_detal <= :precioMaxG';
+            $paramsG[':precioMaxG'] = $precioMax;
+        }
+        if ($stockMin !== null) {
+            $whereG[]          = 'p.stock_disponible >= :stockMinG';
+            $paramsG[':stockMinG'] = $stockMin;
+        }
+        if ($stockMax !== null) {
+            $whereG[]          = 'p.stock_disponible <= :stockMaxG';
+            $paramsG[':stockMaxG'] = $stockMax;
+        }
+        if ($estado !== null) {
+            $whereG[]          = 'p.estado = :estadoG';
+            $paramsG[':estadoG'] = $estado;
         }
 
         $sqlG = "
@@ -358,6 +425,26 @@ public static function producto(
         if ($catId) {
             $whereT[]         = 'p.id_categoria = :catT';
             $paramsT[':catT'] = $catId;
+        }
+        if ($precioMin !== null) {
+            $whereT[]         = 'p.precio_detal >= :precioMinT';
+            $paramsT[':precioMinT'] = $precioMin;
+        }
+        if ($precioMax !== null) {
+            $whereT[]         = 'p.precio_detal <= :precioMaxT';
+            $paramsT[':precioMaxT'] = $precioMax;
+        }
+        if ($stockMin !== null) {
+            $whereT[]         = 'p.stock_disponible >= :stockMinT';
+            $paramsT[':stockMinT'] = $stockMin;
+        }
+        if ($stockMax !== null) {
+            $whereT[]         = 'p.stock_disponible <= :stockMaxT';
+            $paramsT[':stockMaxT'] = $stockMax;
+        }
+        if ($estado !== null) {
+            $whereT[]         = 'p.estado = :estadoT';
+            $paramsT[':estadoT'] = $estado;
         }
 
         $sqlT = "
@@ -470,7 +557,10 @@ public static function venta(
     $start   = null,
     $end     = null,
     $prodId  = null,
-    $catId   = null
+    $catId   = null,
+    $metodoPago = null,
+    $montoMin = null,
+    $montoMax = null
 ): void {
     // 1) Guardar valores originales
     $origStart = $start;
@@ -521,6 +611,18 @@ public static function venta(
         if ($catId) {
             $whereG[]         = 'pr.id_categoria = :catG';
             $paramsG[':catG'] = $catId;
+        }
+        if ($metodoPago) {
+            $whereG[]         = 'pe.id_metodopago = :mpG';
+            $paramsG[':mpG']  = $metodoPago;
+        }
+        if ($montoMin !== null) {
+            $whereG[]         = 'pe.precio_total_usd >= :montoMinG';
+            $paramsG[':montoMinG'] = $montoMin;
+        }
+        if ($montoMax !== null) {
+            $whereG[]         = 'pe.precio_total_usd <= :montoMaxG';
+            $paramsG[':montoMaxG'] = $montoMax;
         }
 
         $sqlG = "
@@ -590,6 +692,18 @@ public static function venta(
         if ($catId) {
             $whereT[]         = 'pr.id_categoria = :catT';
             $paramsT[':catT'] = $catId;
+        }
+        if ($metodoPago) {
+            $whereT[]         = 'pe.id_metodopago = :mpT';
+            $paramsT[':mpT']  = $metodoPago;
+        }
+        if ($montoMin !== null) {
+            $whereT[]         = 'pe.precio_total_usd >= :montoMinT';
+            $paramsT[':montoMinT'] = $montoMin;
+        }
+        if ($montoMax !== null) {
+            $whereT[]         = 'pe.precio_total_usd <= :montoMaxT';
+            $paramsT[':montoMaxT'] = $montoMax;
         }
 
         $sqlT = "
@@ -762,7 +876,11 @@ public static function graficaVentaTop5(): array
 public static function pedidoWeb(
     ?string $start = null,
     ?string $end   = null,
-    ?int    $prodId = null
+    ?int    $prodId = null,
+    ?int    $estado = null,
+    ?int    $metodoPago = null,
+    ?float  $montoMin = null,
+    ?float  $montoMax = null
 ): void {
     // 1) Normalizar fechas
     $origStart = $start;
@@ -771,8 +889,8 @@ public static function pedidoWeb(
         $end = date('Y-m-d');
     }
 
-    // 2) Armar WHERE y params (solo tipo=2)
-    $where  = ['p.tipo = 2', 'p.estado IN (2,5)'];
+    // 2) Armar WHERE y params (solo tipo=2, excluyendo verificar pago)
+    $where  = ['p.tipo = 2', 'p.estado != 1'];
     $params = [];
     if ($origStart && !$origEnd) {
         $where[]      = 'p.fecha >= :s AND p.fecha <= :e';
@@ -789,6 +907,22 @@ public static function pedidoWeb(
     if ($prodId) {
         $where[]        = 'pd.id_producto = :pid';
         $params[':pid'] = $prodId;
+    }
+    if ($estado !== null) {
+        $where[]        = 'p.estado = :estado';
+        $params[':estado'] = $estado;
+    }
+    if ($metodoPago !== null) {
+        $where[]        = 'p.id_metodopago = :metodoPago';
+        $params[':metodoPago'] = $metodoPago;
+    }
+    if ($montoMin !== null) {
+        $where[]       = 'p.precio_total_bs >= :montoMin';
+        $params[':montoMin'] = $montoMin;
+    }
+    if ($montoMax !== null) {
+        $where[]       = 'p.precio_total_bs <= :montoMax';
+        $params[':montoMax'] = $montoMax;
     }
     $whereSql = implode(' AND ', $where);
 
@@ -966,7 +1100,7 @@ public static function pedidoWeb(
 
 
 
-public static function countCompra($start = null, $end = null, $prodId = null, $catId = null): int {
+public static function countCompra($start = null, $end = null, $prodId = null, $catId = null, $provId = null, $montoMin = null, $montoMax = null): int {
     $conex     = (new Conexion())->getConex1();
     $origStart = $start;
     $origEnd   = $end;
@@ -978,6 +1112,7 @@ public static function countCompra($start = null, $end = null, $prodId = null, $
 
     $where  = [];
     $params = [];
+    $having = [];
 
     // a) Sólo inicio
     if ($origStart && !$origEnd) {
@@ -1002,22 +1137,40 @@ public static function countCompra($start = null, $end = null, $prodId = null, $
     }
 
     if ($catId) {
-        // unimos productos para poder filtrar categoría
         $where[]       = 'p.id_categoria = :cid';
         $params[':cid'] = $catId;
     }
 
-    $join = '';
-    if ($catId) {
-        $join = 'JOIN productos p ON p.id_producto = cd.id_producto';
+    if ($provId) {
+        $where[]       = 'c.id_proveedor = :prov';
+        $params[':prov'] = $provId;
     }
 
+    // Filtros de montos - usar HAVING porque es una función agregada
+    if ($montoMin !== null) {
+        $having[]       = 'SUM(cd.cantidad * cd.precio_unitario) >= :montoMin';
+        $params[':montoMin'] = $montoMin;
+    }
+    if ($montoMax !== null) {
+        $having[]       = 'SUM(cd.cantidad * cd.precio_unitario) <= :montoMax';
+        $params[':montoMax'] = $montoMax;
+    }
+
+    // Usar el mismo JOIN que en el PDF para contar exactamente lo mismo
     $sql = "
-      SELECT COUNT(DISTINCT c.id_compra)
+      SELECT COUNT(*) FROM (
+        SELECT
+          c.fecha_entrada,
+          pr.nombre AS proveedor
         FROM compra c
         JOIN compra_detalles cd ON cd.id_compra = c.id_compra
-        {$join}
-        " . ($where ? 'WHERE ' . implode(' AND ', $where) : '') . "
+        JOIN productos        p  ON p.id_producto = cd.id_producto
+        JOIN categoria        cat ON cat.id_categoria = p.id_categoria
+        JOIN proveedor        pr ON pr.id_proveedor = c.id_proveedor
+         " . ($where ? 'WHERE ' . implode(' AND ', $where) : '') . "
+        GROUP BY c.fecha_entrada, pr.nombre
+         " . ($having ? 'HAVING ' . implode(' AND ', $having) : '') . "
+      ) AS subquery
     ";
 
     $stmt = $conex->prepare($sql);
@@ -1030,7 +1183,7 @@ public static function countCompra($start = null, $end = null, $prodId = null, $
 
 
 
-public static function countProducto($prodId = null, $provId = null, $catId = null): int {
+public static function countProducto($prodId = null, $provId = null, $catId = null, $precioMin = null, $precioMax = null, $stockMin = null, $stockMax = null, $estado = null): int {
     $conex = (new Conexion())->getConex1();
     $where  = ['1=1'];
     $params = [];
@@ -1052,6 +1205,26 @@ public static function countProducto($prodId = null, $provId = null, $catId = nu
       $where[]          = 'c.id_proveedor = :prov';
       $params[':prov']  = $provId;
     }
+    if ($precioMin !== null) {
+      $where[]          = 'p.precio_detal >= :precioMin';
+      $params[':precioMin'] = $precioMin;
+    }
+    if ($precioMax !== null) {
+      $where[]          = 'p.precio_detal <= :precioMax';
+      $params[':precioMax'] = $precioMax;
+    }
+    if ($stockMin !== null) {
+      $where[]          = 'p.stock_disponible >= :stockMin';
+      $params[':stockMin'] = $stockMin;
+    }
+    if ($stockMax !== null) {
+      $where[]          = 'p.stock_disponible <= :stockMax';
+      $params[':stockMax'] = $stockMax;
+    }
+    if ($estado !== null) {
+      $where[]          = 'p.estado = :estado';
+      $params[':estado'] = $estado;
+    }
 
     $w   = implode(' AND ', $where);
     $sql = "
@@ -1071,7 +1244,9 @@ public static function countVenta(
     $end        = null,
     $prodId     = null,
     $metodoId   = null,
-    $catId      = null
+    $catId      = null,
+    $montoMin   = null,
+    $montoMax   = null
 ): int {
     $conex     = (new Conexion())->getConex1();
     $origStart = $start;
@@ -1110,22 +1285,39 @@ public static function countVenta(
         $where[]         = 'pe.id_metodopago = :mp';
         $params[':mp']   = $metodoId;
     }
-
-    // Siempre necesitamos el detalle para filtrar producto y categoría
-    $join = 'JOIN pedido_detalles pd ON pd.id_pedido = pe.id_pedido';
-
     if ($catId) {
-        $join    .= ' JOIN productos pr ON pr.id_producto = pd.id_producto ';
         $where[]  = 'pr.id_categoria = :cat';
         $params[':cat'] = $catId;
     }
 
+    // Filtros de montos
+    if ($montoMin !== null) {
+        $where[]       = 'pe.precio_total_usd >= :montoMin';
+        $params[':montoMin'] = $montoMin;
+    }
+    if ($montoMax !== null) {
+        $where[]       = 'pe.precio_total_usd <= :montoMax';
+        $params[':montoMax'] = $montoMax;
+    }
+
+    // Usar la misma estructura que en el PDF para contar exactamente lo mismo
     $sql = "
-      SELECT COUNT(DISTINCT pe.id_pedido) AS cnt
-      FROM pedido pe
-      {$join}
-      WHERE " . implode(' AND ', $where) . "
+      SELECT COUNT(*) FROM (
+        SELECT
+          CONCAT(c.nombre,' ',c.apellido) AS cliente,
+          pe.fecha,
+          pe.precio_total_usd             AS total_usd,
+          cat.nombre                      AS categoria
+        FROM pedido pe
+        JOIN cliente         c   ON c.id_persona     = pe.id_persona
+        JOIN pedido_detalles pd  ON pd.id_pedido     = pe.id_pedido
+        JOIN productos       pr  ON pr.id_producto   = pd.id_producto
+        JOIN categoria       cat ON cat.id_categoria = pr.id_categoria
+        WHERE " . implode(' AND ', $where) . "
+        GROUP BY cliente, pe.fecha, total_usd, cat.nombre
+      ) AS subquery
     ";
+    
     $stmt = $conex->prepare($sql);
     $stmt->execute($params);
     return (int) $stmt->fetchColumn();
@@ -1134,7 +1326,7 @@ public static function countVenta(
 
 
 
-public static function countPedidoWeb($start = null, $end = null, $prodId = null): int {
+public static function countPedidoWeb($start = null, $end = null, $prodId = null, $estado = null, $metodoPago = null, $montoMin = null, $montoMax = null): int {
     // 1) Normalizar rangos parciales
     $origStart = $start;
     $origEnd   = $end;
@@ -1144,7 +1336,7 @@ public static function countPedidoWeb($start = null, $end = null, $prodId = null
     }
 
     // 2) Armar condiciones y parámetros
-    $where  = ['p.tipo = 2', 'p.estado IN (2,5)'];
+    $where  = ['p.tipo = 2', 'p.estado != 1'];
     $params = [];
 
     if ($origStart && !$origEnd) {
@@ -1167,6 +1359,26 @@ public static function countPedidoWeb($start = null, $end = null, $prodId = null
     if ($prodId) {
         $where[]        = 'pd.id_producto = :pid';
         $params[':pid'] = $prodId;
+    }
+
+    if ($estado !== null) {
+        $where[]        = 'p.estado = :estado';
+        $params[':estado'] = $estado;
+    }
+
+    if ($metodoPago !== null) {
+        $where[]        = 'p.id_metodopago = :metodoPago';
+        $params[':metodoPago'] = $metodoPago;
+    }
+
+    // Filtros de montos
+    if ($montoMin !== null) {
+        $where[]       = 'p.precio_total_bs >= :montoMin';
+        $params[':montoMin'] = $montoMin;
+    }
+    if ($montoMax !== null) {
+        $where[]       = 'p.precio_total_bs <= :montoMax';
+        $params[':montoMax'] = $montoMax;
     }
 
     $w = 'WHERE ' . implode(' AND ', $where);
