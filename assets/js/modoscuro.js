@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-
 document.addEventListener('DOMContentLoaded', function () {
   const modoKey = 'modoOscuro_' + idUsuario;
   const modoActivo = localStorage.getItem(modoKey);

@@ -718,27 +718,27 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
       </div>
-      <div class="modal-body">
+      <div class="modal-body bg-s">
         <!-- Indicador de pasos -->
         <div class="mb-4">
           <div class="row">
             <div class="col-12">
-              <div class="progress-steps">
-                <div class="step active" id="step-cliente">
+              <div class="progress-steps ">
+                <div class="step active bg-s" id="step-cliente">
                   <div class="step-number">1</div>
                   <div class="step-label">Cliente</div>
                 </div>
-                <div class="step" id="step-productos">
+                <div class="step bg-s" id="step-productos">
                   <div class="step-number">2</div>
-                  <div class="step-label">Productos</div>
+                  <div class="step-label texto-secundario">Productos</div>
                 </div>
-                <div class="step" id="step-pago">
+                <div class="step bg-s" id="step-pago">
                   <div class="step-number">3</div>
-                  <div class="step-label">Pago</div>
+                  <div class="step-label texto-secundario">Pago</div>
                 </div>
-                <div class="step" id="step-confirmar">
+                <div class="step bg-s" id="step-confirmar">
                   <div class="step-number">4</div>
-                  <div class="step-label">Confirmar</div>
+                  <div class="step-label texto-secundario">Confirmar</div>
                 </div>
               </div>
             </div>
@@ -754,8 +754,8 @@
           <!-- PASO 1: Datos del Cliente -->
           <div class="step-content" id="step-1-content">
             <div class="mb-4">
-              <h6>Paso 1: Datos del Cliente</h6>
-              <p class="text-muted mb-3">
+              <h6 class="texto-quinto">Paso 1: Datos del Cliente</h6>
+              <p class="text-muted mb-3 texto-secundario">
                 <i class="fas fa-info-circle"></i> 
                 Ingrese la cédula del cliente. Si ya está registrado, sus datos se cargarán. Si es nuevo, complete los campos y se registrará al finalizar la venta.
               </p>
@@ -811,10 +811,10 @@
           <!-- PASO 2: Productos -->
           <div class="step-content" id="step-2-content" style="display: none;">
             <div class="mb-4">
-              <h6>Paso 2: Selección de Productos</h6>
+              <h6 class="texto-quinto">Paso 2: Selección de Productos</h6>
               
               <div class="table-responsive">
-                <table class="table table-bordered">
+                <table class="table table-m table-bordered">
                   <thead class="table-color">
                     <tr>
                       <th class="text-white">Producto</th>
@@ -860,8 +860,8 @@
                         <input type="text" class="form-control precio-input-venta" 
                                name="precio_unitario[]" value="0.00" readonly>
                       </td>
-                      <td>
-                        <span class="subtotal-venta">0.00</span>
+                      <td class="texto-secundario">
+                        <span class="subtotal-venta texto-secundario">0.00</span>
                       </td>
                       <td class="text-center">
                         <button type="button" class="btn btn-success btn-sm agregar-producto-venta">
@@ -904,7 +904,7 @@
           <!-- PASO 3: Métodos de Pago -->
           <div class="step-content" id="step-3-content" style="display: none;">
             <div class="mb-4">
-              <h6>Paso 3: Métodos de Pago</h6>
+              <h6 class="texto-quinto">Paso 3: Métodos de Pago</h6>
               
               <!-- Resumen de costos -->
               <div class="row mb-3">
@@ -1122,18 +1122,18 @@
           <!-- PASO 4: Confirmación -->
           <div class="step-content" id="step-4-content" style="display: none;">
             <div class="mb-4">
-              <h6>Paso 4: Confirmación de Venta</h6>
+              <h6 class="texto-quinto">Paso 4: Confirmación de Venta</h6>
               
               <!-- Previsualización de los datos de los pasos anteriores -->
-              <div id="resumen-venta">
+              <div id="resumen-venta" class="card-m">
                 <!-- Información del Cliente (Paso 1) -->
-                <div class="resumen-seccion">
+                <div class="resumen-seccion card-m">
                   <h6 class="resumen-titulo" data-bs-toggle="collapse" data-bs-target="#collapse-cliente" aria-expanded="false" aria-controls="collapse-cliente" style="cursor: pointer;">
                     <i class="fas fa-user text-primary"></i> Información del Cliente
                     <i class="fas fa-chevron-down float-end" style="font-size: 0.8em;"></i>
                   </h6>
                   <div class="collapse" id="collapse-cliente">
-                    <div class="resumen-contenido">
+                    <div class="resumen-contenido bg-s">
                       <div class="row">
                         <div class="col-md-3">
                           <label class="form-label">Cédula</label>
@@ -1166,9 +1166,9 @@
                     <i class="fas fa-chevron-down float-end" style="font-size: 0.8em;"></i>
                   </h6>
                   <div class="collapse" id="collapse-productos">
-                    <div class="resumen-contenido">
-                      <div class="table-responsive">
-                        <table class="table table-sm table-bordered" id="preview_tabla_productos">
+                    <div class="resumen-contenido bg-s">
+                      <div class="table-responsive card-m">
+                        <table class="table table-m table-sm table-bordered" id="preview_tabla_productos">
                           <thead class="table-">
                             <tr>
                               <th>Producto</th>
@@ -1180,10 +1180,10 @@
                           <tbody>
                             <!-- Se llenará por JS -->
                           </tbody>
-                          <tfoot class="table-light">
+                          <tfoot class="table-light table-m">
                             <tr>
-                              <th colspan="3" class="text-end">Total USD:</th>
-                              <th class="text-center" id="preview_total_usd">$0.00</th>
+                              <th colspan="3" class="text-end table-m texto-secundario">Total USD:</th>
+                              <th class="text-center table-m texto-secundario" id="preview_total_usd">$0.00</th>
                             </tr>
                           </tfoot>
                         </table>
@@ -1198,7 +1198,7 @@
                     <i class="fas fa-chevron-down float-end" style="font-size: 0.8em;"></i>
                   </h6>
                   <div class="collapse" id="collapse-metodos">
-                    <div class="resumen-contenido" id="preview_metodos_pago">
+                    <div class="resumen-contenido bg-s" id="preview_metodos_pago">
                       <!-- Se llenará por JS -->
                     </div>
                   </div>
@@ -1208,7 +1208,7 @@
           </div>
 
           <!-- Botones de navegación -->
-          <div class="modal-footer">
+          <div class="modal-footer bg-s">
             <div class="d-flex justify-content-between w-100">
               <button type="button" class="btn btn-secondary" id="btnAnterior" style="display: none;">
                 <i class="fas fa-arrow-left"></i> Anterior

@@ -206,14 +206,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // cfg labels/data vienen de PHP
   const cfg = <?= json_encode($graficaHome, JSON_UNESCAPED_UNICODE) ?>;
-  //console.log('cfg desde PHP:', cfg);
 
   if (!Array.isArray(cfg.data) || !cfg.data.length) {
     console.warn('No hay datos para pintar la gráfica.');
     return;
   }
+
+  const modoOscuroActivo = document.body.classList.contains('modo-oscuro');
+  const colorTexto = modoOscuroActivo ? '#ffffff' : '#333333';
 
   const ctx = document.getElementById('homePieChart').getContext('2d');
   new Chart(ctx, {
@@ -233,15 +234,24 @@ document.addEventListener('DOMContentLoaded', () => {
       plugins: {
         title: {
           display: true,
-          text: 'Top 5 Productos más vendidos'
+          text: 'Top 5 Productos más vendidos',
+          color: colorTexto
         },
         legend: {
-          position: 'bottom'
+          position: 'bottom',
+          labels: {
+            color: colorTexto
+          }
+        },
+        tooltip: {
+          bodyColor: colorTexto,
+          backgroundColor: modoOscuroActivo ? '#2d3436' : '#f5f5f5'
         }
       }
     }
   });
 });
+
 </script>
 
 

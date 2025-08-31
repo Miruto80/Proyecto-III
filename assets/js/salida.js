@@ -674,6 +674,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 nuevaFila.querySelector('.cantidad-input-venta').value = '1';
                 nuevaFila.querySelector('.precio-input-venta').value = '0.00';
                 nuevaFila.querySelector('.subtotal-venta').textContent = '0.00';
+                nuevaFila.querySelector('.subtotal-venta').classList.add('texto-secundario');
                 nuevaFila.querySelector('.stock-info').textContent = '';
                 
                 // Obtener el contenedor de botones
@@ -988,7 +989,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         return pagoCompleto;
-    }
+    } 
 
     // Función para actualizar la lista de métodos de pago aplicados
     function actualizarListaMetodosAplicados() {
@@ -2205,10 +2206,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (select.value && cantidad.value > 0) {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${select.options[select.selectedIndex].text}</td>
-                    <td class="text-center">${cantidad.value}</td>
-                    <td class="text-center">$${precio.value}</td>
-                    <td class="text-center">$${subtotal.textContent}</td>
+                    <td class="texto-secundario">${select.options[select.selectedIndex].text}</td>
+                    <td class="text-center texto-secundario">${cantidad.value}</td>
+                    <td class="text-center texto-secundario">$${precio.value}</td>
+                    <td class="text-center texto-secundario">$${subtotal.textContent}</td>
                 `;
                 tbody.appendChild(tr);
                 total += parseFloat(subtotal.textContent) || 0;
@@ -2249,8 +2250,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     detallesMetodo = `Referencia: ${referencia} | Monto: Bs ${montoBsTransferencia}`;
                 }
                 const div = document.createElement('div');
-                div.className = 'metodo-pago-item';
-                div.innerHTML = `<p><strong>${idx + 1}. ${nombreMetodo}</strong></p><p class="text-muted small">${detallesMetodo}</p>`;
+                div.className = 'metodo-pago-item card-m';
+                div.innerHTML = `<p><strong>${idx + 1}. ${nombreMetodo}</strong></p><p class="text-muted small texto-secundario">${detallesMetodo}</p>`;
                 contenedor.appendChild(div);
             }
         });
