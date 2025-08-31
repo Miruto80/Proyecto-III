@@ -310,11 +310,11 @@
   <div class="row">
     <div class="col-12">
       <div class="card mb-4">
-        <div class="card-header pb-0">
+        <div class="card-header pb-0 div-oscuro-2">
 
         <div class="d-sm-flex align-items-center justify-content-between mb-5">
-  <h4 class="mb-0">
-    <i class="fa-solid fa-pump-soap mr-2" style="color: #f6c5b4;"></i> Producto
+  <h4 class="mb-0 texto-quinto">
+    <i class="fa-solid fa-pump-soap me-2" style="color: #f6c5b4;"></i> Producto
   </h4>
  
   <div class="d-flex gap-2">
@@ -336,7 +336,7 @@
 </div>
 
           <div class="table-responsive">
-            <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+            <table class="table table-m table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
                   <th class="text-white">Nombre</th>
@@ -360,13 +360,13 @@
                     data-stock-maximo="<?php echo htmlspecialchars($dato['stock_maximo']); ?>"
                     data-stock-minimo="<?php echo htmlspecialchars($dato['stock_minimo']); ?>">
 
-                    <td><?php echo htmlspecialchars($dato['nombre']) ?></td>
-                    <td><?php echo htmlspecialchars($dato['descripcion']) ?></td>
-                    <td><?php echo htmlspecialchars($dato['marca']) ?></td>
-                    <td><?php echo htmlspecialchars($dato['precio_detal']) ?> <i class="fa-solid fa-dollar-sign"></i></td>
-                    <td><?php echo htmlspecialchars($dato['stock_disponible']) ?></td>
+                    <td class="texto-secundario"><?php echo htmlspecialchars($dato['nombre']) ?></td>
+                    <td class="texto-secundario"><?php echo htmlspecialchars($dato['descripcion']) ?></td>
+                    <td class="texto-secundario"><?php echo htmlspecialchars($dato['marca']) ?></td>
+                    <td class="texto-secundario"><?php echo htmlspecialchars($dato['precio_detal']) ?> <i class="fa-solid fa-dollar-sign"></i></td>
+                    <td class="texto-secundario"><?php echo htmlspecialchars($dato['stock_disponible']) ?></td>
                     <td><img src="<?php echo htmlspecialchars($dato['imagen']) ?>" alt="Imagen del producto" width="60" height="60"></td>
-                    <td><?php echo htmlspecialchars($dato['nombre_categoria']) ?></td>
+                    <td class="texto-secundario"><?php echo htmlspecialchars($dato['nombre_categoria']) ?></td>
                     <td>
                       <form method="POST" action="">
                       
@@ -420,7 +420,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
-        <div class="modal-body">
+        <div class="modal-body bg-s">
           <form id="u" autocomplete="off" enctype='multipart/form-data'>
             <input type="hidden" id="id_producto" name="id_producto" value="" />   
             <input type="hidden" id="imagenActual" name="imagenActual" value="" />
@@ -428,7 +428,7 @@
 
             <!-- Sección: Datos Básicos del Producto -->
             <div class="seccion-formulario">
-              <h6><i class="fas fa-info-circle"></i> Datos Básicos</h6>
+              <h6 class="texto-quinto"><i class="fas fa-info-circle"></i> Datos Básicos</h6>
               <div class="row mb-3">
                 <div class="col-md-6">
                   <label for="nombre" class="form-label">Nombre del producto</label>
@@ -452,7 +452,7 @@
 
             <!-- Sección: Precios y Cantidades -->
             <div class="seccion-formulario">
-              <h6><i class="fas fa-dollar-sign"></i> Precios y Cantidades</h6>
+              <h6 class="texto-quinto"><i class="fas fa-dollar-sign"></i> Precios y Cantidades</h6>
               <div class="row mb-3">
                 <div class="col-md-4">
                   <label for="cantidad_mayor" class="form-label">Cantidad al mayor</label>
@@ -480,7 +480,7 @@
 
             <!-- Sección: Control de Stock -->
             <div class="seccion-formulario">
-              <h6><i class="fas fa-boxes"></i> Control de Stock</h6>
+              <h6 class="texto-quinto"><i class="fas fa-boxes"></i> Control de Stock</h6>
               <div class="row mb-3">
                 <div class="col-md-4">
                   <label for="stock_maximo" class="form-label">Stock máximo</label>
@@ -507,14 +507,14 @@
 
             <!-- Sección: Imagen del Producto -->
             <div class="seccion-formulario">
-              <h6><i class="fas fa-image"></i> Imagen del Producto</h6>
+              <h6 class="texto-quinto"><i class="fas fa-image"></i> Imagen del Producto</h6>
               <div class="row">
                 <div class="col-md-12">
                   <div class="area-imagen">
                     <label for="archivo">
                       <i class="fas fa-cloud-upload-alt fa-2x mb-3" style="color: #f6c5b4;"></i>
                       <br>
-                      <strong>Click aquí para subir la foto del producto (Formato: .png,.jpg,.jpeg,.webp)</strong>
+                      <strong class="texto-quinto">Click aquí para subir la foto del producto (Formato: .png,.jpg,.jpeg,.webp)</strong>
                       <br>
                       <img src="assets/img/logo.PNG" id="imagen" class="img-fluid rounded mt-3" style="max-width: 200px; max-height: 200px; object-fit: cover;">
                     </label>
@@ -547,7 +547,7 @@
   <!-- Modal de Detalles del Producto -->
   <div class="modal fade" id="modalDetallesProducto" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
+      <div class="modal-content bg-s">
         <div class="modal-header table-color">
           <h5 class="modal-title text-white" id="tituloModal">Detalles del Producto</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -555,7 +555,7 @@
         <div class="modal-body">
           <!-- Sección: Información General -->
           <div class="mb-4">
-            <h6 class="mb-3">Información General</h6>
+            <h6 class="mb-3 texto-quinto">Información General</h6>
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
@@ -568,7 +568,7 @@
 
           <!-- Sección: Información de Ventas al Mayor -->
           <div class="mb-4">
-            <h6 class="mb-3">Información de Ventas al Mayor</h6>
+            <h6 class="mb-3 texto-quinto">Información de Ventas al Mayor</h6>
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
@@ -587,7 +587,7 @@
 
           <!-- Sección: Control de Inventario -->
           <div class="mb-4">
-            <h6 class="mb-3">Control de Inventario</h6>
+            <h6 class="mb-3 texto-quinto">Control de Inventario</h6>
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">

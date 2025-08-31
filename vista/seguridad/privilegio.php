@@ -37,7 +37,7 @@
     <div class="row"> <!-- CARD PRINCIPAL-->  
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">  <!-- CARD N-1 -->  
+            <div class="card-header pb-0 div-oscuro-2">  <!-- CARD N-1 -->  
     
    
           
@@ -45,12 +45,12 @@
      <div class="row">
   <div class="col margen">
 
-  <h2 class="texto"> <b> Estimado Usuario: </b> </h2>
-  <h2 class="text-primary"> <b> <?php echo $_SESSION['nombre']." ".$_SESSION['apellido']; ?> </b> </h2>
+  <h2 class="texto texto-principal"> <b> Estimado Usuario: </b> </h2>
+  <h2 class="text-primary texto-quinto"> <b> <?php echo $_SESSION['nombre']." ".$_SESSION['apellido']; ?> </b> </h2>
   <br>  
-  <h3 class="text-dark mb-3">Acceso denegado. Por favor, contacte al administrador para solicitar los permisos correspondientes.</h3>  
+  <h3 class="text-dark mb-3 texto-principal">Acceso denegado. Por favor, contacte al administrador para solicitar los permisos correspondientes.</h3>  
 
-  <a href="?pagina=home" class="btn btn-primary"> <i class="fas fa-home mr-2"></i> Volver al Inicio</a>
+  <a href="?pagina=home" class="btn btn-primary "> <i class="fas fa-home mr-2"></i> Volver al Inicio</a>
 
   </div>
   <div class="col">

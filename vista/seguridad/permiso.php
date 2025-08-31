@@ -47,10 +47,10 @@
     <div class="row"> <!-- CARD PRINCIPAL-->  
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">  <!-- CARD N-1 --> 
+            <div class="card-header pb-0 div-oscuro-2">  <!-- CARD N-1 --> 
               
             <div class="d-sm-flex align-items-center justify-content-between mb-3">
-              <h4 class="mb-0"><i class="fa-solid fa-users-gear me-2" style="color: #f6c5b4;"></i>
+              <h4 class="mb-0 texto-quinto"><i class="fa-solid fa-users-gear me-2" style="color: #f6c5b4;"></i>
                 Permiso del Usuario: <strong><?php echo $nombre_usuario . ' ' . $apellido_usuario; ?></strong></h4>
            
        <!-- Button que abre el Modal N1 Registro -->
@@ -79,7 +79,7 @@
        <form action="?pagina=usuario" method="POST" autocomplete="off" id="forpermiso">
           
       <div class="table-responsive">
-        <table class="table table-bordered text-center align-middle table-hover">
+        <table class="table table-bordered table-m text-center align-middle table-hover">
   <thead class="table-color">
     <tr>
       <th class="text-white">#</th>
@@ -142,8 +142,8 @@
         }
     ?>
       <tr>
-        <td><?= $contador++ ?></td>
-        <td><?= htmlspecialchars($info['nombre']) ?></td>
+        <td class="texto-secundario"><?= $contador++ ?></td>
+        <td class="texto-secundario"><?= htmlspecialchars($info['nombre']) ?></td>
         <?php foreach (['ver', 'registrar', 'editar', 'eliminar', 'especial'] as $accion): ?>
           <td>
             <?php if (in_array($accion, $acciones_validas)): ?>

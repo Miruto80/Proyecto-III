@@ -262,11 +262,11 @@
     <div class="row"> <!-- CARD PRINCIPAL-->  
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">  <!-- CARD N-1 -->  
+            <div class="card-header pb-0 div-oscuro-2">  <!-- CARD N-1 -->  
     
     <!--Titulo de página -->
      <div class="d-sm-flex align-items-center justify-content-between mb-5">
-       <h4 class="mb-0"><i class="fa-solid fa-cart-plus mr-2" style="color: #f6c5b4;"></i>
+       <h4 class="mb-0 texto-quinto"><i class="fa-solid fa-cart-plus me-2" style="color: #f6c5b4;"></i>
         Compra</h4>
            
        <!-- Button que abre el Modal N1 Registro -->
@@ -292,7 +292,7 @@
 
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+          <table class="table table-m table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
                   <th class="text-white">Producto</th>
@@ -314,9 +314,9 @@
                     $primer_producto = !empty($detalles_producto) ? $detalles_producto[0]['producto_nombre'] : 'Sin productos';
                     ?>
                     <tr>
-                      <td><?php echo $primer_producto; ?></td>
-                      <td><?php echo date('d/m/Y', strtotime($compra['fecha_entrada'])); ?></td>
-                      <td><?php echo $compra['proveedor_nombre']; ?></td>
+                      <td class="texto-secundario"><?php echo $primer_producto; ?></td>
+                      <td class="texto-secundario"><?php echo date('d/m/Y', strtotime($compra['fecha_entrada'])); ?></td>
+                      <td class="texto-secundario"><?php echo $compra['proveedor_nombre']; ?></td>
                       <td class="text-center">
                         
                          <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(2, 'editar')): ?>
@@ -362,11 +362,11 @@
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body bg-s">
             <!-- Información de Fecha y Hora -->
             <div class="row mb-4">
               <div class="col-12">
-                <div class="card">
+                <div class="card card-m">
                   <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#collapse-fecha-<?php echo $compra['id_compra']; ?>" aria-expanded="false" aria-controls="collapse-fecha-<?php echo $compra['id_compra']; ?>" style="cursor: pointer;">
                     <h6 class="mb-0">
                       <i class="fas fa-calendar-alt" style="color: #f6c5b4;"></i> Fecha y Hora de Registro
@@ -400,7 +400,7 @@
                     </h6>
                   </div>
                   <div class="collapse" id="collapse-proveedor-detalle-<?php echo $compra['id_compra']; ?>">
-                    <div class="card-body">
+                    <div class="card-body card-m">
                       <div class="row">
                         <div class="col-md-6">
                           <strong>Nombre del Proveedor:</strong><br>
@@ -428,9 +428,9 @@
                     </h6>
                   </div>
                   <div class="collapse" id="collapse-productos-detalle-<?php echo $compra['id_compra']; ?>">
-                    <div class="card-body">
+                    <div class="card-body card-m">
                       <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
+                        <table class="table table-m table-bordered table-hover">
                           <thead class="table-color">
                             <tr>
                               <th class="text-white">#</th>
@@ -454,19 +454,19 @@
                               $total_compra += $detalle['precio_total'];
                             ?>
                             <tr>
-                              <td class="text-center"><?php echo $contador++; ?></td>
-                              <td><?php echo htmlspecialchars($detalle['producto_nombre']); ?></td>
-                              <td><?php echo htmlspecialchars($detalle['marca']); ?></td>
-                              <td class="text-center"><?php echo $detalle['cantidad']; ?></td>
-                              <td class="text-center">$<?php echo number_format($detalle['precio_unitario'], 2); ?></td>
-                              <td class="text-center">$<?php echo number_format($detalle['precio_total'], 2); ?></td>
+                              <td class="text-center texto-secundario"><?php echo $contador++; ?></td>
+                              <td class="texto-secundario"><?php echo htmlspecialchars($detalle['producto_nombre']); ?></td>
+                              <td class="texto-secundario"><?php echo htmlspecialchars($detalle['marca']); ?></td>
+                              <td class="text-center texto-secundario"><?php echo $detalle['cantidad']; ?></td>
+                              <td class="text-center texto-secundario">$<?php echo number_format($detalle['precio_unitario'], 2); ?></td>
+                              <td class="text-center texto-secundario">$<?php echo number_format($detalle['precio_total'], 2); ?></td>
                             </tr>
                             <?php endforeach; ?>
                           </tbody>
                           <tfoot class="table-light">
                             <tr>
-                              <th colspan="5" class="text-end">Total USD:</th>
-                              <th class="text-center">$<?php echo number_format($total_compra, 2); ?></th>
+                              <th colspan="5" class="text-end table-m texto-secundario">Total USD:</th>
+                              <th class="text-center table-m texto-secundario">$<?php echo number_format($total_compra, 2); ?></th>
                             </tr>
                           </tfoot>
                         </table>
@@ -493,7 +493,7 @@
             <h5 class="modal-title" id="editarModalLabel<?php echo $compra['id_compra']; ?>">Editar Entrada</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body bg-s">
             <form method="POST" action="" name="editar_compra">
               <input type="hidden" name="id_compra" value="<?php echo $compra['id_compra']; ?>">
               
@@ -516,7 +516,7 @@
               </div>
               
               <div class="mb-3">
-                <h6>Productos</h6>
+                <h6 class="texto-quinto">Productos</h6>
                 <div id="productos-container-edit<?php echo $compra['id_compra']; ?>">
                   <?php 
                   $resultadoDetalles = $entrada->procesarCompra(json_encode([
@@ -594,11 +594,11 @@
           <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
       </div>
-      <div class="modal-body">
+      <div class="modal-body bg-s">
         <form method="POST" action="" name="registrar_compra">
           <!-- Sección: Datos Básicos de la Compra -->
           <div class="seccion-formulario">
-            <h6><i class="fas fa-info-circle"></i> Datos de la Compra</h6>
+            <h6 class="texto-quinto"><i class="fas fa-info-circle"></i> Datos de la Compra</h6>
             <div class="row mb-3">
               <div class="col-md-6">
                 <label for="fecha_entrada_reg" class="form-label">Fecha de Entrada</label>
@@ -617,7 +617,7 @@
           </div>
           <!-- Sección: Productos -->
           <div class="seccion-formulario">
-            <h6><i class="fas fa-boxes"></i> Productos</h6>
+            <h6 class="texto-quinto"><i class="fas fa-boxes"></i> Productos</h6>
             <div id="productos-container">
               <div class="row mb-2 producto-fila">
                 <div class="col-md-4">

@@ -2,7 +2,7 @@
    height: 150vh; 
 }
 #sidenav-collapse-main {
-   max-height: 120vh;
+   max-height: 130vh;
    overflow: hidden; 
 }
 .sidedar-color {
@@ -75,6 +75,11 @@
 }
 
 
+.nav-item .bg-activo {
+  background-color: #fc91a3;
+  border-radius: 10px;
+  color:#ffffffff !important;
+}
 
  /* Boton Bitacora */
  .custom-btn {
@@ -263,3 +268,171 @@
           #scrollToTopBtn:hover {
             background-color: #ec93c0;
           }
+
+
+
+
+
+
+
+/*||||||||||||||||||||||| MODO ESCURO |||||||||||||||||||||*/
+/* Fondo general */
+.modo-oscuro {
+  background-color: #1b1b1b !important;
+  color: #F5E8D8 !important;
+}
+
+.modo-oscuro .body-oscuro{
+   background-color: #383838 !important;
+  color: #F5E8D8 !important;
+}
+
+.modo-oscuro .sidedar-color {
+   background-color: #f172b1e3; /* #ff69b4 */
+  }
+
+/* Sidebar */
+.modo-oscuro .sidebar {
+  background-color: #1d1f25 !important;
+  color: #E0E0E0 !important;
+  border-right: 1px solid #101011 !important;
+}
+
+.modo-oscuro .nav-item .bg-activo {
+   background-color: #f172b2 !important;
+  color: #E0E0E0 !important;
+}
+
+/* Navbar */
+.modo-oscuro .navv {
+  background-color: #303e6d !important;
+  color: #F5E8D8 !important;
+  border-bottom: 1px solid #444444;
+}
+
+/* Texto principal */
+.modo-oscuro .texto-principal {
+  color: #f172b2 !important;
+}
+
+/* Texto secundario */
+.modo-oscuro .texto-secundario {
+  color: #f3f3f3 !important;
+}
+
+/* Texto secundario */
+.modo-oscuro .texto-tercero {
+  color: #ffe3fb !important;
+}
+
+.modo-oscuro .texto-cuarto {
+  color: #ff0080 !important;
+}
+
+.modo-oscuro .texto-quinto {
+  color: #f6c5b4 !important;
+}
+
+.modo-oscuro .texto-sexto  {
+  color: #f53b98 !important;
+}
+
+
+.modo-oscuro .table-m {
+  background-color: #6e6e6e86 !important;
+  color: #ffffff !important;
+}
+
+              
+.modo-oscuro .bg-s{
+  background-color: #636364 !important;
+  color: #ffffff !important;
+  border-radius: 8px;
+}
+
+
+/* Cards */
+.modo-oscuro .card-m {
+  background-color: #1e1e1e !important;
+  border: 1px solid #444444 !important;
+  color: #E0E0E0 !important;
+}
+
+.modo-oscuro .card-m1 {
+  background-color: #353535 !important;
+  border: 1px solid #2b2929 !important;
+  color: #E0E0E0 !important;
+}
+
+/* Inputs y formularios */
+.modo-oscuro .form-control{
+  background-color: #252525 !important;
+  color: #ffffff !important;
+
+}
+
+.modo-oscuro .form-select {
+  background-color: #252525 !important;
+  color: #fdfdfd !important;
+  
+}
+
+.modo-oscuro .div-icono{
+  background-color: #b8b8b8 !important;
+  color: #1c72c4 !important;
+   border: 1px solid #1c72c4;
+}
+
+.modo-oscuro .dropdown-menu .dropdown-item:hover {
+  background-color: #e221a2 !important ; /* Color de fondo al hacer hover */
+  color: #f8f8f8 !important;            /* Color del texto al hacer hover */
+}
+
+
+.modo-oscuro .div-oscuro-1 {
+  background-color: #383838 !important;
+  color: #ffffff !important;
+  border: none;
+}
+
+.modo-oscuro .div-oscuro-2 {
+  background-color: #353535 !important;
+  color: #ffffff !important;
+  border: none;
+}
+
+
+.modo-oscuro .seccion-formulario{
+  background-color: #383838 !important;
+  color: #ffffff !important;
+   border-left: 4px solid #f6c5b4;
+}
+
+
+.modo-oscuro .preloader-wrapper{
+  background-color: #151A28 !important;
+}
+
+
+.modo-oscuro .dt-input{
+  background-color: #ececec !important;
+  color: #000000 !important;
+}
+
+.modo-oscuro label{ 
+   color: #ffffff !important;
+}
+
+.modo-oscuro .dt-empty{
+     color: #ffffff !important;
+}
+
+.modo-oscuro .hola{
+  background-color: #000000 !important;
+}
+
+
+  
+  .modo-oscuro .texto-hr{
+     background-color: #ffffff !important;
+  }

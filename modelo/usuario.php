@@ -7,7 +7,7 @@ class Usuario extends Conexion
 {
     private $encryptionKey = "MotorLoveMakeup"; 
     private $cipherMethod = "AES-256-CBC";
-    private $objtipousuario;
+    private $objtipousuario; 
     
     function __construct() {
         parent::__construct();

@@ -1,44 +1,52 @@
 <!-- NAV PLANEL ADMINISTRATIVO -->
+ <script>
+  const idUsuario = <?php echo json_encode($_SESSION['id']); ?>;
+</script>
     <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
         <div class="ms-md-auto pe-md-3 d-flex align-items-center">
 
-          <a class="notification  me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarAyuda" aria-controls="sidebarAyuda" style="background-color: white; padding: 8px; border-radius: 12px; text-decoration: none;">
-            <i class="fa-solid fa-circle-question" style="color: #004adf;"></i>
+          <a class="notification card-m1 me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarAyuda" aria-controls="sidebarAyuda" style="background-color: white; padding: 8px; border-radius: 12px; text-decoration: none;">
+            <i class="fa-solid fa-circle-question texto-secundario" style="color: #004adf;"></i>
           </a>
 
      
             <a href="?pagina=notificacion"
-            class="notification-icon me-2"
+            class="notification-icon card-m1 me-2"
             style="background:white; padding:8px; border-radius:12px; text-decoration:none;">
-            <i class="fa-solid fa-bell" style="color:black;"></i>
+            <i class="fa-solid fa-bell texto-secundario" style="color:black;"></i>
             </a>
 
   
         <div class="input-group">
-          <span class="input-group-text t text-body dropdown-toggle" id="dropdownIcon" aria-expanded="false" style="cursor: pointer; padding: 12px;">
+          <span class="input-group-text t text-body dropdown-toggle card-m1" id="dropdownIcon" aria-expanded="false" style="cursor: pointer; padding: 12px;">
              <i class="fa-solid fa-user-gear" aria-hidden="true"></i>
          </span>
         
-         <ul class="dropdown-menu" id="dropdownOptions" aria-labelledby="dropdownIcon">
+         <ul class="dropdown-menu div-oscuro-1" id="dropdownOptions" aria-labelledby="dropdownIcon">
             <li class="d-block d-md-none">
-                <a class="dropdown-item text-dark">
+                <a class="dropdown-item text-dark texto-secundario">
                     <?php echo $_SESSION['nombre'] . " " . $_SESSION['apellido']; ?>
                 </a>
             </li>  
             <li> 
-                <a class="dropdown-item text-primary"><b><?php 
+                <a class="dropdown-item text-primary texto-secundario"><b><?php 
                 echo "Rol:"." ".$_SESSION['nombre_usuario'];
                 ?></b></a>
             </li>
             <li>
-                <a class="dropdown-item" href="?pagina=datos">
-                    <i class="fa-solid fa-user-pen"></i> 
+                <a class="dropdown-item texto-secundario" href="?pagina=datos">
+                    <i class="fa-solid fa-user-pen me-2"></i> 
                     Modificar Datos
                 </a>
             </li>
+            <li>
+                <button type="button" id="toggleModo" class="texto-secondario dropdown-item lk">
+                <i class="fa-solid fa-moon me-2"></i> Modo Oscuro
+                </button> 
+            </li>
         </ul>
 
-            <div class="nombre-usuario d-none d-md-block">
+            <div class="nombre-usuario d-none d-md-block card-m1">
                 <?php echo $_SESSION['nombre'] . " " . $_SESSION['apellido']; ?>
             </div>
 

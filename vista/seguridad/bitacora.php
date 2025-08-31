@@ -49,11 +49,11 @@
     <div class="row"> <!-- CARD PRINCIPAL-->  
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">  <!-- CARD N-1 -->  
+            <div class="card-header pb-0 div-oscuro-2">  <!-- CARD N-1 -->  
     
               <!--Titulo de página -->
               <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h4 class="mb-0">
+                <h4 class="mb-0 texto-quinto">
                   <i class="fas fa-history fa-sm text-primary-50"></i> Registro de Actividades
                 </h4>
                 <div class="btn-group ms-2" role="group">
@@ -64,7 +64,7 @@
               </div>
 
               <div class="table-responsive"> <!-- comienzo div table-->
-                <table class="table table-bordered table-hover display responsive nowrap" id="myTable" width="100%" cellspacing="0">
+                <table class="table table-m table-bordered table-hover display responsive nowrap" id="myTable" width="100%" cellspacing="0">
                   <thead class="table-color">
                     <tr>
                       <th class="text-white">Fecha y Hora</th>
@@ -81,7 +81,7 @@
                     if ($registro && is_array($registro)) {
                       foreach ($registro as $dato) { ?>
                         <tr>
-                          <td class="fecha-bitacora" data-fecha="<?php echo htmlspecialchars($dato['fecha_hora']) ?>"></td>
+                          <td class="fecha-bitacora texto-secundario" data-fecha="<?php echo htmlspecialchars($dato['fecha_hora']) ?>"></td>
                           <td>
                             <span class="badge bg-<?php 
                               switch($dato['accion']) {
@@ -96,19 +96,19 @@
                               <?php echo $dato['accion']?>
                             </span>
                           </td>
-                          <td>
+                          <td class="texto-secundario">
                             <?php 
                               $desc = $dato['descripcion'];
                               if (preg_match('/\[(.*?)\]$/', $desc, $matches)) {
                                   echo str_replace($matches[0], '', $desc);
-                                  echo '<span class="fw-bold text-primary">' . $matches[0] . '</span>';
+                                  echo '<span class="fw-bold text-primary texto-sexto">' . $matches[0] . '</span>';
                               } else {
                                   echo $desc;
                               }
                             ?>
                           </td>
-                          <td><?php echo $dato['nombre']." ".$dato["apellido"]?></td>
-                          <td><?php echo $dato['nombre_usuario']?></td>
+                          <td class="texto-secundario"><?php echo $dato['nombre']." ".$dato["apellido"]?></td>
+                          <td class="texto-secundario"><?php echo $dato['nombre_usuario']?></td>
                           <td class="text-center">
                             <button class="btn btn-info btn-sm" 
                                     onclick="verDetalles(<?php echo $dato['id_bitacora']?>)"

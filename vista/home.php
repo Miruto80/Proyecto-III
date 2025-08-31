@@ -55,7 +55,7 @@
     <div class="row"> <!-- CARD PRINCIPAL-->  
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">  <!-- CARD N-1 -->  
+            <div class="card-header pb-0 div-oscuro-2" >  <!-- CARD N-1 -->  
 
           <div class="row">
   <!-- Ventas Totales -->
@@ -130,9 +130,9 @@
       
             <div class="row mt-4">
    <div class="col-lg-7 col-md-7 col-12"> 
-  <div class="card">
+  <div class="card card-m">
     <div class="card-body">
-      <h5>Los 5 Producto más vendidos</h5>
+      <h5 class="texto-principal">Los 5 Producto más vendidos</h5>
       <div class="table-responsive">
         <table class="table">
           <thead>
@@ -147,9 +147,9 @@
             if (!empty($registro)) {
               foreach ($registro as $fila) {
                 echo "<tr>";
-                echo "<td class='text-center'>" . htmlspecialchars($fila['nombre_producto']) . "</td>";
-                echo "<td class='text-center'>" . htmlspecialchars($fila['cantidad_vendida']) . "</td>";
-                echo "<td class='text-center'> $" . htmlspecialchars(number_format($fila['total_vendido'], 2)) . "</td>";
+                echo "<td class='text-center texto-secundario'>" . htmlspecialchars($fila['nombre_producto']) . "</td>";
+                echo "<td class='text-center texto-secundario'>" . htmlspecialchars($fila['cantidad_vendida']) . "</td>";
+                echo "<td class='text-center texto-secundario'> $" . htmlspecialchars(number_format($fila['total_vendido'], 2)) . "</td>";
                 echo "</tr>";
               }
             } else {
@@ -164,13 +164,13 @@
 </div>
 
 <div class="col-lg-5 col-md-5 col-12">
-  <div class="card">
+  <div class="card card-m texto-secundario">
     <div class="card-body text-center">
 
       <?php if (!empty($graficaHome['data'])): ?>
         <div class="chart-container" 
              style="position:relative; width:100%; height:350px;">
-          <canvas id="homePieChart"></canvas>
+          <canvas id="homePieChart" ></canvas>
         </div>
       <?php else: ?>
         <p class="text-muted">No hay datos para la gráfica.</p>

@@ -418,12 +418,12 @@
     <div class="row"> <!-- CARD PRINCIPAL-->  
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">  <!-- CARD N-1 -->  
+            <div class="card-header pb-0 div-oscuro-2">  <!-- CARD N-1 -->  
     
     <!--Titulo de página -->
      <div class="d-sm-flex align-items-center justify-content-between mb-5">
-       <h4 class="mb-0">
-         <i class="fa-solid fa-cash-register mr-2" style="color: #f6c5b4;"></i> Venta
+       <h4 class="mb-0 texto-quinto">
+         <i class="fa-solid fa-cash-register me-2" style="color: #f6c5b4;"></i> Venta
       </h4>
            
        <!-- Button que abre el Modal N1 Registro -->
@@ -448,7 +448,7 @@
           
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+          <table class="table table-m table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
                   <th class="text-white">Cliente</th>
@@ -467,9 +467,9 @@
                     $precio_formateado = '$' . number_format($venta['precio_total'], 2);
                     ?>
                     <tr>
-                      <td><?php echo htmlspecialchars($venta['cliente']); ?></td>
-                      <td><?php echo $fecha_formateada; ?></td>
-                      <td><?php echo $precio_formateado; ?></td>
+                      <td class="texto-secundario"><?php echo htmlspecialchars($venta['cliente']); ?></td>
+                      <td class="texto-secundario"><?php echo $fecha_formateada; ?></td>
+                      <td class="texto-secundario"><?php echo $precio_formateado; ?></td>
 
                           <?php if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(4, 'especial')){ ?>
                           <td class="text-center">
@@ -507,7 +507,7 @@
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body bg-s">
             <!-- Información de Fecha y Hora -->
             <div class="row mb-4">
               <div class="col-12">
@@ -519,7 +519,7 @@
                     </h6>
                   </div>
                   <div class="collapse" id="collapse-fecha">
-                  <div class="card-body">
+                  <div class="card-body card-m">
                     <div class="row">
               <div class="col-md-6">
                         <strong>Fecha de Venta:</strong> <?php echo date('d/m/Y', strtotime($venta['fecha'])); ?>
@@ -545,7 +545,7 @@
                     </h6>
                   </div>
                   <div class="collapse" id="collapse-cliente-detalle">
-                  <div class="card-body">
+                  <div class="card-body card-m">
                     <?php
                     // Obtener información detallada del cliente
                     $cliente_detalle = $salida->consultarClienteDetalle($venta['id_pedido']);
@@ -585,9 +585,9 @@
                     </h6>
                   </div>
                   <div class="collapse" id="collapse-productos-detalle">
-                  <div class="card-body">
+                  <div class="card-body card-m">
                     <div class="table-responsive">
-                      <table class="table table-bordered table-hover">
+                      <table class="table table-m table-bordered table-hover">
                         <thead class="table-color">
                           <tr>
                             <th class="text-white">#</th>
@@ -607,18 +607,18 @@
                             $total += $subtotal;
                           ?>
                           <tr>
-                            <td class="text-center"><?php echo $contador++; ?></td>
-                            <td><?php echo htmlspecialchars($detalle['nombre_producto']); ?></td>
-                            <td class="text-center"><?php echo $detalle['cantidad']; ?></td>
-                            <td class="text-center">$<?php echo number_format($detalle['precio_unitario'], 2); ?></td>
-                            <td class="text-center">$<?php echo number_format($subtotal, 2); ?></td>
+                            <td class="text-center texto-secundario"><?php echo $contador++; ?></td>
+                            <td class="texto-secundario"><?php echo htmlspecialchars($detalle['nombre_producto']); ?></td>
+                            <td class="text-center texto-secundario"><?php echo $detalle['cantidad']; ?></td>
+                            <td class="text-center texto-secundario">$<?php echo number_format($detalle['precio_unitario'], 2); ?></td>
+                            <td class="text-center texto-secundario">$<?php echo number_format($subtotal, 2); ?></td>
                           </tr>
                           <?php endforeach; ?>
                         </tbody>
                         <tfoot class="table-light">
                           <tr>
-                            <th colspan="4" class="text-end">Total USD:</th>
-                            <th class="text-center">$<?php echo number_format($total, 2); ?></th>
+                            <th colspan="4" class="text-end table-m texto-secundario">Total USD:</th>
+                            <th class="text-center table-m texto-secundario">$<?php echo number_format($total, 2); ?></th>
                           </tr>
                         </tfoot>
                       </table>
@@ -640,14 +640,14 @@
                     </h6>
                   </div>
                   <div class="collapse" id="collapse-metodos-detalle">
-                  <div class="card-body">
+                  <div class="card-body card-m">
                     <?php
                     // Obtener información de métodos de pago
                     $metodos_pago_venta = $salida->consultarMetodosPagoVenta($venta['id_pedido']);
                     if (!empty($metodos_pago_venta)):
                     ?>
                     <div class="table-responsive">
-                      <table class="table table-bordered">
+                      <table class="table table-m table-bordered">
                         <thead class="table-color">
                           <tr>
                             <th class="text-white">#</th>
@@ -663,11 +663,11 @@
                           foreach($metodos_pago_venta as $metodo): 
                           ?>
                           <tr>
-                            <td class="text-center"><?php echo $contador_metodos++; ?></td>
-                            <td><?php echo htmlspecialchars($metodo['nombre_metodo']); ?></td>
-                            <td class="text-center">$<?php echo number_format($metodo['monto_usd'], 2); ?></td>
-                            <td class="text-center">Bs <?php echo number_format($metodo['monto_bs'], 2); ?></td>
-                            <td>
+                            <td class="text-center texto-secundario"><?php echo $contador_metodos++; ?></td>
+                            <td class="texto-secundario"><?php echo htmlspecialchars($metodo['nombre_metodo']); ?></td>
+                            <td class="text-center texto-secundario">$<?php echo number_format($metodo['monto_usd'], 2); ?></td>
+                            <td class="text-center texto-secundario">Bs <?php echo number_format($metodo['monto_bs'], 2); ?></td>
+                            <td class="texto-secundario">
                               <?php if (!empty($metodo['referencia'])): ?>
                                 <strong>Ref:</strong> <?php echo htmlspecialchars($metodo['referencia']); ?><br>
                               <?php endif; ?>

@@ -38,11 +38,11 @@
     <div class="row"> <!-- CARD PRINCIPAL-->  
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">  <!-- CARD N-1 -->  
+            <div class="card-header pb-0 div-oscuro-2">  <!-- CARD N-1 -->  
     
     <!--Titulo de página -->
      <div class="d-sm-flex align-items-center justify-content-between mb-3">
-       <h4 class="mb-0"><i class="fa-solid fa-user me-2" style="color: #f6c5b4;"></i>
+       <h4 class="mb-0 texto-quinto"><i class="fa-solid fa-user me-2" style="color: #f6c5b4;"></i>
         Clientes</h4>
            
        <!-- Button que abre el Modal N1 Registro -->
@@ -57,7 +57,7 @@
 
       <div class="table-responsive"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-           <table class="table table-hover" id="myTable" width="100%" cellspacing="0">
+           <table class="table table-m table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
                 <tr>
                   <th class="text-white text-center">Nombre y Cédula</th>
@@ -90,13 +90,13 @@
                         <i class="fas fa-user-circle fa-2x" style="color: #f6c5b4;"></i>
                       </div>
                       <div>
-                        <div class="text-dark"><b><?php echo $dato['nombre'] . ' ' . $dato['apellido']; ?></b></div>
-                        <div>N° Cédula: <?php echo $dato['cedula']; ?></div>
+                        <div class="text-dark texto-secundario"><b><?php echo $dato['nombre'] . ' ' . $dato['apellido']; ?></b></div>
+                        <div class="texto-tercero">N° Cédula: <?php echo $dato['cedula']; ?></div>
                       </div>
                     </div>
                   </td>
                   <td>
-                      <div class="text-dark">
+                      <div class="text-dark texto-secundario">
                         <?php echo $dato['telefono'] ?>
                       </div>
                   <?php
@@ -110,7 +110,7 @@
                 </td>
 
                  <td>
-                    <div class="text-dark">
+                    <div class="text-dark texto-secundario">
                       <?php echo $dato['correo'] ?>
                     </div>
                       <a href="mailto:<?= $dato['correo'] ?>" class="btn btn-info btn-sm mt-1 Ayudacorreo" title="Enviar correo">
@@ -167,10 +167,10 @@
         <h5 class="modal-title text-dark" id="modalLabel"><i class="fas fa-pencil-alt"></i> Editar Datos del Cliente</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"  title="(CONTROL + ALT + X) Cerrar" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body bg-s">
         <form method="POST" action="?pagina=cliente" id="formdatosactualizar">
            <div class="seccion-formulario">
-              <h6><i class="fas fa-boxes"></i> Modificar datos del cliente </h6>
+              <h6 class="texto-quinto"><i class="fas fa-boxes"></i> Modificar datos del cliente </h6>
           <div class="mb-3">
             <label for="cedula" class="form-label text-g">Cédula</label>
              <div class="input-group mb-3">

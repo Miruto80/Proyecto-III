@@ -31,9 +31,9 @@
         <div class="row">
           <div class="col-12">
             <div class="card mb-4">
-              <div class="card-header pb-0">
+              <div class="card-header pb-0 div-oscuro-2">
                 <div class="d-sm-flex align-items-center justify-content-between mb-5">
-                  <h4 class="mb-0"><i class="fa-solid fa-credit-card mr-2" style="color: #f6c5b4;"></i> Método de Pago</h4>
+                  <h4 class="mb-0 texto-quinto"><i class="fa-solid fa-credit-card mr-2" style="color: #f6c5b4;"></i> Método de Pago</h4>
                   <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(10, 'registrar')): ?>  
                   <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registro">
                     <i class="fas fa-file-medical"></i> Registrar
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="table-responsive">
-                  <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+                  <table class="table table-m table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
                     <thead class="table-color">
                       <tr>
                         <th class="text-white">ID</th>
@@ -54,9 +54,9 @@
                     <tbody id="metodopagoTableBody">
                       <?php foreach ($metodos as $dato): ?>
                         <tr id="fila-<?= $dato['id_metodopago']; ?>">
-                        <td><?= $dato['id_metodopago']; ?></td>
-                        <td><?= htmlspecialchars($dato['nombre']); ?></td>
-                        <td><?= htmlspecialchars($dato['descripcion']); ?></td>
+                        <td class="texto-secundario"><?= $dato['id_metodopago']; ?></td>
+                        <td class="texto-secundario"><?= htmlspecialchars($dato['nombre']); ?></td>
+                        <td class="texto-secundario"><?= htmlspecialchars($dato['descripcion']); ?></td>
                         <td>
                          <?php if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(10, 'editar')): ?>
                         <button class="btn-editar btn btn-primary btn-sm "
@@ -93,7 +93,7 @@
               <h1 class="modal-title fs-5">Registrar Método de Pago</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body bg-s">
               <form id="formRegistrar" autocomplete="off">
                <div class="mb-3">
                   <label  for="nombre" class="form-label">Nombre</label>
@@ -117,13 +117,13 @@
 
      <!-- Modal modificar -->
 <div class="modal fade" id="modificar" tabindex="-1" aria-labelledby="modificarLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-dialog modal-lg modal-dialog-centered ">
     <div class="modal-content">
       <div class="modal-header header-color">
         <h1 class="modal-title fs-5">Modificar Método de Pago</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body bg-s">
         <form id="formModificar">
           <input type="hidden" id="id_pago_modificar">
 
@@ -141,7 +141,7 @@
 
         </form>
       </div>
-      <div class="modal-footer">   
+      <div class="modal-footer bg-s">   
          <button type="button" class="btn btn-primary" id="btnModificar">Guardar</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
     

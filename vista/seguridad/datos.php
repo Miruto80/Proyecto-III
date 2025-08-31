@@ -44,9 +44,9 @@
 
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">  <!-- CARD N-1 -->  
+            <div class="card-header pb-0 div-oscuro-2">  <!-- CARD N-1 -->  
               
-            <div class="card shadow-lg">
+            <div class="card shadow-lg card-m">
       <div class="card-body p-3">
         <div class="row gx-4">
           <div class="col-auto">
@@ -56,7 +56,7 @@
           </div>
           <div class="col-auto my-auto">
             <div class="h-100">
-              <h5 class="mb-1">
+              <h5 class="mb-1 texto-secundario">
                 <?php echo $_SESSION['nombre'] . " " . $_SESSION['apellido']; ?>
               </h5>
               <p class="mb-0 font-weight-bold text-sm">
@@ -66,7 +66,7 @@
           </div>
           <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
             <div class="nav-wrapper position-relative end-0">
-              <ul class="nav nav-pills nav-fill p-1" role="tablist">
+              <ul class="nav nav-pills nav-fill p-1 card-m" role="tablist">
                 <li class="nav-item me-2">
                   <a href="?pagina=home" class="regresar bg-primary nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center">
                     <i class="ni ni-app"></i>
@@ -91,7 +91,7 @@
   <div class="row">
     <!-- Información Personal -->
     <div class="col-md-6 informacion">
-      <h5><i class="fa-solid fa-user me-2" style="color:#f6c5b4;"></i> Información Personal</h5>
+      <h5 class="texto-quinto"><i class="fa-solid fa-user me-2 " style="color:#f6c5b4;"></i> Información Personal</h5>
       <?php if (isset($_GET['m']) && $_GET['m'] == 'a'): ?>
   
        <div class="info-box">
@@ -105,9 +105,9 @@
         </div>
       </div>
       <?php endif; ?>
-        <p class="text-muted">
+        <p class="text-muted texto-secundario">
           En esta área podrás <strong>actualizar tu información personal</strong>, como cédula, nombre, apellido, teléfono y correo electrónico.
-          <span class="text-primary"> Recuerda que los cambios se aplicarán al cerrar sesión. </span>
+          <span class="text-primary texto-principal"> Recuerda que los cambios se aplicarán al cerrar sesión. </span>
         </p>
        <form action="?pagina=usuario" method="POST" autocomplete="off" id="datos">
         <!-- Cédula -->
@@ -170,9 +170,9 @@
 
     <!-- Seguridad con collapse -->
     <div class="col-md-5 seguridad">
-      <h5><i class="fa-solid fa-shield-halved me-2" style="color:#f6c5b4;"></i> Seguridad</h5>
-      <p class="text-muted">
-  En la sección de <strong>seguridad</strong> puedes <span class="text-warning">modificar tu clave de acceso</span> de forma segura. Solo haz clic en el botón para desplegar el formulario y completa los campos requeridos.
+      <h5 class="texto-quinto"><i class="fa-solid fa-shield-halved me-2" style="color:#f6c5b4;"></i> Seguridad</h5>
+      <p class="text-muted texto-secundario">
+  En la sección de <strong>seguridad</strong> puedes <span class="text-warning texto-principal">modificar tu clave de acceso</span> de forma segura. Solo haz clic en el botón para desplegar el formulario y completa los campos requeridos.
 </p>
       <a class="btn btn-warning w-100 mb-2" data-bs-toggle="collapse" href="#claveCollapse" role="button" aria-expanded="false" aria-controls="claveCollapse">
         <i class="fa-solid fa-shield-halved me-2"></i> Si quieres cambiar la clave, haz clic aquí

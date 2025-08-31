@@ -212,85 +212,138 @@
         </div> <!-- f2 / -->
 
         <div id="form-direcciones" class="formulario d-none"> <!-- f3 -->
-           <div class="row">
-            <div class="section-header d-flex align-items-center justify-content-between mb-lg-2">
-              <h2 class="section-title text-titel-1">Direcciones</h2>
+        <?php
+// Mapeamos las direcciones por método de entrega
+$direccionMap = [];
+foreach ($direccion as $dir) {
+    $direccionMap[$dir['id_metodoentrega']] = $dir;
+}
+
+foreach ($entrega as $item) {
+    if ($item['estatus'] == 1) {
+        $id = $item['id_entrega'];
+        $nombre = htmlspecialchars($item['nombre']);
+        $dirData = $direccionMap[$id] ?? null;
+
+        if ($id == 1) { // DELIVERY ?>
+            <div class="row">
+                <div class="section-header d-flex align-items-center justify-content-between mb-lg-2">
+                    <h2 class="section-title text-titel-1">Direcciones</h2>
+                </div>
             </div>
-           </div>
-          <table class="table" width="100%" cellspacing="0">
-             <thead class="bg-table">
-                <tr>
-                  <th class="text-white"> <i class="fa-solid fa-bicycle me-2"></i> DELIVERY</th>
-                </tr>
-              </thead>
-               <tbody>
-                <td>
-                      <div class="container">
-                        <div class="row g-3 align-items-center mb-3">
-                        
-                          <div class="col-md-1 col-12">
-                            <p class="text-dark"><b>Mi Casa</b></p>
-                          </div>
-                       
-                          <div class="col-md-7 col-12">
-                            <input type="text" class="form-control text-dark" placeholder="Direccion de mi casa">
-                          </div>
-                          
-                          <div class="col-md-4 col-12 d-flex gap-2">
-                            <button class="btn-registrar"><i class="fa-solid fa-file-circle-plus me-2"></i> Agregar</button>
-                            <button class="btn-editar"> <i class="fa-solid fa-pen-to-square me-2"></i> Editar</button>
-                          </div>
-                        </div>
-                    </div>
-                </td>
-               </tbody>
-          </table>
-      <br>
-      <table class="table" width="100%" cellspacing="0">
-         <thead class="bg-table">
-                <tr>
-                  <th class="text-white"> <i class="fa-solid fa-truck me-2"></i> ENVIOS NACIONALES</th>
-                </tr>
-                
-              </thead>
-               <tbody>
-                <td>
-                 <div class="container">
-                      <div class="row g-3 align-items-center mb-3">
-                        
-                        <div class="col-md-1 col-12">
-                          <p class="text-dark"><b>MRW</b></p>
-                        </div>
-                      
-                        <div class="col-md-7 col-12">
-                          <input type="text" class="form-control text-dark" placeholder="MRW">
-                        </div>
-
-                        <div class="col-md-4 col-12 d-flex gap-2">
-                          <button class="btn-registrar"><i class="fa-solid fa-file-circle-plus me-2"></i> Agregar</button>
-                          <button class="btn-editar"><i class="fa-solid fa-pen-to-square me-2"></i> Editar</button>
-                        </div>
-                      </div>
-
-                      <div class="row g-3 align-items-center">
-                       
-                        <div class="col-md-1 col-12">
-                          <p class="text-dark"><b>ZOOM</b></p>
-                        </div>
-                    
-                        <div class="col-md-7 col-12">
-                          <input type="text" class="form-control text-dark" placeholder="ZOOM">
-                        </div>
-                     
-                        <div class="col-md-4 col-12 d-flex gap-2">
-                          <button class="btn-registrar"><i class="fa-solid fa-file-circle-plus me-2"></i> Agregar</button>
-                          <button class="btn-editar"><i class="fa-solid fa-pen-to-square me-2"></i> Editar</button>
-                        </div>
-                      </div>
-                  </div>
-                </td>
-               </tbody>
-          </table>
+            <table class="table" width="100%" cellspacing="0">
+                <thead class="bg-table">
+                    <tr>
+                        <th class="text-white"><i class="fa-solid fa-bicycle me-2"></i> DELIVERY</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="hidden" name="id_entrega[]" value="<?= $id ?>">
+                            <div class="container">
+                                <div class="row g-3 align-items-center mb-3">
+                                    <div class="col-md-1 col-12">
+                                        <p class="text-dark"><b><?= $nombre ?></b></p>
+                                    </div>
+                                    <div class="col-md-9 col-12">
+                                        <input type="text" class="form-control text-dark" name="direccion_envio_<?= $id ?>" placeholder="Dirección de mi casa" disabled
+                                            value="<?= isset($dirData['direccion_envio']) ? htmlspecialchars($dirData['direccion_envio']) : '' ?>">
+                                    </div>
+                                    <div class="col-md-2 col-12 d-flex gap-2">
+                                        <?php if ($dirData): ?>
+                                          <button class="btn-editar"
+                                              data-bs-toggle="modal"
+                                              data-bs-target="#modalEditarDelivery"
+                                              data-id="<?= $dirData['id_direccion'] ?>"
+                                              data-direccion="<?= htmlspecialchars($dirData['direccion_envio']) ?>"
+                                          >
+                                              <i class="fa-solid fa-pen-to-square me-2"></i> Editar
+                                          </button>
+                                        <?php else: ?>
+                                            <button class="btn-registrar"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalAgregarDireccion"
+                                                data-metodo="<?= $id ?>"
+                                                data-nombre="<?= $nombre ?>"
+                                            >
+                                                <i class="fa-solid fa-file-circle-plus me-2"></i> Agregar
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+<?php
+        } elseif ($id == 2 || $id == 3) {
+            if (!isset($renderedNational)) {
+                $renderedNational = true; ?>
+                <table class="table" width="100%" cellspacing="0">
+                    <thead class="bg-table">
+                        <tr>
+                            <th class="text-white"><i class="fa-solid fa-truck me-2"></i> ENVIOS NACIONALES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="container">
+<?php } ?>
+                                    <input type="hidden" name="id_entrega[]" value="<?= $id ?>">
+                                    <div class="row g-3 align-items-center mb-3">
+                                        <div class="col-md-1 col-12">
+                                            <p class="text-dark"><b><?= $nombre ?></b></p>
+                                        </div>
+                                        <div class="col-md-2 col-12">
+                                            <input type="text" class="form-control text-dark" name="sucursal_envio_<?= $id ?>" placeholder="Sucursal" disabled
+                                                value="<?= isset($dirData['sucursal_envio']) ? htmlspecialchars($dirData['sucursal_envio']) : '' ?>">
+                                        </div>
+                                        <div class="col-md-7 col-12">
+                                            <input type="text" class="form-control text-dark" name="direccion_envio_<?= $id ?>" placeholder="Dirección" disabled
+                                                value="<?= isset($dirData['direccion_envio']) ? htmlspecialchars($dirData['direccion_envio']) : '' ?>">
+                                        </div>
+                                        <div class="col-md-2 col-12 d-flex gap-2">
+                                            <?php if ($dirData): ?>
+                                                 <button class="btn-editar"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modalEditarDireccion"
+                                                    data-id="<?= $dirData['id_direccion'] ?>"
+                                                    data-metodo="<?= $id ?>"
+                                                    data-nombre="<?= $nombre ?>"
+                                                    data-direccion="<?= htmlspecialchars($dirData['direccion_envio']) ?>"
+                                                    <?php if (in_array($id, [2, 3])): ?>
+                                                        data-sucursal="<?= htmlspecialchars($dirData['sucursal_envio']) ?>"
+                                                    <?php endif; ?>
+                                                >
+                                                    <i class="fa-solid fa-pen-to-square me-2"></i> Editar
+                                                </button>
+                                            <?php else: ?>
+                                                <button class="btn-registrar"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modalAgregarDireccion"
+                                                    data-metodo="<?= $id ?>"
+                                                    data-nombre="<?= $nombre ?>"
+                                                >
+                                                    <i class="fa-solid fa-file-circle-plus me-2"></i> Agregar
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+<?php
+        }
+    }
+}
+if (isset($renderedNational)) {
+    echo '                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>';
+}
+?>
 
         </div><!-- f3 /-->
       
@@ -321,6 +374,161 @@
     if (btnActivo) btnActivo.classList.add('active');
   }
 </script>
+
+<div class="modal fade" id="modalEditarDireccion" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="editar_direccion.php"> <!-- ajusta ruta según tu backend -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalLabel">Editar Dirección</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id_direccion" id="modal_id_direccion">
+          <input type="hidden" name="id_metodoentrega" id="modal_id_metodo">
+
+          <div class="mb-3">
+            <label for="modal_direccion" class="form-label">Dirección</label>
+            <input type="text" class="form-control" name="direccion_envio" id="modal_direccion">
+          </div>
+
+          <div class="mb-3" id="modal_sucursal_group" style="display: none;">
+            <label for="modal_sucursal" class="form-label">Sucursal</label>
+            <input type="text" class="form-control" name="sucursal_envio" id="modal_sucursal">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const modal = document.getElementById('modalEditarDireccion');
+  modal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+
+    const idDireccion = button.getAttribute('data-id');
+    const metodo = button.getAttribute('data-metodo');
+    const direccion = button.getAttribute('data-direccion');
+    const sucursal = button.getAttribute('data-sucursal');
+
+    document.getElementById('modal_id_direccion').value = idDireccion;
+    document.getElementById('modal_id_metodo').value = metodo;
+    document.getElementById('modal_direccion').value = direccion || '';
+
+    const sucursalGroup = document.getElementById('modal_sucursal_group');
+    const sucursalInput = document.getElementById('modal_sucursal');
+
+    if (metodo === '2' || metodo === '3') {
+      sucursalGroup.style.display = 'block';
+      sucursalInput.value = sucursal || '';
+    } else {
+      sucursalGroup.style.display = 'none';
+      sucursalInput.value = '';
+    }
+  });
+});
+</script>
+
+<div class="modal fade" id="modalEditarDelivery" tabindex="-1" aria-labelledby="modalDeliveryLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="editar_direccion.php">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalDeliveryLabel">Editar Dirección (Delivery)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id_direccion" id="delivery_id_direccion">
+          <input type="hidden" name="id_metodoentrega" value="1">
+
+          <div class="mb-3">
+            <label for="delivery_direccion" class="form-label">Dirección</label>
+            <input type="text" class="form-control" name="direccion_envio" id="delivery_direccion">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const modalDelivery = document.getElementById('modalEditarDelivery');
+  modalDelivery.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const idDireccion = button.getAttribute('data-id');
+    const direccion = button.getAttribute('data-direccion');
+
+    document.getElementById('delivery_id_direccion').value = idDireccion;
+    document.getElementById('delivery_direccion').value = direccion || '';
+  });
+});
+</script>
+
+
+
+
+<div class="modal fade" id="modalAgregarDireccion" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="registrar_direccion.php">
+      <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="modalAgregarLabel">Agregar Dirección para <span id="modalNombreMetodo"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id_metodoentrega" id="agregar_id_metodo">
+
+          <div class="mb-3">
+            <label for="agregar_direccion" class="form-label">Dirección</label>
+            <input type="text" class="form-control" name="direccion_envio" id="agregar_direccion">
+          </div>
+
+          <div class="mb-3" id="agregar_sucursal_group" style="display: none;">
+            <label for="agregar_sucursal" class="form-label">Sucursal</label>
+            <input type="text" class="form-control" name="sucursal_envio" id="agregar_sucursal">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Registrar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const modalAgregar = document.getElementById('modalAgregarDireccion');
+  modalAgregar.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const metodo = button.getAttribute('data-metodo');
+    const nombre = button.getAttribute('data-nombre');
+
+    document.getElementById('agregar_id_metodo').value = metodo;
+    document.getElementById('modalNombreMetodo').textContent = nombre;
+
+    document.getElementById('agregar_direccion').value = '';
+    document.getElementById('agregar_sucursal').value = '';
+
+    const sucursalGroup = document.getElementById('agregar_sucursal_group');
+    if (metodo === '2' || metodo === '3') {
+      sucursalGroup.style.display = 'block';
+    } else {
+      sucursalGroup.style.display = 'none';
+    }
+  });
+});
+</script>
+
 
 
 

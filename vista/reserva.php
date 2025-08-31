@@ -61,10 +61,10 @@
     <div class="row"> 
       <div class="col-12">
         <div class="card mb-4">
-          <div class="card-header pb-0">
+          <div class="card-header pb-0 div-oscuro-2">
             <div class="d-sm-flex align-items-center justify-content-between mb-5">
-              <h4 class="mb-0">
-                <i class="fa-solid fa-calendar-check mr-2" style="color: #f6c5b4;"></i> Reservas
+              <h4 class="mb-0 texto-quinto">
+                <i class="fa-solid fa-calendar-check me-2" style="color: #f6c5b4;"></i> Reservas
               </h4>
               <button type="button" class="btn btn-primary" id="btnAyuda">
                 <i class="fas fa-info-circle"></i> Ayuda

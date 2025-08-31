@@ -35,9 +35,9 @@
       <div class="row">
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">
+            <div class="card-header pb-0 div-oscuro-2">
               <div class="d-sm-flex align-items-center justify-content-between mb-5">
-                <h4 class="mb-0">
+                <h4 class="mb-0 texto-quinto">
                   <i class="fa-solid fa-tag me-2" style="color: #f6c5b4;"></i>
                   Categoria
                 </h4>
@@ -62,7 +62,7 @@
               </div>
 
               <div class="table-responsive">
-                <table class="table table-hover" id="myTable" width="100%" cellspacing="0">
+                <table class="table table-m table-hover" id="myTable" width="100%" cellspacing="0">
                   <thead class="table-color">
                     <tr>
                       <th class="text-white text-center">Nombre de Categoría</th>
@@ -79,10 +79,10 @@
                               <i class="fa-solid fa-tag fa-2x" style="color: #f6c5b4;"></i>
                             </div>
                             <div>
-                              <div class="text-dark">
+                              <div class="text-dark texto-secundario">
                                 <b><?= htmlspecialchars($dato['nombre']) ?></b>
                               </div>
-                              <div style="font-size: 11px; color: #d67888">
+                              <div style="font-size: 11px; color: #d67888" class="texto-tercero">
                                 <b>ID: <?= $dato['id_categoria'] ?></b>
                               </div>
                             </div>
@@ -129,13 +129,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" title="(CONTROL + ALT + X) Cerrar" aria-label="Close"></button>
           </div>
 
-          <div class="modal-body">
+          <div class="modal-body bg-s">
             <form id="u" autocomplete="off">
               <input type="hidden" id="id_categoria" name="id_categoria" value="">
               <input type="hidden" id="accion" name="accion" value="registrar">
 
               <div class="seccion-formulario">
-                <h6><i class="fas fa-tag"></i> Información de la Categoría</h6>
+                <h6 class="texto-quinto"><i class="fas fa-tag"></i> Información de la Categoría</h6>
                 <div class="row g-3">
                   <div class="col-md-12">
                     <label for="nombre">NOMBRE DE LA CATEGORÍA</label>

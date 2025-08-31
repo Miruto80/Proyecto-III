@@ -38,11 +38,11 @@
     <div class="row"> <!-- CARD PRINCIPAL-->  
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">  <!-- CARD N-1 -->  
+            <div class="card-header pb-0 div-oscuro-2">  <!-- CARD N-1 -->  
     
     <!--Titulo de página -->
      <div class="d-sm-flex align-items-center justify-content-between mb-5">
-       <h4 class="mb-0"><i class="fa-solid fa-user-gear me-2" style="color: #f6c5b4;"></i>
+       <h4 class="mb-0 texto-quinto"><i class="fa-solid fa-user-gear me-2" style="color: #f6c5b4;"></i>
         Usuario</h5>
          
       <div class="d-flex gap-2">
@@ -68,11 +68,11 @@
       </div>
           
   </div>  
-      <div class="table-responsive"> <!-- comienzo div table-->
+      <div class="table-responsive "> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
-          <table class="table  table-hover" id="myTable" width="100%" cellspacing="0">
+          <table class="table table-m table-hover" id="myTable" width="100%" cellspacing="0">
               <thead class="table-color">
-                <tr>
+                <tr class="texto-secundario">
                   <th class="text-white text-center">Nombre y Cédula</th>
                  
                   <th class="text-white text-center">Rol</th>
@@ -83,7 +83,7 @@
                   <th class="text-white text-center">Acción</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody class="texto-secundario">
               <?php
                 $estatus_texto = array(
                     1 => "Activo",
@@ -99,14 +99,14 @@
 
                   foreach ($registro as $dato){
                 ?>
-                <tr>
+                <tr class="">
                  <td>
                     <div class="d-flex align-items-center">
                       <div class="me-3">
                         <i class="fa-solid fa-id-card-clip fa-2x" style="color: #f6c5b4;"></i>
                       </div>
                       <div>
-                        <div class="text-dark">
+                        <div class="text-dark texto-secundario">
                           <b>
                             <?php echo $dato['nombre'] . ' ' . $dato['apellido']; ?>
                             <?php if ($dato['id_persona'] == 2): ?>
@@ -114,17 +114,17 @@
                             <?php endif; ?>
                           </b>
                         </div>
-                        <div>N° Cédula: <?php echo $dato['cedula']; ?></div>
+                        <div class="texto-tercero">N° Cédula: <?php echo $dato['cedula']; ?></div>
                       </div>
                     </div>
                   </td>
 
            
-                  <td class="text-center text-dark">
+                  <td class="text-center text-dark texto-secundario">
                      <div>
                         <?php echo $dato['nombre_tipo']; ?>
                       </div>
-                      <div style="font-size: 11px; color: #d67888">
+                      <div class="texto-tercero" style="font-size: 11px; color: #d67888">
                         <b> Nivel: <?php echo $dato['nivel']; ?> </b>
                       </div>
                   </td>
@@ -228,11 +228,11 @@
         <button type="button" class="btn-close"  title="(CONTROL + ALT + X) Cerrar" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <div class="modal-body">
+      <div class="modal-body bg-s">
         
   <form action="?pagina=usuario" method="POST" id="u" autocomplete="off">
      <div class="seccion-formulario">
-              <h6><i class="fas fa-boxes"></i> Datos del Usuario </h6>
+              <h6 class="texto-quinto"><i class="fas fa-boxes"></i> Datos del Usuario </h6>
     <div class="row g-3">
       <!-- F1: Nombre y Apellido -->
       <div class="col-md-6">
@@ -368,10 +368,10 @@
         <h5 class="modal-title text-dark" id="modalLabel"><i class="fas fa-pencil-alt"></i> Editar Datos del Usuario</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" title="(CONTROL + ALT + X) Cerrar"  aria-label="Close"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body bg-s">
         <form method="POST" action="?pagina=cliente" id="formdatosactualizar">
               <div class="seccion-formulario">
-              <h6><i class="fas fa-boxes"></i> Modicar datos del Usuario </h6>
+              <h6 class="texto-quinto"><i class="fas fa-boxes"></i> Modicar datos del Usuario </h6>
           <div class="mb-3">
             <label for="cedula" class="form-label text-g">Cédula</label>
              <div class="input-group mb-3">
@@ -446,32 +446,32 @@
         <h5 class="modal-title" id="infoModalLabel">Información del Usuario</h5>
         <button type="button" class="btn-close" title="(CONTROL + ALT + X) Cerrar" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body bg-s">
          <div class="seccion-formulario table-responsive">
         <table class="table">
           <tr>
-            <th>Nombre Completo</th>
-            <td id="modalNombreCompleto"></td>
+            <th class="texto-secundario">Nombre Completo</th>
+            <td id="modalNombreCompleto" class="texto-secundario"></td>
           </tr>
           <tr>
-            <th>N° Cedula</th>
-            <td id="modalcedula"></td>
+            <th class="texto-secundario">N° Cedula</th>
+            <td id="modalcedula" class="texto-secundario"></td>
           </tr>
           <tr>
-            <th>Rol</th>
-            <td id="modalRol"></td>
+            <th class="texto-secundario">Rol</th>
+            <td id="modalRol" class="texto-secundario"></td>
           </tr>
           <tr>
-            <th>Teléfono</th>
-            <td id="modalTelefonoss"></td>
+            <th class="texto-secundario">Teléfono</th>
+            <td id="modalTelefonoss" class="texto-secundario"></td>
           </tr>
           <tr>
-            <th>Correo</th>
-            <td id="modalCorreoss"></td>
+            <th class="texto-secundario">Correo</th>
+            <td id="modalCorreoss" class="texto-secundario"></td>
           </tr>
           <tr>
-            <th>Estatus</th>
-            <td id="modalEstatus"></td>
+            <th class="texto-secundario">Estatus</th>
+            <td id="modalEstatus" class="texto-secundario"></td>
           </tr>
         </table>
         </div>

@@ -106,18 +106,18 @@
 
     <div class="row"> <!-- CARD PRINCIPAL-->  
         <div class="col-12">
-          <div class="card mb-4">
-            <div class="card-header pb-0">  <!-- CARD N-1 -->  
+          <div class="card mb-4 div-oscuro-2">
+            <div class="card-header pb-0 div-oscuro-2">  <!-- CARD N-1 -->  
     
     <!--Titulo de página -->
      <div class="d-sm-flex align-items-center justify-content-between mb-3">
      <div class="d-flex gap-2">
-     <h4 class="mb-0"><i class="fa-solid fa-desktop mr-2" style="color: #f6c5b4;"></i>
+     <h4 class="mb-0 texto-quinto"><i class="fa-solid fa-desktop me-2" style="color: #f6c5b4;"></i>
         Pedido Web</h5>
       </div>
  
 
- <div class="d-flex gap-2">
+ <div class="d-flex gap-2 div-oscuro-2">
 
           <button type="button" class="btn btn-primary" id="btnayuda">
     <span class="icon text-white">
@@ -136,10 +136,10 @@
       </div>
     
 
-      <div class="table-responsive m-3"> <!-- comienzo div table-->
+      <div class="table-responsive m-3 div-oscuro-2"> <!-- comienzo div table-->
            <!-- comienzo de tabla-->                      
  
-          <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+          <table class="table table-m table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead  class="table-color">
                 <tr>
             
@@ -189,11 +189,11 @@
 ?>
     <tr style="text-align:center;">
  
-    <td class=""><?= $pedido['fecha'] ?></td>
+    <td class="texto-secundario"><?= $pedido['fecha'] ?></td>
     <td class=" m-3 text-white badge <?php echo $badgeClass; ?>"><?php echo $estatus_texto[$pedido['estado']] ?></td>
-    <td><?= $pedido['precio_total_bs'] ?>$</td>
-    <td><?= $pedido['referencia_bancaria'] ?></td>
-    <td><?= $pedido['nombre'] ?></td>
+    <td class="texto-secundario"><?= $pedido['precio_total_bs'] ?>$</td>
+    <td class="texto-secundario"><?= $pedido['referencia_bancaria'] ?></td>
+    <td class="texto-secundario"><?= $pedido['nombre'] ?></td>
 
     <td>
     <button class="btn btn-info " title="ver detalles" data-bs-toggle="modal" 
@@ -276,7 +276,7 @@ if (
             <h5 class="modal-title text-white" id="verDetallesModalLabel<?php echo $pedido['id_pedido']; ?>">Detalles del Pedido</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body bg-s">
 
             <!-- Fecha -->
             <div class="row mb-3">
@@ -289,7 +289,7 @@ if (
                     </h6>
                   </div>
                   <div class="collapse" id="collapseFecha<?php echo $pedido['id_pedido']; ?>">
-                    <div class="card-body">
+                    <div class="card-body card-m">
                       <div class="row">
                         <div class="col-md-6">
                           <strong>Fecha:</strong> <?php echo date('d/m/Y', strtotime($pedido['fecha'])); ?>
@@ -315,7 +315,7 @@ if (
                     </h6>
                   </div>
                   <div class="collapse" id="collapseCliente<?php echo $pedido['id_pedido']; ?>">
-                    <div class="card-body">
+                    <div class="card-body card-m">
                       <p><strong>Nombre:</strong> <?php echo htmlspecialchars($pedido['nombre']); ?> <?php echo htmlspecialchars($pedido['apellido']); ?></p>
                       
                       <p><strong>Estado del pedido:</strong>
@@ -357,7 +357,7 @@ if (
                     </h6>
                   </div>
                   <div class="collapse" id="collapsePagoEntrega<?php echo $pedido['id_pedido']; ?>">
-                    <div class="card-body">
+                    <div class="card-body card-m">
                       <p><strong>Método de Pago:</strong> <?php echo htmlspecialchars($pedido['metodo_pago'] ?? 'N/A'); ?></p>
                       <?php if (!empty($pedido['banco']) || !empty($pedido['banco_destino'])): ?>
                         <p><strong>Banco Emisor:</strong> <?php echo htmlspecialchars($pedido['banco'] ?? 'N/A'); ?></p>
@@ -409,8 +409,8 @@ if (
                     </h6>
                   </div>
                   <div class="collapse" id="collapseProductos<?php echo $pedido['id_pedido']; ?>">
-                    <div class="card-body table-responsive">
-                      <table class="table table-bordered table-striped">
+                    <div class="card-body card-m table-responsive">
+                      <table class="table table-m table-bordered table-striped">
                         <thead class="table-color">
                           <tr>
                             <th class="text-white">#</th>
@@ -429,18 +429,18 @@ if (
                               $total += $subtotal;
                           ?>
                           <tr>
-                            <td class="text-center"><?php echo $i++; ?></td>
-                            <td><?php echo htmlspecialchars($detalle['nombre']); ?></td>
-                            <td class="text-center"><?php echo $detalle['cantidad']; ?></td>
-                            <td class="text-center">$<?php echo number_format($detalle['precio_unitario'], 2); ?></td>
-                            <td class="text-center">$<?php echo number_format($subtotal, 2); ?></td>
+                            <td class="text-center texto-secundario"><?php echo $i++; ?></td>
+                            <td class="texto-secundario"><?php echo htmlspecialchars($detalle['nombre']); ?></td>
+                            <td class="text-center texto-secundario"><?php echo $detalle['cantidad']; ?></td>
+                            <td class="text-center texto-secundario">$<?php echo number_format($detalle['precio_unitario'], 2); ?></td>
+                            <td class="text-center texto-secundario">$<?php echo number_format($subtotal, 2); ?></td>
                           </tr>
                           <?php endforeach; ?>
                         </tbody>
                         <tfoot>
                           <tr>
-                            <th colspan="4" class="text-end">Total USD:</th>
-                            <th class="text-center">$<?php echo number_format($total, 2); ?></th>
+                            <th colspan="4" class="text-end texto-secundario">Total USD:</th>
+                            <th class="text-center texto-secundario">$<?php echo number_format($total, 2); ?></th>
                           </tr>
                         </tfoot>
                       </table>

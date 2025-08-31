@@ -1,12 +1,14 @@
 <?php
 
 require_once 'conexion.php';
+require_once 'metodoentrega.php';
 
 class Datoscliente extends Conexion{
-
+private $objEntrega;
     
     public function __construct() {
         parent::__construct();
+        $this->objEntrega = new metodoentrega();
     }
 
     private function encryptClave($datos) {
@@ -235,5 +237,29 @@ class Datoscliente extends Conexion{
         }
     }
 
+     public function obtenerEntrega() {
+        return $this->objEntrega->consultar();
+    }
   
+     public function consultardireccion() {
+        $conex = $this->getConex1();
+        try {
+             $sql = "SELECT *
+                FROM direccion 
+                WHERE id_metodoentrega IN (1, 2, 3) AND id_persona = :id_persona";
+
+            $stmt = $conex->prepare($sql);
+            $stmt->bindParam(':id_persona', $_SESSION['id'], PDO::PARAM_INT);
+            $stmt->execute();
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return $resultado;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
 }

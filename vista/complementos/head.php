@@ -40,3 +40,6 @@
 
 <!-- Tu módulo de notificaciones -->
 <script src="assets/js/notificacion.js" defer></script>
+
+
+<script src="assets/js/modoscuro.js"></script>

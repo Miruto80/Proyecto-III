@@ -150,12 +150,12 @@
     <div class="container-fluid py-4">
       <div class="row">
         <div class="col-12">
-          <div class="card mb-4">
+          <div class="card mb-4 div-oscuro-2">
             <!-- CABECERA -->
-            <div class="card-header pb-0">
+            <div class="card-header pb-0 div-oscuro-2">
               <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h4 class="mb-0">
-                  <i class="fa-solid fa-file-pdf" style="color: #f6c5b4;"></i>
+                <h4 class="mb-0 texto-quinto">
+                  <i class="fa-solid fa-file-pdf me-2" style="color: #f6c5b4;"></i>
                   Generar Reporte
                 </h4>
                 <div>
@@ -175,7 +175,7 @@
         <div class="row g-4">
             <!-- Card Compras -->
             <div class="col-md-6 col-lg-3">
-                <div id="cardCompra" class="report-card h-100 d-flex flex-column">
+                <div id="cardCompra" class="report-card h-100 d-flex flex-column card-m">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/f6c5b4/FFFFFF?text=Compra" class="card-img-top" alt="Reporte gráfico de niveles de inventario con productos de maquillaje organizados">
                     </div>
@@ -193,7 +193,7 @@
             
             <!-- Card Productos --> 
             <div class="col-md-6 col-lg-3">
-                <div id="cardProducto" class="report-card h-100 d-flex flex-column">
+                <div id="cardProducto" class="report-card h-100 d-flex flex-column card-m">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/d67888/FFFFFF?text=Producto" class="card-img-top" alt="Vista de productos de maquillaje organizados por categorías con precios visibles">
                     </div>
@@ -211,7 +211,7 @@
             
             <!-- Card Ventas -->
             <div class="col-md-6 col-lg-3">
-                <div id="cardVentas" class="report-card h-100 d-flex flex-column">
+                <div id="cardVentas" class="report-card h-100 d-flex flex-column card-m">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/fc91a3/000000?text=Ventas" class="card-img-top" alt="Gráfico de crecimiento de ventas de maquillaje con tendencia alcista">
                     </div>
@@ -229,7 +229,7 @@
             
             <!-- Card Pedidos Web -->
             <div class="col-md-6 col-lg-3">
-                <div id="cardPedidoWeb" class="report-card h-100 d-flex flex-column">
+                <div id="cardPedidoWeb" class="report-card h-100 d-flex flex-column card-m">
                     <div class="card-img-container">
                         <img src="https://placehold.co/600x400/7f7f7f/FFFFFF?text=Pedidos+Web" class="card-img-top" alt="Dashboard digital mostrando pedidos online de productos de belleza">
                     </div>
@@ -261,9 +261,9 @@
 <!-- Modal Compras -->
 <div class="modal fade" id="modalCompra" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content bg-s">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fas fa-file-invoice-dollar me-2"></i>Reporte de Compras</h5>
+        <h5 class="modal-title texto-secundario"><i class="fas fa-file-invoice-dollar me-2"></i>Reporte de Compras</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"
                 style="font-size: 1.2em; opacity: 0.8; transition: all 0.3s ease;"
                 onmouseover="this.style.opacity='1'; this.style.transform='scale(1.1)'"
@@ -277,8 +277,8 @@
       >
         <div class="modal-body">
           <!-- Filtros Básicos -->
-          <div class="filtro-grupo">
-            <h6><i class="fas fa-calendar me-2"></i>Rango de Fechas 
+          <div class="filtro-grupo card-m">
+            <h6 class="texto-quinto"><i class="fas fa-calendar me-2"></i>Rango de Fechas 
               <i class="fas fa-question-circle text-info ms-1" 
                  data-bs-toggle="tooltip" 
                  data-bs-html="true" 
@@ -318,7 +318,7 @@
             <i class="fas fa-filter"></i>Filtros Avanzados
           </button>
           
-          <div id="filtrosAvanzadosCompra" class="filtros-avanzados" style="display: none;">
+          <div id="filtrosAvanzadosCompra" class="filtros-avanzados card-m" style="display: none;">
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label">Proveedor 
@@ -384,7 +384,7 @@
             </div>
           </div>
           
-          <p class="text-center text-muted">¿Generar listado de compras con los filtros seleccionados?</p>
+          <p class="text-center text-muted texto-secundario">¿Generar listado de compras con los filtros seleccionados?</p>
         </div>
 
         <div class="modal-footer">
@@ -403,9 +403,9 @@
 <!-- Modal Productos -->
 <div class="modal fade" id="modalProducto" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content bg-s">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fas fa-boxes me-2"></i>Reporte de Productos</h5>
+        <h5 class="modal-title texto-secundario"><i class="fas fa-boxes me-2"></i>Reporte de Productos</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"
                 style="font-size: 1.2em; opacity: 0.8; transition: all 0.3s ease;"
                 onmouseover="this.style.opacity='1'; this.style.transform='scale(1.1)'"
@@ -419,8 +419,8 @@
       >
         <div class="modal-body">
           <!-- Filtros Básicos -->
-          <div class="filtro-grupo">
-            <h6><i class="fas fa-filter me-2"></i>Filtros de Productos 
+          <div class="filtro-grupo card-m">
+            <h6 class="texto-quinto"><i class="fas fa-filter me-2"></i>Filtros de Productos 
               <i class="fas fa-question-circle text-info ms-1" 
                  data-bs-toggle="tooltip" 
                  data-bs-html="true" 
@@ -467,7 +467,7 @@
             <i class="fas fa-filter"></i>Filtros Avanzados
           </button>
           
-          <div id="filtrosAvanzadosProducto" class="filtros-avanzados" style="display: none;">
+          <div id="filtrosAvanzadosProducto" class="filtros-avanzados card-m" style="display: none;">
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label">Proveedor 
@@ -532,7 +532,7 @@
             </div>
           </div>
           
-          <p class="text-center text-muted">¿Generar listado de productos con los filtros seleccionados?</p>
+          <p class="text-center text-muted texto-secundario">¿Generar listado de productos con los filtros seleccionados?</p>
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger">
@@ -550,9 +550,9 @@
 <!-- Modal Ventas -->
 <div class="modal fade" id="modalVenta" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content bg-s">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fas fa-chart-line me-2"></i>Reporte de Ventas</h5>
+        <h5 class="modal-title texto-secundario"><i class="fas fa-chart-line me-2"></i>Reporte de Ventas</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"
                 style="font-size: 1.2em; opacity: 0.8; transition: all 0.3s ease;"
                 onmouseover="this.style.opacity='1'; this.style.transform='scale(1.1)'"
@@ -566,8 +566,8 @@
       >
         <div class="modal-body">
           <!-- Filtros Básicos -->
-          <div class="filtro-grupo">
-            <h6><i class="fas fa-calendar me-2"></i>Rango de Fechas 
+          <div class="filtro-grupo card-m">
+            <h6 class="texto-quinto"><i class="fas fa-calendar me-2"></i>Rango de Fechas 
               <i class="fas fa-question-circle text-info ms-1" 
                  data-bs-toggle="tooltip" 
                  data-bs-html="true" 
@@ -607,7 +607,7 @@
             <i class="fas fa-filter"></i>Filtros Avanzados
           </button>
           
-          <div id="filtrosAvanzadosVenta" class="filtros-avanzados" style="display: none;">
+          <div id="filtrosAvanzadosVenta" class="filtros-avanzados card-m" style="display: none;">
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label">Producto 
@@ -671,7 +671,7 @@
             </div>
           </div>
           
-          <p class="text-center text-muted">¿Generar listado de ventas con los filtros seleccionados?</p>
+          <p class="text-center text-muted texto-secundario">¿Generar listado de ventas con los filtros seleccionados?</p>
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger">
@@ -689,9 +689,9 @@
 <!-- Modal Pedido Web -->
 <div class="modal fade" id="modalPedidoWeb" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content bg-s">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fas fa-shopping-cart me-2"></i>Reporte de Pedidos Web</h5>
+        <h5 class="modal-title texto-secundario"><i class="fas fa-shopping-cart me-2"></i>Reporte de Pedidos Web</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"
                 style="font-size: 1.2em; opacity: 0.8; transition: all 0.3s ease;"
                 onmouseover="this.style.opacity='1'; this.style.transform='scale(1.1)'"
@@ -705,8 +705,8 @@
       >
         <div class="modal-body">
           <!-- Filtros Básicos -->
-          <div class="filtro-grupo">
-            <h6><i class="fas fa-calendar me-2"></i>Rango de Fechas 
+          <div class="filtro-grupo card-m">
+            <h6 class="texto-quinto"><i class="fas fa-calendar me-2"></i>Rango de Fechas 
               <i class="fas fa-question-circle text-info ms-1" 
                  data-bs-toggle="tooltip" 
                  data-bs-html="true" 
@@ -746,7 +746,7 @@
             <i class="fas fa-filter"></i>Filtros Avanzados
           </button>
           
-          <div id="filtrosAvanzadosPedidoWeb" class="filtros-avanzados" style="display: none;">
+          <div id="filtrosAvanzadosPedidoWeb" class="filtros-avanzados card-m" style="display: none;">
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label">Producto 
@@ -808,7 +808,7 @@
             </div>
           </div>
           
-          <p class="text-center text-muted">¿Generar listado de pedidos web con los filtros seleccionados?</p>
+          <p class="text-center text-muted texto-secundario">¿Generar listado de pedidos web con los filtros seleccionados?</p>
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger">

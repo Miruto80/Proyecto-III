@@ -2,9 +2,9 @@
         <div class="container-fluid">
           <div class="row align-items-center justify-content-lg-between">
             <div class="col-lg-8 mb-lg-0 mb-4">
-              <div class="copyright text-center text-sm text-muted text-lg-start">
+              <div class="copyright text-center text-sm text-muted text-lg-start texto-secundario">
                 © 2025,
-                ESTUDIANTE UPTAEB T3 - LOVEMAKEUP | Todos los derechos Revervados.
+                ESTUDIANTE UPTAEB T3-3113 | LOVEMAKEUP C.A | Todos los derechos Revervados.
               </div>
             </div>
             
@@ -19,13 +19,13 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       
-      <div class="modal-body"> <!-- Modal contenido -->
+      <div class="modal-body bg-s"> <!-- Modal contenido -->
       
       <div class="d-flex justify-content-center mp-3 align-items-center">
           <img src="assets/img/integoracion.png" width="35%">
       </div>
       <div class="d-flex justify-content-center align-items-center">
-        <h3>¿Desea Cerrar la sesión?</h3>
+        <h3 class="texto-secundario">¿Desea Cerrar la sesión?</h3>
       </div>
 
       <br>    

@@ -15,6 +15,9 @@ require_once 'modelo/catalogo_datos.php';
 
 $objdatos = new Datoscliente();
 
+  $entrega = $objdatos->obtenerEntrega();
+  $direccion = $objdatos->consultardireccion();
+
 if (isset($_POST['actualizar'])) {
      $datosCliente = [
         'operacion' => 'actualizar',

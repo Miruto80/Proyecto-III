@@ -40,9 +40,9 @@
       <div class="row">
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">
+            <div class="card-header pb-0 div-oscuro-2">
               <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h4 class="mb-0">
+                <h4 class="mb-0 texto-quinto">
                   <i class="fa-solid fa-user-group mr-2" style="color: #f6c5b4;"></i> Tipo Usuario
                 </h4>
                 <div class="d-flex align-items-center gap-2">
@@ -65,7 +65,7 @@
               </div>
 
               <div class="table-responsive">
-                <table class="table table-hover" id="myTable" width="100%" cellspacing="0">
+                <table class="table table-m table-hover" id="myTable" width="100%" cellspacing="0">
                   <thead class="table-color">
                     <tr>
                       <th class="text-white text-center">Tipo de Usuario</th>
@@ -94,10 +94,10 @@
                               <i class="fa-solid fa-user-tag fa-2x" style="color: #f6c5b4;"></i>
                             </div>
                             <div>
-                              <div class="text-dark">
+                              <div class="text-dark texto-secundario">
                                 <b><?= htmlspecialchars($dato['nombre']) ?></b>
                               </div>
-                              <div style="font-size: 12px; color: #6c757d;">
+                              <div style="font-size: 12px; color: #6c757d;" class="texto-tercero">
                                 ID: <?= $dato['id_rol'] ?>
                               </div>
                             </div>
@@ -173,10 +173,10 @@
             <button type="button" class="btn-close" title="(CONTROL + ALT + X) Cerrar" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
-          <div class="modal-body">
+          <div class="modal-body bg-s">
             <form id="u" autocomplete="off">
               <div class="seccion-formulario">
-                <h6><i class="fas fa-user-tag"></i> Datos del Tipo de Usuario</h6>
+                <h6 class="texto-quinto"><i class="fas fa-user-tag"></i> Datos del Tipo de Usuario</h6>
                 <div class="row g-3">
                   <!-- Nombre del Tipo -->
                   <div class="col-md-12">
@@ -262,12 +262,12 @@
             </h5>
             <button type="button" class="btn-close" title="(CONTROL + ALT + X) Cerrar" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body bg-s">
             <form id="formModificar" autocomplete="off">
               <input type="hidden" name="id_tipo" id="id_tipo_modificar">
               
               <div class="seccion-formulario">
-                <h6><i class="fas fa-edit"></i> Modificar Datos del Tipo de Usuario</h6>
+                <h6 class="texto-quinto"><i class="fas fa-edit"></i> Modificar Datos del Tipo de Usuario</h6>
                 <div class="row g-3">
                   <!-- Nombre del Tipo -->
                   <div class="col-md-12">
@@ -352,24 +352,24 @@
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body bg-s">
             <div class="seccion-formulario table-responsive">
               <table class="table">
                 <tr>
-                  <th>ID del Tipo</th>
-                  <td id="modalId"></td>
+                  <th class="texto-secundario">ID del Tipo</th>
+                  <td id="modalId" class="texto-secundario"></td>
                 </tr>
                 <tr>
-                  <th>Nombre</th>
-                  <td id="modalNombre"></td>
+                  <th class="texto-secundario">Nombre</th>
+                  <td id="modalNombre" class="texto-secundario"></td>
                 </tr>
                 <tr>
-                  <th>Nivel</th>
-                  <td id="modalNivel"></td>
+                  <th class="texto-secundario">Nivel</th>
+                  <td id="modalNivel" class="texto-secundario"></td>
                 </tr>
                 <tr>
-                  <th>Estatus</th>
-                  <td id="modalEstatus"></td>
+                  <th class="texto-secundario">Estatus</th>
+                  <td id="modalEstatus" class="texto-secundario"></td>
                 </tr>
               </table>
             </div>
