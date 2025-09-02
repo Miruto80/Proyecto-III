@@ -32,34 +32,73 @@
              <li class="breadcrumb-item active" aria-current="page">Todos los productos</li>
         </ol>
       </nav>
+      <!-- BOTÓN FLOTANTE SOLO EN MÓVIL -->
+        <button class="btn btn-dark position-fixed bottom-0 start-0 m-3 d-md-none"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasCategorias"
+        aria-controls="offcanvasCategorias"
+        style="z-index:1050;">
+        <i class="fa fa-filter me-2"></i> Categorías
+        </button>
 
+
+<!-- PANEL LATERAL DE CATEGORÍAS -->
+       <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="offcanvasCategorias" aria-labelledby="offcanvasCategoriasLabel">
+       <div class="offcanvas-header">
+       <h5 id="offcanvasCategoriasLabel">Filtrado por categorías</h5>
+       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+      </div>
+  <div class="offcanvas-body">
+    <ul class="navbar-nav menu-list list-unstyled d-flex flex-column gap-2 categorias">
+      <?php if (empty($categorias)): ?>
+        <li class="text-muted">No se encontraron categorías.</li>
+      <?php endif; ?>
+      <?php foreach ($categorias as $cat): ?>
+        <li class="nav-item">
+          <label for="mob-cat-<?php echo $cat['id_categoria']; ?>" 
+                 class="categoria-label nav-link d-flex align-items-center gap-2 px-2 py-1 rounded-2 transition">
+            <input type="checkbox" id="mob-cat-<?php echo $cat['id_categoria']; ?>" 
+                   value="<?php echo $cat['id_categoria']; ?>" 
+                   class="form-check-input filtro-checkbox">
+             <svg width="20" height="20" viewBox="0 0 24 24">
+               <use xlink:href="#icon-<?php echo strtolower($cat['nombre']); ?>"></use>
+              </svg>
+               <span><?php echo htmlspecialchars($cat['nombre']); ?></span>
+             </label>
+            </li>
+           <?php endforeach; ?>
+          </ul>
+        </div>
+      </div>
         <div class="row g-md-5 pt-0">
             <!-- CATEGORÍAS -->
             <div class="row g-md-5">
-            <!-- CATEGORÍAS -->
-            <div class="col-md-3">
-              <div class="p-3 border rounded bg-white shadow-sm">
-                <h5 class="mb-3">Filtrado por categorias</h5>
-                <ul class="navbar-nav menu-list list-unstyled d-flex flex-column gap-2 categorias">
-                  <?php if (empty($categorias)): ?>
-                    <li class="text-muted">No se encontraron categorías.</li>
-                  <?php endif; ?>
-                  <?php foreach ($categorias as $cat): ?>
-                    <li class="nav-item">
-                      <label for="cat-<?php echo $cat['id_categoria']; ?>" class="categoria-label nav-link d-flex align-items-center gap-2 px-2 py-1 rounded-2 transition">
-                        <input type="checkbox" id="cat-<?php echo $cat['id_categoria']; ?>" value="<?php echo $cat['id_categoria']; ?>" class="form-check-input filtro-checkbox">
-                        <svg width="20" height="20" viewBox="0 0 24 24">
-                          <use xlink:href="#icon-<?php echo strtolower($cat['nombre']); ?>"></use>
-                        </svg>
-                        <span><?php echo htmlspecialchars($cat['nombre']); ?></span>
-                      </label>
-                    </li>
-                  <?php endforeach; ?>
-                </ul>
-              </div>
-            </div>
-
-
+           <!-- CATEGORÍAS SOLO EN DESKTOP -->
+           <div class="col-md-3 d-none d-md-block">
+  <div class="p-3 border rounded bg-white shadow-sm">
+    <h5 class="mb-3">Filtrado por categorías</h5>
+    <ul class="navbar-nav menu-list list-unstyled d-flex flex-column gap-2 categorias">
+      <?php if (empty($categorias)): ?>
+        <li class="text-muted">No se encontraron categorías.</li>
+      <?php endif; ?>
+      <?php foreach ($categorias as $cat): ?>
+        <li class="nav-item">
+          <label for="cat-<?php echo $cat['id_categoria']; ?>" 
+                 class="categoria-label nav-link d-flex align-items-center gap-2 px-2 py-1 rounded-2 transition">
+            <input type="checkbox" id="cat-<?php echo $cat['id_categoria']; ?>" 
+                   value="<?php echo $cat['id_categoria']; ?>" 
+                   class="form-check-input filtro-checkbox">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+              <use xlink:href="#icon-<?php echo strtolower($cat['nombre']); ?>"></use>
+            </svg>
+            <span><?php echo htmlspecialchars($cat['nombre']); ?></span>
+          </label>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
+</div>
             <!-- PRODUCTOS -->
             <div class="col-md-9">
                 <div class="row">
