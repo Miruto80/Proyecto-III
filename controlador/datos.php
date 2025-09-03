@@ -69,9 +69,26 @@ if (isset($_POST['actualizar'])) {
         ];
         $bitacoraObj = new Bitacora();
         $bitacoraObj->registrarOperacion($bitacora['accion'], 'datos', $bitacora);
-        
     }
-        echo json_encode($resultado);
+
+       
+    echo json_encode($resultado);
+
+    if ($resultado['respuesta'] == 1) {
+        $id_persona = $_SESSION["id"];
+        $resultado = $objdatos->consultardatos($id_persona);
+
+                // Verificamos que hay al menos un resultado
+            if (!empty($resultado) && is_array($resultado)) {
+                $datos = $resultado[0]; // Accedemos al primer elemento
+
+                $_SESSION["nombre"]   = $datos["nombre"];
+                $_SESSION["apellido"] = $datos["apellido"];
+                $_SESSION["telefono"] = $datos["telefono"];
+                $_SESSION["correo"]   = $datos["correo"];
+                $_SESSION["cedula"]   = $datos["cedula"];
+            }
+      }   
       
 } else if(isset($_POST['actualizarclave'])){
     $datosUsuario = [

@@ -281,7 +281,7 @@ function enviaAjax(datos) {
                   muestraMensaje("success", 1500, "Se ha Modificado con éxito", "Su registro se ha Actualizado exitosamente");
                   desactivarLoaderBoton('#actualizar');
                   setTimeout(function () {
-                    location = '?pagina=datos&m=a';
+                    location = '?pagina=datos';
                   }, 1500);
                 } else {  
                   muestraMensaje("error", 2000, lee.text, "");

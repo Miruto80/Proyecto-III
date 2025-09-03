@@ -36,6 +36,7 @@
   border-radius: 50%;
   padding: 8px;
   transition: all 0.3s ease;
+
 }
 
 .modal-producto .btn-close:hover {
@@ -51,6 +52,16 @@
   margin-bottom: 1.5rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   border-left: 4px solid #f6c5b4;
+  transition: all 0.3s ease;
+}
+
+.seccion-formularioo {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #f786de;
   transition: all 0.3s ease;
 }
 

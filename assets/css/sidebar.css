@@ -165,7 +165,7 @@
     color: #ff9800; 
   }
 
-   .nav-link:hover {
+   .nav-link:hover { 
       background-color: rgba(226, 226, 226, 0.4);
       border-radius: 0.40rem;
       transform: scale(1.05);

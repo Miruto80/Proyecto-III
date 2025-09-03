@@ -4,7 +4,54 @@
 <head>
 <!-- php CSS, Meta y titulo--> 
 <?php include 'vista/complementos/head_catalogo.php' ?>
+<link rel="stylesheet" href="assets/css/formulario.css">
+<style>
+  .modal-productoo {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
 
+.modal-productoo .modal-header {
+  background: linear-gradient(135deg, #f88af8ff 0%, #4dc0eeff 100%);
+  border-radius: 15px 15px 0 0;
+  border-bottom: none;
+  padding: 1.5rem;
+}
+
+.modal-productoo .modal-title {
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-productoo .modal-title i {
+  font-size: 1.8rem;
+  color: #0a0909;
+}
+
+.modal-productoo .modal-body {
+  padding: 2rem;
+  background: #f8f9fa;
+}
+
+.modal-productoo .btn-close {
+  background-color: rgba(8, 6, 6, 0.8);
+  border-radius: 50%;
+  padding: 8px;
+  transition: all 0.3s ease;
+
+}
+
+.modal-productoo .btn-close:hover {
+  background-color: #eb0f0f;
+  transform: scale(1.1);
+}
+
+</style>
 </head>
 
 <body>
@@ -66,15 +113,9 @@
        <form action="?pagina=catalogo_datos" method="POST" autocomplete="off" id="u">
       <div class="row">
          <h5>Información personal</h5>
-            <?php
-            if (isset($_GET['m']) && $_GET['m'] == 'a') {
-              echo '<div class="alert alert-info alert-dismissible fade show text-center" role="alert">
-            <i class="fa-solid fa-circle-info"></i> Los cambios se aplicarán cuando cierre la sesión.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-          </div>';
-            }
-            ?>  
+  
         </div>  
+          <div class="seccion-formularioo">
           <div class="row mb-3">
             <div class="col-md-4 mb-3">
               <label for="cedula">Cédula</label>
@@ -121,7 +162,7 @@
               <p id="textocorreo" class="text-danger"></p>
             </div>
           </div>
-
+  </div>  
         <div class="row">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <button class="btn-verde me-md-2" type="button" id="actualizar"> <i class="fa-solid fa-floppy-disk me-2"></i> Actualizar Datos</button>
@@ -131,7 +172,7 @@
 
         </div>
      </form>   
-      
+    
   </div><!-- f1 /-->
 
         <div id="form-seguridad" class="formulario  mt-3 d-none"> <!-- f2-->
@@ -146,7 +187,7 @@
         </div>
       </div>
       <form action="?pagina=catalogo_datos" method="POST" autocomplete="off" id="formclave">
-    
+     <div class="seccion-formularioo">
   <div class="row mb-3">
   
     <div class="col-12">
@@ -183,7 +224,7 @@
 
   <input type="hidden" name="persona" value="<?php echo $_SESSION['id'] ?>">
 
-
+  </div>
         <div class="row">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
              <button class="btn-verde me-md-2" type="button" id="actualizarclave"> <i class="fa-solid fa-key"></i> Cambiar Clave</button>
@@ -210,6 +251,9 @@
         </div>
 
         </div> <!-- f2 / -->
+
+
+ <!--|||||||||||||||||||||||| DIRECCION -->
 
         <div id="form-direcciones" class="formulario d-none"> <!-- f3 -->
         <?php
@@ -375,30 +419,37 @@ if (isset($renderedNational)) {
   }
 </script>
 
+
+
+<!-- |||||||||||||||||FOR LISTO-->
 <div class="modal fade" id="modalEditarDireccion" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form method="POST" action="editar_direccion.php"> <!-- ajusta ruta según tu backend -->
-      <div class="modal-content">
+  <div class="modal-dialog modal-lg">
+    <form method="POST" action="?pagina=catalogo_datos" autocomplete="off" id="editardireccion"> <!-- ajusta ruta según tu backend -->
+      <div class="modal-content modal-productoo">
         <div class="modal-header">
-          <h5 class="modal-title" id="modalLabel">Editar Dirección</h5>
+          <h5 class="modal-title text-white" id="modalLabel">Editar Dirección</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
           <input type="hidden" name="id_direccion" id="modal_id_direccion">
           <input type="hidden" name="id_metodoentrega" id="modal_id_metodo">
-
+        
+            <div class="seccion-formularioo">
           <div class="mb-3">
             <label for="modal_direccion" class="form-label">Dirección</label>
-            <input type="text" class="form-control" name="direccion_envio" id="modal_direccion">
+            <input type="text" class="form-control text-dark" name="direccion_envio" id="modal_direccion">
+             <p id="textodir" class="text-danger"></p>
           </div>
 
           <div class="mb-3" id="modal_sucursal_group" style="display: none;">
             <label for="modal_sucursal" class="form-label">Sucursal</label>
-            <input type="text" class="form-control" name="sucursal_envio" id="modal_sucursal">
+            <input type="text" class="form-control text-dark" name="sucursal_envio" id="modal_sucursal">
+             <p id="textosur" class="text-danger"></p>
           </div>
         </div>
+           </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          <button type="button" class="btn btn-registrar" name="actualizardireccion" id="direccion">Guardar cambios</button>
         </div>
       </div>
     </form>
@@ -434,24 +485,29 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <div class="modal fade" id="modalEditarDelivery" tabindex="-1" aria-labelledby="modalDeliveryLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form method="POST" action="editar_direccion.php">
-      <div class="modal-content">
+  <div class="modal-dialog modal-lg">
+   
+      <div class="modal-content modal-productoo">
         <div class="modal-header">
-          <h5 class="modal-title" id="modalDeliveryLabel">Editar Dirección (Delivery)</h5>
+          <h5 class="modal-title text-white" id="modalDeliveryLabel">Editar Dirección (Delivery)</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
+          <div class="seccion-formularioo">
+           <form method="POST" action="?pagina=catalogo_datos" autocomplete="off" id="editardelivery">
           <input type="hidden" name="id_direccion" id="delivery_id_direccion">
           <input type="hidden" name="id_metodoentrega" value="1">
+          <input type="hidden" name="sucursal_envio" value="no aplica">
 
           <div class="mb-3">
             <label for="delivery_direccion" class="form-label">Dirección</label>
-            <input type="text" class="form-control" name="direccion_envio" id="delivery_direccion">
+            <input type="text" class="form-control text-dark" name="direccion_envio" id="delivery_direccion">
+            <p id="textodir1" class="text-danger"></p>
           </div>
         </div>
+         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <button type="button" class="btn btn-registrar" name="actualizardireccion" id="direccionedit">Guardar cambios</button>
         </div>
       </div>
     </form>
@@ -477,28 +533,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 <div class="modal fade" id="modalAgregarDireccion" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form method="POST" action="registrar_direccion.php">
-      <div class="modal-content">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content modal-productoo">
         <div class="modal-header">
-        <h5 class="modal-title" id="modalAgregarLabel">Agregar Dirección para <span id="modalNombreMetodo"></span></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <h5 class="modal-title text-white" id="modalAgregarLabel">Agregar Dirección para <span id="modalNombreMetodo"></span></h5>
+          <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
+             <div class="seccion-formularioo">
+           <form method="POST" action="?pagina=catalogo_datos" autocomplete="off" id="incluir">
           <input type="hidden" name="id_metodoentrega" id="agregar_id_metodo">
 
           <div class="mb-3">
             <label for="agregar_direccion" class="form-label">Dirección</label>
-            <input type="text" class="form-control" name="direccion_envio" id="agregar_direccion">
+            <input type="text" class="form-control text-dark" name="direccion_envio" id="agregar_direccion">
+            <p id="textodir2" class="text-danger"></p>
           </div>
 
           <div class="mb-3" id="agregar_sucursal_group" style="display: none;">
             <label for="agregar_sucursal" class="form-label">Sucursal</label>
-            <input type="text" class="form-control" name="sucursal_envio" id="agregar_sucursal">
+            <input type="text" class="form-control text-dark" name="sucursal_envio" id="agregar_sucursal">
+            <p id="textosur1" class="text-danger"></p>
           </div>
         </div>
+          </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-success">Registrar</button>
+          <button type="button" id="agregardireccion" name="incluir" class="btn btn-registrar">Registrar</button>
         </div>
       </div>
     </form>
@@ -524,6 +584,7 @@ document.addEventListener('DOMContentLoaded', function () {
       sucursalGroup.style.display = 'block';
     } else {
       sucursalGroup.style.display = 'none';
+      
     }
   });
 });
@@ -538,8 +599,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 <div class="modal fade" id="cuenta" tabindex="2" aria-labelledby="s" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modal-productoo">
       <div class="modal-header bg-table">
         <h5 class="modal-title text-white" id="exampleModalLabel">¿Deseas Eliminar la Cuenta?</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style=" color: #ffffff;"></button>
@@ -552,11 +613,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         <p class="text-dark">Esta acción es irreversible, y una vez eliminada tu cuenta, no podremos recuperar la información eliminada.</p>
 
+         <div class="seccion-formularioo">
       <form id="eliminarForm" action="?pagina=catalogo_datos" method="POST" autocomplete="off"> 
           <label>Escriba la palabra ACEPTAR, para confimar la eliminación</label>
           <input type="text" name="confirmar" id="confirmar" class="form-control text-dark" placeholder="ACEPTAR">
           <p id="textoconfirmar" class="text-danger"></p>
           <input type="hidden" name="persona" value="<?php echo $_SESSION['id'] ?>" >
+           </div>
           <div class="modal-footer">
               <button type="button" class="btn-verde" name="eliminar" id="btnEliminar">Continuar</button>
           </div>

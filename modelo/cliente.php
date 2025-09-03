@@ -44,7 +44,8 @@ class Cliente extends Conexion
         public function consultar() {
             $conex = $this->getConex1();
             try {
-                $sql = "SELECT * FROM cliente WHERE estatus >=1";
+                $sql = "SELECT * FROM cliente WHERE estatus >=1
+                ORDER BY id_persona DESC";
                         
                 $stmt = $conex->prepare($sql);
                 $stmt->execute();

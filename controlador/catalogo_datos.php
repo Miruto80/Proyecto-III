@@ -23,8 +23,8 @@ if (isset($_POST['actualizar'])) {
         'operacion' => 'actualizar',
         'datos' => [
             'id_persona' => $_SESSION["id"],
-            'nombre' => $_POST['nombre'],
-            'apellido' => $_POST['apellido'],
+            'nombre' => ucfirst(strtolower($_POST['nombre'])),
+            'apellido' => ucfirst(strtolower($_POST['apellido'])),
             'cedula' => $_POST['cedula'],
             'correo' => strtolower($_POST['correo']),
             'telefono' => $_POST['telefono'],
@@ -62,8 +62,58 @@ if (isset($_POST['actualizar'])) {
    $resultado = $objdatos->procesarCliente(json_encode($datosCliente));
     
    echo json_encode($resultado);
+
+    if ($resultado['respuesta'] == 1) {
+        $id_persona = $_SESSION["id"];
+        $resultado = $objdatos->consultardatos($id_persona);
+
+                // Verificamos que hay al menos un resultado
+            if (!empty($resultado) && is_array($resultado)) {
+                $datos = $resultado[0]; // Accedemos al primer elemento
+
+                $_SESSION["nombre"]   = $datos["nombre"];
+                $_SESSION["apellido"] = $datos["apellido"];
+                $_SESSION["telefono"] = $datos["telefono"];
+                $_SESSION["correo"]   = $datos["correo"];
+                $_SESSION["cedula"]   = $datos["cedula"];
+            }
+      }   
       
-}else if(isset($_POST['eliminar'])){
+} else if (isset($_POST['actualizardireccion'])) {
+    
+    $datosCliente = [
+        'operacion' => 'actualizardireccion',
+        'datos' => [
+            'direccion_envio' => $_POST['direccion_envio'],
+            'sucursal_envio' => $_POST['sucursal_envio'],
+            'id_direccion' => $_POST['id_direccion'],
+            'id_metodoentrega' => $_POST['id_metodoentrega']
+        ]
+    ];
+
+   $resultado = $objdatos->procesarCliente(json_encode($datosCliente));
+   echo json_encode($resultado);
+
+   
+      
+} else if (isset($_POST['incluir'])) {
+
+    $sucursal = !empty($_POST['sucursal_envio']) ? $_POST['sucursal_envio'] : "no aplica";
+
+    $datosCliente = [
+        'operacion' => 'incluir',
+        'datos' => [
+            'id_metodoentrega' => $_POST['id_metodoentrega'],
+            'id_persona' => $_SESSION["id"],
+            'direccion_envio' => $_POST['direccion_envio'],
+            'sucursal_envio' => $sucursal
+        ]
+    ];
+
+   $resultado = $objdatos->procesarCliente(json_encode($datosCliente));
+   echo json_encode($resultado);
+   
+} else if(isset($_POST['eliminar'])){
     
     $datosCliente = [
         'operacion' => 'eliminar',

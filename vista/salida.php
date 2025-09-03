@@ -1233,9 +1233,6 @@
 
 <!-- php barra de navegacion-->
 <?php include 'complementos/footer.php' ?>
-
-  <!-- jQuery -->
-  <script src="assets/js/libreria/jquery.min.js"></script>
   
   <!-- Script para inicializar DataTable -->
   <script src="assets/js/demo/datatables-demo.js"></script>
@@ -1485,3 +1482,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+</body>
+
+</html>

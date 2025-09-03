@@ -60,7 +60,7 @@ private $objEntrega;
 
                     return $this->ejecutarActualizacion($datosProcesar);
                     
-                    case 'actualizarclave':
+                case 'actualizarclave':
                       
                      if (!$this->validarClaveActual($datosProcesar)) {
                         return ['respuesta' => 0, 'accion' => 'clave', 'text' => 'La clave actual es incorrecta.'];
@@ -68,8 +68,15 @@ private $objEntrega;
 
                      return $this->ejecutarActualizacionClave($datosProcesar);
 
-                     case 'eliminar':
-                         return $this->ejecutarEliminacion($datosProcesar);                     
+                case 'eliminar':
+                         return $this->ejecutarEliminacion($datosProcesar);
+
+                case 'incluir':
+                         return $this->RegistroDireccion($datosProcesar); 
+
+                case 'actualizardireccion':
+                         return $this->ejecutarActualizacionDireccion($datosProcesar);           
+                         
                 default:
                     return ['respuesta' => 0, 'mensaje' => 'Operación no válida'];
             }
@@ -121,6 +128,82 @@ private $objEntrega;
             throw $e;
         }
     }
+
+      private function ejecutarActualizacionDireccion($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "UPDATE direccion 
+                        SET direccion_envio = :direccion_envio,
+                            sucursal_envio = :sucursal_envio
+                        WHERE id_direccion = :id_direccion";
+            
+               $parametros = [
+                'direccion_envio' => $datos['direccion_envio'],
+                'sucursal_envio' => $datos['sucursal_envio'],
+                'id_direccion' => $datos['id_direccion']
+                ];
+
+            $stmt = $conex->prepare($sql);
+            $resultado = $stmt->execute($parametros);
+            
+            if ($resultado) {
+                $conex->commit();
+                $conex = null;
+                return ['respuesta' => 1, 'accion' => 'actualizardireccion'];
+            }
+            
+            $conex->rollBack();
+            $conex = null;
+            return ['respuesta' => 0, 'accion' => 'actualizardireccion'];
+            
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+     private function RegistroDireccion($datos) {
+        $conex = $this->getConex1();
+        try {
+            $conex->beginTransaction();
+            
+            $sql = "INSERT INTO direccion(id_metodoentrega, id_persona, direccion_envio, sucursal_envio)
+                    VALUES(:id_metodoentrega, :id_persona, :direccion_envio, :sucursal_envio)";
+            
+            $parametros = [
+                'id_metodoentrega' => $datos['id_metodoentrega'],
+                'id_persona' => $datos['id_persona'],
+                'direccion_envio' => $datos['direccion_envio'],
+                'sucursal_envio' => $datos['sucursal_envio']
+                ];
+
+            $stmt = $conex->prepare($sql);
+            $resultado = $stmt->execute($parametros);
+
+             if ($resultado) {
+                $conex->commit();
+                $conex = null;
+               return ['respuesta' => 1, 'accion' => 'incluir'];
+            }
+            
+            $conex->rollBack();
+            $conex = null;
+            return ['respuesta' => 0, 'accion' => 'incluir'];
+                    
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex->rollBack();
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
 
    private function validarClaveActual($datos) {
         $conex = $this->getConex1();
@@ -251,6 +334,27 @@ private $objEntrega;
             $stmt = $conex->prepare($sql);
             $stmt->bindParam(':id_persona', $_SESSION['id'], PDO::PARAM_INT);
             $stmt->execute();
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return $resultado;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
+
+    public function consultardatos($id_persona) {
+        $conex = $this->getConex1();
+        try {
+        $sql = "SELECT *
+                FROM cliente 
+                WHERE id_persona = :id_persona";
+                    
+           $stmt = $conex->prepare($sql);
+             $stmt->execute(['id_persona' => $id_persona]);
+
             $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $conex = null;
             return $resultado;

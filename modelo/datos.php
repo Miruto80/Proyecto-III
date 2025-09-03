@@ -203,5 +203,27 @@ class Datos extends Conexion{
             throw $e;
         }
     }
+
+     public function consultardatos($id_persona) {
+        $conex = $this->getConex2();
+        try {
+        $sql = "SELECT *
+                FROM usuario 
+                WHERE id_persona = :id_persona";
+                    
+           $stmt = $conex->prepare($sql);
+             $stmt->execute(['id_persona' => $id_persona]);
+
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $conex = null;
+            return $resultado;
+        } catch (PDOException $e) {
+            if ($conex) {
+                $conex = null;
+            }
+            throw $e;
+        }
+    }
   
 }
+   

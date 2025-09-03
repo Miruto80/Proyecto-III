@@ -56,18 +56,21 @@
 
           <ul class="navbar-nav  justify-content-end">
             <li class="nav-item d-flex align-items-center">
+                
               <a href="#" class="nav-link text-white font-weight-bold px-0" data-bs-toggle="modal" data-bs-target="#cerrar">
-          
-              <i class="fa-solid fa-right-to-bracket me-sm-1"></i> 
-               
-                <span class="d-sm-inline d-none">Cerrar sesión</span>
-                <span class="d-block d-md-none">Salir</span> 
+                <span class="d-sm-inline d-none"> <i class="fa-solid fa-right-to-bracket me-sm-1"></i>  Cerrar sesión</span>
               </a>
+                 
             </li>
           </ul>
 
 
           <ul class="navbar-nav  justify-content-end">
+            <li class="nav-item d-xl-none  d-flex align-items-center">
+                <a href="#" class="font-weight-bold text-white" data-bs-toggle="modal" data-bs-target="#cerrar">
+                <span class="d-block d-md-none"> <i class="fa-solid fa-right-to-bracket me-2"></i> Salir</span> 
+              </a>
+            </li>
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
                 <a href="javascript:;" class="nav-link text-white p-0" id="iconNavbarSidenav">
                     <div class="sidenav-toggler-inner">

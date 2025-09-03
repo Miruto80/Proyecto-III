@@ -92,19 +92,7 @@
     <!-- Información Personal -->
     <div class="col-md-6 informacion">
       <h5 class="texto-quinto"><i class="fa-solid fa-user me-2 " style="color:#f6c5b4;"></i> Información Personal</h5>
-      <?php if (isset($_GET['m']) && $_GET['m'] == 'a'): ?>
-  
-       <div class="info-box">
-        <div class="info-icon">
-          <i class="fa-solid fa-circle-info"></i>
-        </div>
 
-        <div class="info-content">
-          <strong>Aviso Importante:</strong>
-          <p>Los cambios se aplicarán cuando cierre la sesión.</p>
-        </div>
-      </div>
-      <?php endif; ?>
         <p class="text-muted texto-secundario">
           En esta área podrás <strong>actualizar tu información personal</strong>, como cédula, nombre, apellido, teléfono y correo electrónico.
           <span class="text-primary texto-principal"> Recuerda que los cambios se aplicarán al cerrar sesión. </span>

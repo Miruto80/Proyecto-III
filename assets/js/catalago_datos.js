@@ -82,6 +82,78 @@ $('#actualizarclave').on("click", function () {
 });
 
 
+
+
+$('#direccion').on("click", function () {
+  
+        Swal.fire({
+            title: '¿Deseas cambiar la dirección?',
+            icon: 'question',
+            showCancelButton: true,
+            color: "#00000",
+            confirmButtonColor: '#1e913bff',
+            cancelButtonColor: '#42515A',
+            confirmButtonText: 'Sí, cambiar',
+            cancelButtonText: 'NO'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                activarLoaderBoton('#direccion');
+                var datos = new FormData($('#editardireccion')[0]);
+                datos.append('actualizardireccion', 'actualizardireccion');
+                enviaAjax(datos);
+            }
+        });
+    
+});
+
+
+$('#agregardireccion').on("click", function () {
+ 
+        Swal.fire({
+            title: '¿Deseas Registrar la direccion?',
+            text: '',
+            icon: 'question',
+            showCancelButton: true,
+            color: "#00000",
+            confirmButtonColor: '#1e913bff',
+            cancelButtonColor: '#42515A',
+            confirmButtonText: ' SI',
+            cancelButtonText: 'NO'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                activarLoaderBoton('#agregardireccion');
+                var datos = new FormData($('#incluir')[0]);
+                datos.append('incluir', 'incluir');
+                enviaAjax(datos);
+            }
+        });
+    
+});
+
+$('#direccionedit').on("click", function () {
+ 
+        Swal.fire({
+            title: '¿Deseas cambiar la direccion?',
+            text: '',
+            icon: 'question',
+            showCancelButton: true,
+            color: "#00000",
+            confirmButtonColor: '#1e913bff',
+            cancelButtonColor: '#42515A',
+            confirmButtonText: ' Si, cambiar',
+            cancelButtonText: 'NO'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                activarLoaderBoton('#agregardireccion');
+                var datos = new FormData($('#editardelivery')[0]);
+                datos.append('actualizardireccion', 'actualizardireccion');
+                enviaAjax(datos);
+            }
+        });
+    
+});
+
+
 });
 
 //Función para validar por Keypress
@@ -244,6 +316,56 @@ $(document).ready(function() {
     });
 
 
+    
+    $("#modal_direccion").on("keypress",function(e){
+    validarkeypress(/^[a-zA-Z0-9\s\b]*$/, e);
+    });
+  
+  $("#modal_direccion").on("keyup", function () {
+    validarCampo($(this),/^[a-zA-Z0-9\s]{10,150}$/,
+    $("#textodir"),"Debe contener al menos 10 caracteres");
+  });
+
+    $("#modal_sucursal").on("keypress",function(e){
+      validarkeypress(/^[0-9-\b]*$/,e);
+    });
+  
+  $("#modal_sucursal").on("keyup", function () {
+    validarCampo($(this),/^[0-9]{3,8}$/,
+    $("#textosur"),"Debe contener al menos 3 caracteres");
+  });
+
+
+  $("#delivery_direccion").on("keypress",function(e){
+    validarkeypress(/^[a-zA-Z0-9\s\b]*$/, e);
+    });
+  
+  $("#delivery_direccion").on("keyup", function () {
+    validarCampo($(this),/^[a-zA-Z0-9\s]{10,150}$/,
+    $("#textodir1"),"Debe contener al menos 10 caracteres");
+  });
+
+
+   $("#agregar_direccion").on("keypress",function(e){
+    validarkeypress(/^[a-zA-Z0-9\s\b]*$/, e);
+    });
+  
+  $("#agregar_direccion").on("keyup", function () {
+    validarCampo($(this),/^[a-zA-Z0-9\s]{10,150}$/,
+    $("#textodir2"),"Debe contener al menos 10 caracteres");
+  });
+
+  $("#agregar_sucursal").on("keypress",function(e){
+    validarkeypress(/^[0-9-\b]*$/,e);
+  });
+  
+  $("#agregar_sucursal").on("keyup", function () {
+    validarCampo($(this),/^[0-9]{3,8}$/,
+    $("#textosur1"),"Debe contener al menos 3 caracteres");
+  });
+
+
+
  $(document).ready(function() {
     $("#btnEliminar").click(function() {
         let inputValor = $("#confirmar").val().trim(); // Obtener el valor sin espacios
@@ -283,6 +405,19 @@ $(document).ready(function() {
 });
 
 });
+
+
+function validarFormulario2() {
+    const campoSucursal = validarCampo($("#modal_sucursal"), /^[0-9]{3,8}$/, $("#textosur"), "Debe contener entre 3 y 8 dígitos");
+    const campoDireccion = validarCampo($("#modal_direccion"), /^[a-zA-Z0-9\s]{10,150}$/, $("#textodir"), "Debe contener al menos 10 caracteres");
+
+    if (!campoSucursal || !campoDireccion) {
+        muestraMensaje("warning", 2500, "Campos inválidos", "Por favor verifica los campos antes de continuar.");
+        return false;
+    }
+
+    return true;
+}
 
 function muestraMensajetost(icono, titulo, mensaje, tiempo) {
   Swal.fire({
@@ -342,7 +477,7 @@ function enviaAjax(datos) {
                   muestraMensaje("success", 2000, "Se ha Actualizado con éxito", "Sus datos se en modificado con exitosamente");
                   desactivarLoaderBoton('#actualizar');
                   setTimeout(() => {
-                 location = '?pagina=catalogo_datos&m=a';
+                 location = '?pagina=catalogo_datos';
                   }, 2000); 
               } else {
                   muestraMensaje("error", 2000, lee.text, "");
@@ -369,6 +504,28 @@ function enviaAjax(datos) {
                 } else {
                   muestraMensaje("error", 2000, lee.text, "Revise y vuelva a intentar" );
                       desactivarLoaderBoton('#actualizarclave');
+                }
+              } else if (lee.accion == 'incluir') {
+                if (lee.respuesta == 1) {
+                  muestraMensaje("success", 2000, "Se ha registro con éxito", "Correctamente");
+                      desactivarLoaderBoton('#agregardireccion');
+                  setTimeout(function () {
+                     location = '?pagina=catalogo_datos';
+                  }, 2000);
+                } else {
+                  muestraMensaje("error", 2000, lee.text, "Revise y vuelva a intentar" );
+                      desactivarLoaderBoton('#agregardireccion');
+                }
+              } else if (lee.accion == 'actualizardireccion') {
+                if (lee.respuesta == 1) {
+                  muestraMensaje("success", 2000, "Se ha cambio con éxito", "Direccion editada correctamente");
+                      desactivarLoaderBoton('#direccion');
+                  setTimeout(function () {
+                     location = '?pagina=catalogo_datos';
+                  }, 2000);
+                } else {
+                  muestraMensaje("error", 2000, lee.text, "Revise y vuelva a intentar" );
+                      desactivarLoaderBoton('#direccion');
                 }
               }
             
