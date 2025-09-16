@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  const formCarrito = document.getElementById("form-carrito");
+  const formCarrito = document.getElementById("form-carrito-exterior");
   const btnAgregarCarrito = document.getElementById("btn-agregar-carrito-exterior");
 
   if (btnAgregarCarrito && formCarrito) {

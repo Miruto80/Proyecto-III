@@ -196,7 +196,7 @@
                       <span class="text-dark fw-semibold">D $<?php echo $producto['precio_detal']; ?></span>
                     </div>
                     <div class="button-area p-3">
-                     <form class="form-carrito-exterior">
+                     <form id="form-carrito-exterior">
   <input type="hidden" name="id" value="<?php echo $producto['id_producto']; ?>">
   <input type="hidden" name="nombre" value="<?php echo htmlspecialchars($producto['nombre']); ?>">
   <input type="hidden" name="precio_detal" value="<?php echo $producto['precio_detal']; ?>">
