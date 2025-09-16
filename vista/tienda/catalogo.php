@@ -196,7 +196,7 @@
                       <span class="text-dark fw-semibold">D $<?php echo $producto['precio_detal']; ?></span>
                     </div>
                     <div class="button-area p-3">
-                     <form id="form-carrito-exterior">
+                     <form class="form-carrito-exterior">
   <input type="hidden" name="id" value="<?php echo $producto['id_producto']; ?>">
   <input type="hidden" name="nombre" value="<?php echo htmlspecialchars($producto['nombre']); ?>">
   <input type="hidden" name="precio_detal" value="<?php echo $producto['precio_detal']; ?>">
@@ -209,7 +209,7 @@
 
   <?php if ($sesion_activa): ?>
                         <?php if ($_SESSION["nivel_rol"] == 1): ?>
-                          <button type="button" id="btn-agregar-carrito-exterior"  class="btn btn-dark rounded-1 p-2 fs-7 btn-cart">
+                          <button type="button" class="btn-agregar-carrito-exterior"  class="btn btn-dark rounded-1 p-2 fs-7 btn-cart">
                             <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
                           </button>
 
