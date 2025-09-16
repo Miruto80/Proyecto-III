@@ -196,20 +196,20 @@
                       <span class="text-dark fw-semibold">D $<?php echo $producto['precio_detal']; ?></span>
                     </div>
                     <div class="button-area p-3">
-                     <form class="form-carrito-exterior">
-  <input type="hidden" name="id" value="<?php echo $producto['id_producto']; ?>">
-  <input type="hidden" name="nombre" value="<?php echo htmlspecialchars($producto['nombre']); ?>">
-  <input type="hidden" name="precio_detal" value="<?php echo $producto['precio_detal']; ?>">
-  <input type="hidden" name="precio_mayor" value="<?php echo $producto['precio_mayor']; ?>">
-  <input type="hidden" name="cantidad_mayor" value="<?php echo $producto['cantidad_mayor']; ?>">
-  <input type="hidden" name="imagen" value="<?php echo $producto['imagen']; ?>">
-  <input type="hidden" name="stockDisponible" value="<?php echo $producto['stock_disponible']; ?>">
+                  <form class="form-carrito-exterior">
+                    <input type="hidden" name="id" value="<?php echo $producto['id_producto']; ?>">
+                    <input type="hidden" name="nombre" value="<?php echo htmlspecialchars($producto['nombre']); ?>">
+                    <input type="hidden" name="precio_detal" value="<?php echo $producto['precio_detal']; ?>">
+                    <input type="hidden" name="precio_mayor" value="<?php echo $producto['precio_mayor']; ?>">
+                    <input type="hidden" name="cantidad_mayor" value="<?php echo $producto['cantidad_mayor']; ?>">
+                    <input type="hidden" name="imagen" value="<?php echo $producto['imagen']; ?>">
+                    <input type="hidden" name="stockDisponible" value="<?php echo $producto['stock_disponible']; ?>">
 
 
 
-  <?php if ($sesion_activa): ?>
+                     <?php if ($sesion_activa): ?>
                         <?php if ($_SESSION["nivel_rol"] == 1): ?>
-                          <button type="button" id="btn-agregar-carrito-exterior"  class="btn btn-dark rounded-1 p-2 fs-7 btn-cart">
+                          <button type="button" class="btn-agregar-carrito-exterior  btn btn-dark rounded-1 p-2 fs-7 btn-cart">
                             <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
                           </button>
 
@@ -220,13 +220,13 @@
 
                         
                         <?php endif; ?>
-                      <?php else: ?>
+                       <?php else: ?>
                         <button class="btn btn-dark rounded-1 p-2 fs-7 btn-cart" href="?pagina=login">
                           <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
                         </button>
                       
                       <?php endif; ?>
-</form>
+                  </form>
                     </div>
                   </div>
                 </div>
