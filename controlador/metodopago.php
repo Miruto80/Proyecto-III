@@ -7,6 +7,12 @@ if (empty($_SESSION["id"])) {
 if (!empty($_SESSION['id'])) {
         require_once 'verificarsession.php';
 } 
+
+if ($_SESSION["nivel_rol"] == 1) {
+        header("Location: ?pagina=catalogo");
+        exit();
+    }/*  Validacion cliente  */
+
 require_once __DIR__ . '/../modelo/metodopago.php';
  require_once 'permiso.php';
 
@@ -78,7 +84,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
         require_once 'vista/seguridad/privilegio.php';
 
-} if ($_SESSION["nivel_rol"] == 1) {
-    header("Location: ?pagina=catalogo");
-    exit();
-}
+} 

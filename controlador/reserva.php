@@ -7,6 +7,12 @@ if (empty($_SESSION["id"])) {
 if (!empty($_SESSION['id'])) {
         require_once 'verificarsession.php';
 } 
+
+if ($_SESSION["nivel_rol"] == 1) {
+        header("Location: ?pagina=catalogo");
+        exit();
+    }/*  Validacion cliente  */
+
 require_once __DIR__ . '/../modelo/reserva.php';
 require_once 'permiso.php';
 
@@ -60,8 +66,3 @@ if ($_SESSION["nivel_rol"] >= 2 && tieneAcceso(9, 'ver')) {
     require_once 'vista/seguridad/privilegio.php';
 }
 
-// Redirección si es cliente
-if ($_SESSION["nivel_rol"] == 1) {
-    header("Location: ?pagina=catalogo");
-    exit();
-}

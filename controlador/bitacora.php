@@ -12,7 +12,14 @@
     
      if (!empty($_SESSION['id'])) {
         require_once 'verificarsession.php';
-    } 
+    } /*  Expirar Session  */
+
+     if ($_SESSION["nivel_rol"] == 1) {
+        header("Location: ?pagina=catalogo");
+        exit();
+    }/*  Validacion cliente  */
+
+
     require_once 'modelo/bitacora.php';
     require_once 'permiso.php';
     $objBitacora = new Bitacora();

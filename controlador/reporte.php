@@ -6,7 +6,13 @@ if (empty($_SESSION['id'])) {
 }
 if (!empty($_SESSION['id'])) {
         require_once 'verificarsession.php';
-} 
+}
+
+if ($_SESSION["nivel_rol"] == 1) {
+        header("Location: ?pagina=catalogo");
+        exit();
+    }/*  Validacion cliente  */
+    
 require_once 'modelo/reporte.php';
 require_once 'modelo/producto.php';
 require_once 'modelo/proveedor.php';

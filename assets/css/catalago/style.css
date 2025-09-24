@@ -11,7 +11,7 @@ Version: 1.1
             bottom: 40px;
             right: 40px;
             z-index: 1000;
-            background-color:#3091e0;
+            background-color:#e64595;
             color: white;
             border: none;
             border-radius: 50%;
@@ -23,7 +23,7 @@ Version: 1.1
             display: none; /* Oculto al inicio */
           }
           #scrollToTopBtn:hover {
-            background-color: #3e90d3;
+            background-color: #db5397;
   }
 
 

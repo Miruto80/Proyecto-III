@@ -128,7 +128,7 @@
           <p>© 2025 LoveMakeup C.A | Tienen todos los derechos revervados.</p>
         </div>
         <div class="col-md-6 credit-link text-start text-md-end">
-          <p>Estudiantes UPTAEB T3</a></p>
+          <p>Estudiantes UPTAEB T3 - 3113</a></p>
         </div>
       </div>
     </div>

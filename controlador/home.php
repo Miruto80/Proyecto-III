@@ -1,5 +1,6 @@
 <?php  
-    session_start();
+session_start();
+
 if (empty($_SESSION['id'])) {
     header('Location:?pagina=login');
     exit;
@@ -7,6 +8,13 @@ if (empty($_SESSION['id'])) {
  if (!empty($_SESSION['id'])) {
     require_once 'verificarsession.php';
 } 
+
+if ($_SESSION["nivel_rol"] == 1) {
+        header("Location: ?pagina=catalogo");
+        exit();
+    }/*  Validacion cliente  */
+
+    
  require_once 'modelo/home.php';
  require_once 'modelo/reporte.php';
  require_once 'permiso.php';

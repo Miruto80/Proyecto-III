@@ -269,7 +269,7 @@
 
 <?php if ($_SESSION["nivel_rol"] == 1): ?>
    
-  <button type="button" id="btn-agregar-carrito-exterior"  class="btn btn-dark rounded-1 p-2 fs-7 btn-cart">
+  <button type="button" id="btn-agregar-carrito-exterior"  class="btn btn-dark w-100 rounded-1 p-2 fs-7 btn-cart">
                             <i class="fa fa-cart-plus me-2"></i> Añadir al carrito
                           </button>
 
@@ -307,10 +307,20 @@
         </div>
     </div>
 </section>
+<form id="session-extension-form" method="POST" style="display: none;">
+  <input type="hidden" name="extender" value="1">
+</form>
 
 <!-- php Publicidad Insta, Publicidad calidad, footer y JS--> 
 <?php include 'vista/complementos/footer_catalogo.php' ?>
-  
+
+
+
+
+
+
+
+
 </body>
 
 </html>

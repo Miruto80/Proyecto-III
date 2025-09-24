@@ -6,10 +6,12 @@
   <?php include 'vista/complementos/head.php' ?> 
   <title> Cambiar Permisos | LoveMakeup  </title>
   <link rel="stylesheet" href="assets/css/formulario.css">
-<style>
- 
-
+  <style>
+  .text-g{
+    font-size: 15px;
+  }
 </style>
+
 </head>
  
 <body class="g-sidenav-show bg-gray-100">
@@ -31,17 +33,8 @@
 <!-- php barra de navegacion-->    
 <?php include 'vista/complementos/nav.php' ?>
 
-<style>
-  .text-g{
-    font-size: 15px;
-  }
-</style>
-<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
-  <div class="preloader-wrapper">
-    <div class="preloader">
-    </div>
-  </div> 
-<!-- |||||||||||||||| LOADER ||||||||||||||||||||-->
+
+
 <div class="container-fluid py-4"> <!-- DIV CONTENIDO -->
 
     <div class="row"> <!-- CARD PRINCIPAL-->  

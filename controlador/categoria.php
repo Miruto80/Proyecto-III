@@ -1,12 +1,17 @@
 <?php
 session_start();
-if (empty($_SESSION['id'])) {
-    header('Location:?pagina=login');
-    exit;
-}
-if (!empty($_SESSION['id'])) {
+    if (empty($_SESSION['id'])) {
+        header('Location:?pagina=login');
+        exit;
+    }
+    if (!empty($_SESSION['id'])) {
         require_once 'verificarsession.php';
     } 
+
+    if ($_SESSION["nivel_rol"] == 1) {
+        header("Location: ?pagina=catalogo");
+        exit();
+    }
 require_once 'modelo/categoria.php';
 require_once 'modelo/bitacora.php';  
 require_once 'permiso.php';
@@ -100,7 +105,4 @@ if (isset($_POST['eliminar'])) {
 } else {
         require_once 'vista/seguridad/privilegio.php';
 
-} if ($_SESSION["nivel_rol"] == 1) {
-    header("Location: ?pagina=catalogo");
-    exit();
-}
+} 

@@ -4,8 +4,14 @@ if (empty($_SESSION["id"])){
   header("location:?pagina=login");
 } /*  Validacion URL  */
 if (!empty($_SESSION['id'])) {
-        require_once 'verificarsession.php';
+    require_once 'verificarsession.php';
 } 
+
+    if ($_SESSION["nivel_rol"] == 1) {
+        header("Location: ?pagina=catalogo");
+        exit();
+    }/*  Validacion cliente  */
+
 require_once 'modelo/cliente.php';
 require_once 'modelo/bitacora.php';
 require_once 'permiso.php';
@@ -59,9 +65,6 @@ if(isset($_POST['actualizar'])){
 } else {
         require_once 'vista/seguridad/privilegio.php';
 
-} if ($_SESSION["nivel_rol"] == 1) {
-    header("Location: ?pagina=catalogo");
-    exit();
 }
 
 ?>

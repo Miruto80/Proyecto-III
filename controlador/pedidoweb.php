@@ -7,6 +7,13 @@ if (empty($_SESSION["id"])) {
 if (!empty($_SESSION['id'])) {
         require_once 'verificarsession.php';
 } 
+
+if ($_SESSION["nivel_rol"] == 1) {
+        header("Location: ?pagina=catalogo");
+        exit();
+    }/*  Validacion cliente  */
+
+
 require_once __DIR__ . '/../modelo/pedidoweb.php';
  require_once 'permiso.php';
 $objPedidoWeb = new pedidoWeb();
@@ -98,8 +105,5 @@ require_once __DIR__ . '/../vista/pedidoweb.php';
 } else {
         require_once 'vista/seguridad/privilegio.php';
 
-} if ($_SESSION["nivel_rol"] == 1) {
-    header("Location: ?pagina=catalogo");
-    exit();
-}
+} 
 

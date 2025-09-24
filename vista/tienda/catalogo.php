@@ -5,6 +5,51 @@
 <!-- php CSS, Meta y titulo--> 
 <?php include 'vista/complementos/head_catalogo.php' ?>
 
+<style>
+  .logo-slider {
+  overflow: hidden;
+  width: 100%;
+  background: #fff;
+  padding: 1rem 0;
+}
+
+.logo-track {
+  display: flex;
+  width: calc(200%);
+  animation: scroll 20s linear infinite;
+}
+
+.logo {
+  flex: 0 0 auto;
+  width: 150px;
+  margin: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo img {
+  max-width: 100%;
+  height: auto;
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
+}
+
+.logo img:hover {
+  filter: grayscale(0%);
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+</style>
+
 </head>
 
 <body>
@@ -316,7 +361,40 @@
   </div>
 </section>
 
+  <section class="mt-5 bg-light">
 
+    <div class="logo-slider">
+      <div class="logo-track">
+        <div class="logo"><img src="assets/img/slider/01.png" alt="Logo 1"></div>
+        <div class="logo"><img src="assets/img/slider/02.jpg" alt="Logo 2"></div>
+        <div class="logo"><img src="assets/img/slider/03.png" alt="Logo 3"></div>
+        <div class="logo"><img src="assets/img/slider/04.png" alt="Logo 4"></div>
+        <div class="logo"><img src="assets/img/slider/05.png" alt="Logo 5"></div>
+
+        <!-- Repetimos los logos para crear el efecto infinito -->
+        <div class="logo"><img src="assets/img/slider/01.png" alt="Logo 1"></div>
+        <div class="logo"><img src="assets/img/slider/02.jpg" alt="Logo 2"></div>
+        <div class="logo"><img src="assets/img/slider/03.png" alt="Logo 3"></div>
+        <div class="logo"><img src="assets/img/slider/04.png" alt="Logo 4"></div>
+        <div class="logo"><img src="assets/img/slider/05.png" alt="Logo 5"></div>
+
+          <!-- Repetimos los logos para crear el efecto infinito -->
+        <div class="logo"><img src="assets/img/slider/01.png" alt="Logo 1"></div>
+        <div class="logo"><img src="assets/img/slider/02.jpg" alt="Logo 2"></div>
+        <div class="logo"><img src="assets/img/slider/03.png" alt="Logo 3"></div>
+        <div class="logo"><img src="assets/img/slider/04.png" alt="Logo 4"></div>
+        <div class="logo"><img src="assets/img/slider/05.png" alt="Logo 5"></div>
+
+          <!-- Repetimos los logos para crear el efecto infinito -->
+        <div class="logo"><img src="assets/img/slider/01.png" alt="Logo 1"></div>
+        <div class="logo"><img src="assets/img/slider/02.jpg" alt="Logo 2"></div>
+        <div class="logo"><img src="assets/img/slider/03.png" alt="Logo 3"></div>
+        <div class="logo"><img src="assets/img/slider/04.png" alt="Logo 4"></div>
+        <div class="logo"><img src="assets/img/slider/05.png" alt="Logo 5"></div>
+      </div>
+    </div>
+
+  </section>
 
   <section class="mt-5 bg-light">
     <div class="container">
@@ -390,6 +468,8 @@
 <!-- php Publicidad Insta, Publicidad calidad, footer y JS--> 
 
 <?php include 'vista/complementos/footer_catalogo.php' ?>
+
+
 
   
 </body>
