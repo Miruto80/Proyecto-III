@@ -1,0 +1,19 @@
+{
+    "name": "hogar/app-com",
+    "description": "pruebas unitarias",
+    "type": "project",
+    "require": {
+        "phpunit/phpunit": "9.6.29"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Hogar\\AppCom\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "lovemakeup"
+        }
+    ]
+}

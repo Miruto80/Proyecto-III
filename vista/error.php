@@ -35,3 +35,37 @@
 
 </body>
 </html>
+
+
+
+
+
+
+<div class="input-group">
+          <span class="input-group-text t text-body dropdown-toggle card-m1" id="dropdownIcon" aria-expanded="false" style="cursor: pointer; padding: 12px;">
+             <i class="fa-solid fa-user-gear" aria-hidden="true"></i>
+         </span>
+        
+         <ul class="dropdown-menu div-oscuro-1" id="dropdownOptions" aria-labelledby="dropdownIcon">
+            <li class="d-block d-md-none">
+                <a class="dropdown-item text-dark texto-secundario">
+                    <?php echo $_SESSION['nombre'] . " " . $_SESSION['apellido']; ?>
+                </a>
+            </li>  
+            <li> 
+                <a class="dropdown-item text-primary texto-secundario"><b><?php 
+                echo "Rol:"." ".$_SESSION['nombre_usuario'];
+                ?></b></a>
+            </li>
+            <li>
+                <a class="dropdown-item texto-secundario" href="?pagina=datos">
+                    <i class="fa-solid fa-user-pen me-2"></i> 
+                    Modificar Datos
+                </a>
+            </li>
+            <li>
+                <button type="button" id="toggleModo" class="texto-secondario dropdown-item lk">
+                <i class="fa-solid fa-moon me-2"></i> Modo Oscuro
+                </button> 
+            </li>
+        </ul>
