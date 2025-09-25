@@ -1,5 +1,5 @@
 <?php
-
+/*||||||||||||||||||||||||||||||| METODO: TOTAL 14 ||||||||||||||||||||||||||||||*/
 require_once 'conexion.php';
 require_once 'tipousuario.php';
 
@@ -14,12 +14,14 @@ class Usuario extends Conexion
         $this->objtipousuario = new Tipousuario();
     }
 
+/*||||||||||||||||||||||||||||||| ENCRIPTACION DE CLAVE  |||||||||||||||||||||||||||| 01 ||*/   
     private function encryptClave($clave) {
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipherMethod)); 
         $encrypted = openssl_encrypt($clave, $this->cipherMethod, $this->encryptionKey, 0, $iv);
         return base64_encode($iv . $encrypted);
     }
 
+    /*||||||||||||||||||||||||||||||| DESINCRIPTACION DE CLAVE)  ||||||||||||||||||||||||||| 02 |||*/
     private function decryptClave($claveEncriptada) {
         $data = base64_decode($claveEncriptada);
         $ivLength = openssl_cipher_iv_length($this->cipherMethod);
@@ -28,6 +30,7 @@ class Usuario extends Conexion
         return openssl_decrypt($encrypted, $this->cipherMethod, $this->encryptionKey, 0, $iv);
     }
 
+/*|||||||||||||||||||||||||||||||  OPERACIONES  |||||||||||||||||||||||||| 03 ||||*/    
     public function procesarUsuario($jsonDatos) {
         $datos = json_decode($jsonDatos, true);
         $operacion = $datos['operacion'];
@@ -84,6 +87,7 @@ class Usuario extends Conexion
         }
     }
 
+/*||||||||||||||||||||||||||||||| REGISTRO DE UN NUEVO USUARIO ||||||||||||||||||||||||||| 04 |||*/    
     private function ejecutarRegistro($datos) {
         $conex = $this->getConex2();
         try {
@@ -131,7 +135,8 @@ class Usuario extends Conexion
         }
     }
 
-   private function ejecutarActualizacion($datos) {
+/*||||||||||||||||||||||||||||||| ACTUALIZAR DATOS DEL USUARIO  ||||||||||||||||||||||||||| 05 |||*/
+   private function ejecutarActualizacion($datos) { 
     $conex = $this->getConex2();
     try {
         $conex->beginTransaction();
@@ -181,7 +186,7 @@ class Usuario extends Conexion
     }
 }
 
-
+/*||||||||||||||||||||||||||||||| ELIMINAR USUARIO (LOGICO)  |||||||||||||||||||||||||| 06 ||||*/
     private function ejecutarEliminacion($datos) {
         $conex = $this->getConex2();
         try {
@@ -211,6 +216,7 @@ class Usuario extends Conexion
         }
     }
 
+/*||||||||||||||||||||||||||||||| VERIFICAR CEDULA Y CORREO  ||||||||||||||||||||||||| 07 |||||*/    
     private function verificarExistencia($datos) {
         $conex1 = $this->getConex1();
         $conex2 = $this->getConex2();
@@ -239,6 +245,7 @@ class Usuario extends Conexion
         }
     }
 
+/*||||||||||||||||||||||||||||||| CONSULTAR LOS USUARIOS  |||||||||||||||||||||||||| 08 ||||*/    
     public function consultar() {
         $conex = $this->getConex2();
         try {
@@ -261,10 +268,12 @@ class Usuario extends Conexion
         }
     }
 
+/*||||||||||||||||||||||||||||||| LISTAR TIPO USUARIO  |||||||||||||||||||||||||  09  |||||*/    
     public function obtenerRol() {
         return $this->objtipousuario->consultar();
     }
 
+/*||||||||||||||||||||||||||||||| PERMISOS PREDETERMINADOS DEL USUARIO |||||||||||||||||||||||| 10 |||||*/    
    private function generarPermisosPorNivel($id_persona, $nivel) {
     $permisos = [];
 
@@ -388,6 +397,7 @@ class Usuario extends Conexion
     }, $permisos);
 }
 
+/*||||||||||||||||||||||||||||||| ELIMINAR PERMISOS (USUARIO CAMBIO DE ROL)  |||||||||||||||||||||||||| 11 ||||*/
 private function ejecutarEliminacionPermisos($id_persona) {
     $conex = $this->getConex2();
     try {
@@ -416,6 +426,7 @@ private function ejecutarEliminacionPermisos($id_persona) {
     }
 }
 
+/*||||||||||||||||||||||||||||||| CONSULTAR PERMISO DEL USUARIO SELECCIONADO  |||||||||||||||||||||||||| 12 ||||*/
      public function buscar($id_persona) {
         $conex = $this->getConex2();
         try {
@@ -442,6 +453,7 @@ private function ejecutarEliminacionPermisos($id_persona) {
         }
     }
 
+/*||||||||||||||||||||||||||||||| CONSULTAR EL NIVEL PARA EDITAR LOS PERMISOS  ||||||||||||||||||||||||| 13 |||||*/    
     public function obtenerNivelPorId($id_persona) {
     $conex = $this->getConex2();
     try {
@@ -460,8 +472,7 @@ private function ejecutarEliminacionPermisos($id_persona) {
     }
 }
 
-
-
+/*||||||||||||||||||||||||||||||| ACTUALIZAR PERMISOS DEL USUARIO  ||||||||||||||||||||||||| 14 |||||*/
     private function actualizarLotePermisos($lista) {
     $conex = $this->getConex2();
     try {

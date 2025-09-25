@@ -61,7 +61,7 @@ class Cliente extends Conexion
         }
 
 
-    private function ejecutarActualizacion($datos) {
+    protected function ejecutarActualizacion($datos) {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
@@ -101,7 +101,7 @@ class Cliente extends Conexion
         }
     }
 
-     private function verificarExistencia($datos) {
+     protected function verificarExistencia($datos) {
         $conex1 = $this->getConex1();
         $conex2 = $this->getConex2();
         try {

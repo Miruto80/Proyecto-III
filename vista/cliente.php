@@ -6,6 +6,44 @@
   <?php include 'complementos/head.php' ?> 
   <link rel="stylesheet" href="assets/css/formulario.css">
   <title> Clientes | LoveMakeup  </title> 
+  <style>
+.telefono-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.telefono-text {
+  color: #212529;
+  font-size: 0.95rem;
+}
+
+.btn-copiar {
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border: 1px solid #ccc;
+  color: #ff59f7ff;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+.btn-copiar:hover {
+  background-color: #e2e6ea;
+}
+
+.correo-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.correo-text {
+  color: #212529;
+  font-size: 0.95rem;
+}
+</style>
 </head>
  
 <body class="g-sidenav-show bg-gray-100">
@@ -96,9 +134,13 @@
                     </div>
                   </td>
                   <td>
-                      <div class="text-dark texto-secundario">
-                        <?php echo $dato['telefono'] ?>
-                      </div>
+                      
+                      <div class="telefono-wrapper text-dark texto-secundario">
+                        <span class="telefono-text texto-secundario"><?php echo $dato['telefono'] ?></span>
+                        <span class="btn-copiar" onclick="copiarTelefono(this)" title="Copiar">
+                            <i class="fas fa-copy"></i>
+                        </span>
+                      </div> <br>
                   <?php
                     $telefono_limpio = str_replace('-', '', $dato['telefono']);
                     $telefono_sin_cero = ltrim($telefono_limpio, '0');
@@ -110,9 +152,12 @@
                 </td>
 
                  <td>
-                    <div class="text-dark texto-secundario">
-                      <?php echo $dato['correo'] ?>
-                    </div>
+                    <div class="correo-wrapper text-dark texto-secundario">
+                        <span class="correo-text texto-secundario"><?php echo $dato['correo'] ?></span>
+                        <span class="btn-copiar" onclick="copiarCorreo(this)" title="Copiar">
+                            <i class="fas fa-copy"></i>
+                        </span>
+                      </div> <br>
                       <a href="mailto:<?= $dato['correo'] ?>" class="btn btn-info btn-sm mt-1 Ayudacorreo" title="Enviar correo">
                     <i class="fas fa-envelope me-1"></i> Enviar correo
                   </a>
@@ -214,6 +259,33 @@
 </div>
 
 <!--FIN Modal -->
+<script>
+function copiarTelefono(elemento) {
+ const telefono = elemento.closest('.telefono-wrapper').querySelector('.telefono-text').innerText;
+  navigator.clipboard.writeText(telefono).then(() => {
+    const icono = elemento.querySelector('i');
+    icono.classList.replace('fa-copy', 'fa-check');
+    setTimeout(() => {
+      icono.classList.replace('fa-check', 'fa-copy');
+    }, 1500);
+  }).catch(err => {
+    console.error('Error al copiar:', err);
+  });
+}
+
+function copiarCorreo(elemento) {
+ const correo = elemento.closest('.correo-wrapper').querySelector('.correo-text').innerText;
+  navigator.clipboard.writeText(correo).then(() => {
+    const icono = elemento.querySelector('i');
+    icono.classList.replace('fa-copy', 'fa-check');
+    setTimeout(() => {
+      icono.classList.replace('fa-check', 'fa-copy');
+    }, 1500);
+  }).catch(err => {
+    console.error('Error al copiar:', err);
+  });
+}
+</script>
 
 
 <!-- php barra de navegacion-->
