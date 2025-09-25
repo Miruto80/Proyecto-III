@@ -21,7 +21,7 @@ class Usuario extends Conexion
         return base64_encode($iv . $encrypted);
     }
 
-    /*||||||||||||||||||||||||||||||| DESINCRIPTACION DE CLAVE)  ||||||||||||||||||||||||||| 02 |||*/
+    /*||||||||||||||||||||||||||||||| DESINCRIPTACION DE CLAVE  ||||||||||||||||||||||||||| 02 |||*/
     private function decryptClave($claveEncriptada) {
         $data = base64_decode($claveEncriptada);
         $ivLength = openssl_cipher_iv_length($this->cipherMethod);

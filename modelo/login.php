@@ -1,12 +1,13 @@
 <?php
-
+/*||||||||||||||||||||||||||||||| TOTAL DE METODOS = 8  |||||*/            
 require_once 'conexion.php';
 
 class Login extends Conexion {
     function __construct() {
         parent::__construct();
     }
-    
+
+/*||||||||||||||||||||||||||||||| ENCRIPTAR CLAVE  |||||||||||||||||||||||||  01  |||||*/            
     private function encryptClave($datos) {
         $config = [
             'key' => "MotorLoveMakeup",
@@ -18,6 +19,7 @@ class Login extends Conexion {
         return base64_encode($iv . $encrypted);
     }
 
+/*||||||||||||||||||||||||||||||| DESINCRIPTAR CLAVE  |||||||||||||||||||||||||  02  |||||*/            
     private function decryptClave($datos) {
         $config = [
             'key' => "MotorLoveMakeup",
@@ -31,6 +33,7 @@ class Login extends Conexion {
         return openssl_decrypt($encrypted, $config['method'], $config['key'], 0, $iv);
     }
 
+/*||||||||||||||||||||||||||||||| OPERACIONES  |||||||||||||||||||||||||  03  |||||*/            
     public function procesarLogin($jsonDatos) {
         $datos = json_decode($jsonDatos, true);
         $operacion = $datos['operacion'];
@@ -65,6 +68,7 @@ class Login extends Conexion {
         }
     }
 
+/*||||||||||||||||||||||||||||||| VERIFICAR CREDENCIALES CEDULA Y CLAVE  |||||||||||||||||||||||||  04  |||||*/            
  private function verificarCredenciales($datos) {
     $conex1 = $this->getConex1();
     $conex2 = $this->getConex2();
@@ -115,8 +119,7 @@ class Login extends Conexion {
     }
 }
 
-
-
+/*||||||||||||||||||||||||||||||| REGISTRAR CLIENTE NUEVO  |||||||||||||||||||||||||  05  |||||*/            
     private function registrarCliente($datos) {
         $conex = $this->getConex1();
         try {
@@ -141,13 +144,6 @@ class Login extends Conexion {
                 $conex->commit();
                 $conex = null;
                 
-               /* require_once 'CORREObienvenida.php';
-                $envio = enviarBienvenida($datos['correo']);
-                 if (!$envio['exito']) {
-                        return ['respuesta' => 0, 'accion' => 'incluir'];
-                 }else{
-                      return ['respuesta' => 1, 'accion' => 'incluir'];
-                 }  */
                 return ['respuesta' => 1, 'accion' => 'incluir'];
             }
             
@@ -164,6 +160,7 @@ class Login extends Conexion {
         }
     }
 
+/*||||||||||||||||||||||||||||||| VERIFICAR CEDULA Y CORREO SI EXISTE  |||||||||||||||||||||||||  06  |||||*/            
     private function verificarExistencia($datos) {
         $conex1 = $this->getConex1();
         $conex2 = $this->getConex2();
@@ -192,6 +189,7 @@ class Login extends Conexion {
         }
     }
 
+/*||||||||||||||||||||||||||||||| OBTENER CEDULA PARA INGRESAR OLVIDO CLAVE  |||||||||||||||||||||||||  07  |||||*/            
     private function obtenerPersonaPorCedula($datos) {
         $conex1 = $this->getConex1();
         $conex2 = $this->getConex2();
@@ -230,6 +228,7 @@ class Login extends Conexion {
         }
     }
 
+/*||||||||||||||||||||||||||||||| CONSULTAR PERMISOS ID PERMISOS  |||||||||||||||||||||||||  08  |||||*/            
      public function consultar($id_persona) {
         $conex = $this->getConex2();
         try {
@@ -256,7 +255,5 @@ class Login extends Conexion {
             throw $e;
         }
     }
-
-
 
 }

@@ -1,5 +1,5 @@
 <?php
-
+/*||||||||||||||||||||||||||||||| TOTAL DE METODOS =  |||||||||||||||||||||||||  04  |||||*/    
 require_once 'conexion.php';
 
 class Cliente extends Conexion
@@ -9,6 +9,7 @@ class Cliente extends Conexion
         parent::__construct(); // Llama al constructor de la clase padre
     }
 
+/*||||||||||||||||||||||||||||||| OPERACIONES  |||||||||||||||||||||||||  01  |||||*/        
     public function procesarCliente($jsonDatos) {
         $datos = json_decode($jsonDatos, true);
         $operacion = $datos['operacion'];
@@ -41,6 +42,7 @@ class Cliente extends Conexion
         }
     }
 
+/*||||||||||||||||||||||||||||||| CONSULTAR DATOS  |||||||||||||||||||||||||  02  |||||*/        
         public function consultar() {
             $conex = $this->getConex1();
             try {
@@ -60,7 +62,7 @@ class Cliente extends Conexion
             }
         }
 
-
+/*||||||||||||||||||||||||||||||| ACTUALIZAR DATOS DEL CLIENTE  |||||||||||||||||||||||||  03  |||||*/    
     protected function ejecutarActualizacion($datos) {
         $conex = $this->getConex1();
         try {
@@ -101,6 +103,7 @@ class Cliente extends Conexion
         }
     }
 
+/*||||||||||||||||||||||||||||||| VERIFICAR CEDULA Y CORREO  |||||||||||||||||||||||||  04  |||||*/        
      protected function verificarExistencia($datos) {
         $conex1 = $this->getConex1();
         $conex2 = $this->getConex2();

@@ -8,7 +8,7 @@ class Datos extends Conexion{
         parent::__construct();
     }
 
-    private function encryptClave($datos) {
+    protected function encryptClave($datos) {
         $config = [
             'key' => "MotorLoveMakeup",
             'method' => "AES-256-CBC"
@@ -19,7 +19,7 @@ class Datos extends Conexion{
         return base64_encode($iv . $encrypted);
     }
 
-    private function decryptClave($datos) {
+    protected function decryptClave($datos) {
         $config = [
             'key' => "MotorLoveMakeup",
             'method' => "AES-256-CBC"
@@ -73,7 +73,7 @@ class Datos extends Conexion{
         }
     }
     
-     private function ejecutarActualizacion($datos) {
+     protected function ejecutarActualizacion($datos) {
         $conex = $this->getConex2();
         try {
             $conex->beginTransaction();
@@ -117,7 +117,7 @@ class Datos extends Conexion{
         }
     }
 
-   private function validarClaveActual($datos) {
+   protected function validarClaveActual($datos) {
         $conex = $this->getConex2();
         try {
             $sql = "SELECT clave FROM usuario WHERE id_persona = :id_persona AND estatus >= 1";
@@ -139,7 +139,7 @@ class Datos extends Conexion{
     }
 
 
-   private function ejecutarActualizacionClave($datos) {
+   protected function ejecutarActualizacionClave($datos) {
         $conex = $this->getConex2();
         try {
             $conex->beginTransaction();
@@ -176,7 +176,7 @@ class Datos extends Conexion{
     }
 
     
-   private function verificarExistencia($datos) {
+   protected function verificarExistencia($datos) {
         $conex1 = $this->getConex1();
         $conex2 = $this->getConex2();
         try {

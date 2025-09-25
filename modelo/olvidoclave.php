@@ -1,5 +1,5 @@
 <?php
-
+/*||||||||||||||||||||||||||||||| TOTAL METODOS =   06  |||||||||||||||||||||||||||||*/    
 require_once 'conexion.php';
 
 class Olvido extends Conexion{
@@ -11,7 +11,8 @@ class Olvido extends Conexion{
        parent::__construct(); // Llama al constructor de la clase padre
     }
 
-     private function encryptClave($datos) {
+/*||||||||||||||||||||||||||||||| ENCRIPTACION DE CLAVE  |||||||||||||||||||||||||  01  |||||*/        
+     protected function encryptClave($datos) {
             $config = [
                 'key' => "MotorLoveMakeup",
                 'method' => "AES-256-CBC"
@@ -22,7 +23,8 @@ class Olvido extends Conexion{
             return base64_encode($iv . $encrypted);
     }
 
-    private function decryptClave($datos) {
+/*||||||||||||||||||||||||||||||| DESINCRIPTACION DE CLAVE   |||||||||||||||||||||||||  02  |||||*/        
+    protected function decryptClave($datos) {
         $config = [
             'key' => "MotorLoveMakeup",
             'method' => "AES-256-CBC"
@@ -35,8 +37,8 @@ class Olvido extends Conexion{
         return openssl_decrypt($encrypted, $config['method'], $config['key'], 0, $iv);
     }
 
-/*--------*/
-     
+
+/*||||||||||||||||||||||||||||||| OPERACIONES  |||||||||||||||||||||||||  03  |||||*/         
    public function procesarOlvido($jsonDatos) {
         $datos = json_decode($jsonDatos, true);
         $operacion = $datos['operacion'];
@@ -54,7 +56,8 @@ class Olvido extends Conexion{
         }
     }
 
-    private function ejecutarActualizacionPorOrigen($datosProcesar) {
+/*||||||||||||||||||||||||||||||| TABLA DE ORIGEN PARA SABER SI ES USUARIO O CLIENTE  |||||||||||||||||||||||||  04  |||||*/        
+    protected function ejecutarActualizacionPorOrigen($datosProcesar) {
         if (isset($datosProcesar['tabla_origen']) && $datosProcesar['tabla_origen'] == 1) {
             return $this->ejecutarActualizacionCliente($datosProcesar);
         } else {
@@ -62,7 +65,8 @@ class Olvido extends Conexion{
         }
     }
 
-    private function ejecutarActualizacionCliente($datos) {
+/*||||||||||||||||||||||||||||||| ACTUALIZAR DE CLAVE CLIENTE  |||||||||||||||||||||||||  05  |||||*/        
+    protected function ejecutarActualizacionCliente($datos) {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
@@ -98,7 +102,8 @@ class Olvido extends Conexion{
         }
     }
 
-     private function ejecutarActualizacionUsuario($datos) {
+/*||||||||||||||||||||||||||||||| ACTUALIZAR DE CLAVE USUARIO  |||||||||||||||||||||||||  06  |||||*/        
+     protected function ejecutarActualizacionUsuario($datos) {
         $conex = $this->getConex2();
         try {
             $conex->beginTransaction();
