@@ -1,9 +1,9 @@
 <?php
 use PHPUnit\Framework\TestCase;
-require_once __DIR__ . '/../../../modelo/datos.php';
+require_once __DIR__ . '/../../../modelo/catalogo_datos.php';
 
 /*|||||||||||||||||||||||||| INSTANCIA DE LA CLASE Y METODOS  |||||||||||||||||||||| */
-class DatosTestable extends Datos {
+class DatosclienteTestable extends Datoscliente {
    
     public function testEncrypt($clave) {  /*||| 1 ||| */
         return $this->encryptClave(['clave' => $clave]);
@@ -35,47 +35,61 @@ class DatosTestable extends Datos {
         return $this->verificarExistencia(['campo' => $campo, 'valor' => $valor]);
     }
 
+    public function testEjecutarEliminacionCliente($id_persona) {
+        return $this->ejecutarEliminacion(['id_persona' => $id_persona]);
+    }
+
+    public function testRegistroDireccion($datos) {
+        return $this->RegistroDireccion($datos);
+    }
+
+    public function testEjecutarActualizacionDireccion($datos) {
+        return $this->ejecutarActualizacionDireccion($datos);
+    }
+
+
+
 }
 
 /*||||||||||||||||||||||||||||||| CLASE DE TEST  |||||||||||||||||||||||||||||| */
-class DatosTest extends TestCase {
-    private DatosTestable $datos;
+class DatosclienteTest extends TestCase {
+    private DatosclienteTestable $datoscliente;
 
     protected function setUp(): void {
-        $this->datos = new DatosTestable();
+        $this->datoscliente = new DatosclienteTestable();
     }
 
     public function testOperacionInvalida() { /*|||||| OPERACIONES |||| 3 || */
-        $datosDirecto = new DatosTestable(); // No 
+        $datosclienteDirecto = new DatosclienteTestable(); // No 
         $json = json_encode([
             'operacion' => 'desconocido',
             'datos' => []
         ]);
 
-        $resultado = $datosDirecto->procesarUsuario($json);
+        $resultado = $datosclienteDirecto->procesarCliente($json);
         $this->assertEquals(0, $resultado['respuesta']);
         $this->assertEquals('Operación no válida', $resultado['mensaje']);
     }
     
     public function testEncriptacionYDesencriptacion() {    /*|||||| 01 Y 02 - ENCRIPTAR Y DESENCRIPTAR CLAVE ||||*/
         $claveOriginal = 'MiClaveSegura123';
-        $claveEncriptada = $this->datos->testEncrypt($claveOriginal);
-        $claveDesencriptada = $this->datos->testDecrypt($claveEncriptada);
+        $claveEncriptada = $this->datoscliente->testEncrypt($claveOriginal);
+        $claveDesencriptada = $this->datoscliente->testDecrypt($claveEncriptada);
 
         $this->assertEquals($claveOriginal, $claveDesencriptada);
     }
 
-    public function testActualizarDatosUsuario() {
+    public function testActualizarDatosCliente() {
         $datos = [
             'cedula' => '10200300',
             'correo' => 'actualizado@example.com',
             'nombre' => 'Daniel',
             'apellido' => 'Sánchez',
             'telefono' => '04141234567',
-            'id_persona' => 2 
+            'id_persona' => 1 
         ];
 
-        $resultado = $this->datos->testEjecutarActualizacion($datos);
+        $resultado = $this->datoscliente->testEjecutarActualizacion($datos);
 
         $this->assertIsArray($resultado, 'No se recibió un array como respuesta');
         $this->assertEquals(1, $resultado['respuesta'], 'La actualización falló');
@@ -84,9 +98,9 @@ class DatosTest extends TestCase {
 
     public function testValidarClaveActual() {
         $id_persona = 2; 
-        $clavePlano = 'love1234'; 
+        $clavePlano = 'lara1234'; 
 
-        $resultado = $this->datos->testValidarClaveActual($id_persona, $clavePlano);
+        $resultado = $this->datoscliente->testValidarClaveActual($id_persona, $clavePlano);
 
         $this->assertTrue($resultado, "La clave actual no coincide con la registrada para el usuario $id_persona");
     }
@@ -95,7 +109,7 @@ class DatosTest extends TestCase {
         $id_persona = 2; 
         $claveNueva = 'love1234'; 
 
-        $resultado = $this->datos->testEjecutarActualizacionClave($id_persona, $claveNueva);
+        $resultado = $this->datoscliente->testEjecutarActualizacionClave($id_persona, $claveNueva);
 
         $this->assertIsArray($resultado, 'No se recibió un array como respuesta');
         $this->assertEquals(1, $resultado['respuesta'], 'La actualización de clave falló');
@@ -104,20 +118,20 @@ class DatosTest extends TestCase {
 
     public function testCedulaExistente() { /*||||||  VERIFICAR CEDULA Y CORREO ||||| 6 | */
         $cedula = '3071651';
-        $existe = $this->datos->testVerificarExistencia('cedula', $cedula);
+        $existe = $this->datoscliente->testVerificarExistencia('cedula', $cedula);
         $this->assertFalse($existe);
     }
 
     public function testCorreoInexistente() {
         $correo = 'danielsanchezcv@gmail.com';
-        $existe = $this->datos->testVerificarExistencia('correo', $correo);
+        $existe = $this->datoscliente->testVerificarExistencia('correo', $correo);
         $this->assertFalse($existe);
     }
 
     public function testConsultarDatosPorId() {
-        $id_persona = 2;
+        $id_persona = 20;
 
-        $resultado = $this->datos->consultardatos($id_persona);
+        $resultado = $this->datoscliente->consultardatos($id_persona);
 
         $this->assertIsArray($resultado, 'resultado no es un array');
 
@@ -129,6 +143,45 @@ class DatosTest extends TestCase {
         } else {
             $this->fail("No se encontraron datos para el id_persona $id_persona");
         }
+    }
+
+    public function testEliminarClienteExistente() {
+        $id_persona = 1; 
+
+        $resultado = $this->datoscliente->testEjecutarEliminacionCliente($id_persona);
+
+        $this->assertIsArray($resultado, 'No se recibió un array como respuesta');
+        $this->assertEquals(1, $resultado['respuesta'], "No se pudo eliminar al cliente con id_persona $id_persona");
+        $this->assertEquals('eliminar', $resultado['accion']);
+    }
+
+    public function testRegistrarDireccionCliente() {
+        $datos = [
+            'id_metodoentrega' => 1, 
+            'id_persona' => 3, 
+            'direccion_envio' => 'Av. Lara, Edif. Copilot, Piso 3',
+            'sucursal_envio' => 'Sucursal Barquisimeto'
+        ];
+
+        $resultado = $this->datoscliente->testRegistroDireccion($datos);
+
+        $this->assertIsArray($resultado, 'No se recibió un array como respuesta');
+        $this->assertEquals(1, $resultado['respuesta'], 'No se pudo registrar la dirección');
+        $this->assertEquals('incluir', $resultado['accion']);
+    }
+
+    public function testActualizarDireccionExistente() {
+        $datos = [
+            'id_direccion' => 1,
+            'direccion_envio' => 'Av. Libertador, Edif. Copilot, Piso 5',
+            'sucursal_envio' => 'Sucursal Este'
+        ];
+
+        $resultado = $this->datoscliente->testEjecutarActualizacionDireccion($datos);
+
+        $this->assertIsArray($resultado, 'No se recibió un array como respuesta');
+        $this->assertEquals(1, $resultado['respuesta'], "No se pudo actualizar la dirección con id_direccion {$datos['id_direccion']}");
+        $this->assertEquals('actualizardireccion', $resultado['accion']);
     }
 
 
