@@ -112,6 +112,31 @@ class UsuarioTest extends TestCase {
         $this->assertEquals('incluir', $resultado['accion']);
     }
 
+        public function testRegistroMasivoUsuarios() {
+        for ($i = 1; $i <= 2; $i++) {
+            $cedula = 30716541 + $i;
+            $correo = "pruebaunitaria{$i}@gmail.com";
+            $nombre = "danielsanc{$i}";
+
+            $datos = [
+                'cedula' => (string)$cedula,
+                'nombre' => $nombre,
+                'apellido' => 'Unitaria',
+                'correo' => $correo,
+                'telefono' => '04149739941',
+                'clave' => $this->usuario->testEncrypt('claveSegura123'),
+                'id_rol' => 1,
+                'nivel' => 3
+            ];
+
+            $resultado = $this->usuario->testEjecutarRegistro($datos);
+
+            $this->assertIsArray($resultado, "Falló en la iteración $i: no se recibió un array");
+            $this->assertEquals(1, $resultado['respuesta'], "Falló en la iteración $i: respuesta incorrecta");
+            $this->assertEquals('incluir', $resultado['accion'], "Falló en la iteración $i: acción incorrecta");
+        }
+    }
+
     public function testActualizarUsuarioExistente() { /*||||||  ACTUALIZAR DATOS  TEST ||||| 8 | */
         $datos = [
             'cedula' => '10200300',

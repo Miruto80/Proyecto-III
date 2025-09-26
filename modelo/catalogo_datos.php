@@ -11,7 +11,7 @@ private $objEntrega;
         $this->objEntrega = new metodoentrega();
     }
 
-    private function encryptClave($datos) {
+    protected function encryptClave($datos) {
         $config = [
             'key' => "MotorLoveMakeup",
             'method' => "AES-256-CBC"
@@ -22,7 +22,7 @@ private $objEntrega;
         return base64_encode($iv . $encrypted);
     }
 
-    private function decryptClave($datos) {
+    protected function decryptClave($datos) {
         $config = [
             'key' => "MotorLoveMakeup",
             'method' => "AES-256-CBC"
@@ -85,7 +85,7 @@ private $objEntrega;
         }
     }
     
-     private function ejecutarActualizacion($datos) {
+     protected function ejecutarActualizacion($datos) {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
@@ -129,7 +129,7 @@ private $objEntrega;
         }
     }
 
-      private function ejecutarActualizacionDireccion($datos) {
+    protected function ejecutarActualizacionDireccion($datos) {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
@@ -167,7 +167,7 @@ private $objEntrega;
         }
     }
 
-     private function RegistroDireccion($datos) {
+     protected function RegistroDireccion($datos) {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
@@ -205,7 +205,7 @@ private $objEntrega;
     }
 
 
-   private function validarClaveActual($datos) {
+   protected function validarClaveActual($datos) {
         $conex = $this->getConex1();
         try {
             $sql = "SELECT clave FROM cliente WHERE id_persona = :id_persona AND estatus >= 1";
@@ -227,7 +227,7 @@ private $objEntrega;
     }
 
 
-   private function ejecutarActualizacionClave($datos) {
+   protected function ejecutarActualizacionClave($datos) {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
@@ -264,7 +264,7 @@ private $objEntrega;
     }
 
     
-   private function verificarExistencia($datos) {
+   protected function verificarExistencia($datos) {
         $conex1 = $this->getConex1();
         $conex2 = $this->getConex2();
         try {
@@ -292,7 +292,7 @@ private $objEntrega;
         }
     }
     
-    private function ejecutarEliminacion($datos) {
+    protected function ejecutarEliminacion($datos) {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
@@ -324,7 +324,7 @@ private $objEntrega;
         return $this->objEntrega->consultar();
     }
   
-     public function consultardireccion() {
+    public function consultardireccion() {
         $conex = $this->getConex1();
         try {
              $sql = "SELECT *

@@ -15,14 +15,14 @@ class Usuario extends Conexion
     }
 
 /*||||||||||||||||||||||||||||||| ENCRIPTACION DE CLAVE  |||||||||||||||||||||||||||| 01 ||*/   
-    private function encryptClave($clave) {
+    protected function encryptClave($clave) {
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipherMethod)); 
         $encrypted = openssl_encrypt($clave, $this->cipherMethod, $this->encryptionKey, 0, $iv);
         return base64_encode($iv . $encrypted);
     }
 
     /*||||||||||||||||||||||||||||||| DESINCRIPTACION DE CLAVE  ||||||||||||||||||||||||||| 02 |||*/
-    private function decryptClave($claveEncriptada) {
+    protected function decryptClave($claveEncriptada) {
         $data = base64_decode($claveEncriptada);
         $ivLength = openssl_cipher_iv_length($this->cipherMethod);
         $iv = substr($data, 0, $ivLength);
@@ -88,7 +88,7 @@ class Usuario extends Conexion
     }
 
 /*||||||||||||||||||||||||||||||| REGISTRO DE UN NUEVO USUARIO ||||||||||||||||||||||||||| 04 |||*/    
-    private function ejecutarRegistro($datos) {
+    protected function ejecutarRegistro($datos) {
         $conex = $this->getConex2();
         try {
             $conex->beginTransaction();
@@ -136,7 +136,7 @@ class Usuario extends Conexion
     }
 
 /*||||||||||||||||||||||||||||||| ACTUALIZAR DATOS DEL USUARIO  ||||||||||||||||||||||||||| 05 |||*/
-   private function ejecutarActualizacion($datos) { 
+   protected function ejecutarActualizacion($datos) { 
     $conex = $this->getConex2();
     try {
         $conex->beginTransaction();
@@ -187,7 +187,7 @@ class Usuario extends Conexion
 }
 
 /*||||||||||||||||||||||||||||||| ELIMINAR USUARIO (LOGICO)  |||||||||||||||||||||||||| 06 ||||*/
-    private function ejecutarEliminacion($datos) {
+    protected function ejecutarEliminacion($datos) {
         $conex = $this->getConex2();
         try {
             $conex->beginTransaction();
@@ -217,7 +217,7 @@ class Usuario extends Conexion
     }
 
 /*||||||||||||||||||||||||||||||| VERIFICAR CEDULA Y CORREO  ||||||||||||||||||||||||| 07 |||||*/    
-    private function verificarExistencia($datos) {
+    protected function verificarExistencia($datos) {
         $conex1 = $this->getConex1();
         $conex2 = $this->getConex2();
         try {
@@ -398,7 +398,7 @@ class Usuario extends Conexion
 }
 
 /*||||||||||||||||||||||||||||||| ELIMINAR PERMISOS (USUARIO CAMBIO DE ROL)  |||||||||||||||||||||||||| 11 ||||*/
-private function ejecutarEliminacionPermisos($id_persona) {
+protected function ejecutarEliminacionPermisos($id_persona) {
     $conex = $this->getConex2();
     try {
         $conex->beginTransaction();
@@ -473,7 +473,7 @@ private function ejecutarEliminacionPermisos($id_persona) {
 }
 
 /*||||||||||||||||||||||||||||||| ACTUALIZAR PERMISOS DEL USUARIO  ||||||||||||||||||||||||| 14 |||||*/
-    private function actualizarLotePermisos($lista) {
+    protected function actualizarLotePermisos($lista) {
     $conex = $this->getConex2();
     try {
         $conex->beginTransaction();
