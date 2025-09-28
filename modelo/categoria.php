@@ -1,6 +1,6 @@
 <?php
-require_once 'modelo/conexion.php';
-require_once 'modelo/bitacora.php'; 
+require_once __DIR__ . '/conexion.php';
+require_once __DIR__ . '/bitacora.php'; 
 
 class Categoria extends Conexion {
     private $bitacoraObj;
