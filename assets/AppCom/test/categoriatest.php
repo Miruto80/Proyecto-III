@@ -84,7 +84,7 @@ class CategoriaTest extends TestCase {
         $resultadoInsertar = $this->categoria->testProcesarCategoria($jsonInsertar);
 
 
-        // Pero para esta prueba unitaria, usamos un ID fijo
+        // Para esta prueba unitaria, usamos un ID fijo
         $jsonActualizar = json_encode([
             'operacion' => 'actualizar',
             'datos' => [
