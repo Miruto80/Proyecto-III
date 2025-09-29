@@ -1,6 +1,7 @@
 <?php
-require_once 'modelo/conexion.php';
-require_once 'assets/dompdf/vendor/autoload.php';
+// Corregir las rutas para que funcionen desde cualquier directorio
+require_once __DIR__ . '/conexion.php';
+require_once __DIR__ . '/../assets/dompdf/vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -25,8 +26,8 @@ public static function compra(
     }
 
     // 3) Dependencias
-    require_once 'modelo/conexion.php';
-    require_once 'assets/dompdf/vendor/autoload.php';
+    require_once __DIR__ . '/conexion.php';
+    require_once __DIR__ . '/../assets/dompdf/vendor/autoload.php';
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph.php';
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie.php';
     require_once __DIR__ . '/../assets/js/jpgraph/src/jpgraph_pie3d.php';

@@ -29,7 +29,10 @@ class CategoriaTest extends TestCase {
         $this->assertEquals('Operación no válida', $resultado['mensaje']);
     }
 
-    public function testConsultarDevuelveArray() { /*|||||| CONSULTAR  ||||| 2 | */
+    public function testConsultar() { /*|||||| CONSULTAR  ||||| 2 | */
+        // Agregar mensaje para verificar que se está ejecutando la consulta
+        fwrite(STDERR, "Ejecutando consulta de categorías...\n");
+        
         $resultado = $this->categoria->consultar();
         $this->assertIsArray($resultado);
 
@@ -37,9 +40,12 @@ class CategoriaTest extends TestCase {
             $this->assertArrayHasKey('id_categoria', $resultado[0]);
             $this->assertArrayHasKey('nombre', $resultado[0]);
         }
+        
+        // Mostrar cantidad de resultados
+        fwrite(STDERR, "Consulta de categorías completada. Resultados: " . count($resultado) . "\n");
     }
 
-    public function testInsertarCategoriaNueva() {   /*||||||  REGISTRO NUEVO TEST ||||| 3 | */
+    public function testRegistrarCategoria() {   /*||||||  REGISTRO NUEVO TEST ||||| 3 | */
         $nombreCategoria = 'Categoría de prueba ' . time();
         $json = json_encode([
             'operacion' => 'incluir',
@@ -72,7 +78,7 @@ class CategoriaTest extends TestCase {
         }
     }
 
-    public function testActualizarCategoriaExistente() { /*||||||  ACTUALIZAR DATOS  TEST ||||| 5 | */
+    public function testActualizarCategoria() { /*||||||  ACTUALIZAR DATOS  TEST ||||| 5 | */
         // Primero insertamos una categoría para tener un ID válido
         $nombreCategoria = 'Categoría para actualizar ' . time();
         $jsonInsertar = json_encode([
@@ -82,7 +88,6 @@ class CategoriaTest extends TestCase {
             ]
         ]);
         $resultadoInsertar = $this->categoria->testProcesarCategoria($jsonInsertar);
-
 
         // Para esta prueba unitaria, usamos un ID fijo
         $jsonActualizar = json_encode([
@@ -99,7 +104,7 @@ class CategoriaTest extends TestCase {
         $this->assertEquals('actualizar', $resultado['accion']);
     }
 
-    public function testEliminarCategoriaExistente() { /*||||||  ELIMINAR  ||||| 6 | */
+    public function testEliminarCategoria() { /*||||||  ELIMINAR  ||||| 6 | */
         // Primero insertamos una categoría para tener un ID válido
         $nombreCategoria = 'Categoría para eliminar ' . time();
         $jsonInsertar = json_encode([
@@ -110,11 +115,11 @@ class CategoriaTest extends TestCase {
         ]);
         $resultadoInsertar = $this->categoria->testProcesarCategoria($jsonInsertar);
 
-        //para esta prueba unitaria, usamos un ID fijo
+        // Para esta prueba unitaria, usamos un ID fijo
         $jsonEliminar = json_encode([
             'operacion' => 'eliminar',
             'datos' => [
-                'id_categoria' => 1 // ID 
+                'id_categoria' => 1 // ID
             ]
         ]);
 
@@ -123,71 +128,5 @@ class CategoriaTest extends TestCase {
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('eliminar', $resultado['accion']);
     }
-
-    public function testProcesarIncluirCategoria() { /*|||||| PROCESAR INCLUIR ||||| 7 | */
-        $nombreCategoria = 'Categoría procesar incluir ' . time();
-        $json = json_encode([
-            'operacion' => 'incluir',
-            'datos' => [
-                'nombre' => $nombreCategoria
-            ]
-        ]);
-
-        $resultado = $this->categoria->testProcesarCategoria($json);
-        $this->assertIsArray($resultado);
-        $this->assertEquals(1, $resultado['respuesta']);
-        $this->assertEquals('incluir', $resultado['accion']);
-    }
-
-    public function testProcesarActualizarCategoria() { /*|||||| PROCESAR ACTUALIZAR ||||| 8 | */
-        // Primero insertamos una categoría para tener un ID válido
-        $nombreCategoria = 'Categoría para procesar actualizar ' . time();
-        $jsonInsertar = json_encode([
-            'operacion' => 'incluir',
-            'datos' => [
-                'nombre' => $nombreCategoria
-            ]
-        ]);
-        $resultadoInsertar = $this->categoria->testProcesarCategoria($jsonInsertar);
-
-        // para esta prueba unitaria, usamos un ID fijo
-        $json = json_encode([
-            'operacion' => 'actualizar',
-            'datos' => [
-                'id_categoria' => 1, // ID 
-                'nombre' => 'Categoría procesar actualizada ' . time()
-            ]
-        ]);
-
-        $resultado = $this->categoria->testProcesarCategoria($json);
-        $this->assertIsArray($resultado);
-        $this->assertEquals(1, $resultado['respuesta']);
-        $this->assertEquals('actualizar', $resultado['accion']);
-    }
-
-    public function testProcesarEliminarCategoria() { /*|||||| PROCESAR ELIMINAR ||||| 9 | */
-        // Primero insertamos una categoría para tener un ID válido
-        $nombreCategoria = 'Categoría para procesar eliminar ' . time();
-        $jsonInsertar = json_encode([
-            'operacion' => 'incluir',
-            'datos' => [
-                'nombre' => $nombreCategoria
-            ]
-        ]);
-        $resultadoInsertar = $this->categoria->testProcesarCategoria($jsonInsertar);
-
-        // Para esta prueba unitaria, usamos un ID fijo
-        $json = json_encode([
-            'operacion' => 'eliminar',
-            'datos' => [
-                'id_categoria' => 1 // ID 
-            ]
-        ]);
-
-        $resultado = $this->categoria->testProcesarCategoria($json);
-        $this->assertIsArray($resultado);
-        $this->assertEquals(1, $resultado['respuesta']);
-        $this->assertEquals('eliminar', $resultado['accion']);
-    }
 }
-?>    
+?>

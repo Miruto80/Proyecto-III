@@ -1,7 +1,7 @@
 <?php
 // modelo/tipousuario.php
 
-require_once 'conexion.php';
+require_once __DIR__ . '/conexion.php';
 
 class tipousuario extends Conexion {
 
