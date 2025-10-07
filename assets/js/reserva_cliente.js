@@ -1,124 +1,142 @@
-$(document).ready(function () {
+document.addEventListener("DOMContentLoaded", () => {
 
+  // ---- Funciones de error ----
   function mostrarError(campo, mensaje) {
-    campo.addClass("is-invalid");
-    let span = campo.next(".invalid-feedback");
-    if (!span.length) {
-      span = $('<span class="invalid-feedback" style="color:red;"></span>');
-      campo.after(span);
+    campo.classList.add("is-invalid");
+    let span = campo.nextElementSibling;
+    if (!span || !span.classList.contains("invalid-feedback")) {
+      span = document.createElement("span");
+      span.classList.add("invalid-feedback");
+      span.style.color = "red";
+      campo.insertAdjacentElement("afterend", span);
     }
-    span.text(mensaje);
+    span.textContent = mensaje;
   }
 
   function limpiarError(campo) {
-    campo.removeClass("is-invalid");
-    campo.next(".invalid-feedback").text("");
+    campo.classList.remove("is-invalid");
+    const span = campo.nextElementSibling;
+    if (span && span.classList.contains("invalid-feedback")) {
+      span.textContent = "";
+    }
   }
 
+  // ---- Validaciones individuales ----
   function validarReferenciaBancaria(input) {
-    const valor = input.val().trim();
+    const valor = input.value.trim();
     const valido = /^[0-9]{4,6}$/.test(valor);
     valido ? limpiarError(input) : mostrarError(input, "Debe tener entre 4 y 6 dígitos.");
     return valido;
   }
 
   function validarTelefonoEmisor(input) {
-    const valor = input.val().trim();
+    const valor = input.value.trim();
     const valido = /^(0414|0424|0412|0416|0426)[0-9]{7}$/.test(valor);
     valido ? limpiarError(input) : mostrarError(input, "Formato válido: 04141234567");
     return valido;
   }
 
-  function validarSelect(input, mensaje) {
-    const valor = input.val();
-    const valido = valor !== "" && !valor.includes("Seleccione");
-    valido ? limpiarError(input) : mostrarError(input, mensaje);
+  function validarSelect(select, mensaje) {
+    const valido = select.value && !select.value.includes("Seleccione");
+    valido ? limpiarError(select) : mostrarError(select, mensaje);
     return valido;
   }
 
-  function validarFormulario() {
-    const ref = $("#referencia_bancaria");
-    const tel = $("#telefono_emisor");
-    const pago = $("#metodopago");
-    const banco = $("#banco");
-    const bancoDestino = $("#banco_destino");
-    const terminos = $("#che");
+  // ---- Inputs y botones ----
+  const ref = document.getElementById("referencia_bancaria");
+  const tel = document.getElementById("telefono_emisor");
+  const pago = document.getElementById("metodopago");
+  const banco = document.getElementById("banco");
+  const bancoDestino = document.getElementById("banco_destino");
+  const form = document.getElementById("formReserva");
+  const btnGuardar = document.getElementById("btn-guardar-reserva");
+  const checkTerminos = document.getElementById("che");
 
-    const validaciones = [
-      validarReferenciaBancaria(ref),
-      validarTelefonoEmisor(tel),
-      validarSelect(pago, "Seleccione un método de pago válido."),
-      validarSelect(banco, "Seleccione un banco de origen."),
-      validarSelect(bancoDestino, "Seleccione un banco de destino.")
-    ];
+  // ---- Restricciones de entrada ----
+  ref.addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6);
+  });
+  tel.addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "").slice(0, 11);
+  });
 
-    if (!terminos.is(":checked")) {
-      Swal.fire("Error", "Debe aceptar los términos y condiciones", "warning");
-      return false;
+  // ---- Validación en tiempo real ----
+  ref.addEventListener("input", () => validarReferenciaBancaria(ref));
+  tel.addEventListener("input", () => validarTelefonoEmisor(tel));
+  [pago, banco, bancoDestino].forEach(sel => {
+    sel.addEventListener("change", () => validarSelect(sel, "Seleccione un valor válido"));
+  });
+
+  // ---- Botón Guardar Reserva ----
+  btnGuardar.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    // Validaciones previas
+    if (!validarSelect(pago, "Seleccione un método de pago válido.")) {
+      return Swal.fire("Error", "Seleccione un método de pago válido", "warning");
+    }
+    if (!ref.value || !validarReferenciaBancaria(ref)) {
+      return Swal.fire("Error", "Ingrese una referencia bancaria válida", "warning");
+    }
+    if (!tel.value || !validarTelefonoEmisor(tel)) {
+      return Swal.fire("Error", "Ingrese un teléfono del emisor válido", "warning");
+    }
+    if (!validarSelect(banco, "Seleccione un banco de origen.")) {
+      return Swal.fire("Error", "Seleccione un banco de origen", "warning");
+    }
+    if (!validarSelect(bancoDestino, "Seleccione un banco de destino.")) {
+      return Swal.fire("Error", "Seleccione un banco de destino", "warning");
+    }
+    if (!checkTerminos.checked) {
+      return Swal.fire("Error", "Debe aceptar los términos y condiciones", "warning");
     }
 
-    return validaciones.every(v => v);
-  }
-
-  // Solo números y límites
-  $("#referencia_bancaria").on("input", function () {
-    let v = this.value.replace(/\D/g, "").slice(0, 6);
-    $(this).val(v);
-  });
-
-  $("#telefono_emisor").on("input", function () {
-    let v = this.value.replace(/\D/g, "").slice(0, 11);
-    $(this).val(v);
-  });
-
-  // Validación en tiempo real
-  $("#referencia_bancaria").on("input", () => validarReferenciaBancaria($("#referencia_bancaria")));
-  $("#telefono_emisor").on("input", () => validarTelefonoEmisor($("#telefono_emisor")));
-  $("select").on("change", () => validarFormulario());
-
-  // Envío del formulario
-  $("#btn-guardar-reserva").on("click", function (e) {
-    e.preventDefault();
-    if (!validarFormulario()) return;
-
+    // Confirmación
     Swal.fire({
-      title: "¿Confirmar reserva?",
-      text: "Se registrará su orden y pago.",
+      title: "¿Confirmar Reserva?",
+      text: "Se procesará su reserva.",
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Sí, confirmar",
+      confirmButtonText: "Sí, reservar",
       cancelButtonText: "Cancelar"
     }).then((result) => {
       if (!result.isConfirmed) return;
 
-      const fd = new FormData($("#formReserva")[0]);
-      $.ajax({
-        url: "controlador/reserva_cliente.php",
-        type: "POST",
-        data: fd,
-        processData: false,
-        contentType: false,
-        dataType: "json",
-        success(res) {
-          if (res.success) {
-            Swal.fire({
-              title: "¡Reserva realizada!",
-              text: "Recuerde que debe retirarlo en el local.",
-              icon: "success",
-              timer: 2000,
-              showConfirmButton: false
-            }).then(() => {
-              setTimeout(() => window.location.href = "?pagina=catalogo", 2000);
-            });
-          } else {
-            Swal.fire("Error", res.message || "Error al registrar la reserva.", "error");
-          }
-        },
-        error(xhr) {
-          console.error("Error de servidor:", xhr.responseText);
-          Swal.fire("Error", "Comunicación fallida con el servidor.", "error");
+      // ---- Envío con XMLHttpRequest ----
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "controlador/reserva_cliente.php", true);
+      xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+      xhr.onload = function () {
+        let data;
+        try {
+          data = JSON.parse(xhr.responseText);
+        } catch {
+          Swal.fire("Error", "Respuesta del servidor no válida", "error");
+          return;
         }
-      });
+
+        if (xhr.status === 200 && data.success) {
+          Swal.fire({
+            title: "¡Listo!",
+            text: "Su reserva fue realizada. Recuerde retirarla en el local.",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+          }).then(() => {
+            setTimeout(() => window.location.href = "?pagina=catalogo", 1500);
+          });
+        } else {
+          Swal.fire("Error", data.message || "Error al registrar la reserva.", "error");
+        }
+      };
+
+      xhr.onerror = function () {
+        Swal.fire("Error", "Comunicación fallida", "error");
+      };
+
+      xhr.send(new FormData(form));
     });
   });
 });

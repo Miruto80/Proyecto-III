@@ -26,17 +26,6 @@ class ReservaCliente extends Conexion {
         try {
             $this->validarStockCarrito($d['carrito']);
 
-            // Procesar imagen (comprobante)
-            $nombreArchivo = null;
-            if (isset($d['imagen']) && is_array($d['imagen']) && $d['imagen']['error'] === UPLOAD_ERR_OK) {
-                $nombreArchivo = uniqid() . '_' . basename($d['imagen']['name']);
-                $rutaDestino = __DIR__ . '/../uploads/' . $nombreArchivo;
-                if (!move_uploaded_file($d['imagen']['tmp_name'], $rutaDestino)) {
-                    throw new Exception("No se pudo guardar el comprobante.");
-                }
-            }
-            $d['imagen'] = $nombreArchivo;
-
             // 1. Registrar pedido SIN dirección
             $idPedido = $this->registrarPedido([
                 'tipo' => $d['tipo'],
