@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const pago = document.getElementById("metodopago");
         const banco = document.getElementById("banco");
         const bancoDestino = document.getElementById("banco_destino");
-        const check = document.getElementById("check_terminos");
+        const checkTerminos = document.getElementById("check_terminos");
 
         return [
             validarReferenciaBancaria(ref),
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
             validarSelect(pago, "Seleccione un método de pago válido."),
             validarSelect(banco, "Seleccione un banco de origen."),
             validarSelect(bancoDestino, "Seleccione un banco de destino."),
-            validarCheckbox(check, "Debe aceptar los términos y condiciones.")
+            validarCheckbox(checkTerminos, "Debe aceptar los términos y condiciones.")
         ].every(v => v);
     }
 
@@ -83,9 +83,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Activar botón solo si se aceptan términos
-    const check = document.getElementById("check_terminos");
+    const checkTerminos = document.getElementById("check_terminos");
     const btn = document.getElementById("btn-guardar-reserva");
-    check.addEventListener("change", () => btn.disabled = !check.checked);
+    checkTerminos.addEventListener("change", () => btn.disabled = !checkTerminos.checked);
 
     // Botón guardar reserva
     btn.addEventListener("click", async e => {
