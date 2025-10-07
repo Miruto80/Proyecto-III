@@ -61,6 +61,7 @@ function validarFormularioReserva() {
     const pago = document.getElementById("metodopago");
     const banco = document.getElementById("banco");
     const bancoDestino = document.getElementById("banco_destino");
+    const terminos = document.getElementById("che");
 
     const validaciones = [
         validarReferenciaBancaria(ref),
@@ -69,6 +70,11 @@ function validarFormularioReserva() {
         validarSelect(banco, "Seleccione un banco de origen."),
         validarSelect(bancoDestino, "Seleccione un banco de destino.")
     ];
+
+    if (!terminos.checked) {
+        Swal.fire("Error", "Debe aceptar los términos y condiciones", "warning");
+        return false;
+    }
 
     return validaciones.every(v => v);
 }
@@ -100,48 +106,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const formData = new FormData(form);
 
-        try {
-            const res = await fetch("controlador/reserva_cliente.php", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest"
-                }
-            });
+        Swal.fire({
+            title: "¿Confirmar reserva?",
+            text: "Se registrará su orden y pago.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Sí, confirmar",
+            cancelButtonText: "Cancelar"
+        }).then(async (result) => {
+            if (!result.isConfirmed) return;
 
-            const rawText = await res.text();
-
-            // Limpia caracteres invisibles o BOM antes de parsear
-            const cleaned = rawText.trim().replace(/^\uFEFF/, "");
-
-            let data;
             try {
-                data = JSON.parse(cleaned);
-            } catch (err) {
-                console.error("⚠️ Respuesta inesperada del servidor:", cleaned);
-                throw new Error("Respuesta del servidor no válida o contiene HTML.");
+                const res = await fetch("/controlador/reserva_cliente.php", {
+                    method: "POST",
+                    body: formData,
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                });
+
+                const rawText = await res.text();
+                const cleaned = rawText.trim().replace(/^\uFEFF/, "");
+
+                let data;
+                try {
+                    data = JSON.parse(cleaned);
+                } catch (err) {
+                    console.error("Respuesta inesperada del servidor:", cleaned);
+                    throw new Error("Respuesta del servidor no válida o contiene HTML.");
+                }
+
+                if (!res.ok || !data.success) {
+                    throw new Error(data.message || "Error al registrar la reserva.");
+                }
+
+                Swal.fire({
+                    icon: "success",
+                    title: "¡Reserva realizada!",
+                    html: "Recuerde que debe retirarlo en el local.",
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                });
+
+                setTimeout(() => window.location.href = "?pagina=catalogo", 2000);
+
+            } catch (error) {
+                muestraMensaje("error", 3000, "Error", error.message || "Ocurrió un error inesperado en el servidor.");
             }
-
-            if (!res.ok || !data.success) {
-                throw new Error(data.message || "Error al registrar la reserva.");
-            }
-
-            //  Reserva exitosa
-            Swal.fire({
-                icon: "success",
-                title: "Su reserva fue realizada",
-                html: "Recuerde que debe retirarlo en el local.",
-                timer: 2000,
-                showConfirmButton: false,
-                timerProgressBar: true
-            });
-            setTimeout(() => {
-                window.location.href = "?pagina=catalogo";
-            }, 2000);
-
-        } catch (error) {
-            muestraMensaje("error", 3000, "Error", error.message || "Ocurrió un error inesperado en el servidor.");
-        }
+        });
     });
 
     // Validación en tiempo real
