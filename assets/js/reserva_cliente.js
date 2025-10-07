@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!span || !span.classList.contains('invalid-feedback')) {
             span = document.createElement("span");
             span.classList.add("invalid-feedback");
-            span.style.color = "red";
             campo.parentNode.insertBefore(span, campo.nextSibling);
         }
         span.innerText = mensaje;
@@ -47,13 +46,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const pago = document.getElementById("metodopago");
         const banco = document.getElementById("banco");
         const bancoDestino = document.getElementById("banco_destino");
+        const check = document.getElementById("check_terminos");
 
         return [
             validarReferenciaBancaria(ref),
             validarTelefonoEmisor(tel),
             validarSelect(pago, "Seleccione un método de pago válido."),
             validarSelect(banco, "Seleccione un banco de origen."),
-            validarSelect(bancoDestino, "Seleccione un banco de destino.")
+            validarSelect(bancoDestino, "Seleccione un banco de destino."),
+            check.checked || mostrarError(check, "Debe aceptar los términos y condiciones.")
         ].every(v => v);
     }
 
@@ -71,15 +72,16 @@ document.addEventListener("DOMContentLoaded", () => {
         validarTelefonoEmisor(tel);
     });
 
+    // Activar botón solo si se aceptan términos
+    const check = document.getElementById("check_terminos");
+    const btn = document.getElementById("btn-guardar-reserva");
+    check.addEventListener("change", () => btn.disabled = !check.checked);
+
     // Botón guardar reserva
-    document.getElementById("btn-guardar-reserva").addEventListener("click", async e => {
+    btn.addEventListener("click", async e => {
         e.preventDefault();
 
         if (!validarFormulario()) return Swal.fire('Error', 'Complete correctamente el formulario', 'warning');
-
-        if (!document.getElementById("che").checked) {
-            return Swal.fire('Error', 'Debe aceptar los términos y condiciones', 'warning');
-        }
 
         Swal.fire({
             title: '¿Confirmar Pago?',
