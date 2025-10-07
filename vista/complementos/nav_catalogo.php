@@ -27,14 +27,40 @@ nav {
   display: none;
 }
 
-.contadorL{
-  margin-left: 20px;
-  margin-bottom: 2px;
-  display:flex;
-  width: 22px;
-  color: #fff;
-  background-color: #ff71d8;
+.carrito-wrapper {
+  display: grid;
+  place-items: center;
+  position: relative;
+  width: 30px;
+  height: 30px;
 }
+
+.carrito-icon {
+  font-size: 25px;
+  color: #FA48C9;
+  grid-area: 1 / 1;
+}
+
+.contadorL {
+  grid-area: 1 / 1;
+  justify-self: end;
+  align-self: start;
+  font-size: 12px;
+  width: 18px;
+  height: 18px;
+  background-color: #ff71d8;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; 
+  margin-left: 1.1rem;
+  margin-top: -1rem;
+ 
+}
+
+
 </style>
   <header>
     <div class="container-lg">
@@ -102,12 +128,15 @@ nav {
 
               <?php if (!in_array($pagina, $paginasOcultas)): ?>
                 <li id="carrito">
-                  <a href="#" class="p-0 m-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" title="Ver Carrito"
+                  <a href="#" class="carrito-wrapper" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" title="Ver Carrito"
                     aria-controls="offcanvasCart">
+
+                    <i class="fa-solid fa-cart-shopping carrito-icon" style="font-size: 25px;color:#FA48C9;"></i>
+
                     <span class="badge rounded-pill contador contadorL">
                       <?php echo count($carrito); ?>
                     </span>
-                    <i class="fa-solid fa-cart-shopping" style="font-size: 25px;color:#FA48C9;"></i>
+                   
                   </a>
                 </li>
               <?php endif; ?>

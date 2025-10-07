@@ -57,7 +57,6 @@
                   <table class="table table-m table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
                     <thead class="table-color">
                       <tr>
-                        <th class="text-white">ID</th>
                         <th class="text-white">NOMBRE</th>
                         <th class="text-white">DESCRIPCIÓN</th>
                         <th class="text-white">ACCIONES</th>
@@ -66,7 +65,6 @@
                     <tbody id="entregaTableBody">
                       <?php foreach ($metodos as $dato): ?>
                       <tr id="fila-<?= $dato['id_entrega']; ?>">
-                        <td class="texto-secundario"><?= $dato['id_entrega']; ?></td>
                         <td class="texto-secundario"><?= htmlspecialchars($dato['nombre']); ?></td>
                         <td class="texto-secundario"><?= htmlspecialchars($dato['descripcion']); ?></td>
                         <td>
