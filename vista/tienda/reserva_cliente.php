@@ -150,12 +150,12 @@ input[type="radio"]:checked + .opcion-custom {
             <!-- COMPROBANTE -->
             <div class="col-12">
               <label class="form-label">Adjuntar Comprobante</label>
-              <input type="file" name="comprobante" id="comprobante" class="form-control" accept=".jpg,.jpeg,.png" required>
+              <input type="file" name="imagen" id="imagen" class="form-control" accept=".jpg,.jpeg,.png" required>
               <img id="preview" src="#" alt="Vista previa" class="img-fluid border rounded d-none mt-2" style="max-height:200px;">
             </div>
 
             <script>
-              document.getElementById('comprobante').addEventListener('change', e => {
+              document.getElementById('imagen').addEventListener('change', e => {
                 const file = e.target.files[0];
                 if (!file) return;
                 const allowed = ['image/jpeg', 'image/png', 'image/jpg'];
