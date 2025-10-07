@@ -1,128 +1,84 @@
 <?php
-// -----------------------------------------------------------
-// INICIO DE SESIÓN
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// -----------------------------------------------------------
-// DESACTIVAR ERRORES EN PRODUCCIÓN
-ini_set('display_errors', 0);
-error_reporting(0);
-
-// -----------------------------------------------------------
-// CARGAR MODELO
+session_start();
 require_once __DIR__ . '/../modelo/reserva_cliente.php';
 
-// -----------------------------------------------------------
-// DETECTAR PETICIÓN AJAX POST
-$esPost = $_SERVER['REQUEST_METHOD'] === 'POST';
-$esAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-
-if ($esPost && $esAjax) {
-    header('Content-Type: application/json; charset=utf-8');
-
-    // Verificar sesión
-    if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
-        echo json_encode(['success' => false, 'message' => 'Sesión expirada. Inicia sesión nuevamente.']);
-        exit;
-    }
-
-    // Verificar carrito
-    if (empty($_SESSION['carrito'])) {
-        echo json_encode(['success' => false, 'message' => 'El carrito está vacío.']);
-        exit;
-    }
-
-    $reserva = new ReservaCliente();
-
-    try {
-        // Obtener datos del FormData
-        $referencia_bancaria = $_POST['referencia_bancaria'] ?? '';
-        $telefono_emisor     = $_POST['telefono_emisor'] ?? '';
-        $banco               = $_POST['banco'] ?? '';
-        $banco_destino       = $_POST['banco_destino'] ?? '';
-        $id_metodopago       = $_POST['metodopago'] ?? '';
-        $estado              = $_POST['estado'] ?? '1';
-        $precio_total_usd    = $_POST['precio_total_usd'] ?? '0';
-        $precio_total_bs     = $_POST['precio_total_bs'] ?? '0';
-        $monto               = $_POST['monto'] ?? null;
-        $monto_usd           = $_POST['monto_usd'] ?? null;
-        $imagen              = $_FILES['imagen'] ?? null;
-
-        // Construir datos de la reserva
-        $datosReserva = [
-            'operacion' => 'registrar_reserva',
-            'datos' => [
-                'referencia_bancaria' => $referencia_bancaria,
-                'telefono_emisor'     => $telefono_emisor,
-                'banco'               => $banco,
-                'banco_destino'       => $banco_destino,
-                'id_metodopago'       => $id_metodopago,
-                'id_persona'          => $_SESSION['id'],
-                'estado'              => $estado,
-                'precio_total_usd'    => $precio_total_usd,
-                'precio_total_bs'     => $precio_total_bs,
-                'tipo'                => '3',
-                'carrito'             => $_SESSION['carrito'] ?? [],
-                'monto'               => $monto,
-                'monto_usd'           => $monto_usd,
-                'imagen'              => $imagen,
-            ]
-        ];
-
-        // Procesar reserva
-        $resultado = $reserva->procesarReserva(json_encode($datosReserva));
-
-        // Vaciar carrito si fue exitoso
-        if (isset($resultado['success']) && $resultado['success'] && !empty($resultado['id_pedido'])) {
-            unset($_SESSION['carrito']);
-        }
-
-        // Enviar respuesta JSON
-        echo json_encode($resultado);
-
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => 'Error interno: ' . $e->getMessage()]);
-    }
-
-    exit;
-}
-
-// -----------------------------------------------------------
-// PETICIÓN NORMAL (GET)
-$sesion_activa = isset($_SESSION['id']) && !empty($_SESSION['id']);
-if (!$sesion_activa) {
-    header("Location: ?pagina=login");
-    exit;
-}
-
-// Carrito vacío
-if (empty($_SESSION['carrito'])) {
-    require_once __DIR__ . '/../vista/complementos/carritovacio.php';
-    exit;
-}
-
-// -----------------------------------------------------------
-// CARGAR DATOS DE VISTA
-$reserva = new ReservaCliente();
-
-$nombre         = $_SESSION['nombre'] ?? 'Estimado Cliente';
-$apellido       = $_SESSION['apellido'] ?? '';
+$nombre = isset($_SESSION["nombre"]) && !empty($_SESSION["nombre"]) ? $_SESSION["nombre"] : "Estimado Cliente";
+$apellido = isset($_SESSION["apellido"]) && !empty($_SESSION["apellido"]) ? $_SESSION["apellido"] : ""; 
 $nombreCompleto = trim("$nombre $apellido");
 
-$metodos_pago = $reserva->obtenerMetodosPago();
-$carrito      = $_SESSION['carrito'] ?? [];
-$total        = 0;
+$sesion_activa = isset($_SESSION["id"]) && !empty($_SESSION["id"]);
 
+if (!$sesion_activa) {
+    header("Location:?pagina=login");
+    exit;
+}
+
+$reserva = new ReservaCliente();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['continuar_pago'])) {
+    header('Content-Type: application/json');
+
+    // Validar carrito
+    if (empty($_SESSION['carrito'])) {
+        echo json_encode(['success'=>false,'message'=>'El carrito está vacío.']);
+        exit;
+    }
+
+    // Construir datos de reserva/pedido
+    $datos = [
+        'operacion' => 'registrar_reserva',
+        'datos' => [
+            'id_persona'          => $_SESSION['id'],
+            'tipo'                => '3',
+            'estado'              => '1',
+            'precio_total_usd'    => $_POST['precio_total_usd'] ?? '0',
+            'precio_total_bs'     => $_POST['precio_total_bs'] ?? '0',
+            'id_metodopago'       => $_POST['id_metodopago'] ?? '',
+            'referencia_bancaria' => $_POST['referencia_bancaria'] ?? '',
+            'telefono_emisor'     => $_POST['telefono_emisor'] ?? '',
+            'banco'               => $_POST['banco'] ?? '',
+            'banco_destino'       => $_POST['banco_destino'] ?? '',
+            'monto'               => $_POST['precio_total_bs'] ?? null,
+            'monto_usd'           => $_POST['precio_total_usd'] ?? null,
+            'imagen'              => '', // se setea abajo
+            'carrito'             => $_SESSION['carrito'],
+        ]
+    ];
+
+    // Manejo de imagen
+    if (!empty($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        $ext = pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION);
+        $name = uniqid('img_') . ".$ext";
+        $dest = __DIR__ . '/../assets/img/captures/' . $name;
+        if (move_uploaded_file($_FILES['imagen']['tmp_name'], $dest)) {
+            $datos['datos']['imagen'] = 'assets/img/captures/' . $name;
+        }
+    }
+
+    // Procesar reserva
+    $res = $reserva->procesarReserva(json_encode($datos));
+
+    if ($res['success'] && isset($res['id_pedido'])) {
+        unset($_SESSION['carrito']); // limpiar carrito
+        echo json_encode([
+            'success'  => true,
+            'message'  => 'Pago realizado en espera de verificación.',
+            'redirect' => '?pagina=confirmacion&id=' . $res['id_pedido']
+        ]);
+    } else {
+        echo json_encode(['success'=>false,'message'=>$res['message'] ?? 'Error al procesar reserva.']);
+    }
+    exit;
+}
+
+// Si no es POST, mostrar vista de reserva
+$metodos_pago = $reserva->obtenerMetodosPago();
+$carrito = $_SESSION['carrito'] ?? [];
+$total = 0;
 foreach ($carrito as $item) {
-    $cantidad       = $item['cantidad'];
-    $precioUnitario = $cantidad >= $item['cantidad_mayor']
-        ? $item['precio_mayor']
-        : $item['precio_detal'];
+    $cantidad = $item['cantidad'];
+    $precioUnitario = $cantidad >= $item['cantidad_mayor'] ? $item['precio_mayor'] : $item['precio_detal'];
     $total += $cantidad * $precioUnitario;
 }
 
-// -----------------------------------------------------------
-// MOSTRAR VISTA PRINCIPAL
 require_once __DIR__ . '/../vista/tienda/reserva_cliente.php';
