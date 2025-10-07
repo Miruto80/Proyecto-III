@@ -105,42 +105,42 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "POST",
                 body: formData,
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    "X-Requested-With": "XMLHttpRequest"
                 }
             });
 
-            const rawText = await res.text(); // Primero texto sin procesar
+            const rawText = await res.text();
+
+            // Limpia caracteres invisibles o BOM antes de parsear
+            const cleaned = rawText.trim().replace(/^\uFEFF/, "");
 
             let data;
             try {
-                data = JSON.parse(rawText);
-            } catch (jsonError) {
-                console.error("⚠️ Respuesta inesperada del servidor (no es JSON):", rawText);
-
-                if (rawText.includes("<!DOCTYPE html>") || rawText.includes("<html")) {
-                    throw new Error("Sesión expirada o error inesperado del servidor.");
-                } else {
-                    throw new Error("Respuesta del servidor no válida.");
-                }
+                data = JSON.parse(cleaned);
+            } catch (err) {
+                console.error("⚠️ Respuesta inesperada del servidor:", cleaned);
+                throw new Error("Respuesta del servidor no válida o contiene HTML.");
             }
 
             if (!res.ok || !data.success) {
                 throw new Error(data.message || "Error al registrar la reserva.");
-            } else {
-                Swal.fire({
-                    icon: "success",
-                    title: "Su reserva fue realizada",
-                    html: "Recuerde que debe retirarlo en el local.",
-                    timer: 1500,
-                    showConfirmButton: false,
-                    timerProgressBar: true
-                });
-                setTimeout(() => window.location.href = "?pagina=catalogo", 1500);
-                return;
             }
 
+            //  Reserva exitosa
+            Swal.fire({
+                icon: "success",
+                title: "Su reserva fue realizada",
+                html: "Recuerde que debe retirarlo en el local.",
+                timer: 2000,
+                showConfirmButton: false,
+                timerProgressBar: true
+            });
+            setTimeout(() => {
+                window.location.href = "?pagina=catalogo";
+            }, 2000);
+
         } catch (error) {
-            muestraMensaje("error", 3000, "Error", error.message || "Ocurrió un error inesperado.");
+            muestraMensaje("error", 3000, "Error", error.message || "Ocurrió un error inesperado en el servidor.");
         }
     });
 
