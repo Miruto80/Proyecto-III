@@ -1,12 +1,12 @@
 <?php
 // -----------------------------------------------------------
-// INICIO DE SESIÓN (evita duplicados)
+// INICIO DE SESIÓN
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 // -----------------------------------------------------------
-// DESACTIVAR MOSTRAR ERRORES EN PRODUCCIÓN (evita romper JSON)
+// DESACTIVAR ERRORES EN PRODUCCIÓN
 ini_set('display_errors', 0);
 error_reporting(0);
 
@@ -37,24 +37,32 @@ if ($esPost && $esAjax) {
     $reserva = new ReservaCliente();
 
     try {
-        // Obtener datos opcionales
-        $monto       = $_POST['monto'] ?? null;
-        $monto_usd   = $_POST['monto_usd'] ?? null;
-        $imagen      = $_FILES['imagen'] ?? null;
+        // Obtener datos del FormData
+        $referencia_bancaria = $_POST['referencia_bancaria'] ?? '';
+        $telefono_emisor     = $_POST['telefono_emisor'] ?? '';
+        $banco               = $_POST['banco'] ?? '';
+        $banco_destino       = $_POST['banco_destino'] ?? '';
+        $id_metodopago       = $_POST['metodopago'] ?? '';
+        $estado              = $_POST['estado'] ?? '1';
+        $precio_total_usd    = $_POST['precio_total_usd'] ?? '0';
+        $precio_total_bs     = $_POST['precio_total_bs'] ?? '0';
+        $monto               = $_POST['monto'] ?? null;
+        $monto_usd           = $_POST['monto_usd'] ?? null;
+        $imagen              = $_FILES['imagen'] ?? null;
 
         // Construir datos de la reserva
         $datosReserva = [
             'operacion' => 'registrar_reserva',
             'datos' => [
-                'referencia_bancaria' => $_POST['referencia_bancaria'] ?? '',
-                'telefono_emisor'     => $_POST['telefono_emisor'] ?? '',
-                'banco'               => $_POST['banco'] ?? '',
-                'banco_destino'       => $_POST['banco_destino'] ?? '',
-                'id_metodopago'       => $_POST['id_metodopago'] ?? '',
+                'referencia_bancaria' => $referencia_bancaria,
+                'telefono_emisor'     => $telefono_emisor,
+                'banco'               => $banco,
+                'banco_destino'       => $banco_destino,
+                'id_metodopago'       => $id_metodopago,
                 'id_persona'          => $_SESSION['id'],
-                'estado'              => $_POST['estado'] ?? '1',
-                'precio_total_usd'    => $_POST['precio_total_usd'] ?? '0',
-                'precio_total_bs'     => $_POST['precio_total_bs'] ?? '0',
+                'estado'              => $estado,
+                'precio_total_usd'    => $precio_total_usd,
+                'precio_total_bs'     => $precio_total_bs,
                 'tipo'                => '3',
                 'carrito'             => $_SESSION['carrito'] ?? [],
                 'monto'               => $monto,
@@ -73,6 +81,7 @@ if ($esPost && $esAjax) {
 
         // Enviar respuesta JSON
         echo json_encode($resultado);
+
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => 'Error interno: ' . $e->getMessage()]);
     }
