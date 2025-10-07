@@ -254,13 +254,55 @@ input[type="radio"]:checked + .opcion-custom {
           
             <div class="col-12">
               <label class="form-label">Subir comprobante</label>
-              <input type="file" name="imagen" id="imagen" class="form-control" accept="image/*" required>
+              <input type="file" name="imagen" id="imagen" class="form-control" accept=".jpg, .jpeg, .png, .webp" required>
             </div>
+
+            <!-- Vista previa -->
+<div class="col-12">
+  
+  <img id="preview" src="#" alt="Vista previa" class="img-fluid border rounded d-none" style="max-height: 300px;">
+</div>
+
+<script>
+  document.getElementById('imagen').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+    if (file) {
+      if (!allowedTypes.includes(file.type)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Formato no permitido',
+          text: 'Solo se aceptan imágenes JPG, PNG o WEBP.',
+          confirmButtonText: 'OK'
+        });
+        e.target.value = ''; // Limpia el campo
+        return;
+      }
+
+      // Vista previa si el formato es válido
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const preview = document.getElementById('preview');
+        preview.src = event.target.result;
+        preview.classList.remove('d-none');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+
+
+
 
          
             <div class="form-check form-switch mb-3 ml-3">
               <input class="form-check-input" type="checkbox" id="che">
-              <label class="form-check-label" for="che">Acepto los <a href="">terminos y condidiones</a></label>
+              <label class="form-check-label" for="che">Acepto los 
+              <a type="button" class=" " data-bs-toggle="modal" data-bs-target="#scrollableModal">
+  Terminos y Condiciones
+            </a>
+              </label>
             </div>
           <button type="button" id="btn-guardar-pago" class="btn btn-primary w-100 ">Realizar Pago <i class="fa-solid fa-credit-card ms-2"></i></button>
           <p class="text-muted mt-2"><small>Compra con confianza, tu mejor elección te espera.</small></p>
@@ -314,6 +356,134 @@ input[type="radio"]:checked + .opcion-custom {
 </a>
 </div>
   </section>
+
+
+   <!-- modal terminos y condiciones  -->
+
+
+   <div class="modal fade" id="scrollableModal" tabindex="-1" aria-labelledby="scrollableModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="scrollableModalLabel">Terminos y Condiciones</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="container py-5">
+  
+  <div class="accordion" id="termsAccordion">
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading1">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true">
+          1. Generalidades
+        </button>
+      </h2>
+      <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#termsAccordion">
+        <div class="accordion-body">
+          Al acceder y utilizar este sitio web, usted acepta cumplir con los presentes Términos y Condiciones. Estos aplican a todas las compras realizadas a través de nuestra plataforma de comercio electrónico.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading2">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+          2. Productos y Precios
+        </button>
+      </h2>
+      <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+        <div class="accordion-body">
+          Todos los productos ofrecidos están sujetos a disponibilidad. Nos reservamos el derecho de modificar precios, descripciones y condiciones de venta sin previo aviso.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading3">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+          3. Proceso de Compra
+        </button>
+      </h2>
+      <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+        <div class="accordion-body">
+          El cliente debe verificar cuidadosamente los detalles del producto antes de confirmar su compra. Una vez realizado el pago, no se aceptan modificaciones ni cancelaciones del pedido.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading4">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4">
+          4. Pagos
+        </button>
+      </h2>
+      <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+        <div class="accordion-body">
+          Aceptamos los métodos de pago indicados en el sitio web. Todos los pagos deben realizarse en su totalidad antes del envío del producto.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading5">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5">
+          5. Envíos
+        </button>
+      </h2>
+      <div id="collapse5" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+        <div class="accordion-body">
+          Los tiempos de entrega son estimados y pueden variar según la ubicación y condiciones externas. No nos hacemos responsables por retrasos ocasionados por terceros.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading6">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6">
+          6. Política de No Devoluciones
+        </button>
+      </h2>
+      <div id="collapse6" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+        <div class="accordion-body">
+        No aceptamos devoluciones ni cambios bajo ninguna circunstancia.
+
+          Al realizar una compra, el cliente reconoce y acepta esta política.
+
+          En caso de recibir un producto defectuoso o incorrecto, se deberá contactar al servicio de atención al cliente dentro de las 48 horas siguientes a la recepción para evaluar posibles soluciones.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading7">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7">
+          7. Responsabilidad
+        </button>
+      </h2>
+      <div id="collapse7" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+        <div class="accordion-body">
+        No nos responsabilizamos por el uso indebido de los productos adquiridos.
+        Nuestra responsabilidad se limita al valor del producto adquirido.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading8">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8">
+          8. Propiedad Intelectual
+        </button>
+      </h2>
+      <div id="collapse8" class="accordion-collapse collapse" data-bs-parent="#termsAccordion">
+        <div class="accordion-body">
+        Todo el contenido del sitio web (textos, imágenes, logotipos, etc.) está protegido por derechos de autor y no puede ser reproducido sin autorización.
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
 
   <?php include 'vista/complementos/footer_catalogo.php'; ?>
   <script src="assets/js/Pedidopago.js"></script>

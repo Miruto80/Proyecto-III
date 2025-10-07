@@ -50,7 +50,7 @@ class Salida extends Conexion {
             $conex->beginTransaction();
             // Insertar cabecera del pedido con los campos correctos según la estructura de la BD
             $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total_usd, precio_total_bs, id_persona) 
-                    VALUES ('1', NOW(), '1', :precio_total_usd, :precio_total_bs, :id_persona)";
+                    VALUES ('2', NOW(), '1', :precio_total_usd, :precio_total_bs, :id_persona)";
             $stmt = $conex->prepare($sql);
             $stmt->execute([
                 'precio_total_usd' => $datos['precio_total'],
