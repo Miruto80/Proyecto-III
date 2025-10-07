@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Funciones de validación
     function mostrarError(campo, mensaje) {
         campo.classList.add("is-invalid");
         let span = campo.nextElementSibling;
@@ -41,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function validarCheckbox(checkbox, mensaje) {
+        if (!checkbox) return false; // No existe
         if (!checkbox.checked) {
             mostrarError(checkbox, mensaje);
             return false;
@@ -59,78 +59,90 @@ document.addEventListener("DOMContentLoaded", () => {
         const checkTerminos = document.getElementById("check_terminos");
 
         return [
-            validarReferenciaBancaria(ref),
-            validarTelefonoEmisor(tel),
-            validarSelect(pago, "Seleccione un método de pago válido."),
-            validarSelect(banco, "Seleccione un banco de origen."),
-            validarSelect(bancoDestino, "Seleccione un banco de destino."),
+            ref ? validarReferenciaBancaria(ref) : true,
+            tel ? validarTelefonoEmisor(tel) : true,
+            pago ? validarSelect(pago, "Seleccione un método de pago válido.") : true,
+            banco ? validarSelect(banco, "Seleccione un banco de origen.") : true,
+            bancoDestino ? validarSelect(bancoDestino, "Seleccione un banco de destino.") : true,
             validarCheckbox(checkTerminos, "Debe aceptar los términos y condiciones.")
         ].every(v => v);
     }
 
-    // Limitar inputs
+    // Limitar inputs si existen
     const ref = document.getElementById("referencia_bancaria");
     const tel = document.getElementById("telefono_emisor");
 
-    ref.addEventListener("input", e => {
-        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
-        validarReferenciaBancaria(ref);
-    });
+    if (ref) {
+        ref.addEventListener("input", e => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+            validarReferenciaBancaria(ref);
+        });
+    }
 
-    tel.addEventListener("input", e => {
-        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
-        validarTelefonoEmisor(tel);
-    });
+    if (tel) {
+        tel.addEventListener("input", e => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+            validarTelefonoEmisor(tel);
+        });
+    }
 
-    // Activar botón solo si se aceptan términos
+    // Activar botón solo si checkbox existe
     const checkTerminos = document.getElementById("check_terminos");
     const btn = document.getElementById("btn-guardar-reserva");
-    checkTerminos.addEventListener("change", () => btn.disabled = !checkTerminos.checked);
 
-    // Botón guardar reserva
-    btn.addEventListener("click", async e => {
-        e.preventDefault();
+    if (checkTerminos && btn) {
+        btn.disabled = !checkTerminos.checked;
 
-        if (!validarFormulario()) return Swal.fire('Error', 'Complete correctamente el formulario', 'warning');
-
-        Swal.fire({
-            title: '¿Confirmar Pago?',
-            text: 'Se procesará su orden y pago.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, pagar',
-            cancelButtonText: 'Cancelar'
-        }).then(async (result) => {
-            if (!result.isConfirmed) return;
-
-            const form = document.getElementById('formReserva');
-            const fd = new FormData(form);
-
-            try {
-                const res = await fetch("controlador/reserva_cliente.php", {
-                    method: "POST",
-                    body: fd
-                });
-
-                const data = await res.json();
-
-                if (!data.success) {
-                    Swal.fire('Error', data.message || 'Error al procesar la reserva', 'error');
-                } else {
-                    Swal.fire({
-                        title: '¡Listo!',
-                        text: data.message,
-                        icon: 'success',
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => {
-                        if (data.redirect) window.location.href = data.redirect;
-                    });
-                }
-            } catch (error) {
-                Swal.fire('Error', 'Comunicación fallida o sesión expirada', 'error');
-                console.error(error);
-            }
+        checkTerminos.addEventListener("change", () => {
+            btn.disabled = !checkTerminos.checked;
         });
-    });
+
+        btn.addEventListener("click", async e => {
+            e.preventDefault();
+
+            if (!validarFormulario()) return Swal.fire('Error', 'Complete correctamente el formulario', 'warning');
+
+            Swal.fire({
+                title: '¿Confirmar Pago?',
+                text: 'Se procesará su orden y pago.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, pagar',
+                cancelButtonText: 'Cancelar'
+            }).then(async (result) => {
+                if (!result.isConfirmed) return;
+
+                const form = document.getElementById('formReserva');
+                if (!form) return;
+
+                const fd = new FormData(form);
+
+                try {
+                    const res = await fetch("controlador/reserva_cliente.php", {
+                        method: "POST",
+                        body: fd
+                    });
+
+                    const data = await res.json();
+
+                    if (!data.success) {
+                        Swal.fire('Error', data.message || 'Error al procesar la reserva', 'error');
+                    } else {
+                        Swal.fire({
+                            title: '¡Listo!',
+                            text: data.message,
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            if (data.redirect) window.location.href = data.redirect;
+                        });
+                    }
+                } catch (error) {
+                    Swal.fire('Error', 'Comunicación fallida o sesión expirada', 'error');
+                    console.error(error);
+                }
+            });
+        });
+    }
 });
