@@ -40,6 +40,16 @@ document.addEventListener("DOMContentLoaded", () => {
         return valido;
     }
 
+    function validarCheckbox(checkbox, mensaje) {
+        if (!checkbox.checked) {
+            mostrarError(checkbox, mensaje);
+            return false;
+        } else {
+            limpiarError(checkbox);
+            return true;
+        }
+    }
+
     function validarFormulario() {
         const ref = document.getElementById("referencia_bancaria");
         const tel = document.getElementById("telefono_emisor");
@@ -54,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
             validarSelect(pago, "Seleccione un método de pago válido."),
             validarSelect(banco, "Seleccione un banco de origen."),
             validarSelect(bancoDestino, "Seleccione un banco de destino."),
-            check.checked || mostrarError(check, "Debe aceptar los términos y condiciones.")
+            validarCheckbox(check, "Debe aceptar los términos y condiciones.")
         ].every(v => v);
     }
 
