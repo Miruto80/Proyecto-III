@@ -52,17 +52,20 @@ class LoginTest extends TestCase {
         $this->assertEquals($claveOriginal, $claveDesencriptada);
     }
 
-    public function testVerificarCredenciales() {     /*|||||| 03 - VERIFICAR CREDENCIALES CORRECTAS ||||*/
-        $cedula = '20152522'; 
-        $clavePlano = 'love1234';
+  public function testVerificarCredenciales() { /*|||||| 03 - VERIFICAR CREDENCIALES CORRECTAS ||||*/
+    $cedula = '20152522'; 
+    $clavePlano = 'love1234';
 
-        $resultado = $this->login->testVerificarCredenciales($cedula, $clavePlano);
+    $resultado = $this->login->testVerificarCredenciales($cedula, $clavePlano);
 
-        $this->assertNotNull($resultado, 'Las credenciales son incorrectas o el usuario no existe');
+    $this->assertNotNull($resultado, 'Las credenciales son incorrectas o el usuario no existe.');
 
-        $this->assertObjectHasProperty('cedula', $resultado);
-        $this->assertObjectHasProperty('estatus', $resultado);  
+    if ($resultado !== null) {
+        echo "Las credenciales son correctas. Usuario autenticado.\n";
+        $this->assertObjectHasProperty('cedula', $resultado, 'Falta la propiedad cedula en el objeto resultado.');
+        $this->assertObjectHasProperty('estatus', $resultado, 'Falta la propiedad estatus en el objeto resultado.');
     }
+}
 
     public function testRegistrarClienteNuevo() {   /*|||||| 04 - REGISTRAR CLIENTE NUEVO ||||*/
         $datos = [

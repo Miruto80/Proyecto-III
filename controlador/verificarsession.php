@@ -1,5 +1,5 @@
 <?php
-$tiempo_limite = 60; 
+$tiempo_limite = 900; 
 
 if (isset($_SESSION['ultimo_movimiento'])) {
     $inactivo = time() - $_SESSION['ultimo_movimiento'];

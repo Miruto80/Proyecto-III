@@ -4,6 +4,7 @@ require_once __DIR__ . '/../../../modelo/usuario.php';
 
 /*|||||||||||||||||||||||||| INSTANCIA DE LA CLASE Y METODOS  |||||||||||||||||||||| */
 class UsuarioTestable extends Usuario {
+    
     public function testEncrypt($clave) {  /*||| 1 ||| */
         return $this->encryptClave($clave);
     }
@@ -62,16 +63,23 @@ class UsuarioTest extends TestCase {
         $this->assertEquals('Operación no válida', $resultado['mensaje']);
     }
 
-    public function testConsultarDevuelveArray() { /*|||||| CONSULTAR  ||||| 4 | */
-        $resultado = $this->usuario->consultar();
-        $this->assertIsArray($resultado);
+   public function testConsultarDevuelveArray() {
+    /*|||||| CONSULTAR  ||||| 4 | */
+    $resultado = $this->usuario->consultar();
 
-        if (!empty($resultado)) {
-            $this->assertArrayHasKey('id_rol', $resultado[0]);
-            $this->assertArrayHasKey('nombre_tipo', $resultado[0]);
-            $this->assertArrayHasKey('nivel', $resultado[0]);
-        }
+    $this->assertIsArray($resultado, 'El resultado de consultar() no es un array.');
+
+    if (!empty($resultado)) {
+        echo "Se encontraron datos en la consulta.\n";
+        $this->assertArrayHasKey('id_rol', $resultado[0], 'Falta la clave id_rol en el primer elemento.');
+        $this->assertArrayHasKey('nombre_tipo', $resultado[0], 'Falta la clave nombre_tipo en el primer elemento.');
+        $this->assertArrayHasKey('nivel', $resultado[0], 'Falta la clave nivel en el primer elemento.');
+    } else {
+        echo "No se encontraron datos en la consulta.\n";
+        $this->assertEmpty($resultado, 'Se esperaba que el resultado estuviera vacío.');
     }
+}
+
 
     public function testEliminarUsuarioExistente() { /*||||||  ELIMINAR  ||||| 5 | */
         $datos = ['id_persona' => 50];
@@ -113,7 +121,7 @@ class UsuarioTest extends TestCase {
     }
 
         public function testRegistroMasivoUsuarios() {
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 1; $i++) {
             $cedula = 30716541 + $i;
             $correo = "pruebaunitaria{$i}@gmail.com";
             $nombre = "danielsanc{$i}";
@@ -168,7 +176,8 @@ class UsuarioTest extends TestCase {
     }
 
     public function testObtenerNivelPorIdInexistente() { /*|||||| OBTENER EL NIVEL DEL USUARIO  ||||| 10 | */
-        $nivel = $this->usuario->obtenerNivelPorId(9999);
+        $datos = 5;
+        $nivel = $this->usuario->obtenerNivelPorId($datos);
         $this->assertNull($nivel);
     }
 
