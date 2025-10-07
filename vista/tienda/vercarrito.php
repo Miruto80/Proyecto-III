@@ -364,6 +364,8 @@ $carritoVacio = empty($_SESSION['carrito']);
 <div class="d-flex justify-content-between m-5">
 <a href="?pagina=catalogo_producto" class="btn btn-secondary"><i class="fa-solid fa-arrow-left me-2"></i> Atrás</a>
 
+<a href="?pagina=reserva_cliente" class="btn btn-primary me-2"> <i class="fa-solid fa-arrow-right"> </i> Reservar</a>
+
   <a href="?pagina=Pedidoentrega" class="btn btn-primary me-2"> <i class="fa-solid fa-arrow-right"> </i> Comprar</a>
 </div>
  </section>
