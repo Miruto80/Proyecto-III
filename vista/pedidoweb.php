@@ -142,7 +142,7 @@
           <table class="table table-m table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
               <thead  class="table-color">
                 <tr>
-            
+                  <th class="text-white">ID</th>
                   <th class="text-white">Fecha</th>
                   <th class="text-white"style="">Estado</th>
                   <th class="text-white">Total</th>
@@ -188,7 +188,7 @@
   
 ?>
     <tr style="text-align:center;">
- 
+    <td class="texto-secundario"><?= $pedido['id_pedido']?></td>
     <td class="texto-secundario"><?= $pedido['fecha'] ?></td>
     <td class=" m-3 text-white badge <?php echo $badgeClass; ?>"><?php echo $estatus_texto[$pedido['estado']] ?></td>
     <td class="texto-secundario"><?= $pedido['precio_total_bs'] ?>$</td>

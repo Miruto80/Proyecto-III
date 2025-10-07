@@ -147,7 +147,7 @@
 
 <div class="confirmacion-box">
     <i class="fas fa-check-circle"></i>
-    <h2>Tu pedido sea registrar con exito</h2>
+    <h2>Tu pedido se a registrar con exito</h2>
     <p>¡Gracias por tu compra!. Tu pedido está en proceso de verificación de pago por parte de nuestro equipo. Una vez confirmado, se procederá al retiro o envío según lo que seleccionaste.</p>
 
     <p class="footer-text">¡Agradecemos tu confianza y preferencia!</p>
