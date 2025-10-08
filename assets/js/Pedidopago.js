@@ -1,5 +1,27 @@
 $(document).ready(function() {
 
+
+  document.getElementById("che").addEventListener("change", function() {
+    const btn = document.getElementById("btn-guardar-pago");
+    btn.disabled = !this.checked;
+  });
+
+  /*||| Funcion para cambiar el boton a loader |||*/
+function activarLoaderBoton(idBoton, texto) {
+  const $boton = $(idBoton);
+  const textoActual = $boton.html();
+  $boton.data('texto-original', textoActual); // Guarda el texto original
+  $boton.prop('disabled', true);
+  $boton.html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${texto}`);
+}
+
+function desactivarLoaderBoton(idBoton) {
+  const $boton = $(idBoton);
+  const textoOriginal = $boton.data('texto-original');
+  $boton.prop('disabled', false);
+  $boton.html(textoOriginal);
+}
+
   function mostrarError(campo, mensaje) {
     campo.addClass('is-invalid');
     let span = campo.next('.invalid-feedback');
@@ -40,6 +62,34 @@ $(document).ready(function() {
     $(this).val(v);
   });
 
+
+  document.getElementById('imagen').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+    if (file) {
+      if (!allowedTypes.includes(file.type)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Formato no permitido',
+          text: 'Solo se aceptan imágenes JPG, PNG o WEBP.',
+          confirmButtonText: 'OK'
+        });
+        e.target.value = ''; // Limpia el campo
+        return;
+      }
+
+      // Vista previa si el formato es válido
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const preview = document.getElementById('preview');
+        preview.src = event.target.result;
+        preview.classList.remove('d-none');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
    // Validación en tiempo real
 
 
@@ -57,10 +107,11 @@ $(document).ready(function() {
   
     $('#btn-guardar-pago').on('click', function(e) {
       e.preventDefault();
-  
+   
        // Validaciones básicas
     if (!$('#metodopago').val()) {
-      return Swal.fire('Error', 'Seleccione un método de pago', 'warning');
+     
+     return Swal.fire('Error', 'Seleccione un método de pago', 'warning');
     }
     if (!$('#referencia_bancaria').val() || !validarReferenciaBancaria($('#referencia_bancaria'))) {
       return Swal.fire('Error', 'Ingrese una referencia bancaria válida', 'warning');
@@ -72,13 +123,15 @@ $(document).ready(function() {
       return Swal.fire('Error', 'Seleccione un banco de origen', 'warning');
     }
     if (!$('#banco_destino').val()) {
-      return Swal.fire('Error', 'Seleccione un banco de destino', 'warning');
+     return Swal.fire('Error', 'Seleccione un banco de destino', 'warning');
     }
     // Validar términos y condiciones
     if (!$('#che').is(':checked')) {
       return Swal.fire('Error', 'Debe aceptar los términos y condiciones', 'warning');
     }
   
+    activarLoaderBoton('#btn-guardar-pago',"Guardando...");  
+    
       Swal.fire({
         title: '¿Confirmar Pago?',
         text: 'Se procesará su orden y pago.',
@@ -87,7 +140,10 @@ $(document).ready(function() {
         confirmButtonText: 'Sí, pagar',
         cancelButtonText: 'Cancelar'
       }).then((result) => {
-        if (!result.isConfirmed) return;
+        if (!result.isConfirmed){
+              desactivarLoaderBoton('#btn-guardar-pago');
+           return;
+          }
   
         const fd = new FormData($('#formPago')[0]);
         $.ajax({
@@ -99,10 +155,14 @@ $(document).ready(function() {
           dataType: 'json',
           success(res) {
             if (res.success) {
+              activarLoaderBoton('#btn-guardar-pago',"Guardando...");  
               Swal.fire({ title: '¡Listo!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
                 .then(() => setTimeout(()=> window.location.href='?pagina=Pedidoconfirmar',2000));
+               
             } else {
+              activarLoaderBoton('#btn-guardar-pago',"Guardando...");  
               Swal.fire({ title: 'Error', text: res.message, icon: 'error', timer: 1500, showConfirmButton: false });
+              
             }
           },
           error() {
