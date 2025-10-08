@@ -1,5 +1,7 @@
 $(document).ready(function() {
 
+  
+
   // Mostrar detalles del pedido en modal
   $(document).on('click', '.ver-detalles', function () {
     const detalles = $(this).data('detalles');
