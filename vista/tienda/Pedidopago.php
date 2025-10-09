@@ -263,36 +263,6 @@ input[type="radio"]:checked + .opcion-custom {
   <img id="preview" src="#" alt="Vista previa" class="img-fluid border rounded d-none" style="max-height: 300px;">
 </div>
 
-<script>
-  document.getElementById('imagen').addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-
-    if (file) {
-      if (!allowedTypes.includes(file.type)) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Formato no permitido',
-          text: 'Solo se aceptan imágenes JPG, PNG o WEBP.',
-          confirmButtonText: 'OK'
-        });
-        e.target.value = ''; // Limpia el campo
-        return;
-      }
-
-      // Vista previa si el formato es válido
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        const preview = document.getElementById('preview');
-        preview.src = event.target.result;
-        preview.classList.remove('d-none');
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-</script>
-
-
 
 
          
@@ -304,7 +274,7 @@ input[type="radio"]:checked + .opcion-custom {
             </a>
               </label>
             </div>
-          <button type="button" id="btn-guardar-pago" class="btn btn-primary w-100 ">Realizar Pago <i class="fa-solid fa-credit-card ms-2"></i></button>
+          <button type="button" id="btn-guardar-pago" class="btn btn-primary w-100 " disabled >Realizar Pago <i class="fa-solid fa-credit-card ms-2"></i></button>
           <p class="text-muted mt-2"><small>Compra con confianza, tu mejor elección te espera.</small></p>
 
            
@@ -484,8 +454,12 @@ input[type="radio"]:checked + .opcion-custom {
 
   </div>
 </div>
+    </div>
+  </div>
+   </div>
 
-  <?php include 'vista/complementos/footer_catalogo.php'; ?>
+   
+  <?php include 'vista/complementos/footer_catalogo.php'?>
   <script src="assets/js/Pedidopago.js"></script>
 </body>
 </html>

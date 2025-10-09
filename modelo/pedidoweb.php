@@ -296,7 +296,7 @@ public function consultarDetallesPedido($id_pedido) {
     
             $mail->setFrom('help.lovemakeupca@gmail.com', 'Love Makeup');
             $mail->addAddress($correo, $nombre_cliente);
-            $mail->Subject = 'Información de Envío: Número de Tracking';
+            $mail->Subject = 'Informacion de Envio: Numero de Tracking';
             $mail->isHTML(true);
 
 
