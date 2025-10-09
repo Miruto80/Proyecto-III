@@ -1,4 +1,8 @@
 <?php
+// ===================================================
+// VISTA: RESERVA_CLIENTE
+// ===================================================
+
 // Evitar el Notice de sesión duplicada
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -7,6 +11,9 @@ if (session_status() === PHP_SESSION_NONE) {
 $usuario = $_SESSION;
 $carrito = $_SESSION['carrito'] ?? [];
 $carritoEmpty = empty($carrito);
+
+// ✅ Definir $sesion_activa para evitar warnings en nav_catalogo
+$sesion_activa = isset($_SESSION['id']) && !empty($_SESSION['id']);
 
 // Calcular total USD
 $total = 0;
@@ -30,6 +37,7 @@ $metodos_pago = $venta->obtenerMetodosPago();
   <title>Reserva de Productos</title>
 </head>
 <body>
+
 <?php include 'vista/complementos/nav_catalogo.php'; ?>
 
 <!-- SCRIPT PARA TASA DEL DÓLAR -->
@@ -53,7 +61,6 @@ document.addEventListener("DOMContentLoaded", obtenerTasaDolarApi);
 
 <style>
 .text-color1 { color: #ff009a; }
-
 .pasos-container {
   display: flex; justify-content: space-between; align-items: center;
   max-width: 600px; margin: 40px auto;
@@ -72,7 +79,6 @@ document.addEventListener("DOMContentLoaded", obtenerTasaDolarApi);
 .actual .circulo { background: #4fa7fa; }
 .pendiente .circulo { background: #adb5bd; }
 .sombra-suave { box-shadow: 0 4px 12px rgba(255, 105, 180, 0.25); }
-
 .opcion-custom {
   display: block; padding: 15px; border: 2px solid #dee2e6; border-radius: 12px;
   transition: all 0.3s ease; background-color: #fff; color: #f679d4;
@@ -95,17 +101,24 @@ input[type="radio"]:checked + .opcion-custom {
     <div class="row g-5 m-5">
       <!-- FORMULARIO DE RESERVA -->
       <div class="col-md-6 sombra-suave card p-4">
-        <h4 class="mb-3">Detalles de Reserva</h4>
+        <h4 class="mb-3">Completar Reserva | Pago Móvil</h4>
 
         <?php if ($carritoEmpty): ?>
           <div class="alert alert-warning">Tu carrito está vacío.</div>
         <?php else: ?>
-          <form id="formReserva" enctype="multipart/form-data" class="row g-3">
+          <form id="formReserva" enctype="multipart/form-data" class="row g-4">
+            <input type="hidden" name="continuar_pago" value="1">
             <input type="hidden" name="id_persona" value="<?= $usuario['id'] ?>">
             <input type="hidden" name="estado" value="1">
             <input type="hidden" name="precio_total_usd" value="<?= $total ?>">
             <input type="hidden" name="precio_total_bs" id="precio_total_bs" value="">
             <input type="hidden" name="tipo" value="3">
+
+            <div class="mb-3">
+              <p class="mb-1 text-primary"><b>Datos del pago móvil</b></p>
+              <p class="mb-1">• Venezuela (0102)  C.I.: V-30.352.937  Telf.: 0414-509.49.59</p>
+              <p class="mb-1">• Mercantil (0105)  C.I.: V-11.787.299  Telf.: 0426-554.13.64</p>
+            </div>
 
             <!-- BANCOS -->
             <div class="col-md-6">
@@ -136,46 +149,15 @@ input[type="radio"]:checked + .opcion-custom {
               <input type="text" name="telefono_emisor" id="telefono_emisor" class="form-control" required>
             </div>
 
-            <!-- MÉTODO DE PAGO -->
-            <div class="col-12">
-              <label class="form-label">Método de Pago</label>
-              <select name="id_metodopago" id="metodopago" class="form-select" required>
-                <option selected disabled>Seleccione</option>
-                <?php foreach ($metodos_pago as $mp): ?>
-                  <option value="<?= $mp['id_metodopago'] ?>"><?= htmlspecialchars($mp['nombre']) ?></option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-
             <!-- COMPROBANTE -->
             <div class="col-12">
               <label class="form-label">Adjuntar Comprobante</label>
-              <input type="file" name="imagen" id="imagen" class="form-control" accept=".jpg,.jpeg,.png" required>
+              <input type="file" name="imagen" id="imagen" class="form-control" accept=".jpg,.jpeg,.png,.webp" required>
               <img id="preview" src="#" alt="Vista previa" class="img-fluid border rounded d-none mt-2" style="max-height:200px;">
             </div>
 
-            <script>
-              document.getElementById('imagen').addEventListener('change', e => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const allowed = ['image/jpeg', 'image/png', 'image/jpg'];
-                if (!allowed.includes(file.type)) {
-                  alert('Formato no permitido. Solo JPG o PNG.');
-                  e.target.value = '';
-                  return;
-                }
-                const reader = new FileReader();
-                reader.onload = ev => {
-                  const preview = document.getElementById('preview');
-                  preview.src = ev.target.result;
-                  preview.classList.remove('d-none');
-                };
-                reader.readAsDataURL(file);
-              });
-            </script>
-
             <!-- ACEPTAR TÉRMINOS -->
-            <div class="form-check form-switch mb-2">
+            <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" id="check_terminos">
               <label class="form-check-label" for="check_terminos">
                 Acepto los <a data-bs-toggle="modal" data-bs-target="#modalTerminos">Términos y Condiciones</a>
@@ -225,7 +207,7 @@ input[type="radio"]:checked + .opcion-custom {
   </div>
 </section>
 
-<!-- MODAL TÉRMINOS (tipo acordeón) -->
+<!-- MODAL TÉRMINOS -->
 <div class="modal fade" id="modalTerminos" tabindex="-1" aria-labelledby="modalTerminosLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
     <div class="modal-content">
@@ -234,56 +216,11 @@ input[type="radio"]:checked + .opcion-custom {
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <div class="accordion" id="termsAccordion">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="heading1">
-              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
-                1. Generalidades
-              </button>
-            </h2>
-            <div id="collapse1" class="accordion-collapse collapse show">
-              <div class="accordion-body">
-                Al realizar una reserva, aceptas nuestras políticas de compra, entrega y pagos.
-              </div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="heading2">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
-                2. Proceso de Reserva
-              </button>
-            </h2>
-            <div id="collapse2" class="accordion-collapse collapse">
-              <div class="accordion-body">
-                Verifica bien tus datos antes de confirmar tu reserva. No se aceptan cambios una vez procesada.
-              </div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="heading3">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
-                3. Pagos y Tasa BCV
-              </button>
-            </h2>
-            <div id="collapse3" class="accordion-collapse collapse">
-              <div class="accordion-body">
-                Los precios están sujetos a la tasa BCV vigente al momento del pago.
-              </div>
-            </div>
-          </div>
-        </div>
+        <p>Al realizar una reserva, aceptas nuestras políticas de compra, entrega y pagos.</p>
       </div>
     </div>
   </div>
 </div>
-
-<script>
-//  Activar botón solo si se aceptan términos
-document.getElementById("check_terminos").addEventListener("change", function() {
-  const btn = document.getElementById("btn-guardar-reserva");
-  btn.disabled = !this.checked;
-});
-</script>
 
 <?php include 'vista/complementos/footer_catalogo.php'; ?>
 <script src="assets/js/reserva_cliente.js"></script>
