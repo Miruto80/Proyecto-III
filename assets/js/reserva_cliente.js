@@ -1,121 +1,168 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("formReserva");
-  const btn = document.getElementById("btn-guardar-reserva");
-  const check = document.getElementById("check_terminos");
-  const imagen = document.getElementById("imagen");
+$(document).ready(function () {
 
-  // Activar botón al aceptar términos
-  check.addEventListener("change", () => {
-    btn.disabled = !check.checked;
+  // Activar o desactivar botón según los términos
+  $('#check_terminos').on('change', function () {
+    const btn = $('#btn-guardar-reserva');
+    btn.prop('disabled', !this.checked);
   });
 
-  // ✅ Vista previa y validación de la imagen
-  imagen.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  /* === FUNCIONES DE LOADER EN BOTÓN === */
+  function activarLoaderBoton(idBoton, texto) {
+    const $boton = $(idBoton);
+    const textoOriginal = $boton.html();
+    $boton.data('texto-original', textoOriginal);
+    $boton.prop('disabled', true);
+    $boton.html(
+      `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${texto}`
+    );
+  }
 
-    const formatosPermitidos = ["image/jpeg", "image/png", "image/webp"];
-    if (!formatosPermitidos.includes(file.type)) {
-      Swal.fire("Error", "Solo se permiten imágenes JPG, PNG o WEBP", "error");
-      imagen.value = "";
-      return;
+  function desactivarLoaderBoton(idBoton) {
+    const $boton = $(idBoton);
+    const textoOriginal = $boton.data('texto-original');
+    $boton.prop('disabled', false);
+    $boton.html(textoOriginal);
+  }
+
+  /* === VALIDACIÓN VISUAL === */
+  function mostrarError(campo, mensaje) {
+    campo.addClass('is-invalid');
+    let span = campo.next('.invalid-feedback');
+    if (!span.length) {
+      span = $('<span class="invalid-feedback" style="color:red;"></span>');
+      campo.after(span);
     }
+    span.text(mensaje);
+  }
 
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const preview = document.getElementById("preview");
-      preview.src = ev.target.result;
-      preview.classList.remove("d-none");
-    };
-    reader.readAsDataURL(file);
+  function limpiarError(campo) {
+    campo.removeClass('is-invalid');
+    campo.next('.invalid-feedback').text('');
+  }
+
+  /* === VALIDACIONES === */
+  function validarReferenciaBancaria(input) {
+    const valor = input.val().trim();
+    const valido = /^[0-9]{4,6}$/.test(valor);
+    valido ? limpiarError(input) : mostrarError(input, 'Debe tener entre 4 y 6 dígitos.');
+    return valido;
+  }
+
+  function validarTelefonoEmisor(input) {
+    const valor = input.val().trim();
+    const valido = /^(0412|0414|0416|0424|0426)\d{7}$/.test(valor);
+    valido ? limpiarError(input) : mostrarError(input, 'Formato válido: 04141234567');
+    return valido;
+  }
+
+  // Validaciones en tiempo real
+  $('#referencia_bancaria').on('input', function () {
+    const v = this.value.replace(/\D/g, '').slice(0, 6);
+    $(this).val(v);
+    validarReferenciaBancaria($('#referencia_bancaria'));
   });
 
-  // ✅ Validaciones de campos
-  function validarReferenciaBancaria(i) {
-    return /^[0-9]{4,6}$/.test(i.value.trim());
-  }
+  $('#telefono_emisor').on('input', function () {
+    const v = this.value.replace(/\D/g, '').slice(0, 11);
+    $(this).val(v);
+    validarTelefonoEmisor($('#telefono_emisor'));
+  });
 
-  function validarTelefonoEmisor(i) {
-    return /^(0412|0414|0416|0424|0426)\d{7}$/.test(i.value.trim());
-  }
+  // === VALIDAR Y MOSTRAR VISTA PREVIA DE IMAGEN ===
+  $('#imagen').on('change', function (e) {
+    const file = e.target.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
-  function validarImagen(input) {
-    return input && input.files && input.files.length > 0;
-  }
+    if (file) {
+      if (!allowedTypes.includes(file.type)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Formato no permitido',
+          text: 'Solo se aceptan imágenes JPG, PNG o WEBP.',
+          confirmButtonText: 'OK'
+        });
+        e.target.value = '';
+        return;
+      }
 
-  // ✅ Evento de envío
-  btn.addEventListener("click", async (e) => {
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const preview = document.getElementById('preview');
+        preview.src = event.target.result;
+        preview.classList.remove('d-none');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  /* === ENVÍO DEL FORMULARIO === */
+  $('#btn-guardar-reserva').on('click', function (e) {
     e.preventDefault();
 
-    const ref = document.getElementById("referencia_bancaria");
-    const tel = document.getElementById("telefono_emisor");
-    const banco = document.getElementById("banco");
-    const bancoDestino = document.getElementById("banco_destino");
-
-    if (!validarReferenciaBancaria(ref)) {
-      Swal.fire("Error", "Referencia bancaria inválida (4-6 dígitos)", "warning");
-      return;
+    // Validaciones básicas antes del envío
+    if (!$('#banco').val()) {
+      return Swal.fire('Error', 'Seleccione un banco de origen', 'warning');
     }
-    if (!validarTelefonoEmisor(tel)) {
-      Swal.fire("Error", "Teléfono emisor inválido (ejemplo: 04141234567)", "warning");
-      return;
+    if (!$('#banco_destino').val()) {
+      return Swal.fire('Error', 'Seleccione un banco de destino', 'warning');
     }
-    if (!banco.value || banco.value.includes("Seleccione")) {
-      Swal.fire("Error", "Seleccione un banco de origen", "warning");
-      return;
+    if (!$('#referencia_bancaria').val() || !validarReferenciaBancaria($('#referencia_bancaria'))) {
+      return Swal.fire('Error', 'Ingrese una referencia bancaria válida', 'warning');
     }
-    if (!bancoDestino.value || bancoDestino.value.includes("Seleccione")) {
-      Swal.fire("Error", "Seleccione un banco de destino", "warning");
-      return;
+    if (!$('#telefono_emisor').val() || !validarTelefonoEmisor($('#telefono_emisor'))) {
+      return Swal.fire('Error', 'Ingrese un teléfono del emisor válido', 'warning');
     }
-    if (!validarImagen(imagen)) {
-      Swal.fire("Error", "Debe adjuntar un comprobante de pago", "warning");
-      return;
+    if (!$('#imagen').val()) {
+      return Swal.fire('Error', 'Debe adjuntar un comprobante', 'warning');
     }
-    if (!check.checked) {
-      Swal.fire("Error", "Debe aceptar los términos y condiciones", "warning");
-      return;
+    if (!$('#check_terminos').is(':checked')) {
+      return Swal.fire('Error', 'Debe aceptar los términos y condiciones', 'warning');
     }
 
-    const fd = new FormData(form);
-
-    const confirmar = await Swal.fire({
-      title: "¿Confirmar Reserva?",
-      text: "Se procesará su solicitud de reserva.",
-      icon: "question",
+    Swal.fire({
+      title: '¿Confirmar Reserva?',
+      text: 'Se procesará su solicitud de reserva.',
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonText: "Sí, reservar",
-      cancelButtonText: "Cancelar",
-    });
+      confirmButtonText: 'Sí, reservar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (!result.isConfirmed) return;
 
-    if (!confirmar.isConfirmed) return;
+      activarLoaderBoton('#btn-guardar-reserva', 'Guardando...');
 
-    try {
-      const res = await fetch("controlador/reserva_cliente.php", {
-        method: "POST",
-        body: fd,
+      const fd = new FormData($('#formReserva')[0]);
+
+      $.ajax({
+        url: 'controlador/reserva_cliente.php',
+        type: 'POST',
+        data: fd,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        success(res) {
+          desactivarLoaderBoton('#btn-guardar-reserva');
+
+          if (res.success) {
+            Swal.fire({
+              title: '¡Listo!',
+              text: res.message,
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false
+            }).then(() => {
+              setTimeout(() => (window.location.href = res.redirect || '?pagina=confirmacion'), 1500);
+            });
+          } else {
+            Swal.fire('Error', res.message || 'Ocurrió un error en la reserva.', 'error');
+          }
+        },
+        error(xhr, status, error) {
+          desactivarLoaderBoton('#btn-guardar-reserva');
+          console.error('AJAX Error:', status, error);
+          Swal.fire('Error', 'Comunicación fallida con el servidor', 'error');
+        }
       });
-      const data = await res.json();
-
-      if (data.success) {
-        await Swal.fire({
-          title: "¡Listo!",
-          text: data.message || "Reserva enviada correctamente.",
-          icon: "success",
-          timer: 1500,
-          showConfirmButton: false,
-        });
-        window.location.href = data.redirect;
-      } else {
-        Swal.fire(
-          "Error",
-          data.message || "Complete correctamente el formulario.",
-          "error"
-        );
-      }
-    } catch (error) {
-      console.error(error);
-      Swal.fire("Error", "Error de comunicación con el servidor", "error");
-    }
+    });
   });
 });
