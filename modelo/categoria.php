@@ -55,6 +55,11 @@ class Categoria extends Conexion {
     private function insertar(array $d): array {
         $conex = $this->getConex1();
         try {
+            // Validar que el nombre no esté vacío
+            if (empty($d['nombre'])) {
+                throw new Exception("El nombre de la categoría no puede estar vacío.");
+            }
+            
             $conex->beginTransaction();
 
             $sql  = "INSERT INTO categoria (nombre, estatus)
@@ -85,6 +90,16 @@ class Categoria extends Conexion {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
+
+            // Verificar si la categoría existe antes de actualizar
+            $sqlCheck  = "SELECT COUNT(*) FROM categoria WHERE id_categoria = :id";
+            $stmtCheck = $conex->prepare($sqlCheck);
+            $stmtCheck->execute(['id' => $d['id_categoria']]);
+            $existe = $stmtCheck->fetchColumn();
+            
+            if ($existe == 0) {
+                throw new Exception("La categoría con ID {$d['id_categoria']} no existe.");
+            }
 
             $sql  = "UPDATE categoria
                      SET nombre = :nombre
@@ -118,6 +133,16 @@ class Categoria extends Conexion {
         $conex = $this->getConex1();
         try {
             $conex->beginTransaction();
+
+            // Verificar si la categoría existe antes de eliminar
+            $sqlCheck  = "SELECT COUNT(*) FROM categoria WHERE id_categoria = :id";
+            $stmtCheck = $conex->prepare($sqlCheck);
+            $stmtCheck->execute(['id'=>$d['id_categoria']]);
+            $existe = $stmtCheck->fetchColumn();
+            
+            if ($existe == 0) {
+                throw new Exception("La categoría con ID {$d['id_categoria']} no existe.");
+            }
 
             $sql  = "UPDATE categoria
                      SET estatus = 0
