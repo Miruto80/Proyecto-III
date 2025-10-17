@@ -1,10 +1,45 @@
 <?php
 use PHPUnit\Framework\TestCase;
-require_once __DIR__ . '/../../../modelo/tipousuario.php';
+
+// Crear una copia temporal del archivo tipousuario.php
+$tipousuarioOriginal = __DIR__ . '/../../../modelo/tipousuario.php';
+$tipousuarioContent = file_get_contents($tipousuarioOriginal);
+
+// Corregir la ruta de conexion.php para que funcione desde el directorio temporal
+$conexionPath = realpath(__DIR__ . '/../../../modelo/conexion.php');
+$tipousuarioContent = str_replace("require_once __DIR__ . '/conexion.php';", "require_once '$conexionPath';", $tipousuarioContent);
+
+// Cambiar métodos privados a protegidos para que puedan ser accedidos por la clase hija
+$tipousuarioContent = str_replace("private function registro", "protected function registro", $tipousuarioContent);
+$tipousuarioContent = str_replace("private function actualizacion", "protected function actualizacion", $tipousuarioContent);
+$tipousuarioContent = str_replace("private function eliminacion", "protected function eliminacion", $tipousuarioContent);
+
+// Crear archivo temporal
+$tempFile = tempnam(sys_get_temp_dir(), 'tipousuario_test_') . '.php';
+file_put_contents($tempFile, $tipousuarioContent);
+
+// Incluir el archivo temporal
+require_once $tempFile;
 
 /*|||||||||||||||||||||||||| INSTANCIA DE LA CLASE Y METODOS  |||||||||||||||||||||| */
 class TipousuarioTestable extends tipousuario {
-   
+    
+    public function testRegistro($datos) {  /*||| 1 ||| */
+        return $this->registro($datos);
+    }
+
+    public function testActualizacion($datos) {  /*||| 2 ||| */
+        return $this->actualizacion($datos);
+    }
+
+    public function testEliminacion($datos) {  /*||| 3 ||| */
+        return $this->eliminacion($datos);
+    }
+
+    public function testConsultar() {  /*||| 4 ||| */
+        return $this->consultar();
+    }
+
     public function testProcesarTipousuario($jsonDatos) {
         return $this->procesarTipousuario($jsonDatos);
     }
@@ -33,7 +68,7 @@ class TipousuarioTest extends TestCase {
         // Agregar mensaje para verificar que se está ejecutando
         fwrite(STDERR, "Ejecutando consulta de tipos de usuario...\n");
         
-        $resultado = $this->tipousuario->consultar();
+        $resultado = $this->tipousuario->testConsultar();
         $this->assertIsArray($resultado);
         
         // Mostrar cantidad de resultados
@@ -46,30 +81,20 @@ class TipousuarioTest extends TestCase {
             'nivel' => rand(2, 3) // Nivel aleatorio entre 2 y 3
         ];
         
-        $json = json_encode([
-            'operacion' => 'registrar',
-            'datos' => $datosTipousuario
-        ]);
-
-        $resultado = $this->tipousuario->testProcesarTipousuario($json);
+        $resultado = $this->tipousuario->testRegistro($datosTipousuario);
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('incluir', $resultado['accion']);
     }
 
     public function testRegistroMasivoTipousuario() { /*||||||  REGISTRO MASIVO TEST ||||| 4 | */
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 80; $i++) {
             $datosTipousuario = [
                 'nombre' => 'Tipo usuario masivo ' . time() . '_' . $i,
                 'nivel' => rand(2, 3) // Nivel aleatorio entre 2 y 3
             ];
             
-            $json = json_encode([
-                'operacion' => 'registrar',
-                'datos' => $datosTipousuario
-            ]);
-
-            $resultado = $this->tipousuario->testProcesarTipousuario($json);
+            $resultado = $this->tipousuario->testRegistro($datosTipousuario);
 
             $this->assertIsArray($resultado, "Falló en la iteración $i: no se recibió un array");
             $this->assertEquals(1, $resultado['respuesta'], "Falló en la iteración $i: respuesta incorrecta");
@@ -84,11 +109,7 @@ class TipousuarioTest extends TestCase {
             'nivel' => rand(1, 5)
         ];
         
-        $jsonInsertar = json_encode([
-            'operacion' => 'registrar',
-            'datos' => $datosTipousuario
-        ]);
-        $resultadoInsertar = $this->tipousuario->testProcesarTipousuario($jsonInsertar);
+        $resultadoInsertar = $this->tipousuario->testRegistro($datosTipousuario);
 
         // Para esta prueba unitaria, usamos un ID fijo
         $datosActualizar = array_merge($datosTipousuario, [
@@ -96,12 +117,7 @@ class TipousuarioTest extends TestCase {
             'estatus' => 1
         ]);
         
-        $jsonActualizar = json_encode([
-            'operacion' => 'actualizar',
-            'datos' => $datosActualizar
-        ]);
-
-        $resultado = $this->tipousuario->testProcesarTipousuario($jsonActualizar);
+        $resultado = $this->tipousuario->testActualizacion($datosActualizar);
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('actualizar', $resultado['accion']);
@@ -111,27 +127,44 @@ class TipousuarioTest extends TestCase {
         // Primero insertamos un tipo de usuario para tener un ID válido
         $datosTipousuario = [
             'nombre' => 'Tipo usuario para eliminar ' . time(),
-            'nivel' => rand(1, 5)
+            'nivel' => rand(1, 2)
         ];
         
-        $jsonInsertar = json_encode([
-            'operacion' => 'registrar',
-            'datos' => $datosTipousuario
-        ]);
-        $resultadoInsertar = $this->tipousuario->testProcesarTipousuario($jsonInsertar);
+        $resultadoInsertar = $this->tipousuario->testRegistro($datosTipousuario);
 
         // Para esta prueba unitaria, usamos un ID fijo
-        $jsonEliminar = json_encode([
-            'operacion' => 'eliminar',
-            'datos' => [
-                'id_tipo' => 2 // ID de ejemplo (1 está reservado)
-            ]
-        ]);
+        $datosEliminar = [
+            'id_tipo' => 2 // ID de ejemplo (1 está reservado)
+        ];
 
-        $resultado = $this->tipousuario->testProcesarTipousuario($jsonEliminar);
+        $resultado = $this->tipousuario->testEliminacion($datosEliminar);
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('eliminar', $resultado['accion']);
     }
+    
+    public function testRegistrarTipousuarioConDatosInvalidos() { /*|||||| REGISTRO CON DATOS INVÁLIDOS ||||| 7 | */
+        // Datos inválidos que deberían causar un error
+        $datosTipousuarioInvalidos = [
+            'nombre' => '', // Nombre vacío
+            'nivel' => null   // Nivel nulo
+        ];
+        
+        // Llamar al método y verificar que devuelve un error
+        $resultado = $this->tipousuario->testRegistro($datosTipousuarioInvalidos);
+        
+        // Verificar que la respuesta indica un error
+        $this->assertIsArray($resultado);
+        $this->assertEquals(0, $resultado['respuesta']);
+        $this->assertEquals('incluir', $resultado['accion']);
+        // El mensaje puede variar dependiendo del motor de base de datos
+        // pero debería contener información sobre el error
+        $this->assertNotEmpty($resultado['mensaje']);
+    }
+}
+
+// Limpiar archivo temporal
+if (isset($tempFile) && file_exists($tempFile)) {
+    unlink($tempFile);
 }
 ?>

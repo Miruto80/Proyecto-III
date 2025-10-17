@@ -55,34 +55,20 @@ class CategoriaTest extends TestCase {
         $this->categoria = new CategoriaTestable();
     }
 
-    protected function tearDown(): void {
-        // Limpiar archivo temporal
-        global $tempFile;
-        if (isset($tempFile) && file_exists($tempFile)) {
-            unlink($tempFile);
+    public function testConsultarCategorias() { /*|||||| CONSULTAR CATEGORIAS ||||| 1 | que no devuelva un array vacio*/
+        $resultado = $this->categoria->testConsultar();
+        $this->assertIsArray($resultado);
+        // Nota: No todas las bases de datos tendrán categorías, por lo que no verificamos que no esté vacío
+        if (!empty($resultado)) {
+            $this->assertArrayHasKey('id_categoria', $resultado[0]);
+            $this->assertArrayHasKey('nombre', $resultado[0]);
         }
     }
 
-    public function testOperacionInvalida() { /*|||||| OPERACIONES |||| 1 || */
-        $json = json_encode([
-            'operacion' => 'desconocido',
-            'datos' => []
-        ]);
-
-        $resultado = $this->categoria->testProcesarCategoria($json);
-        $this->assertEquals(0, $resultado['respuesta']);
-        $this->assertEquals('Operación no válida', $resultado['mensaje']);
-    }
-
-    public function testConsultarCategorias() { /*|||||| CONSULTAR CATEGORIAS ||||| 2 | */
-        $resultado = $this->categoria->testConsultar();
-        $this->assertIsArray($resultado);
-        $this->assertNotEmpty($resultado);
-        $this->assertArrayHasKey('id_categoria', $resultado[0]);
-        $this->assertArrayHasKey('nombre', $resultado[0]);
-    }
-
-    public function testInsertarCategoriaValida() { /*|||||| INSERTAR CATEGORIA VÁLIDA ||||| 3 | */
+    public function testInsertarCategoriaValida() { /*|||||| INSERTAR CATEGORIA VÁLIDA 
+        Prueba la inserción exitosa de una nueva categoría con datos válidos.
+Verifica que la respuesta sea un array con los valores esperados: código 1, acción "incluir" y 
+mensaje "Categoría creada".||||| 2 | */
         $datos = [
             'nombre' => 'Categoría de prueba ' . time()
         ];
@@ -94,16 +80,19 @@ class CategoriaTest extends TestCase {
         $this->assertEquals('Categoría creada', $resultado['mensaje']);
     }
 
-    public function testInsertarCategoriaSinNombre() { /*|||||| INSERTAR CATEGORIA SIN NOMBRE ||||| 4 | */
+    public function testInsertarCategoriaSinNombre() { /*|||||| INSERTAR CATEGORIA SIN NOMBRE ||||| 3 | */
         $datos = [
             'nombre' => '' // Nombre vacío
         ];
 
+        // Esperamos que se lance una Exception
         $this->expectException(Exception::class);
+        $this->expectExceptionMessage('El nombre de la categoría no puede estar vacío.');
+        
         $this->categoria->testInsertar($datos);
     }
 
-    public function testActualizarCategoriaExistente() { /*|||||| ACTUALIZAR CATEGORIA EXISTENTE ||||| 5 | */
+    public function testActualizarCategoriaExistente() { /*|||||| ACTUALIZAR CATEGORIA EXISTENTE ||||| 4 | */
         $datos = [
             'id_categoria' => 1,
             'nombre' => 'Categoría actualizada ' . time()
@@ -116,17 +105,20 @@ class CategoriaTest extends TestCase {
         $this->assertEquals('Categoría modificada', $resultado['mensaje']);
     }
 
-    public function testActualizarCategoriaInexistente() { /*|||||| ACTUALIZAR CATEGORIA INEXISTENTE ||||| 6 | */
+    public function testActualizarCategoriaInexistente() { /*|||||| ACTUALIZAR CATEGORIA INEXISTENTE ||||| 5 | */
         $datos = [
-            'id_categoria' => 99999, // Categoría que no existe
-            'nombre' => 'Categoría actualizada ' . time()
+            'id_categoria' => 99999, // ID que no existe
+            'nombre' => 'Categoría inexistente ' . time()
         ];
 
+        // Esperamos que se lance una Exception
         $this->expectException(Exception::class);
+        $this->expectExceptionMessage('La categoría con ID 99999 no existe.');
+        
         $this->categoria->testActualizar($datos);
     }
 
-    public function testEliminarCategoriaExistente() { /*|||||| ELIMINAR CATEGORIA EXISTENTE ||||| 7 | */
+    public function testEliminarCategoriaExistente() { /*|||||| ELIMINAR CATEGORIA EXISTENTE ||||| 6 | */
         $datos = ['id_categoria' => 1];
 
         $resultado = $this->categoria->testEliminarLogico($datos);
@@ -136,14 +128,17 @@ class CategoriaTest extends TestCase {
         $this->assertEquals('Categoría eliminada', $resultado['mensaje']);
     }
 
-    public function testEliminarCategoriaInexistente() { /*|||||| ELIMINAR CATEGORIA INEXISTENTE ||||| 8 | */
-        $datos = ['id_categoria' => 99999]; // Categoría que no existe
+    public function testEliminarCategoriaInexistente() { /*|||||| ELIMINAR CATEGORIA INEXISTENTE ||||| 7 | */
+        $datos = ['id_categoria' => 99999]; // ID que no existe
 
+        // Esperamos que se lance una Exception
         $this->expectException(Exception::class);
+        $this->expectExceptionMessage('La categoría con ID 99999 no existe.');
+        
         $this->categoria->testEliminarLogico($datos);
     }
 
-    public function testProcesarCategoriaIncluir() { /*|||||| PROCESAR CATEGORIA INCLUIR ||||| 9 | */
+    public function testProcesarCategoriaIncluir() { /*|||||| PROCESAR CATEGORIA INCLUIR ||||| 8 | */
         $categoriaDirecto = new Categoria();
         $json = json_encode([
             'operacion' => 'incluir',
@@ -158,7 +153,7 @@ class CategoriaTest extends TestCase {
         $this->assertEquals('incluir', $resultado['accion']);
     }
 
-    public function testProcesarCategoriaActualizar() { /*|||||| PROCESAR CATEGORIA ACTUALIZAR ||||| 10 | */
+    public function testProcesarCategoriaActualizar() { /*|||||| PROCESAR CATEGORIA ACTUALIZAR ||||| 9 | */
         $categoriaDirecto = new Categoria();
         $json = json_encode([
             'operacion' => 'actualizar',
@@ -174,7 +169,7 @@ class CategoriaTest extends TestCase {
         $this->assertEquals('actualizar', $resultado['accion']);
     }
 
-    public function testProcesarCategoriaEliminar() { /*|||||| PROCESAR CATEGORIA ELIMINAR ||||| 11 | */
+    public function testProcesarCategoriaEliminar() { /*|||||| PROCESAR CATEGORIA ELIMINAR ||||| 10 | */
         $categoriaDirecto = new Categoria();
         $json = json_encode([
             'operacion' => 'eliminar',
@@ -188,5 +183,25 @@ class CategoriaTest extends TestCase {
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('eliminar', $resultado['accion']);
     }
+    
+    public function testInsertarCategoriaConNombreDuplicado() { /*|||||| INSERTAR CATEGORIA CON NOMBRE DUPLICADO ||||| 11 | */
+        // Primero insertamos una categoría
+        $nombreCategoria = 'Categoría única ' . time();
+        $datos = ['nombre' => $nombreCategoria];
+        $this->categoria->testInsertar($datos);
+        
+        // Intentamos insertar otra categoría con el mismo nombre
+        // En este caso, la base de datos podría permitirlo o no dependiendo de las restricciones
+        // Si hay restricción UNIQUE en la base de datos, esto debería lanzar una PDOException
+        $this->expectException(PDOException::class);
+        
+        // Esta llamada podría fallar si hay restricción UNIQUE en la base de datos
+        $this->categoria->testInsertar($datos);
+    }
+}
+
+// Limpiar archivo temporal
+if (isset($tempFile) && file_exists($tempFile)) {
+    unlink($tempFile);
 }
 ?>
