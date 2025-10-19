@@ -627,12 +627,11 @@ function desactivarLoaderBoton(idBoton) {
   <?php endforeach; ?>
 <?php endif; ?>
 
-<!-- Modal oculto -->
-<div id="finalModal" class="FinalModal">
+<div id="finalModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Resumen de Botones</h2>
-    <img src="ruta-a-tu-imagen-de-botones.png" alt="Botones del sistema" style="width:100%; max-width:600px;">
+    <img src="ruta-a-tu-imagen.png" alt="Botones del sistema" style="width:100%; max-width:600px;">
     <ul>
       <li><strong>Ver detalle:</strong> Abre un modal con información del pedido.</li>
       <li><strong>Validar pedido:</strong> Confirma el pago del pedido.</li>
@@ -645,9 +644,10 @@ function desactivarLoaderBoton(idBoton) {
   </div>
 </div>
 
+
 <style>
-  .FinalModal {
-    display: none;
+.modal {
+  display: none; /* Oculto por defecto */
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
@@ -671,6 +671,7 @@ function desactivarLoaderBoton(idBoton) {
   font-size: 24px;
   cursor: pointer;
 }
+
 
 </style>
 
