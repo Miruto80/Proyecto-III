@@ -627,6 +627,53 @@ function desactivarLoaderBoton(idBoton) {
   <?php endforeach; ?>
 <?php endif; ?>
 
+<!-- Modal oculto -->
+<div id="finalModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Resumen de Botones</h2>
+    <img src="ruta-a-tu-imagen-de-botones.png" alt="Botones del sistema" style="width:100%; max-width:600px;">
+    <ul>
+      <li><strong>Ver detalle:</strong> Abre un modal con información del pedido.</li>
+      <li><strong>Validar pedido:</strong> Confirma el pago del pedido.</li>
+      <li><strong>Eliminar pedido:</strong> Elimina el pedido seleccionado.</li>
+      <li><strong>Enviar pedido:</strong> Marca el pedido como enviado.</li>
+      <li><strong>Entregar pedido:</strong> Confirma la entrega al cliente.</li>
+      <li><strong>Enviar Tracking:</strong> Envía el código de seguimiento.</li>
+      <li><strong>Buscar:</strong> Filtra pedidos por texto.</li>
+    </ul>
+  </div>
+</div>
+
+<style>
+  .modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 9999;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  width: 80%;
+  max-width: 700px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 10px; right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+</style>
+
+
 
 
 
