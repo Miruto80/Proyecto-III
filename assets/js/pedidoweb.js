@@ -287,45 +287,28 @@ $(document).on('submit', '.form-delivery', function(e){
 
 
 $('#btnayuda').on("click", function () {
+  
   const driver = window.driver.js.driver;
-
+  
   const driverObj = new driver({
     nextBtnText: 'Siguiente',
-    prevBtnText: 'Anterior',
-    doneBtnText: 'Listo',
+        prevBtnText: 'Anterior',
+        doneBtnText: 'Listo',
     popoverClass: 'driverjs-theme',
-    closeBtn: false,
+    closeBtn:false,
     steps: [
-      { element: '.table-color', popover: { title: 'Tabla de Pedidos', description: 'Aquí se guardan los registros de los pedidos web', side: "left" }},
-      { element: '.btn-info', popover: { title: 'Ver detalle', description: 'Abre un modal con los detalles del pedido', side: "bottom", align: 'start' }},
-      { element: '.btn-validar', popover: { title: 'Validar pedido', description: 'Confirma el pago del pedido', side: "left", align: 'start' }},
-      { element: '.btn-eliminar', popover: { title: 'Eliminar pedido', description: 'Elimina el pedido seleccionado', side: "left", align: 'start' }},
-      { element: '.btn-enviar', popover: { title: 'Enviar pedido', description: 'Marca el pedido como enviado', side: "left", align: 'start' }},
-      { element: '.btn-entregar', popover: { title: 'Entregar pedido', description: 'Confirma la entrega al cliente', side: "left", align: 'start' }},
-      { element: '.btn-tracking', popover: { title: 'Enviar Tracking', description: 'Envía el código de seguimiento al cliente', side: "left", align: 'start' }},
-      { element: '.dt-search', popover: { title: 'Buscar', description: 'Filtra pedidos por texto', side: "right", align: 'start' }},
-      { popover: { title: 'Eso es todo', description: 'Este es el fin de la guía. Haz clic en "Listo" para ver el resumen.' }}
+      { element: '.table-color', popover: { title: 'Tabla de Pedidos', description: 'Aqui es donde se guardaran los registros de los pedidos web', side: "left", }},
+      { element: '.btn-info', popover: { title: 'Boton de ver detalle', description: <i class="fa fa-eye">'Darle click aqui te llevara a un modal para poder ver los detalles del pedido'</i>  , side: "bottom", align: 'start' }},
+      { element: '.btn-validar', popover: { title: 'validar pedido', description: 'Este botón te permite validar un pedido cuando el pago es confirmado', side: "left", align: 'start' }},
+      { element: '.btn-eliminar', popover: { title: 'Eliminar pedido', description: 'Usa este botón para eliminar un pedido', side: "left", align: 'start' }},
+      { element: '.btn-enviar', popover: { title: 'Enviar pedido', description: 'Usa este botón para Enviar un pedido', side: "left", align: 'start' }},
+      { element: '.btn-entregar', popover: { title: 'Entregar pedido', description: 'Usa este botón para confirmar que el pedido fue Entregado', side: "left", align: 'start' }},
+      { element: '.btn-tracking', popover: { title: 'Enviar Tracking', description: 'Usa este botón enviar el codigo de Tracking al Cliente', side: "left", align: 'start' }},
+      { element: '.dt-search', popover: { title: 'Buscar', description: 'Te permite buscar un pedido especifico ', side: "right", align: 'start' }},
+      { popover: { title: 'Eso es todo', description: 'Este es el fin de la guia espero hayas entendido'} }
     ]
   });
-
-  // Mostrar el modal al finalizar el tour
-  driverObj.on('reset', () => {
-    document.getElementById('finalModal').style.display = 'block';
-  });
-
-  // Cerrar el modal al hacer clic en la X
-  document.querySelector('.close').addEventListener('click', function () {
-    document.getElementById('finalModal').style.display = 'none';
-  });
-
-  // Cerrar el modal al hacer clic fuera del contenido
-  window.addEventListener('click', function (event) {
-    const modal = document.getElementById('finalModal');
-    if (event.target === modal) {
-      modal.style.display = 'none';
-    }
-  });
-
+  
+  // Iniciar el tour
   driverObj.drive();
 });
-
