@@ -628,7 +628,7 @@ function desactivarLoaderBoton(idBoton) {
 <?php endif; ?>
 
 <!-- Modal oculto -->
-<div id="finalModal" class="FinalModal" style="display:;">
+<div id="finalModal" class="FinalModal">
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Resumen de Botones</h2>
@@ -647,6 +647,7 @@ function desactivarLoaderBoton(idBoton) {
 
 <style>
   .FinalModal {
+    display: none;
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
