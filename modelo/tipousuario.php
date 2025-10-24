@@ -18,6 +18,15 @@ class tipousuario extends Conexion {
     private function registro(array $d): array {
         $c = $this->getConex2();
         try {
+            // Verificar si ya existe un tipo de usuario con el mismo nombre
+            $sqlCheck = "SELECT COUNT(*) FROM rol_usuario WHERE LOWER(nombre) = LOWER(:nombre) AND estatus = 1";
+            $stmtCheck = $c->prepare($sqlCheck);
+            $stmtCheck->execute(['nombre' => $d['nombre']]);
+            
+            if ($stmtCheck->fetchColumn() > 0) {
+                return ['respuesta'=>0,'accion'=>'incluir','mensaje'=>"Ya existe un tipo de usuario registrado con el nombre \"{$d['nombre']}\"."];
+            }
+            
             $nextId = (int)$c
                 ->query("SELECT COALESCE(MAX(id_rol),0) + 1 FROM rol_usuario")
                 ->fetchColumn();
@@ -42,8 +51,10 @@ class tipousuario extends Conexion {
             $c = null;
             return ['respuesta'=>0,'accion'=>'incluir','mensaje'=>'Error al registrar'];
         } catch (\Throwable $e) {
-            $c->rollBack();
-            $c = null;
+            if (isset($c)) {
+                $c->rollBack();
+                $c = null;
+            }
             return ['respuesta'=>0,'accion'=>'incluir','mensaje'=>$e->getMessage()];
         }
     }
@@ -51,6 +62,18 @@ class tipousuario extends Conexion {
     private function actualizacion(array $d): array {
         $c = $this->getConex2();
         try {
+            // Verificar si ya existe otro tipo de usuario con el mismo nombre
+            $sqlCheck = "SELECT COUNT(*) FROM rol_usuario WHERE LOWER(nombre) = LOWER(:nombre) AND id_rol != :id_tipo AND estatus = 1";
+            $stmtCheck = $c->prepare($sqlCheck);
+            $stmtCheck->execute([
+                'nombre' => $d['nombre'],
+                'id_tipo' => $d['id_tipo']
+            ]);
+            
+            if ($stmtCheck->fetchColumn() > 0) {
+                return ['respuesta'=>0,'accion'=>'actualizar','mensaje'=>"Ya existe otro tipo de usuario registrado con el nombre \"{$d['nombre']}\"."];
+            }
+            
             $c->beginTransaction();
             $sql = "UPDATE rol_usuario
                     SET nombre  = :nombre,
@@ -74,8 +97,10 @@ class tipousuario extends Conexion {
             $c = null;
             return ['respuesta'=>0,'accion'=>'actualizar','mensaje'=>'Error al actualizar'];
         } catch (\Throwable $e) {
-            $c->rollBack();
-            $c = null;
+            if (isset($c)) {
+                $c->rollBack();
+                $c = null;
+            }
             return ['respuesta'=>0,'accion'=>'actualizar','mensaje'=>$e->getMessage()];
         }
     }
@@ -97,8 +122,10 @@ class tipousuario extends Conexion {
             $c = null;
             return ['respuesta'=>0,'accion'=>'eliminar','mensaje'=>'Error al eliminar'];
         } catch (\Throwable $e) {
-            $c->rollBack();
-            $c = null;
+            if (isset($c)) {
+                $c->rollBack();
+                $c = null;
+            }
             return ['respuesta'=>0,'accion'=>'eliminar','mensaje'=>$e->getMessage()];
         }
     }

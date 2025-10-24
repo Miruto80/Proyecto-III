@@ -1,9 +1,51 @@
 <?php
 use PHPUnit\Framework\TestCase;
-require_once __DIR__ . '/../../../modelo/producto.php';
 
-/*|||||||||||||||||||||||||| INSTANCIA DE LA CLASE Y METODOS  |||||||||||||||||||||| */
-class ProductoTestable extends producto {
+/*||||||||||||||||||||||||||| COPIA TEMPORAL DE producto.php |||||||||||||||||||||||||||*/
+
+// Ruta original del modelo
+$productoOriginal = __DIR__ . '/../../../modelo/producto.php';
+$productoContent = file_get_contents($productoOriginal);
+
+// --- Remover dependencias innecesarias si existen ---
+$productoContent = str_replace("require_once('assets/dompdf/vendor/autoload.php');", "// require_once('assets/dompdf/vendor/autoload.php'); // Comentado para tests", $productoContent);
+$productoContent = str_replace("use Dompdf\\Dompdf;", "// use Dompdf\\Dompdf; // Comentado para tests", $productoContent);
+$productoContent = str_replace("use Dompdf\\Options;", "// use Dompdf\\Options; // Comentado para tests", $productoContent);
+
+// --- Ajustar ruta de conexión ---
+$conexionPath = realpath(__DIR__ . '/../../../modelo/conexion.php');
+// --- Reemplazar cualquier require de conexion.php con la ruta absoluta correcta ---
+$productoContent = preg_replace(
+    '/require_once\s+__DIR__\s*\.\s*[\'"]\/conexion\.php[\'"]\s*;?/',
+    "require_once '$conexionPath';",
+    $productoContent
+);
+
+$productoContent = preg_replace(
+    '/require_once\s+__DIR__\s*\.\s*[\'"]\/categoria\.php[\'"]\s*;?/',
+    "require_once '" . __DIR__ . "/../../../modelo/categoria.php';",
+    $productoContent
+);
+
+
+
+// --- Cambiar métodos privados a protegidos para acceder desde la clase testable ---
+$productoContent = str_replace("private function ejecutarRegistro", "protected function ejecutarRegistro", $productoContent);
+$productoContent = str_replace("private function ejecutarActualizacion", "protected function ejecutarActualizacion", $productoContent);
+$productoContent = str_replace("private function ejecutarEliminacion", "protected function ejecutarEliminacion", $productoContent);
+$productoContent = str_replace("private function ejecutarCambioEstatus", "protected function ejecutarCambioEstatus", $productoContent);
+$productoContent = str_replace("private function verificarProductoExistente", "protected function verificarProductoExistente", $productoContent);
+
+// --- Crear archivo temporal ---
+$tempFile = tempnam(sys_get_temp_dir(), 'producto_test_') . '.php';
+file_put_contents($tempFile, $productoContent);
+
+// --- Incluir archivo temporal ---
+require_once $tempFile;
+
+/*|||||||||||||||||||||||||| CLASE TESTABLE |||||||||||||||||||||||||||*/
+
+class ProductosTestable extends producto {
 
     public function testVerificarProductoExistente($nombre, $marca) {
         return $this->verificarProductoExistente($nombre, $marca);
@@ -26,15 +68,16 @@ class ProductoTestable extends producto {
     }
 }
 
-/*||||||||||||||||||||||||||||||| CLASE DE TEST  |||||||||||||||||||||||||||||| */
+/*||||||||||||||||||||||||||||||| CLASE DE TEST ||||||||||||||||||||||||||||||*/
+
 class ProductosTest extends TestCase {
-    private ProductoTestable $producto;
+    private ProductosTestable $producto;
 
     protected function setUp(): void {
-        $this->producto = new ProductoTestable();
+        $this->producto = new ProductosTestable();
     }
 
-    /* ----------- PRUEBAS DE PROCESAR ----------- */
+    /*|||||| TESTS DE PROCESAR PRODUCTO ||||||*/
 
     public function testOperacionInvalida() {
         $json = json_encode([
@@ -51,8 +94,8 @@ class ProductosTest extends TestCase {
         $json = json_encode([
             'operacion' => 'registrar',
             'datos' => [
-                'nombre' => 'Cable #12',
-                'marca' => 'Prysmian',
+                'nombre' => 'Bálsamo premium',
+                'marca' => 'Salome',
                 'descripcion' => 'Prueba producto existente',
                 'cantidad_mayor' => 10,
                 'precio_mayor' => 20,
@@ -70,7 +113,7 @@ class ProductosTest extends TestCase {
         $this->assertArrayHasKey('respuesta', $resultado);
     }
 
-    /* ----------- PRUEBAS DE CONSULTAR ----------- */
+    /*|||||| TESTS DE CONSULTAS ||||||*/
 
     public function testConsultarProductos() {
         $resultado = $this->producto->consultar();
@@ -102,12 +145,18 @@ class ProductosTest extends TestCase {
         $this->assertIsArray($resultado);
     }
 
-    /* ----------- PRUEBAS DE MÉTODOS PRIVADOS EXPUESTOS ----------- */
+    /*|||||| TESTS DE MÉTODOS PRIVADOS ||||||*/
 
     public function testVerificarProductoInexistente() {
         $existe = $this->producto->testVerificarProductoExistente('ProductoInexistenteXYZ', 'MarcaX');
         $this->assertFalse($existe);
     }
+
+    public function testVerificarProductoExistenteFallido() {
+    $existe = $this->producto->testVerificarProductoExistente('Base de gotero', 'Salome');
+    $this->assertFalse($existe, "Este test debería fallar porque el producto sí existe");
+}
+
 
     public function testCambioEstatus() {
         $datos = [
@@ -120,3 +169,10 @@ class ProductosTest extends TestCase {
         $this->assertEquals('cambiarEstatus', $resultado['accion']);
     }
 }
+
+/*||||||||||||||||||||||||||| LIMPIEZA FINAL |||||||||||||||||||||||||||*/
+if (isset($tempFile) && file_exists($tempFile)) {
+    unlink($tempFile);
+}
+
+?>
