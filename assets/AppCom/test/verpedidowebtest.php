@@ -33,7 +33,7 @@ class verpedidowebtest extends TestCase {
 
    /** @test */
 public function testRegistrarPedidoCompletoSimulado() {
-    $cantidadIteraciones = 1;
+    $cantidadIteraciones = 2;
 
     for ($i = 0; $i < $cantidadIteraciones; $i++) {
         $datos = [
