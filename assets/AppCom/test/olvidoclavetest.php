@@ -1,6 +1,23 @@
 <?php
 use PHPUnit\Framework\TestCase;
-require_once __DIR__ . '/../../../modelo/olvidoclave.php';
+
+// Ruta al archivo original
+$OlvidoOriginal = __DIR__ . '/../../../modelo/olvidoclave.php';
+$OlvidoContenido = file_get_contents($OlvidoOriginal);
+
+// Corregir la ruta de conexion.php si es necesario
+$conexionPath = realpath(__DIR__ . '/../../../modelo/conexion.php');
+$OlvidoContenido = str_replace("require_once 'conexion.php';", "require_once '$conexionPath';", $OlvidoContenido);
+
+// Cambiar métodos privados a protegidos para permitir acceso desde LoginTestable
+$OlvidoContenido = str_replace("private function encryptClave", "protected function encryptClave", $OlvidoContenido);
+$OlvidoContenido = str_replace("private function decryptClave", "protected function decryptClave", $OlvidoContenido);
+$OlvidoContenido = str_replace("private function ejecutarActualizacionCliente", "protected function ejecutarActualizacionCliente", $OlvidoContenido);
+$OlvidoContenido = str_replace("private function ejecutarActualizacionUsuario", "protected function ejecutarActualizacionUsuario", $OlvidoContenido);
+$OlvidoContenido = str_replace("private function ejecutarActualizacionPorOrigen", "protected function ejecutarActualizacionPorOrigen", $OlvidoContenido);
+
+// Evaluar el contenido modificado directamente
+eval('?>' . $OlvidoContenido);
 
 /*|||||||||||||||||||||||||| INSTANCIA DE LA CLASE Y METODOS  |||||||||||||||||||||| */
 class OlvidoTestable extends Olvido {
@@ -68,6 +85,12 @@ class OlvidoclaveTest extends TestCase {
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('actualizar', $resultado['accion']);
+              // Mensaje de confirmación
+        if ($resultado['respuesta'] === 1 && $resultado['accion'] === 'actualizar') {
+            echo "\n Clave de Cliente actualizada exitosamente.\n";
+        } else {
+            echo "\n Error al actualizar la clave del usuario.\n";
+        }
     }
 
     /*|||||| 05 - ACTUALIZAR CLAVE USUARIO ||||*/
@@ -81,6 +104,12 @@ class OlvidoclaveTest extends TestCase {
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('actualizar', $resultado['accion']);
+          // Mensaje de confirmación
+        if ($resultado['respuesta'] === 1 && $resultado['accion'] === 'actualizar') {
+            echo "\n Clave de usuario actualizada exitosamente.\n";
+        } else {
+            echo "\n Error al actualizar la clave del usuario.\n";
+        }
     }
 
     /*|||||| 06 - ACTUALIZAR SEGÚN ORIGEN ||||*/
