@@ -38,7 +38,7 @@ $(function(){
     const nombre = $('#nombre').val().trim();
     const nivel  = $('#nivel').val();
     if (!nombre || !/^.{3,30}$/.test(nombre)) {
-      mostrarMensaje('info',2000,'Nombre inválido','Debe tener entre 3 y 30 letras');
+      mostrarMensaje('info',2000,'Nombre inválido','Debe tener entre 3 y 30 Caracteres');
       return;
     }
     if (nivel!=='2' && nivel!=='3') {
@@ -54,10 +54,10 @@ $(function(){
   $('#modificar').on('show.bs.modal', function(e){
     const btn = e.relatedTarget;
     const id  = parseInt(btn.getAttribute('data-id'),10);
-    if (id===1 || id===2) {
+    if (id===2) {
       e.preventDefault();
       mostrarMensaje('info',3000,'Acción no permitida',
-        'Los roles <strong>Administrador</strong> y <strong>Asesora de Ventas</strong><br>no pueden modificarse.');
+        'El rol <strong>Administrador</strong><br>no puede modificarse.');
       return;
     }
     $('#id_tipo_modificar').val(id);
@@ -90,10 +90,10 @@ $(function(){
   // —— 5) Eliminar ——  
   $('.eliminar').on('click', function(e){
     const id = parseInt($(this).val(),10);
-    if (id===1 || id===2) {
+    if (id===2) {
       e.preventDefault();
       mostrarMensaje('info',3000,'Acción no permitida',
-        'Los roles <strong>Administrador</strong> y <strong>Asesora de Ventas</strong><br>no pueden eliminarse.');
+        'El rol <strong>Administrador</strong><br>no puede eliminarse.');
       return;
     }
     e.preventDefault();
