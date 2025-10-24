@@ -31,7 +31,7 @@ $(function() {
   }
 
   // ————————————————————————————
-  // Bloquear números y mostrar "No se permiten números"
+  // Bloquear números y mostrar "Solo se ermiten letras"
   // ————————————————————————————
   $('#nombre')
     .on('keypress', function(e) {
@@ -41,7 +41,7 @@ $(function() {
       if (/\d/.test(chr)) {
         e.preventDefault();
         const $span = $('#snombre');
-        $span.text('No se permiten números');
+        $span.text('Solo se permiten letras');
         $(this).addClass('is-invalid').removeClass('is-valid');
         // marca el error y evita que keyup lo borre
         $(this).data('numError', true);
@@ -105,7 +105,8 @@ $(function() {
       text:'No podrás revertir esto.',
       icon:'warning',
       showCancelButton:true,
-      confirmButtonText:'Sí, eliminar'
+      confirmButtonText:'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
     }).then(({isConfirmed})=>{
       if (!isConfirmed) return;
       const fd = new FormData($('#u')[0]);

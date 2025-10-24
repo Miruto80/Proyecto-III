@@ -4,8 +4,8 @@ require_once('assets/dompdf/vendor/autoload.php');
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-require_once('modelo/conexion.php');
-require_once('modelo/categoria.php');
+require_once __DIR__ . '/conexion.php';
+require_once __DIR__ . '/categoria.php';
 
 class producto extends Conexion {
     private $objcategoria;
