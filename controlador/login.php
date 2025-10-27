@@ -95,6 +95,13 @@ if (isset($_POST['ingresar'])) {
         }
     }
 
+} else if($resultado === "10"){
+    echo json_encode([
+        'respuesta' => 0,
+        'accion' => 'ingresar',
+        'text' => 'Error en Credenciales ERROR#10'
+    ]);
+
 } else {
    
     echo json_encode([

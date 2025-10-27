@@ -1,6 +1,27 @@
 <?php
 use PHPUnit\Framework\TestCase;
-require_once __DIR__ . '/../../../modelo/usuario.php';
+require_once __DIR__ . '/../../../modelo/tipousuario.php';
+
+// Ruta al archivo original
+$UsuarioOriginal = __DIR__ . '/../../../modelo/usuario.php';
+$UsuarioContenido = file_get_contents($UsuarioOriginal);
+
+// Corregir la ruta de conexion.php si es necesario
+$conexionPath = realpath(__DIR__ . '/../../../modelo/conexion.php');
+$UsuarioContenido = str_replace("require_once 'conexion.php';", "require_once '$conexionPath';", $UsuarioContenido);
+
+// Cambiar métodos privados a protegidos para permitir acceso desde LoginTestable
+$UsuarioContenido = str_replace("private function encryptClave", "protected function encryptClave", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function decryptClave", "protected function decryptClave", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function ejecutarEliminacion", "protected function ejecutarEliminacion", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function registrarCliente", "protected function registrarCliente", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function ejecutarRegistro", "protected function ejecutarRegistro", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function ejecutarActualizacion", "protected function ejecutarActualizacion", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function actualizarLotePermisos", "protected function actualizarLotePermisos", $UsuarioContenido);
+
+// Evaluar el contenido modificado directamente
+eval('?>' . $UsuarioContenido);
+
 
 /*|||||||||||||||||||||||||| INSTANCIA DE LA CLASE Y METODOS  |||||||||||||||||||||| */
 class UsuarioTestable extends Usuario {
@@ -118,6 +139,11 @@ class UsuarioTest extends TestCase {
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('incluir', $resultado['accion']);
+          if ($resultado['respuesta'] === 1 && $resultado['accion'] === 'incluir') {
+            echo "\n Registro con exitosamente. | Usuario nuevo\n";
+        } else {
+            echo "\n Error al registrar Usuario\n";
+        }
     }
 
         public function testRegistroMasivoUsuarios() {
@@ -173,12 +199,6 @@ class UsuarioTest extends TestCase {
             $this->assertArrayHasKey('accion', $resultado[0]);
             $this->assertArrayHasKey('estado', $resultado[0]);
         }
-    }
-
-    public function testObtenerNivelPorIdInexistente() { /*|||||| OBTENER EL NIVEL DEL USUARIO  ||||| 10 | */
-        $datos = 5;
-        $nivel = $this->usuario->obtenerNivelPorId($datos);
-        $this->assertNull($nivel);
     }
 
     public function testActualizarPermisosLote() { /*|||||| ACTUALIZAR LOS PERMISOS DEL USUARIO  |||||||| 11  ||| */

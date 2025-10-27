@@ -145,7 +145,7 @@ function validarFor() {
 //|||||||||||||| VALIDAR ENVIO login ||||||||||||||||||||||
 function validarForlogin() {
     let valido = true;
-
+  
     if (!/^[0-9]{7,8}$/.test($("#usuario").val())) {
         $("#usuario").removeClass("input-correcto").addClass("input-incorrecto");
         $("#textousuario").text("Formato incorrecto.");
@@ -219,6 +219,7 @@ $(document).ready(function() {
     });
 
   // EXPRESIONES REGULARES 
+  
   $("#usuario").on("keypress",function(e){
     validarkeypress(/^[0-9\b]*$/,e);
   });
@@ -228,6 +229,7 @@ $(document).ready(function() {
     validarCampoS($(this),/^[0-9]{7,8}$/,
     $("#textousuario"),"El formato debe ser 1222333");
   });
+  
 
   $("#pid").on("keypress", function(e) {
     validarkeyup(/^.{8,16}$/, e);
@@ -400,16 +402,25 @@ function enviaAjax(datos) {
               
             }
         } catch (e) {
-          alert("Error en JSON " + e.name);
+            muestraMensaje("error", 2000, "Error", "ERROR: <br/>" + e.name);
+                desactivarLoaderBoton('#registrar');
+                  desactivarLoaderBoton('#validarolvido');
+                    desactivarLoaderBoton('#ingresar');
         }
       },
       error: function (request, status, err) {
         Swal.close();
         if (status == "timeout") {
           muestraMensaje("error", 2000, "Error", "Servidor ocupado, intente de nuevo");
+                desactivarLoaderBoton('#registrar');
+                    desactivarLoaderBoton('#validarolvido');
+                      desactivarLoaderBoton('#ingresar');
 
         } else {
           muestraMensaje("error", 2000, "Error", "ERROR: <br/>" + request + status + err);
+              desactivarLoaderBoton('#registrar');
+                  desactivarLoaderBoton('#validarolvido');
+                    desactivarLoaderBoton('#ingresar');
         }
       },
       complete: function () {
