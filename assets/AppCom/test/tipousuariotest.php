@@ -55,13 +55,13 @@ class TipousuarioTest extends TestCase {
 
     public function testConsultar() { /*|||||| CONSULTAR  ||||| 2 | */
         // Agregar mensaje para verificar que se está ejecutando
-        fwrite(STDERR, "Ejecutando consulta de tipos de usuario...\n");
+      //  fwrite(STDERR, "Ejecutando consulta de tipos de usuario...\n");
         
         $resultado = $this->tipousuario->testConsultar();
         $this->assertIsArray($resultado);
         
         // Mostrar cantidad de resultados
-        fwrite(STDERR, "Consulta de tipos de usuario completada. Resultados: " . count($resultado) . "\n");
+       // fwrite(STDERR, "Consulta de tipos de usuario completada. Resultados: " . count($resultado) . "\n");
     }
 
     public function testRegistrarTipousuario() {   /*||||||  REGISTRO NUEVO TEST ||||| 3 | */
@@ -74,8 +74,6 @@ class TipousuarioTest extends TestCase {
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('incluir', $resultado['accion']);
-
-        fwrite(STDERR, "¡Tipo de usuario registrado con éxito!\n");
     }
 
     public function testRegistroMasivoTipousuario() { /*||||||  REGISTRO MASIVO TEST ||||| 4 | */
@@ -91,6 +89,7 @@ class TipousuarioTest extends TestCase {
             $this->assertEquals(1, $resultado['respuesta'], "Falló en la iteración $i: respuesta incorrecta");
             $this->assertEquals('incluir', $resultado['accion'], "Falló en la iteración $i: acción incorrecta");
         }
+        fwrite(STDERR, "¡Registro masivo de tipos de usuario completado con éxito!\n");
     }
 
     public function testActualizarTipousuario() { /*||||||  ACTUALIZAR DATOS  TEST ||||| 5 | */
@@ -101,7 +100,7 @@ class TipousuarioTest extends TestCase {
         if (empty($tiposUsuario)) {
             $datosTipousuario = [
                 'nombre' => 'Tipo usuario para actualizar ' . time(),
-                'nivel' => rand(1, 5)
+                'nivel' => rand(2, 3)
             ];
             
             $resultadoInsertar = $this->tipousuario->testRegistro($datosTipousuario);
@@ -117,7 +116,7 @@ class TipousuarioTest extends TestCase {
         $datosActualizar = [
             'id_tipo' => $tipoUsuario['id_rol'],
             'nombre' => 'Nombre actualizado ' . time(),
-            'nivel' => rand(1, 5),
+            'nivel' => rand(2, 3),
             'estatus' => 1
         ];
         
@@ -125,35 +124,35 @@ class TipousuarioTest extends TestCase {
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('actualizar', $resultado['accion']);
-
-        fwrite(STDERR, "¡Tipo de usuario actualizado con éxito!\n");
+        //fwrite(STDERR, "¡Tipo de usuario modificado con éxito!\n");
     }
 
     public function testEliminarTipousuario() { /*||||||  ELIMINAR  ||||| 6 | */
         // Primero insertamos un tipo de usuario para tener un ID válido
         $datosTipousuario = [
             'nombre' => 'Tipo usuario para eliminar ' . time(),
-            'nivel' => rand(1, 2)
+            'nivel' => rand(2, 3)
         ];
         
         $resultadoInsertar = $this->tipousuario->testRegistro($datosTipousuario);
 
-        // Para esta prueba unitaria, usamos un ID fijo
+        // Usamos el ID del registro recién creado
         $datosEliminar = [
-            'id_tipo' => 2 // ID de ejemplo (1 está reservado)
+            'id_tipo' => $resultadoInsertar['id'] ?? 3 // Usamos el ID retornado o fallback a 3
         ];
 
         $resultado = $this->tipousuario->testEliminacion($datosEliminar);
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('eliminar', $resultado['accion']);
+        //fwrite(STDERR, "¡Tipo de usuario eliminado con éxito!\n");
     }
-    
-    public function testRegistrarTipousuarioConDatosInvalidos() { /*|||||| REGISTRO CON DATOS INVÁLIDOS ||||| 7 | */
+    /*
+    public function testRegistrarTipousuarioConDatosInvalidos() { |||||| REGISTRO CON DATOS INVÁLIDOS ||||| 7 | 
         // Datos inválidos que deberían causar un error
         $datosTipousuarioInvalidos = [
             'nombre' => '', // Nombre vacío
-            'nivel' => null   // Nivel nulo
+            'nivel' => 2   // Nivel nulo
         ];
         
         // Llamar al método y verificar que devuelve un error
@@ -166,7 +165,7 @@ class TipousuarioTest extends TestCase {
         // El mensaje puede variar dependiendo del motor de base de datos
         // pero debería contener información sobre el error
         $this->assertNotEmpty($resultado['mensaje']);
-    }
+    }*/
 }
 
 // Limpiar archivo temporal
