@@ -70,6 +70,12 @@ class Login extends Conexion {
 
 /*||||||||||||||||||||||||||||||| VERIFICAR CREDENCIALES CEDULA Y CLAVE  |||||||||||||||||||||||||  04  |||||*/            
  private function verificarCredenciales($datos) {
+    
+    if (!isset($datos['cedula']) || !is_numeric($datos['cedula']) || strlen((string)$datos['cedula']) > 8) {
+        $error="10";
+        return $error;
+    }
+
     $conex1 = $this->getConex1();
     $conex2 = $this->getConex2();
 
@@ -191,6 +197,10 @@ class Login extends Conexion {
 
 /*||||||||||||||||||||||||||||||| OBTENER CEDULA PARA INGRESAR OLVIDO CLAVE  |||||||||||||||||||||||||  07  |||||*/            
     private function obtenerPersonaPorCedula($datos) {
+        if (!isset($datos['cedula']) || !is_numeric($datos['cedula']) || strlen((string)$datos['cedula']) > 8) {
+            $error="10";
+            return $error;
+        }
         $conex1 = $this->getConex1();
         $conex2 = $this->getConex2();
         try {

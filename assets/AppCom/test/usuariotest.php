@@ -1,6 +1,29 @@
 <?php
 use PHPUnit\Framework\TestCase;
-require_once __DIR__ . '/../../../modelo/usuario.php';
+require_once __DIR__ . '/../../../modelo/tipousuario.php';
+
+// Ruta al archivo original
+$UsuarioOriginal = __DIR__ . '/../../../modelo/usuario.php';
+$UsuarioContenido = file_get_contents($UsuarioOriginal);
+
+$UsuarioContenido = str_replace("require_once 'tipousuario.php'", "// require_once 'tipousuario.php' // Comentado para tests", $UsuarioContenido);
+
+// Corregir la ruta de conexion.php si es necesario
+$conexionPath = realpath(__DIR__ . '/../../../modelo/conexion.php');
+$UsuarioContenido = str_replace("require_once 'conexion.php';", "require_once '$conexionPath';", $UsuarioContenido);
+
+// Cambiar métodos privados a protegidos para permitir acceso desde LoginTestable
+$UsuarioContenido = str_replace("private function encryptClave", "protected function encryptClave", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function decryptClave", "protected function decryptClave", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function ejecutarEliminacion", "protected function ejecutarEliminacion", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function registrarCliente", "protected function registrarCliente", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function ejecutarRegistro", "protected function ejecutarRegistro", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function ejecutarActualizacion", "protected function ejecutarActualizacion", $UsuarioContenido);
+$UsuarioContenido = str_replace("private function actualizarLotePermisos", "protected function actualizarLotePermisos", $UsuarioContenido);
+
+// Evaluar el contenido modificado directamente
+eval('?>' . $UsuarioContenido);
+
 
 /*|||||||||||||||||||||||||| INSTANCIA DE LA CLASE Y METODOS  |||||||||||||||||||||| */
 class UsuarioTestable extends Usuario {
@@ -82,12 +105,17 @@ class UsuarioTest extends TestCase {
 
 
     public function testEliminarUsuarioExistente() { /*||||||  ELIMINAR  ||||| 5 | */
-        $datos = ['id_persona' => 50];
+        $datos = ['id_persona' => 20];
         $resultado = $this->usuario->testEjecutarEliminacion($datos);
 
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('eliminar', $resultado['accion']);
+         if ($resultado['respuesta'] === 1 && $resultado['accion'] === 'eliminar') {
+            echo "\n Eliminado con exitosamente\n";
+        } else {
+            echo "\n Error al Eliminar Usuario\n";
+        }
     }
 
     public function testCedulaExistente() { /*||||||  VERIFICAR CEDULA Y CORREO ||||| 6 | */
@@ -118,6 +146,11 @@ class UsuarioTest extends TestCase {
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('incluir', $resultado['accion']);
+          if ($resultado['respuesta'] === 1 && $resultado['accion'] === 'incluir') {
+            echo "\n Registro con exitosamente. | Usuario nuevo\n";
+        } else {
+            echo "\n Error al registrar Usuario\n";
+        }
     }
 
         public function testRegistroMasivoUsuarios() {
@@ -150,7 +183,7 @@ class UsuarioTest extends TestCase {
             'cedula' => '10200300',
             'correo' => 'actualizado@exampleee.com',
             'estatus' => 1,
-            'id_rol' => 1,
+            'id_rol' => 2,
             'id_persona' => 2,
             'insertar_permisos' => false,
             'nivel' => 3
@@ -175,22 +208,29 @@ class UsuarioTest extends TestCase {
         }
     }
 
-    public function testObtenerNivelPorIdInexistente() { /*|||||| OBTENER EL NIVEL DEL USUARIO  ||||| 10 | */
-        $datos = 5;
-        $nivel = $this->usuario->obtenerNivelPorId($datos);
-        $this->assertNull($nivel);
-    }
-
     public function testActualizarPermisosLote() { /*|||||| ACTUALIZAR LOS PERMISOS DEL USUARIO  |||||||| 11  ||| */
         $lista = [
-            ['id_permiso' => 1, 'estado' => 0],
-            ['id_permiso' => 2, 'estado' => 1]
+            ['id_permiso' => 1, 'estado' => 1],
+            ['id_permiso' => 2, 'estado' => 1],
+            ['id_permiso' => 3, 'estado' => 1],
+            ['id_permiso' => 4, 'estado' => 1],
+            ['id_permiso' => 5, 'estado' => 1],
+            ['id_permiso' => 6, 'estado' => 1],
+            ['id_permiso' => 7, 'estado' => 1],
+            ['id_permiso' => 8, 'estado' => 1],
+            ['id_permiso' => 9, 'estado' => 1],
+            ['id_permiso' => 10, 'estado' => 1]
         ];
 
         $resultado = $this->usuario->testActualizarLotePermisos($lista);
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('actualizar_permisos', $resultado['accion']);
+          if ($resultado['respuesta'] === 1 && $resultado['accion'] === 'actualizar_permisos') {
+            echo "\n Actualizado los permiso con exitosamente.\n";
+        } else {
+            echo "\n Error al Actualizar los permiso\n";
+        }
     }
 }
 

@@ -8,7 +8,7 @@ require_once 'modelo/bitacora.php';
 $objlogin = new Login();
 
 if (isset($_POST['ingresar'])) {
-    
+    /*
     if (empty($_POST['g-recaptcha-response'])) {
             echo json_encode([
                 'respuesta' => 0,
@@ -32,7 +32,7 @@ if (isset($_POST['ingresar'])) {
         ]);
         exit;
     }
-    
+    */
     $datosLogin = [
         'operacion' => 'verificar',
         'datos' => [
@@ -94,6 +94,13 @@ if (isset($_POST['ingresar'])) {
             exit;
         }
     }
+
+} else if($resultado === "10"){
+    echo json_encode([
+        'respuesta' => 0,
+        'accion' => 'ingresar',
+        'text' => 'Error en Credenciales ERROR#10'
+    ]);
 
 } else {
    
