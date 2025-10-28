@@ -17,13 +17,13 @@ class NotificacionTest extends TestCase {
 
     public function testConsultarNotificaciones() { /*|||||| CONSULTAR  ||||| 1 | */
         // Agregar mensaje para verificar que se está ejecutando
-        fwrite(STDERR, "Ejecutando consulta de notificaciones...\n");
+        //fwrite(STDERR, "Ejecutando consulta de notificaciones...\n");
         
         $resultado = $this->notificacion->getAll();
         $this->assertIsArray($resultado);
         
         // Mostrar cantidad de resultados
-        fwrite(STDERR, "Consulta de notificaciones completada. Resultados: " . count($resultado) . "\n");
+        //fwrite(STDERR, "Consulta de notificaciones completada. Resultados: " . count($resultado) . "\n");
     }
 
     public function testContarNuevasNotificaciones() { /*|||||| CONTAR NUEVAS  ||||| 2 | */
@@ -31,7 +31,7 @@ class NotificacionTest extends TestCase {
         $this->assertIsInt($resultado);
         $this->assertGreaterThanOrEqual(0, $resultado);
         
-        fwrite(STDERR, "Conteo de notificaciones nuevas: " . $resultado . "\n");
+        //fwrite(STDERR, "Conteo de notificaciones nuevas: " . $resultado . "\n");
     }
 
     public function testContarParaAsesora() { /*|||||| CONTAR PARA ASESORA  ||||| 3 | */
@@ -39,15 +39,15 @@ class NotificacionTest extends TestCase {
         $this->assertIsInt($resultado);
         $this->assertGreaterThanOrEqual(0, $resultado);
         
-        fwrite(STDERR, "Conteo de notificaciones para asesora: " . $resultado . "\n");
+        //fwrite(STDERR, "Conteo de notificaciones para asesora: " . $resultado . "\n");
     }
 
     public function testContarParaAdmin() { /*|||||| CONTAR PARA ADMIN  ||||| 4 | */
         $resultado = $this->notificacion->contarParaAdmin();
         $this->assertIsInt($resultado);
         $this->assertGreaterThanOrEqual(0, $resultado);
-        
-        fwrite(STDERR, "Conteo de notificaciones para admin: " . $resultado . "\n");
+
+        //fwrite(STDERR, "Conteo de notificaciones para admin: " . $resultado . "\n");
     }
 
     public function testGenerarDePedidos() { /*|||||| GENERAR DE PEDIDOS  ||||| 5 | */
@@ -56,7 +56,7 @@ class NotificacionTest extends TestCase {
         $this->assertIsInt($resultado);
         $this->assertGreaterThanOrEqual(0, $resultado);
         
-        fwrite(STDERR, "Notificaciones generadas de pedidos: " . $resultado . "\n");
+        //fwrite(STDERR, "Notificaciones generadas de pedidos: " . $resultado . "\n");
     }
 
     public function testGetNuevosPedidos() { /*|||||| OBTENER NUEVOS PEDIDOS  ||||| 6 | */
@@ -64,7 +64,7 @@ class NotificacionTest extends TestCase {
         // Usamos 0 como valor inicial para obtener todos los pedidos
         $resultado = $this->notificacion->getNuevosPedidos(0);
         $this->assertIsArray($resultado);
-        
+
         fwrite(STDERR, "Nuevos pedidos obtenidos: " . count($resultado) . "\n");
     }
 }

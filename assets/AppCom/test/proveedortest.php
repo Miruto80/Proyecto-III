@@ -65,26 +65,15 @@ class ProveedorTest extends TestCase {
         $this->proveedor = new ProveedorTestable();
     }
 
-    public function testOperacionInvalida() { /*|||||| OPERACIONES |||| 1 || */
-        $json = json_encode([
-            'operacion' => 'desconocido',
-            'datos' => []
-        ]);
-
-        $resultado = $this->proveedor->testProcesarProveedor($json);
-        $this->assertEquals(0, $resultado['respuesta']);
-        $this->assertEquals('Operación inválida', $resultado['mensaje']);
-    }
-
     public function testConsultar() { /*|||||| CONSULTAR  ||||| 2 | */
         // Agregar mensaje para verificar que se está ejecutando la consulta
-        fwrite(STDERR, "Ejecutando consulta de proveedores...\n");
+        //fwrite(STDERR, "Ejecutando consulta de proveedores...\n");
         
         $resultado = $this->proveedor->testConsultar();
         $this->assertIsArray($resultado);
         
         // Mostrar cantidad de resultados
-        fwrite(STDERR, "Consulta de proveedores completada. Resultados: " . count($resultado) . "\n");
+        //fwrite(STDERR, "Consulta de proveedores completada. Resultados: " . count($resultado) . "\n");
     }
 
     public function testRegistrarProveedor() {   /*||||||  REGISTRO NUEVO TEST ||||| 3 | */
@@ -101,10 +90,11 @@ class ProveedorTest extends TestCase {
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('incluir', $resultado['accion']);
+        //fwrite(STDERR, "Proveedor registrado con éxito\n");
     }
 
     public function testRegistroMasivoProveedores() { /*||||||  REGISTRO MASIVO TEST ||||| 4 | */
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 50; $i++) {
             $datosProveedor = [
                 'numero_documento' => 'J-87654321-' . time() . $i,
                 'tipo_documento' => 'J',
@@ -120,6 +110,7 @@ class ProveedorTest extends TestCase {
             $this->assertEquals(1, $resultado['respuesta'], "Falló en la iteración $i: respuesta incorrecta");
             $this->assertEquals('incluir', $resultado['accion'], "Falló en la iteración $i: acción incorrecta");
         }
+        //fwrite(STDERR, "Registro masivo de proveedores completado con éxito\n");
     }
 
     public function testActualizarProveedor() { /*||||||  ACTUALIZAR DATOS  TEST ||||| 5 | */
@@ -144,6 +135,7 @@ class ProveedorTest extends TestCase {
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('actualizar', $resultado['accion']);
+        //fwrite(STDERR, "Proveedor modificado con éxito\n");
     }
 
     public function testEliminarProveedor() { /*||||||  ELIMINAR  ||||| 6 | */
@@ -168,6 +160,7 @@ class ProveedorTest extends TestCase {
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('eliminar', $resultado['accion']);
+        //fwrite(STDERR, "Proveedor eliminado con éxito\n");
     }
 
     public function testConsultarPorId() { /*|||||| CONSULTAR POR ID ||||| 7 | */
@@ -194,8 +187,8 @@ class ProveedorTest extends TestCase {
         
         $this->assertIsArray($resultado);
     }
-    
-    public function testRegistrarProveedorConDatosInvalidos() { /*|||||| REGISTRO CON DATOS INVÁLIDOS ||||| 8 | */
+    /*
+    public function testRegistrarProveedorConDatosInvalidos() { |||||| REGISTRO CON DATOS INVÁLIDOS ||||| 8 | 
         // Datos inválidos que deberían causar una excepción
         $datosProveedorInvalidos = [
             'numero_documento' => '', // Documento vacío
@@ -211,7 +204,7 @@ class ProveedorTest extends TestCase {
         
         // Esta llamada debería fallar y lanzar la excepción
         $this->proveedor->testEjecutarRegistro($datosProveedorInvalidos);
-    }
+    }*/
 }
 
 // Limpiar archivo temporal

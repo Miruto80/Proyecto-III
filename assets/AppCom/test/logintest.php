@@ -1,6 +1,24 @@
 <?php
 use PHPUnit\Framework\TestCase;
-require_once __DIR__ . '/../../../modelo/login.php';
+// Ruta 
+$loginOriginal = __DIR__ . '/../../../modelo/login.php';
+$loginContent = file_get_contents($loginOriginal);
+
+// Corregir la ruta de conexion.php si es necesario
+$conexionPath = realpath(__DIR__ . '/../../../modelo/conexion.php');
+$loginContent = str_replace("require_once 'conexion.php';", "require_once '$conexionPath';", $loginContent);
+
+// Cambiar métodos privados a protegidos 
+$loginContent = str_replace("private function encryptClave", "protected function encryptClave", $loginContent);
+$loginContent = str_replace("private function decryptClave", "protected function decryptClave", $loginContent);
+$loginContent = str_replace("private function verificarCredenciales", "protected function verificarCredenciales", $loginContent);
+$loginContent = str_replace("private function registrarCliente", "protected function registrarCliente", $loginContent);
+$loginContent = str_replace("private function verificarExistencia", "protected function verificarExistencia", $loginContent);
+$loginContent = str_replace("private function obtenerPersonaPorCedula", "protected function obtenerPersonaPorCedula", $loginContent);
+$loginContent = str_replace("private function consultar", "protected function consultar", $loginContent);
+
+// Evaluar el contenido modificado directamente
+eval('?>' . $loginContent);
 
 /*|||||||||||||||||||||||||| INSTANCIA DE LA CLASE Y METODOS  |||||||||||||||||||||| */
 class LoginTestable extends Login {
@@ -82,6 +100,11 @@ class LoginTest extends TestCase {
         $this->assertIsArray($resultado);
         $this->assertEquals(1, $resultado['respuesta'], 'No se pudo registrar el cliente');
         $this->assertEquals('incluir', $resultado['accion']);
+          if ($resultado['respuesta'] === 1 && $resultado['accion'] === 'incluir') {
+            echo "\n Registro con exitosamente. | Cliente nuevo\n";
+        } else {
+            echo "\n Error al registrar Cliente\n";
+        }
     }
 
     public function testCedulaExistente() { /*|||||| 05 - VERIFICAR CEDULA Y CORREO |||||| */

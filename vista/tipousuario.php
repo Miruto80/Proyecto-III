@@ -330,7 +330,7 @@
               <!-- Botones -->
               <div class="col-12 text-center">
                 <button type="button" class="btn btn-modern btn-guardar me-3" id="btnModificar">
-                  <i class="fa-solid fa-check me-2"></i> Modificar
+                  <i class="fa-solid fa-check me-2"></i> ACTUALIZAR
                 </button>
                 <button type="button" class="btn btn-modern btn-limpiar" data-bs-dismiss="modal">
                   <i class="fa-solid fa-times me-2"></i> Cancelar

@@ -48,6 +48,13 @@ class Categoria extends Conexion {
               'accion'   =>$operacion,
               'mensaje'  =>$e->getMessage()
             ];
+        } catch (Exception $e) {
+            // Manejar excepciones personalizadas
+            return [
+              'respuesta'=>0,
+              'accion'   =>$operacion,
+              'mensaje'  =>$e->getMessage()
+            ];
         }
     }
 
@@ -58,6 +65,14 @@ class Categoria extends Conexion {
             // Validar que el nombre no esté vacío
             if (empty($d['nombre'])) {
                 throw new Exception("El nombre de la categoría no puede estar vacío.");
+            }
+            
+            // Verificar si ya existe una categoría con el mismo nombre (ignorando mayúsculas/minúsculas)
+            $sqlCheck = "SELECT COUNT(*) FROM categoria WHERE LOWER(nombre) = LOWER(:nombre) AND estatus = 1";
+            $stmtCheck = $conex->prepare($sqlCheck);
+            $stmtCheck->execute(['nombre' => $d['nombre']]);
+            if ($stmtCheck->fetchColumn() > 0) {
+                throw new Exception("Ya existe una categoría con el nombre \"{$d['nombre']}\".");
             }
             
             $conex->beginTransaction();
@@ -99,6 +114,17 @@ class Categoria extends Conexion {
             
             if ($existe == 0) {
                 throw new Exception("La categoría con ID {$d['id_categoria']} no existe.");
+            }
+            
+            // Verificar si ya existe otra categoría con el mismo nombre (ignorando mayúsculas/minúsculas)
+            $sqlCheckName = "SELECT COUNT(*) FROM categoria WHERE LOWER(nombre) = LOWER(:nombre) AND id_categoria != :id AND estatus = 1";
+            $stmtCheckName = $conex->prepare($sqlCheckName);
+            $stmtCheckName->execute([
+                'nombre' => $d['nombre'],
+                'id' => $d['id_categoria']
+            ]);
+            if ($stmtCheckName->fetchColumn() > 0) {
+                throw new Exception("Ya existe otra categoría con el nombre \"{$d['nombre']}\".");
             }
 
             $sql  = "UPDATE categoria

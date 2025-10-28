@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":1,"defects":{"ProductosTest::testVerificarProductoExistenteFallido":3},"times":{"ProductosTest::testRegistrarProductoExistente":0.057,"ProductosTest::testOperacionInvalida":0.1,"ProductosTest::testConsultarProductos":0.038,"ProductosTest::testProductosActivos":0.07,"ProductosTest::testObtenerCategoria":0.085,"ProductosTest::testVerificarProductoExistenteFallido":0.054,"ProductosTest::testVerificarProductoInexistente":0.085,"ProductosTest::testCambioEstatus":0.102}}
+=======
+{"version":1,"defects":[],"times":{"DatosTest::testActualizarDatosUsuario":0.226,"OlvidoclaveTest::testActualizarClaveUsuario":0.499,"UsuarioTest::testActualizarUsuarioExistente":0.322,"UsuarioTest::testEliminarUsuarioExistente":0.152,"UsuarioTest::testCedulaExistente":0.242,"UsuarioTest::testCorreoInexistente":0.161,"UsuarioTest::testActualizarPermisosLote":0.122,"UsuarioTest::testConsultarDevuelveArray":0.034}}
+>>>>>>> da81d16bc804613b0151ca20a1f373c3c69de763
