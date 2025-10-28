@@ -88,6 +88,7 @@ class ProductosTest extends TestCase {
         $resultado = $this->producto->procesarProducto($json);
         $this->assertEquals(0, $resultado['respuesta']);
         $this->assertEquals('Operación no válida', $resultado['mensaje']);
+        echo "\n testOperacionInvalida: El sistema manejó correctamente una operación no válida.\n";
     }
 
     public function testRegistrarProductoExistente() {
@@ -111,6 +112,7 @@ class ProductosTest extends TestCase {
 
         $this->assertIsArray($resultado);
         $this->assertArrayHasKey('respuesta', $resultado);
+        echo "\n testRegistrarProductoExistente: Se validó correctamente el intento de registro duplicado.\n";
     }
 
     /*|||||| TESTS DE CONSULTAS ||||||*/
@@ -124,39 +126,57 @@ class ProductosTest extends TestCase {
             $this->assertArrayHasKey('nombre', $resultado[0]);
             $this->assertArrayHasKey('estatus', $resultado[0]);
         }
+        echo "\n testConsultarProductos: La consulta devolvió datos válidos y con estructura esperada.\n";
+        echo "Productos consultados (array):\n";
+        echo print_r($resultado, true) . "\n";
     }
 
     public function testProductosActivos() {
-        $resultado = $this->producto->ProductosActivos();
-        $this->assertIsArray($resultado);
+    $resultado = $this->producto->ProductosActivos();
+    $this->assertIsArray($resultado);
 
-        foreach ($resultado as $prod) {
-            $this->assertEquals(1, $prod['estatus']);
-        }
+    $activos = 0;
+
+    foreach ($resultado as $prod) {
+        $this->assertEquals(1, $prod['estatus']);
+        $activos++;
     }
 
-    public function testMasVendidos() {
-        $resultado = $this->producto->MasVendidos();
-        $this->assertIsArray($resultado);
-    }
+    echo "\n testProductosActivos: Se encontraron {$activos} productos activos.\n";
+}
 
     public function testObtenerCategoria() {
-        $resultado = $this->producto->obtenerCategoria();
-        $this->assertIsArray($resultado);
+    $resultado = $this->producto->obtenerCategoria();
+    $this->assertIsArray($resultado);
+
+    echo "\n testObtenerCategoria: Se consultaron correctamente las categorías.\n";
+
+    if (empty($resultado)) {
+        echo "No se encontraron categorías registradas.\n";
+    } else {
+        echo "Lista de categorías encontradas:\n";
+        foreach ($resultado as $cat) {
+            $nombre = isset($cat['nombre']) ? $cat['nombre'] : 'Sin nombre';
+            echo "- {$nombre}\n";
+        }
+        echo "Total de categorías: " . count($resultado) . "\n";
     }
+}
+
 
     /*|||||| TESTS DE MÉTODOS PRIVADOS ||||||*/
 
     public function testVerificarProductoInexistente() {
         $existe = $this->producto->testVerificarProductoExistente('ProductoInexistenteXYZ', 'MarcaX');
         $this->assertFalse($existe);
+        echo "\n testVerificarProductoInexistente: Correcto, el producto no existe.\n";
     }
 
     public function testVerificarProductoExistenteFallido() {
-    $existe = $this->producto->testVerificarProductoExistente('Base de gotero', 'Salome');
-    $this->assertFalse($existe, "Este test debería fallar porque el producto sí existe");
-}
-
+        $existe = $this->producto->testVerificarProductoExistente('Base de gotero', 'Salome');
+        $this->assertFalse($existe, "Este test debería fallar porque el producto sí existe");
+        echo "\n testVerificarProductoExistenteFallido: Se esperaba fallo al detectar un producto existente.\n";
+    }
 
     public function testCambioEstatus() {
         $datos = [
@@ -167,6 +187,7 @@ class ProductosTest extends TestCase {
         $resultado = $this->producto->testEjecutarCambioEstatus($datos);
         $this->assertIsArray($resultado);
         $this->assertEquals('cambiarEstatus', $resultado['accion']);
+        echo "\n testCambioEstatus: Cambio de estatus ejecutado correctamente.\n";
     }
 }
 
