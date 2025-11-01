@@ -1,6 +1,24 @@
 <?php
 use PHPUnit\Framework\TestCase;
-require_once __DIR__ . '/../../../modelo/datos.php';
+// Ruta 
+$Original = __DIR__ . '/../../../modelo/datos.php';
+$UsuariosDatosContent = file_get_contents($Original);
+
+// Corregir la ruta de conexion.php si es necesario
+$conexionPath = realpath(__DIR__ . '/../../../modelo/conexion.php');
+$UsuariosDatosContent = str_replace("require_once 'conexion.php';", "require_once '$conexionPath';", $UsuariosDatosContent);
+
+// Cambiar métodos privados a protegidos 
+$UsuariosDatosContent = str_replace("private function encryptClave", "protected function encryptClave", $UsuariosDatosContent);
+$UsuariosDatosContent = str_replace("private function decryptClave", "protected function decryptClave", $UsuariosDatosContent);
+$UsuariosDatosContent = str_replace("private function verificarExistencia", "protected function verificarExistencia", $UsuariosDatosContent);
+$UsuariosDatosContent = str_replace("private function ejecutarActualizacion", "protected function ejecutarActualizacion", $UsuariosDatosContent);
+$UsuariosDatosContent = str_replace("private function validarClaveActual", "protected function validarClaveActual", $UsuariosDatosContent);
+$UsuariosDatosContent = str_replace("private function ejecutarActualizacionClave", "protected function ejecutarActualizacionClave", $UsuariosDatosContent);
+
+// Evaluar el contenido modificado directamente
+eval('?>' . $UsuariosDatosContent);
+
 
 /*|||||||||||||||||||||||||| INSTANCIA DE LA CLASE Y METODOS  |||||||||||||||||||||| */
 class DatosTestable extends Datos {
