@@ -94,7 +94,7 @@ class ProveedorTest extends TestCase {
     }
 
     public function testRegistroMasivoProveedores() { /*||||||  REGISTRO MASIVO TEST ||||| 4 | */
-        for ($i = 1; $i <= 50; $i++) {
+        for ($i = 1; $i <= 100; $i++) {
             $datosProveedor = [
                 'numero_documento' => 'J-87654321-' . time() . $i,
                 'tipo_documento' => 'J',
@@ -110,7 +110,7 @@ class ProveedorTest extends TestCase {
             $this->assertEquals(1, $resultado['respuesta'], "Falló en la iteración $i: respuesta incorrecta");
             $this->assertEquals('incluir', $resultado['accion'], "Falló en la iteración $i: acción incorrecta");
         }
-        //fwrite(STDERR, "Registro masivo de proveedores completado con éxito\n");
+        fwrite(STDERR, "Registro masivo de proveedores completado con éxito\n");
     }
 
     public function testActualizarProveedor() { /*||||||  ACTUALIZAR DATOS  TEST ||||| 5 | */
@@ -151,7 +151,6 @@ class ProveedorTest extends TestCase {
         
         $resultadoInsertar = $this->proveedor->testEjecutarRegistro($datosProveedor);
 
-        // Para esta prueba unitaria, usamos un ID fijo
         $datosEliminar = [
             'id_proveedor' => 1 // ID
         ];
@@ -164,7 +163,6 @@ class ProveedorTest extends TestCase {
     }
 
     public function testConsultarPorId() { /*|||||| CONSULTAR POR ID ||||| 7 | */
-        // Primero insertamos un proveedor para tener un ID válido
         $datosProveedor = [
             'numero_documento' => 'J-33333333-' . time(),
             'tipo_documento' => 'J',
@@ -177,13 +175,13 @@ class ProveedorTest extends TestCase {
         $resultadoInsertar = $this->proveedor->testEjecutarRegistro($datosProveedor);
 
         // Agregar mensaje para verificar que se está ejecutando
-        fwrite(STDERR, "Ejecutando consulta de proveedor por ID...\n");
+        //fwrite(STDERR, "Ejecutando consulta de proveedor por ID...\n");
         
         // Para esta prueba unitaria, usamos un ID fijo
         $resultado = $this->proveedor->testConsultarPorId(1); // ID
         
         // Mostrar resultado
-        fwrite(STDERR, "Consulta de proveedor por ID completada. Resultado: " . (empty($resultado) ? "No encontrado" : "Encontrado") . "\n");
+        //fwrite(STDERR, "Consulta de proveedor por ID completada. Resultado: " . (empty($resultado) ? "No encontrado" : "Encontrado") . "\n");
         
         $this->assertIsArray($resultado);
     }
