@@ -1,16 +1,16 @@
-<footer class="footer pt-3  ">
-        <div class="container-fluid">
-          <div class="row align-items-center justify-content-lg-between">
-            <div class="col-lg-8 mb-lg-0 mb-4">
-              <div class="copyright text-center text-sm text-muted text-lg-start texto-secundario">
-                © 2025,
-                ESTUDIANTE UPTAEB T3-3113 | LOVEMAKEUP C.A | Todos los derechos Revervados.
-              </div>
-            </div>
-            
-          </div>
+<footer class="footer pt-3 text-center">
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <div class="copyright text-center text-muted texto-secundario">
+          © 2025, ESTUDIANTE UPTAEB T3-3113 | LOVEMAKEUP C.A | Todos los derechos Reservados.
         </div>
-  </footer>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <br><br>
      <!--|||||||||||||||||||||||||||||||||| End Navbar||||||||||||||||||||||||||||||||| --></div>
   </main>
 

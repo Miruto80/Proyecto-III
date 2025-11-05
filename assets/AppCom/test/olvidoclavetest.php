@@ -97,7 +97,7 @@ class OlvidoclaveTest extends TestCase {
     public function testActualizarClaveUsuario() {
         $datos = [
             'id_persona' => 2,
-            'clave' => 'NuevaClaveUsuario456'
+            'clave' => 'love1234'
         ];
 
         $resultado = $this->olvido->testEjecutarActualizacionUsuario($datos);

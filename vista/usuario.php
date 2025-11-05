@@ -85,6 +85,8 @@
               </thead>
               <tbody class="texto-secundario">
               <?php
+               
+
                 $estatus_texto = array(
                     1 => "Activo",
                     2 => "Inactivo",
@@ -97,8 +99,14 @@
                     3 =>  'badge bg-primary'
                   );
 
-                  foreach ($registro as $dato){
-                ?>
+                    $total_registros = count($registro);
+                    $limite = $_SESSION['registro_limite'];
+                    $contador = 0;
+
+                    foreach ($registro as $dato) {
+                        if ($contador >= $limite) break;
+                        $contador++;
+                    ?>
                 <tr class="">
                  <td>
                     <div class="d-flex align-items-center">
@@ -209,6 +217,15 @@
               </tbody>
                                
           </table> <!-- Fin tabla--> 
+          <?php if ($total_registros > $limite): ?>
+  <div class="text-center mt-3">
+    <form method="POST">
+      <button type="submit" name="cargar_mas" class="btn btn-secondary">
+        Mostrar más Registro
+      </button>
+    </form>
+  </div>
+<?php endif; ?>
       </div>  <!-- Fin div table-->
 
       </div><!-- FIN CARD N-1 -->  

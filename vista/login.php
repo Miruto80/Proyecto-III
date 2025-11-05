@@ -73,10 +73,11 @@ if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'sesion_expirada') {
                     </div>
                 <p id="textop" class="text-danger"></p>
                       <!-- reCAPTCHA -->
+                       <!--
                     <div class="d-flex justify-content-center my-3">
                         <div class="g-recaptcha" data-sitekey="6LfHU6YrAAAAAJbZuGP2Z-l_HyrEMRftGDfR8cQH"></div>
                     </div>
-
+                    -->
                 </div>
                 
  

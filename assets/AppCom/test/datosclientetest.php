@@ -1,14 +1,35 @@
 <?php
 use PHPUnit\Framework\TestCase;
-require_once __DIR__ . '/../../../modelo/catalogo_datos.php';
+// Ruta 
+$DatosOriginal = __DIR__ . '/../../../modelo/catalogo_datos.php';
+$DatosContent = file_get_contents($DatosOriginal);
 
+// Corregir la ruta de conexion.php si es necesario
+$conexionPath = realpath(__DIR__ . '/../../../modelo/conexion.php');
+$DatosContent = str_replace("require_once 'conexion.php';", "require_once '$conexionPath';", $DatosContent);
+
+$Metodo = realpath(__DIR__ . '/../../../modelo/metodoentrega.php');
+$DatosContent = str_replace("require_once 'metodoentrega.php';", "require_once '$Metodo';", $DatosContent);
+
+// Cambiar métodos privados a protegidos 
+$DatosContent = str_replace("private function encryptClave", "protected function encryptClave", $DatosContent);
+$DatosContent = str_replace("private function decryptClave", "protected function decryptClave", $DatosContent);
+$DatosContent = str_replace("private function verificarExistencia", "protected function verificarExistencia", $DatosContent);
+$DatosContent = str_replace("private function ejecutarActualizacion", "protected function ejecutarActualizacion", $DatosContent);
+$DatosContent = str_replace("private function validarClaveActual", "protected function validarClaveActual", $DatosContent);
+$DatosContent = str_replace("private function ejecutarActualizacionClave", "protected function ejecutarActualizacionClave", $DatosContent);
+$DatosContent = str_replace("private function ejecutarEliminacion", "protected function ejecutarEliminacion", $DatosContent);
+$DatosContent = str_replace("private function RegistroDireccion", "protected function RegistroDireccion", $DatosContent);
+$DatosContent = str_replace("private function ejecutarActualizacionDireccion", "protected function ejecutarActualizacionDireccion", $DatosContent);
+
+// Evaluar el contenido modificado directamente
+eval('?>' . $DatosContent);
 /*|||||||||||||||||||||||||| INSTANCIA DE LA CLASE Y METODOS  |||||||||||||||||||||| */
 class DatosclienteTestable extends Datoscliente {
    
     public function testEncrypt($clave) {  /*||| 1 ||| */
         return $this->encryptClave(['clave' => $clave]);
     }
-
     public function testDecrypt($claveEncriptada) {  /*||| 2 ||| */
         return $this->decryptClave(['clave_encriptada' => $claveEncriptada]);
     }
