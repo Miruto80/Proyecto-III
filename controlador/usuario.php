@@ -15,6 +15,8 @@
    require_once 'modelo/usuario.php';
    require_once 'permiso.php';
    require_once 'modelo/bitacora.php';
+
+
     $objusuario = new Usuario();
     
     $rol = $objusuario->obtenerRol();
@@ -169,7 +171,7 @@ if (isset($_POST['registrar'])) { /* -------  */
         'operacion' => 'eliminar',
         'datos' => [
             'id_persona' => $_POST['eliminar']
-        ]
+        ] 
     ];
 
     if ($datosUsuario['datos']['id_persona'] == 2) {
@@ -195,7 +197,7 @@ if (isset($_POST['registrar'])) { /* -------  */
     }
 
     echo json_encode($resultado);
-/*
+
 } else if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(13, 'ver')) {
         $bitacora = [
             'id_persona' => $_SESSION["id"],
@@ -210,18 +212,6 @@ if (isset($_POST['registrar'])) { /* -------  */
         require_once 'vista/seguridad/privilegio.php';
 
 }
- */
-} else if (isset($_POST['vermodulo'])){ 
-    $ver = $_POST['ver13'];
-    if($ver == 13){
-        require_once 'vista/usuario.php';
-    }
-    else{
-        require_once 'vista/seguridad/privilegio.php';
-    }
-   
-}else {
-        require_once 'vista/seguridad/privilegio.php';
-}
+ 
 
 ?>
