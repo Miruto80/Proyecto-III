@@ -50,7 +50,7 @@ class Salida extends Conexion {
             $conex->beginTransaction();
             // Insertar cabecera del pedido con los campos correctos según la estructura de la BD
             $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total_usd, precio_total_bs, id_persona) 
-                    VALUES ('2', NOW(), '1', :precio_total_usd, :precio_total_bs, :id_persona)";
+                    VALUES ('1', NOW(), '2', :precio_total_usd, :precio_total_bs, :id_persona)";
             $stmt = $conex->prepare($sql);
             $stmt->execute([
                 'precio_total_usd' => $datos['precio_total'],
@@ -225,7 +225,7 @@ class Salida extends Conexion {
                     p.fecha, p.estado, p.precio_total_usd as precio_total
                     FROM pedido p 
                     JOIN cliente per ON p.id_persona = per.id_persona 
-                    WHERE p.tipo = '2' 
+                    WHERE p.tipo = '1' 
                     ORDER BY p.id_pedido DESC";
             $stmt = $conex->prepare($sql);
             $stmt->execute();
@@ -515,7 +515,7 @@ class Salida extends Conexion {
             }
 
             // Insertar cabecera del pedido con los campos correctos según la estructura de la BD
-            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total_usd, precio_total_bs, id_persona) VALUES ('2', NOW(), '1', ?, ?, ?)";
+            $sql = "INSERT INTO pedido(tipo, fecha, estado, precio_total_usd, precio_total_bs, id_persona) VALUES ('1', NOW(), '1', ?, ?, ?)";
             $params = [
                 $datos['precio_total'],
                 $datos['precio_total_bs'] ?? 0.00, // Usar el valor calculado desde el frontend

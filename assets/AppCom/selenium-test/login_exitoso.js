@@ -18,7 +18,7 @@ async function runTest() {
   try {
     // === Paso 1: Entrar al login ===
     console.log('🧭 Navegando al formulario de login...');
-    await driver.get('http://localhost:8080/lovemakeup/Proyecto-III/Proyecto-III/?pagina=login');
+    await driver.get('https://lovemakeuptienda.com/?pagina=login');
 
     // Esperar un poco para verificar que la página carga
     await driver.sleep(2000);
@@ -29,8 +29,8 @@ async function runTest() {
    
        // === Paso 2: Ingresar cedula y contraseña ===
        console.log('✏️ Ingresando cédula y contraseña...');
-       await driver.findElement(By.id('usuario')).sendKeys('10200300');
-       await driver.findElement(By.id('pid')).sendKeys('love1234');
+       await driver.findElement(By.id('usuario')).sendKeys('30559878');
+       await driver.findElement(By.id('pid')).sendKeys('25002100');
    
        // === Paso 3: Hacer clic en "Ingresar" ===
        console.log('🖱️ Haciendo clic en "Ingresar"...');
@@ -38,7 +38,7 @@ async function runTest() {
    
        // === Paso 4: Verificar redirección al home ===
        console.log('⏳ Esperando redirección...');
-       await driver.wait(until.urlContains('pagina=home'), 10000);
+       await driver.wait(until.urlContains('pagina=catalogo'), 10000);
 
     console.log('✅ Página de login cargada correctamente');
     notes = 'Página de login cargada correctamente.';

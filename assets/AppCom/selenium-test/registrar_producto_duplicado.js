@@ -52,22 +52,27 @@ async function runTestRegistrarProductoDuplicado() {
     console.log('💾 Intentando guardar producto duplicado...');
     await driver.findElement(By.id('btnEnviar')).click();
 
-    // === Paso 7: Esperar mensaje de error o alerta ===
-    console.log('⏳ Esperando mensaje de error o alerta...');
-    await driver.sleep(3000);
-
+    // === Esperar SweetAlert explícitamente ===
+    console.log('⏳ Esperando mensaje de error SweetAlert...');
     let mensaje = '';
+
     try {
-      // Buscar si aparece SweetAlert o mensaje de error
-      const alerta = await driver.findElement(By.css('.swal2-popup'));
+      const alerta = await driver.wait(
+        until.elementLocated(By.css('.swal2-popup')),
+        5000 // espera hasta 5s que aparezca el popup
+      );
+
+      await driver.wait(until.elementIsVisible(alerta), 2000);
       mensaje = await alerta.getText();
     } catch {
+      console.warn('⚠️ No se detectó SweetAlert, revisando código fuente...');
       const pageSource = await driver.getPageSource();
       mensaje = pageSource;
     }
 
     console.log('📄 Mensaje detectado:', mensaje);
 
+    // === Verificar contenido ===
     if (/ya existe|duplicado|existente|registrado anteriormente/i.test(mensaje)) {
       console.log('✅ Sistema detectó correctamente el producto duplicado.');
       status = 'p';
@@ -93,7 +98,7 @@ async function reportResultToTestLinkDuplicado(status, notes) {
     const client = xmlrpc.createClient({ url: TESTLINK_URL });
     const params = {
       devKey: DEV_KEY,
-      testcaseexternalid: '1-2', // ⚠️ cambia al ID real del caso "Producto duplicado"
+      testcaseexternalid: '1-2', // ⚠️ Ajusta al ID real de tu TestCase en TestLink
       testplanid: TEST_PLAN_ID,
       buildname: BUILD_NAME,
       notes: notes,
