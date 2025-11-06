@@ -109,6 +109,15 @@
               </thead>
               <tbody>
               <?php
+              if (!isset($_SESSION['registro_limite'])) {
+                    $_SESSION['registro_limite'] = 100;
+                }
+
+                // Si se presionó el botón para cargar más
+                if (isset($_POST['cargar_mas'])) {
+                    $_SESSION['registro_limite'] += 100;
+                }
+
                   $estatus_texto = array(
                     1 => "Activo",
                     2 => "Inactivo"
@@ -119,7 +128,13 @@
                     2 =>  'badge bg-danger text-white'
                   );
 
-                  foreach ($registro as $dato){
+                    $total_registros = count($registro);
+                    $limite = $_SESSION['registro_limite'];
+                    $contador = 0;
+
+                   foreach ($registro as $dato) {
+                        if ($contador >= $limite) break;
+                        $contador++;
                 ?>
                 <tr>
                   <td>
@@ -190,6 +205,15 @@
               </tbody>
                                
           </table> <!-- Fin tabla-->
+          <?php if ($total_registros > $limite): ?>
+  <div class="text-center mt-3">
+    <form method="POST">
+      <button type="submit" name="cargar_mas" class="btn btn-secondary">
+        Mostrar más Registro
+      </button>
+    </form>
+  </div>
+<?php endif; ?>
       </div>  <!-- Fin div table-->
 
 
@@ -197,7 +221,7 @@
     </div>
     </div>  
     </div><!-- FIN CARD PRINCIPAL-->  
-
+ </div>
 <style>
   .text-g{
     font-size:15px;
@@ -257,7 +281,8 @@
     </div>
   </div>
 </div>
-
+ </div>
+ 
 <!--FIN Modal -->
 <script>
 function copiarTelefono(elemento) {

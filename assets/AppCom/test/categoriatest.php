@@ -105,7 +105,7 @@ mensaje "Categoría creada".||||| 2 | */
         $this->assertEquals(1, $resultado['respuesta']);
         $this->assertEquals('eliminar', $resultado['accion']);
         $this->assertEquals('Categoría eliminada', $resultado['mensaje']);
-        fwrite(STDERR, "Categoria eliminada\n");
+        //fwrite(STDERR, "Categoria eliminada\n");
     }
     /*
     public function testInsertarCategoriaConNombreDuplicado() { |||||| INSERTAR CATEGORIA CON NOMBRE DUPLICADO ||||| 11 | 

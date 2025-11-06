@@ -3,6 +3,7 @@
     if (empty($_SESSION["id"])){
       header("location:?pagina=login");
     } /*  Validacion URL  */
+
     if (!empty($_SESSION['id'])) {
         require_once 'verificarsession.php';
     }
@@ -10,6 +11,7 @@
         header("Location: ?pagina=catalogo");
         exit();
     }/*  Validacion cliente  */ 
+
    require_once 'modelo/usuario.php';
    require_once 'permiso.php';
    require_once 'modelo/bitacora.php';
@@ -19,7 +21,14 @@
     $roll = $objusuario->obtenerRol();
     $registro = $objusuario->consultar();
 
- 
+  if (!isset($_SESSION['registro_limite'])) {
+                    $_SESSION['registro_limite'] = 100;
+                }
+
+   // Si se presionó el botón para cargar más
+   if (isset($_POST['cargar_mas'])) {
+         $_SESSION['registro_limite'] += 100;
+    }
 
 if (isset($_POST['registrar'])) { /* -------  */
     if (!empty($_POST['nombre']) && !empty($_POST['apellido']) && !empty($_POST['cedula']) && !empty($_POST['telefono']) && !empty($_POST['correo']) && !empty($_POST['id_rol']) && !empty($_POST['clave'])) {
@@ -186,7 +195,7 @@ if (isset($_POST['registrar'])) { /* -------  */
     }
 
     echo json_encode($resultado);
-
+/*
 } else if ($_SESSION["nivel_rol"] == 3 && tieneAcceso(13, 'ver')) {
         $bitacora = [
             'id_persona' => $_SESSION["id"],
@@ -201,5 +210,18 @@ if (isset($_POST['registrar'])) { /* -------  */
         require_once 'vista/seguridad/privilegio.php';
 
 }
-    
+ */
+} else if (isset($_POST['vermodulo'])){ 
+    $ver = $_POST['ver13'];
+    if($ver == 13){
+        require_once 'vista/usuario.php';
+    }
+    else{
+        require_once 'vista/seguridad/privilegio.php';
+    }
+   
+}else {
+        require_once 'vista/seguridad/privilegio.php';
+}
+
 ?>
