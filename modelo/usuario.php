@@ -14,15 +14,15 @@ class Usuario extends Conexion
         $this->objtipousuario = new Tipousuario();
     }
 
-/*||||||||||||||||||||||||||||||| ENCRIPTACION DE CLAVE  |||||||||||||||||||||||||||| 01 ||*/   
-    protected function encryptClave($clave) {
+/*|||||||||||||||||||||||||||||||||||||| ENCRIPTACION DE CLAVE  |||||||||||||||||||||||||||||||||| 01 ||*/   
+    private function encryptClave($clave) {
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipherMethod)); 
         $encrypted = openssl_encrypt($clave, $this->cipherMethod, $this->encryptionKey, 0, $iv);
         return base64_encode($iv . $encrypted);
     }
 
-    /*||||||||||||||||||||||||||||||| DESINCRIPTACION DE CLAVE  ||||||||||||||||||||||||||| 02 |||*/
-    protected function decryptClave($claveEncriptada) {
+    /*|||||||||||||||||||||||||||||||||||| DESINCRIPTACION DE CLAVE  ||||||||||||||||||||||||||||||||| 02 |||*/
+    private function decryptClave($claveEncriptada) {
         $data = base64_decode($claveEncriptada);
         $ivLength = openssl_cipher_iv_length($this->cipherMethod);
         $iv = substr($data, 0, $ivLength);
@@ -30,7 +30,7 @@ class Usuario extends Conexion
         return openssl_decrypt($encrypted, $this->cipherMethod, $this->encryptionKey, 0, $iv);
     }
 
-/*|||||||||||||||||||||||||||||||  OPERACIONES  |||||||||||||||||||||||||| 03 ||||*/    
+/*||||||||||||||||||||||||||||||||||||||||||||||||||  OPERACIONES  ||||||||||||||||||||||||||||||||||||||||| 03 ||||*/    
     public function procesarUsuario($jsonDatos) {
         $datos = json_decode($jsonDatos, true);
         $operacion = $datos['operacion'];
@@ -88,7 +88,7 @@ class Usuario extends Conexion
     }
 
 /*||||||||||||||||||||||||||||||| REGISTRO DE UN NUEVO USUARIO ||||||||||||||||||||||||||| 04 |||*/    
-    protected function ejecutarRegistro($datos) {
+    private function ejecutarRegistro($datos) {
         $conex = $this->getConex2();
         try {
             $conex->beginTransaction();
@@ -136,7 +136,7 @@ class Usuario extends Conexion
     }
 
 /*||||||||||||||||||||||||||||||| ACTUALIZAR DATOS DEL USUARIO  ||||||||||||||||||||||||||| 05 |||*/
-   protected function ejecutarActualizacion($datos) { 
+   private function ejecutarActualizacion($datos) { 
     $conex = $this->getConex2();
     try {
         $conex->beginTransaction();
@@ -187,7 +187,7 @@ class Usuario extends Conexion
 }
 
 /*||||||||||||||||||||||||||||||| ELIMINAR USUARIO (LOGICO)  |||||||||||||||||||||||||| 06 ||||*/
-    protected function ejecutarEliminacion($datos) {
+    private function ejecutarEliminacion($datos) {
         $conex = $this->getConex2();
         try {
             $conex->beginTransaction();
@@ -217,7 +217,7 @@ class Usuario extends Conexion
     }
 
 /*||||||||||||||||||||||||||||||| VERIFICAR CEDULA Y CORREO  ||||||||||||||||||||||||| 07 |||||*/    
-    protected function verificarExistencia($datos) {
+    private function verificarExistencia($datos) {
         $conex1 = $this->getConex1();
         $conex2 = $this->getConex2();
         try {
@@ -398,7 +398,7 @@ class Usuario extends Conexion
 }
 
 /*||||||||||||||||||||||||||||||| ELIMINAR PERMISOS (USUARIO CAMBIO DE ROL)  |||||||||||||||||||||||||| 11 ||||*/
-protected function ejecutarEliminacionPermisos($id_persona) {
+private function ejecutarEliminacionPermisos($id_persona) {
     $conex = $this->getConex2();
     try {
         $conex->beginTransaction();
@@ -473,7 +473,7 @@ protected function ejecutarEliminacionPermisos($id_persona) {
 }
 
 /*||||||||||||||||||||||||||||||| ACTUALIZAR PERMISOS DEL USUARIO  ||||||||||||||||||||||||| 14 |||||*/
-    protected function actualizarLotePermisos($lista) {
+    private function actualizarLotePermisos($lista) {
     $conex = $this->getConex2();
     try {
         $conex->beginTransaction();
