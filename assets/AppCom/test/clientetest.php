@@ -65,7 +65,7 @@ class ClienteTest extends TestCase {
     }
 
     public function testCedulaExistente() { /*||||||  VERIFICAR CEDULA Y CORREO ||||| 3 | */
-        $cedula = '3071651';
+        $cedula = '306716741';
         $existe = $this->cliente->testVerificarExistencia('cedula', $cedula);
         
         if ($existe) {
@@ -78,7 +78,7 @@ class ClienteTest extends TestCase {
     }
 
     public function testCorreoInexistente() {
-        $correo = 'loves@gmail.com';
+        $correo = 'danielactual50@gmail.com';
         $existe = $this->cliente->testVerificarExistencia('correo', $correo);
 
         if ($existe) {

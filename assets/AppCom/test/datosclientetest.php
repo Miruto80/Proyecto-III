@@ -115,19 +115,32 @@ class DatosclienteTest extends TestCase {
         $this->assertIsArray($resultado, 'No se recibió un array como respuesta');
         $this->assertEquals(1, $resultado['respuesta'], 'La actualización falló');
         $this->assertEquals('actualizar', $resultado['accion']);
+
+         if ($resultado['respuesta'] === 1 && $resultado['accion'] === 'actualizar') {
+            echo "\n testActualizarDatosCliente | Actualizacion con exitosamente. \n";
+        } else {
+            echo "\n testActualizarDatosCliente | Error al Actualizar \n";
+        }
     }
 
     public function testValidarClaveActual() {
-        $id_persona = 2; 
-        $clavePlano = 'lara1234'; 
+        $id_persona = 1; 
+        $clavePlano = 'love1234'; 
 
         $resultado = $this->datoscliente->testValidarClaveActual($id_persona, $clavePlano);
 
+        if ($resultado) {
+             echo "\n testValidarClaveActual |La clave ingresada del ID:$id_persona es correcta.\n";
+        } else {
+            echo "\n testValidarClaveActual | La clave ingresada del ID: $id_persona es incorrecta.\n";
+        }
+
         $this->assertTrue($resultado, "La clave actual no coincide con la registrada para el usuario $id_persona");
+      
     }
 
     public function testActualizarClaveUsuario() {
-        $id_persona = 2; 
+        $id_persona = 1; 
         $claveNueva = 'love1234'; 
 
         $resultado = $this->datoscliente->testEjecutarActualizacionClave($id_persona, $claveNueva);
@@ -135,18 +148,33 @@ class DatosclienteTest extends TestCase {
         $this->assertIsArray($resultado, 'No se recibió un array como respuesta');
         $this->assertEquals(1, $resultado['respuesta'], 'La actualización de clave falló');
         $this->assertEquals('clave', $resultado['accion']);
+        if ($resultado['respuesta'] === 1 && $resultado['accion'] === 'clave') {
+            echo "\n testActualizarClaveUsuario | Se ha Cambiado la clave con exitosamente. \n";
+        } else {
+            echo "\n testActualizarClaveUsuario | Error al Actulizar la clave \n";
+        }
     }
 
     public function testCedulaExistente() { /*||||||  VERIFICAR CEDULA Y CORREO ||||| 6 | */
-        $cedula = '3071651';
+        $cedula = '20554335';
         $existe = $this->datoscliente->testVerificarExistencia('cedula', $cedula);
         $this->assertFalse($existe);
+          if ($existe) {
+            echo "\n testCedulaExistente |  El cedula '$cedula' existe. \n";
+        } else {
+            echo "\n testCedulaExistente |  El cedula '$cedula' NO existe. \n";
+        }
     }
 
     public function testCorreoInexistente() {
         $correo = 'danielsanchezcv@gmail.com';
         $existe = $this->datoscliente->testVerificarExistencia('correo', $correo);
         $this->assertFalse($existe);
+          if ($existe) {
+            echo "\n testCorreoInexistente |  El correo '$correo' existe. \n";
+        } else {
+            echo "\n testCorreoInexistente |  El correo '$correo' NO existe. \n";
+        }
     }
 
     public function testConsultarDatosPorId() {
@@ -174,6 +202,12 @@ class DatosclienteTest extends TestCase {
         $this->assertIsArray($resultado, 'No se recibió un array como respuesta');
         $this->assertEquals(1, $resultado['respuesta'], "No se pudo eliminar al cliente con id_persona $id_persona");
         $this->assertEquals('eliminar', $resultado['accion']);
+
+        if ($resultado['respuesta'] === 1 && $resultado['accion'] === 'eliminar') {
+            echo "\n testEliminarClienteExistente | Eliminada la cuenta del cliente con exitosamente. \n";
+        } else {
+            echo "\n testEliminarClienteExistente | Error al Eliminada \n";
+        }
     }
 
     public function testRegistrarDireccionCliente() {
